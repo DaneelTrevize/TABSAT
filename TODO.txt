@@ -1,0 +1,45 @@
+
+
+Improve the save file choosing UI to default to the most recently modified .zxsav in the given saves directory?
+
+Provide an option to stop the Reflector as often as possible, requiring restarting it between uses during a single usage of TABSAT? Would also need to split out stop/start and deploy/delete in ReflectorManager.
+
+Provide options to:
+Simply extract, modify and repact in 1 button click.
+To skip backing up the save file before repacking the potentially modified data.
+
+Refactor TABSAT's own Console...WriteLine() to use a UI textfield, at the bottom of the UI/on another pane?
+
+
+----
+
+Options for Mutant modification/max % restoration:
+
+Delete all mutants.
+
+Relocate mutants onto giants:
+nearest giant per mutant;
+giant furthest from CC;
+giant furthest from CC within cardinal map quarter (divide diagonally), if non in quadrant find next nearest/furthest from CC globally?
+
+Relocate mutants onto smaller zombies at the map edge/at least l distance from the CC? Less likely to avoid terrain clipping than relocating onto giants.
+
+Replace all mutants with smaller zombies. Harpies?
+
+
+----
+
+Wide-ranging editor options:
+
+Adjust zombie type ratios for even harder procedurally-generated maps.
+Potentially also increase the % score scale factor for such maps?
+
+Set <Simple name="ShowFullMap"... true to effectively give Beholder for free.
+Modify <Simple name="LayerFog"... to potentially reveal all terrain but not zombies?
+
+----
+
+Other features:
+
+Use a series of auto-backed-up saves during a game to chart the player's economy, pause ratio, zombie kill rate, potential turret & army dps, etc.
+

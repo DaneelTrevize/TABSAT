@@ -1,0 +1,66 @@
+
+Early in the Data file we find:
+
+        <Dictionary name="LevelEntities" keyType="System.UInt64, mscorlib" valueType="DXVision.DXEntity, DXVision">
+          <Items>
+            <Item>
+              <Simple value="6877191615347175589" />
+              <Complex type="ZX.Entities.ZombieMutant, TheyAreBillions">
+
+Find the single instance of the LevelEntities Dictionary, then each occurrence of <Item> ... <Complex type="ZX.Entities.ZombieMutant, TheyAreBillions">. The sandwiched Simple value is their unique id? It occurs as <Simple name="ID" value="6877191615347175589" /> just after the start of this Complex Item, as a Simple Property.
+
+Later there occurs:
+
+        <Collection name="MiniMapIndicators" elementType="ZX.ZXMiniMapIndicator, TheyAreBillions">
+          <Items>
+            <Complex type="ZX.ZXMiniMapIndicatorInfo, TheyAreBillions">
+              <Properties>
+                <Simple name="IDProjectImage" value="3097669356589096184" />
+                <Simple name="HueRotation" value="0" />
+                <Complex name="EntityRef">
+                  <Properties>
+                    <Simple name="IDEntity" value="6877191615347175589" />
+                  </Properties>
+                </Complex>
+                <Simple name="Cell" value="92;34" />
+                <Simple name="Text" value="It has been detected in this location." />
+                <Simple name="Title" value="Infected Mutant" />
+              </Properties>
+            </Complex>
+
+IDEntity value here matches previous ID and Item values.
+
+Near the end of the file, the save name occurs, twice:
+
+    <Complex name="SurvivalModeParams">
+      <Properties>
+        <Simple name="Name" value="Surv4 DieMutants" />
+        <Simple name="Seed" value="-436391388" />
+        <Simple name="NCells" value="256" />
+        <Simple name="ThemeType" value="DS" />
+        <Simple name="FactorGameDuration" value="0.8" />
+        <Simple name="FactorZombiePopulation" value="1.5" />
+        <Simple name="DifficultyType" value="Brutal" />
+        <Null name="ScoreFactorFixed" />
+      </Properties>
+    </Complex>
+    <Simple name="HUD" value="False" />
+    <Simple name="Difficulty" value="Normal" />
+    <Simple name="ID" value="1939114612170716834" />
+    <Simple name="Name" value="Surv4 DieMutants" />
+
+The adjacent Info file also contains the save name twice. Here's the file in its entirety:
+
+<Complex name="Root" type="ZX.ZXGameStateInfo, TheyAreBillions">
+  <Properties>
+    <Simple name="Version" value="1" />
+    <Null name="ID" />
+    <Null name="UserName" />
+    <Simple name="FileName" value="Surv4 DieMutants.zxsav" />
+    <Simple name="Name" value="Surv4 DieMutants" />
+    <Simple name="Date" value="01/14/2020 09:55:06" />
+    <Simple name="Difficulty" value="Normal" />
+    <Null name="IDCampaign" />
+    <Null name="IDCurrentMission" />
+  </Properties>
+</Complex>
