@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Reflection;
@@ -501,7 +502,27 @@ namespace TABReflector
                 initialiseBillionsAndStall( new string[] { "" } );
             } ).Start();
             // Now give the TAB thread time to do what we need
-            Thread.Sleep( 1000 );
+            //Thread.Sleep( 1000 );
+            Process self = Process.GetCurrentProcess();
+            for( int i = 0; i < 5; i++ )
+            {
+                Thread.Sleep( 200 );
+                try
+                {
+                    IntPtr popup = self.MainWindowHandle;
+                    if( popup != IntPtr.Zero )
+                    {
+                        Console.WriteLine( "Popup detected, cycles: " + i );
+                        break;
+                    }
+                }
+                catch( InvalidOperationException ioe )
+                {
+                    Console.WriteLine( "Waiting for popup." );
+                    Thread.Sleep( 800 );
+                    break;
+                }
+            }
 
             TABReflector tabref = new TABReflector( args[0] );
 

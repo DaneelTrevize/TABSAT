@@ -4,11 +4,11 @@ Improve the save file choosing UI to default to the most recently modified .zxsa
 
 Provide an option to stop the Reflector as often as possible, requiring restarting it between uses during a single usage of TABSAT? Would also need to split out stop/start and deploy/delete in ReflectorManager.
 
-Provide options to:
-Simply extract, modify and repact in 1 button click.
-To skip backing up the save file before repacking the potentially modified data.
 
-Refactor TABSAT's own Console...WriteLine() to use a UI textfield, at the bottom of the UI/on another pane?
+Refactor TABSAT's own Console...WriteLine() to use a UI textfield/list, at the bottom of the UI/on another pane?
+
+
+Would TABReflector need to technically be a graphical application, with a hidden window, in order for Process.WaitForInputIdle() to best solve the Sleep() race condition?
 
 
 ----
@@ -33,6 +33,8 @@ Wide-ranging editor options:
 
 Adjust zombie type ratios for even harder procedurally-generated maps.
 Potentially also increase the % score scale factor for such maps?
+
+Without needing to generate new zombie IDs, we could just swap the locations of different types to affect distribution difficulty. Depends upon generating LevelFastSerializedEntities?
 
 Set <Simple name="ShowFullMap"... true to effectively give Beholder for free.
 Modify <Simple name="LayerFog"... to potentially reveal all terrain but not zombies?

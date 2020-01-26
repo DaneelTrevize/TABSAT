@@ -39,34 +39,56 @@
             this.popupPictureBox = new System.Windows.Forms.PictureBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.beforeUsingTabPage = new System.Windows.Forms.TabPage();
-            this.mutantEditorTabPage = new System.Windows.Forms.TabPage();
+            this.saveEditorTabPage = new System.Windows.Forms.TabPage();
+            this.modifySaveButton = new System.Windows.Forms.Button();
+            this.manualGroupBox = new System.Windows.Forms.GroupBox();
+            this.skipRepackButton = new System.Windows.Forms.Button();
+            this.repackSaveButton = new System.Windows.Forms.Button();
+            this.extractSaveButton = new System.Windows.Forms.Button();
+            this.extractGroupBox = new System.Windows.Forms.GroupBox();
+            this.extractManualRadioButton = new System.Windows.Forms.RadioButton();
+            this.extractLeaveRadioButton = new System.Windows.Forms.RadioButton();
+            this.extractTidyRadioButton = new System.Windows.Forms.RadioButton();
+            this.terrainGroupBox = new System.Windows.Forms.GroupBox();
+            this.themeComboBox = new System.Windows.Forms.ComboBox();
+            this.themeCheckBox = new System.Windows.Forms.CheckBox();
+            this.showAllCheckBox = new System.Windows.Forms.CheckBox();
+            this.mutantGroupBox = new System.Windows.Forms.GroupBox();
+            this.mutantMoveGlobalComboBox = new System.Windows.Forms.ComboBox();
+            this.mutantMoveCCLabel = new System.Windows.Forms.Label();
+            this.mutantMoveWhatComboBox = new System.Windows.Forms.ComboBox();
+            this.mutantsMoveRadio = new System.Windows.Forms.RadioButton();
+            this.mutantsRemoveRadio = new System.Windows.Forms.RadioButton();
+            this.mutantsNothingRadio = new System.Windows.Forms.RadioButton();
             this.reflectorOutputLabel = new System.Windows.Forms.Label();
             this.reflectorTextBox = new System.Windows.Forms.TextBox();
-            this.backupSaveLavel = new System.Windows.Forms.Label();
-            this.backupSaveFileTextBox = new System.Windows.Forms.TextBox();
-            this.repackedSaveLabel = new System.Windows.Forms.Label();
-            this.repackedSaveFileTextBox = new System.Windows.Forms.TextBox();
-            this.repackSaveButton = new System.Windows.Forms.Button();
-            this.mutantModifyButton = new System.Windows.Forms.Button();
-            this.extractedDirLlabel = new System.Windows.Forms.Label();
-            this.extractedDirTextBox = new System.Windows.Forms.TextBox();
-            this.tabDirTextBox = new System.Windows.Forms.TextBox();
-            this.tabDirLabel = new System.Windows.Forms.Label();
-            this.reflectorDirLabel = new System.Windows.Forms.Label();
-            this.reflectorDirTextBox = new System.Windows.Forms.TextBox();
-            this.extractSaveButton = new System.Windows.Forms.Button();
             this.corruptionGroupBox = new System.Windows.Forms.GroupBox();
-            this.saveFileChooseButton = new System.Windows.Forms.Button();
+            this.saveFileGroupBox = new System.Windows.Forms.GroupBox();
             this.saveFileTextBox = new System.Windows.Forms.TextBox();
+            this.saveFileChooseButton = new System.Windows.Forms.Button();
+            this.backupCheckBox = new System.Windows.Forms.CheckBox();
             this.openSaveFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.statusTextBox = new System.Windows.Forms.TextBox();
+            this.reflectorGroupBox = new System.Windows.Forms.GroupBox();
+            this.reflectorExitRadioButton = new System.Windows.Forms.RadioButton();
+            this.reflectorRepackRadioButton = new System.Windows.Forms.RadioButton();
+            this.reflectorExtractRadioButton = new System.Windows.Forms.RadioButton();
+            this.modifyGroupBox = new System.Windows.Forms.GroupBox();
             this.cloudGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.propertiesPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.updatesPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.popupPictureBox)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.beforeUsingTabPage.SuspendLayout();
-            this.mutantEditorTabPage.SuspendLayout();
+            this.saveEditorTabPage.SuspendLayout();
+            this.manualGroupBox.SuspendLayout();
+            this.extractGroupBox.SuspendLayout();
+            this.terrainGroupBox.SuspendLayout();
+            this.mutantGroupBox.SuspendLayout();
             this.corruptionGroupBox.SuspendLayout();
+            this.saveFileGroupBox.SuspendLayout();
+            this.reflectorGroupBox.SuspendLayout();
+            this.modifyGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // popupLabel
@@ -98,10 +120,10 @@
             // cloudDisableLabel
             // 
             this.cloudDisableLabel.AutoSize = true;
-            this.cloudDisableLabel.Location = new System.Drawing.Point(18, 444);
-            this.cloudDisableLabel.MaximumSize = new System.Drawing.Size(300, 0);
+            this.cloudDisableLabel.Location = new System.Drawing.Point(73, 423);
+            this.cloudDisableLabel.MaximumSize = new System.Drawing.Size(220, 0);
             this.cloudDisableLabel.Name = "cloudDisableLabel";
-            this.cloudDisableLabel.Size = new System.Drawing.Size(295, 26);
+            this.cloudDisableLabel.Size = new System.Drawing.Size(216, 26);
             this.cloudDisableLabel.TabIndex = 4;
             this.cloudDisableLabel.Text = "Steam Cloud being disabled for TAB cannot be automatically verified at this time." +
     "";
@@ -153,12 +175,14 @@
             // 
             // tabControl1
             // 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.beforeUsingTabPage);
-            this.tabControl1.Controls.Add(this.mutantEditorTabPage);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
+            this.tabControl1.Controls.Add(this.saveEditorTabPage);
+            this.tabControl1.Location = new System.Drawing.Point(8, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(832, 597);
+            this.tabControl1.Size = new System.Drawing.Size(828, 597);
             this.tabControl1.TabIndex = 5;
             // 
             // beforeUsingTabPage
@@ -167,43 +191,264 @@
             this.beforeUsingTabPage.Location = new System.Drawing.Point(4, 22);
             this.beforeUsingTabPage.Name = "beforeUsingTabPage";
             this.beforeUsingTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.beforeUsingTabPage.Size = new System.Drawing.Size(824, 571);
+            this.beforeUsingTabPage.Size = new System.Drawing.Size(820, 571);
             this.beforeUsingTabPage.TabIndex = 0;
             this.beforeUsingTabPage.Text = "Before using TABSAT";
             this.beforeUsingTabPage.UseVisualStyleBackColor = true;
             // 
-            // mutantEditorTabPage
+            // saveEditorTabPage
             // 
-            this.mutantEditorTabPage.Controls.Add(this.reflectorOutputLabel);
-            this.mutantEditorTabPage.Controls.Add(this.reflectorTextBox);
-            this.mutantEditorTabPage.Controls.Add(this.backupSaveLavel);
-            this.mutantEditorTabPage.Controls.Add(this.backupSaveFileTextBox);
-            this.mutantEditorTabPage.Controls.Add(this.repackedSaveLabel);
-            this.mutantEditorTabPage.Controls.Add(this.repackedSaveFileTextBox);
-            this.mutantEditorTabPage.Controls.Add(this.repackSaveButton);
-            this.mutantEditorTabPage.Controls.Add(this.mutantModifyButton);
-            this.mutantEditorTabPage.Controls.Add(this.extractedDirLlabel);
-            this.mutantEditorTabPage.Controls.Add(this.extractedDirTextBox);
-            this.mutantEditorTabPage.Controls.Add(this.tabDirTextBox);
-            this.mutantEditorTabPage.Controls.Add(this.tabDirLabel);
-            this.mutantEditorTabPage.Controls.Add(this.reflectorDirLabel);
-            this.mutantEditorTabPage.Controls.Add(this.reflectorDirTextBox);
-            this.mutantEditorTabPage.Controls.Add(this.extractSaveButton);
-            this.mutantEditorTabPage.Controls.Add(this.corruptionGroupBox);
-            this.mutantEditorTabPage.Controls.Add(this.saveFileChooseButton);
-            this.mutantEditorTabPage.Controls.Add(this.saveFileTextBox);
-            this.mutantEditorTabPage.Location = new System.Drawing.Point(4, 22);
-            this.mutantEditorTabPage.Name = "mutantEditorTabPage";
-            this.mutantEditorTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.mutantEditorTabPage.Size = new System.Drawing.Size(824, 571);
-            this.mutantEditorTabPage.TabIndex = 1;
-            this.mutantEditorTabPage.Text = "Modify Mutants in a Save File";
-            this.mutantEditorTabPage.UseVisualStyleBackColor = true;
+            this.saveEditorTabPage.Controls.Add(this.reflectorGroupBox);
+            this.saveEditorTabPage.Controls.Add(this.manualGroupBox);
+            this.saveEditorTabPage.Controls.Add(this.extractGroupBox);
+            this.saveEditorTabPage.Controls.Add(this.terrainGroupBox);
+            this.saveEditorTabPage.Controls.Add(this.mutantGroupBox);
+            this.saveEditorTabPage.Controls.Add(this.reflectorOutputLabel);
+            this.saveEditorTabPage.Controls.Add(this.reflectorTextBox);
+            this.saveEditorTabPage.Controls.Add(this.corruptionGroupBox);
+            this.saveEditorTabPage.Controls.Add(this.saveFileGroupBox);
+            this.saveEditorTabPage.Controls.Add(this.modifyGroupBox);
+            this.saveEditorTabPage.Location = new System.Drawing.Point(4, 22);
+            this.saveEditorTabPage.Name = "saveEditorTabPage";
+            this.saveEditorTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.saveEditorTabPage.Size = new System.Drawing.Size(820, 571);
+            this.saveEditorTabPage.TabIndex = 1;
+            this.saveEditorTabPage.Text = "Modify Save Files";
+            this.saveEditorTabPage.UseVisualStyleBackColor = true;
+            // 
+            // modifySaveButton
+            // 
+            this.modifySaveButton.Location = new System.Drawing.Point(20, 19);
+            this.modifySaveButton.Name = "modifySaveButton";
+            this.modifySaveButton.Size = new System.Drawing.Size(118, 30);
+            this.modifySaveButton.TabIndex = 15;
+            this.modifySaveButton.Text = "Modify the Save File";
+            this.modifySaveButton.UseVisualStyleBackColor = true;
+            this.modifySaveButton.Click += new System.EventHandler(this.modifySaveButton_Click);
+            // 
+            // manualGroupBox
+            // 
+            this.manualGroupBox.Controls.Add(this.skipRepackButton);
+            this.manualGroupBox.Controls.Add(this.repackSaveButton);
+            this.manualGroupBox.Controls.Add(this.extractSaveButton);
+            this.manualGroupBox.Enabled = false;
+            this.manualGroupBox.Location = new System.Drawing.Point(241, 371);
+            this.manualGroupBox.Name = "manualGroupBox";
+            this.manualGroupBox.Size = new System.Drawing.Size(154, 123);
+            this.manualGroupBox.TabIndex = 26;
+            this.manualGroupBox.TabStop = false;
+            this.manualGroupBox.Text = "Manual Editing";
+            // 
+            // skipRepackButton
+            // 
+            this.skipRepackButton.Enabled = false;
+            this.skipRepackButton.Location = new System.Drawing.Point(20, 91);
+            this.skipRepackButton.Name = "skipRepackButton";
+            this.skipRepackButton.Size = new System.Drawing.Size(118, 23);
+            this.skipRepackButton.TabIndex = 18;
+            this.skipRepackButton.Text = "Skip Repacking";
+            this.skipRepackButton.UseVisualStyleBackColor = true;
+            this.skipRepackButton.Click += new System.EventHandler(this.skipRepackButton_Click);
+            // 
+            // repackSaveButton
+            // 
+            this.repackSaveButton.Enabled = false;
+            this.repackSaveButton.Location = new System.Drawing.Point(20, 62);
+            this.repackSaveButton.Name = "repackSaveButton";
+            this.repackSaveButton.Size = new System.Drawing.Size(118, 23);
+            this.repackSaveButton.TabIndex = 19;
+            this.repackSaveButton.Text = "Repack the Save File";
+            this.repackSaveButton.UseVisualStyleBackColor = true;
+            this.repackSaveButton.Click += new System.EventHandler(this.repackSaveButton_Click);
+            // 
+            // extractSaveButton
+            // 
+            this.extractSaveButton.Enabled = false;
+            this.extractSaveButton.Location = new System.Drawing.Point(20, 19);
+            this.extractSaveButton.Name = "extractSaveButton";
+            this.extractSaveButton.Size = new System.Drawing.Size(118, 23);
+            this.extractSaveButton.TabIndex = 17;
+            this.extractSaveButton.Text = "Extract the Save File";
+            this.extractSaveButton.UseVisualStyleBackColor = true;
+            this.extractSaveButton.Click += new System.EventHandler(this.extractSaveButton_Click);
+            // 
+            // extractGroupBox
+            // 
+            this.extractGroupBox.Controls.Add(this.extractManualRadioButton);
+            this.extractGroupBox.Controls.Add(this.extractLeaveRadioButton);
+            this.extractGroupBox.Controls.Add(this.extractTidyRadioButton);
+            this.extractGroupBox.Location = new System.Drawing.Point(10, 306);
+            this.extractGroupBox.Name = "extractGroupBox";
+            this.extractGroupBox.Size = new System.Drawing.Size(210, 91);
+            this.extractGroupBox.TabIndex = 24;
+            this.extractGroupBox.TabStop = false;
+            this.extractGroupBox.Text = "Extracted Files options:";
+            // 
+            // extractManualRadioButton
+            // 
+            this.extractManualRadioButton.AutoSize = true;
+            this.extractManualRadioButton.Location = new System.Drawing.Point(17, 65);
+            this.extractManualRadioButton.Name = "extractManualRadioButton";
+            this.extractManualRadioButton.Size = new System.Drawing.Size(125, 17);
+            this.extractManualRadioButton.TabIndex = 14;
+            this.extractManualRadioButton.Text = "Manual Editing Mode";
+            this.extractManualRadioButton.UseVisualStyleBackColor = true;
+            this.extractManualRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
+            // 
+            // extractLeaveRadioButton
+            // 
+            this.extractLeaveRadioButton.AutoSize = true;
+            this.extractLeaveRadioButton.Checked = true;
+            this.extractLeaveRadioButton.Location = new System.Drawing.Point(17, 42);
+            this.extractLeaveRadioButton.Name = "extractLeaveRadioButton";
+            this.extractLeaveRadioButton.Size = new System.Drawing.Size(55, 17);
+            this.extractLeaveRadioButton.TabIndex = 13;
+            this.extractLeaveRadioButton.TabStop = true;
+            this.extractLeaveRadioButton.Text = "Leave";
+            this.extractLeaveRadioButton.UseVisualStyleBackColor = true;
+            this.extractLeaveRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
+            // 
+            // extractTidyRadioButton
+            // 
+            this.extractTidyRadioButton.AutoSize = true;
+            this.extractTidyRadioButton.Enabled = false;
+            this.extractTidyRadioButton.Location = new System.Drawing.Point(17, 19);
+            this.extractTidyRadioButton.Name = "extractTidyRadioButton";
+            this.extractTidyRadioButton.Size = new System.Drawing.Size(65, 17);
+            this.extractTidyRadioButton.TabIndex = 12;
+            this.extractTidyRadioButton.Text = "Remove";
+            this.extractTidyRadioButton.UseVisualStyleBackColor = true;
+            this.extractTidyRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
+            // 
+            // terrainGroupBox
+            // 
+            this.terrainGroupBox.Controls.Add(this.themeComboBox);
+            this.terrainGroupBox.Controls.Add(this.themeCheckBox);
+            this.terrainGroupBox.Controls.Add(this.showAllCheckBox);
+            this.terrainGroupBox.Location = new System.Drawing.Point(10, 121);
+            this.terrainGroupBox.Name = "terrainGroupBox";
+            this.terrainGroupBox.Size = new System.Drawing.Size(385, 71);
+            this.terrainGroupBox.TabIndex = 22;
+            this.terrainGroupBox.TabStop = false;
+            this.terrainGroupBox.Text = "Terrain options:";
+            // 
+            // themeComboBox
+            // 
+            this.themeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.themeComboBox.FormattingEnabled = true;
+            this.themeComboBox.Location = new System.Drawing.Point(133, 40);
+            this.themeComboBox.Name = "themeComboBox";
+            this.themeComboBox.Size = new System.Drawing.Size(118, 21);
+            this.themeComboBox.TabIndex = 8;
+            // 
+            // themeCheckBox
+            // 
+            this.themeCheckBox.AutoSize = true;
+            this.themeCheckBox.Location = new System.Drawing.Point(17, 42);
+            this.themeCheckBox.Name = "themeCheckBox";
+            this.themeCheckBox.Size = new System.Drawing.Size(110, 17);
+            this.themeCheckBox.TabIndex = 7;
+            this.themeCheckBox.Text = "Change theme to:";
+            this.themeCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // showAllCheckBox
+            // 
+            this.showAllCheckBox.AutoSize = true;
+            this.showAllCheckBox.Enabled = false;
+            this.showAllCheckBox.Location = new System.Drawing.Point(17, 19);
+            this.showAllCheckBox.Name = "showAllCheckBox";
+            this.showAllCheckBox.Size = new System.Drawing.Size(126, 17);
+            this.showAllCheckBox.TabIndex = 6;
+            this.showAllCheckBox.Text = "Reveal all of the map";
+            this.showAllCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // mutantGroupBox
+            // 
+            this.mutantGroupBox.Controls.Add(this.mutantMoveGlobalComboBox);
+            this.mutantGroupBox.Controls.Add(this.mutantMoveCCLabel);
+            this.mutantGroupBox.Controls.Add(this.mutantMoveWhatComboBox);
+            this.mutantGroupBox.Controls.Add(this.mutantsMoveRadio);
+            this.mutantGroupBox.Controls.Add(this.mutantsRemoveRadio);
+            this.mutantGroupBox.Controls.Add(this.mutantsNothingRadio);
+            this.mutantGroupBox.Location = new System.Drawing.Point(10, 19);
+            this.mutantGroupBox.Name = "mutantGroupBox";
+            this.mutantGroupBox.Size = new System.Drawing.Size(385, 96);
+            this.mutantGroupBox.TabIndex = 21;
+            this.mutantGroupBox.TabStop = false;
+            this.mutantGroupBox.Text = "Mutant options:";
+            // 
+            // mutantMoveGlobalComboBox
+            // 
+            this.mutantMoveGlobalComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mutantMoveGlobalComboBox.Enabled = false;
+            this.mutantMoveGlobalComboBox.FormattingEnabled = true;
+            this.mutantMoveGlobalComboBox.Items.AddRange(new object[] {
+            "anywhere on the map",
+            "per compass quadrant"});
+            this.mutantMoveGlobalComboBox.Location = new System.Drawing.Point(238, 64);
+            this.mutantMoveGlobalComboBox.Name = "mutantMoveGlobalComboBox";
+            this.mutantMoveGlobalComboBox.Size = new System.Drawing.Size(131, 21);
+            this.mutantMoveGlobalComboBox.TabIndex = 5;
+            // 
+            // mutantMoveCCLabel
+            // 
+            this.mutantMoveCCLabel.AutoSize = true;
+            this.mutantMoveCCLabel.Location = new System.Drawing.Point(188, 67);
+            this.mutantMoveCCLabel.Name = "mutantMoveCCLabel";
+            this.mutantMoveCCLabel.Size = new System.Drawing.Size(44, 13);
+            this.mutantMoveCCLabel.TabIndex = 5;
+            this.mutantMoveCCLabel.Text = "from CC";
+            // 
+            // mutantMoveWhatComboBox
+            // 
+            this.mutantMoveWhatComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mutantMoveWhatComboBox.Enabled = false;
+            this.mutantMoveWhatComboBox.FormattingEnabled = true;
+            this.mutantMoveWhatComboBox.Items.AddRange(new object[] {
+            "Giant",
+            "Mutant"});
+            this.mutantMoveWhatComboBox.Location = new System.Drawing.Point(119, 64);
+            this.mutantMoveWhatComboBox.Name = "mutantMoveWhatComboBox";
+            this.mutantMoveWhatComboBox.Size = new System.Drawing.Size(63, 21);
+            this.mutantMoveWhatComboBox.TabIndex = 4;
+            // 
+            // mutantsMoveRadio
+            // 
+            this.mutantsMoveRadio.AutoSize = true;
+            this.mutantsMoveRadio.Location = new System.Drawing.Point(17, 65);
+            this.mutantsMoveRadio.Name = "mutantsMoveRadio";
+            this.mutantsMoveRadio.Size = new System.Drawing.Size(102, 17);
+            this.mutantsMoveRadio.TabIndex = 3;
+            this.mutantsMoveRadio.Text = "Move to farthest";
+            this.mutantsMoveRadio.UseVisualStyleBackColor = true;
+            // 
+            // mutantsRemoveRadio
+            // 
+            this.mutantsRemoveRadio.AutoSize = true;
+            this.mutantsRemoveRadio.Enabled = false;
+            this.mutantsRemoveRadio.Location = new System.Drawing.Point(17, 42);
+            this.mutantsRemoveRadio.Name = "mutantsRemoveRadio";
+            this.mutantsRemoveRadio.Size = new System.Drawing.Size(65, 17);
+            this.mutantsRemoveRadio.TabIndex = 2;
+            this.mutantsRemoveRadio.Text = "Remove";
+            this.mutantsRemoveRadio.UseVisualStyleBackColor = true;
+            // 
+            // mutantsNothingRadio
+            // 
+            this.mutantsNothingRadio.AutoSize = true;
+            this.mutantsNothingRadio.Checked = true;
+            this.mutantsNothingRadio.Location = new System.Drawing.Point(17, 19);
+            this.mutantsNothingRadio.Name = "mutantsNothingRadio";
+            this.mutantsNothingRadio.Size = new System.Drawing.Size(77, 17);
+            this.mutantsNothingRadio.TabIndex = 1;
+            this.mutantsNothingRadio.TabStop = true;
+            this.mutantsNothingRadio.Text = "Do nothing";
+            this.mutantsNothingRadio.UseVisualStyleBackColor = true;
             // 
             // reflectorOutputLabel
             // 
             this.reflectorOutputLabel.AutoSize = true;
-            this.reflectorOutputLabel.Location = new System.Drawing.Point(422, 226);
+            this.reflectorOutputLabel.Location = new System.Drawing.Point(413, 296);
             this.reflectorOutputLabel.Name = "reflectorOutputLabel";
             this.reflectorOutputLabel.Size = new System.Drawing.Size(93, 13);
             this.reflectorOutputLabel.TabIndex = 21;
@@ -211,138 +456,21 @@
             // 
             // reflectorTextBox
             // 
-            this.reflectorTextBox.Location = new System.Drawing.Point(425, 242);
+            this.reflectorTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.reflectorTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.reflectorTextBox.Location = new System.Drawing.Point(416, 312);
             this.reflectorTextBox.Multiline = true;
             this.reflectorTextBox.Name = "reflectorTextBox";
             this.reflectorTextBox.ReadOnly = true;
-            this.reflectorTextBox.Size = new System.Drawing.Size(386, 322);
+            this.reflectorTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.reflectorTextBox.Size = new System.Drawing.Size(403, 253);
             this.reflectorTextBox.TabIndex = 20;
-            // 
-            // backupSaveLavel
-            // 
-            this.backupSaveLavel.AutoSize = true;
-            this.backupSaveLavel.Location = new System.Drawing.Point(6, 411);
-            this.backupSaveLavel.Name = "backupSaveLavel";
-            this.backupSaveLavel.Size = new System.Drawing.Size(134, 13);
-            this.backupSaveLavel.TabIndex = 19;
-            this.backupSaveLavel.Text = "Save File Backup location:";
-            // 
-            // backupSaveFileTextBox
-            // 
-            this.backupSaveFileTextBox.Location = new System.Drawing.Point(9, 427);
-            this.backupSaveFileTextBox.Name = "backupSaveFileTextBox";
-            this.backupSaveFileTextBox.ReadOnly = true;
-            this.backupSaveFileTextBox.Size = new System.Drawing.Size(386, 20);
-            this.backupSaveFileTextBox.TabIndex = 18;
-            this.backupSaveFileTextBox.WordWrap = false;
-            // 
-            // repackedSaveLabel
-            // 
-            this.repackedSaveLabel.AutoSize = true;
-            this.repackedSaveLabel.Location = new System.Drawing.Point(6, 451);
-            this.repackedSaveLabel.Name = "repackedSaveLabel";
-            this.repackedSaveLabel.Size = new System.Drawing.Size(147, 13);
-            this.repackedSaveLabel.TabIndex = 17;
-            this.repackedSaveLabel.Text = "Repacked Save File location:";
-            // 
-            // repackedSaveFileTextBox
-            // 
-            this.repackedSaveFileTextBox.Location = new System.Drawing.Point(9, 467);
-            this.repackedSaveFileTextBox.Name = "repackedSaveFileTextBox";
-            this.repackedSaveFileTextBox.ReadOnly = true;
-            this.repackedSaveFileTextBox.Size = new System.Drawing.Size(386, 20);
-            this.repackedSaveFileTextBox.TabIndex = 16;
-            this.repackedSaveFileTextBox.WordWrap = false;
-            // 
-            // repackSaveButton
-            // 
-            this.repackSaveButton.Enabled = false;
-            this.repackSaveButton.Location = new System.Drawing.Point(226, 386);
-            this.repackSaveButton.Name = "repackSaveButton";
-            this.repackSaveButton.Size = new System.Drawing.Size(169, 23);
-            this.repackSaveButton.TabIndex = 15;
-            this.repackSaveButton.Text = "Repack the extracted Save File";
-            this.repackSaveButton.UseVisualStyleBackColor = true;
-            this.repackSaveButton.Click += new System.EventHandler(this.repackSaveButton_Click);
-            // 
-            // mutantModifyButton
-            // 
-            this.mutantModifyButton.Enabled = false;
-            this.mutantModifyButton.Location = new System.Drawing.Point(161, 329);
-            this.mutantModifyButton.Name = "mutantModifyButton";
-            this.mutantModifyButton.Size = new System.Drawing.Size(234, 23);
-            this.mutantModifyButton.TabIndex = 14;
-            this.mutantModifyButton.Text = "Modify the Mutants in the extracted Save File";
-            this.mutantModifyButton.UseVisualStyleBackColor = true;
-            this.mutantModifyButton.Click += new System.EventHandler(this.mutantModifyButton_Click);
-            // 
-            // extractedDirLlabel
-            // 
-            this.extractedDirLlabel.AutoSize = true;
-            this.extractedDirLlabel.Location = new System.Drawing.Point(6, 255);
-            this.extractedDirLlabel.Name = "extractedDirLlabel";
-            this.extractedDirLlabel.Size = new System.Drawing.Size(142, 13);
-            this.extractedDirLlabel.TabIndex = 13;
-            this.extractedDirLlabel.Text = "Extracted Save File location:";
-            // 
-            // extractedDirTextBox
-            // 
-            this.extractedDirTextBox.Location = new System.Drawing.Point(9, 271);
-            this.extractedDirTextBox.Name = "extractedDirTextBox";
-            this.extractedDirTextBox.ReadOnly = true;
-            this.extractedDirTextBox.Size = new System.Drawing.Size(386, 20);
-            this.extractedDirTextBox.TabIndex = 12;
-            this.extractedDirTextBox.WordWrap = false;
-            // 
-            // tabDirTextBox
-            // 
-            this.tabDirTextBox.Location = new System.Drawing.Point(9, 83);
-            this.tabDirTextBox.Name = "tabDirTextBox";
-            this.tabDirTextBox.ReadOnly = true;
-            this.tabDirTextBox.Size = new System.Drawing.Size(386, 20);
-            this.tabDirTextBox.TabIndex = 11;
-            this.tabDirTextBox.WordWrap = false;
-            // 
-            // tabDirLabel
-            // 
-            this.tabDirLabel.AutoSize = true;
-            this.tabDirLabel.Location = new System.Drawing.Point(6, 67);
-            this.tabDirLabel.Name = "tabDirLabel";
-            this.tabDirLabel.Size = new System.Drawing.Size(71, 13);
-            this.tabDirLabel.TabIndex = 10;
-            this.tabDirLabel.Text = "TAB location:";
-            // 
-            // reflectorDirLabel
-            // 
-            this.reflectorDirLabel.AutoSize = true;
-            this.reflectorDirLabel.Location = new System.Drawing.Point(6, 19);
-            this.reflectorDirLabel.Name = "reflectorDirLabel";
-            this.reflectorDirLabel.Size = new System.Drawing.Size(93, 13);
-            this.reflectorDirLabel.TabIndex = 9;
-            this.reflectorDirLabel.Text = "Reflector location:";
-            // 
-            // reflectorDirTextBox
-            // 
-            this.reflectorDirTextBox.Location = new System.Drawing.Point(9, 35);
-            this.reflectorDirTextBox.Name = "reflectorDirTextBox";
-            this.reflectorDirTextBox.ReadOnly = true;
-            this.reflectorDirTextBox.Size = new System.Drawing.Size(386, 20);
-            this.reflectorDirTextBox.TabIndex = 8;
-            this.reflectorDirTextBox.WordWrap = false;
-            // 
-            // extractSaveButton
-            // 
-            this.extractSaveButton.Enabled = false;
-            this.extractSaveButton.Location = new System.Drawing.Point(275, 242);
-            this.extractSaveButton.Name = "extractSaveButton";
-            this.extractSaveButton.Size = new System.Drawing.Size(120, 23);
-            this.extractSaveButton.TabIndex = 7;
-            this.extractSaveButton.Text = "Extract the Save File";
-            this.extractSaveButton.UseVisualStyleBackColor = true;
-            this.extractSaveButton.Click += new System.EventHandler(this.extractSaveButton_Click);
             // 
             // corruptionGroupBox
             // 
+            this.corruptionGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.corruptionGroupBox.Controls.Add(this.popupLabel);
             this.corruptionGroupBox.Controls.Add(this.popupPictureBox);
             this.corruptionGroupBox.Location = new System.Drawing.Point(416, 19);
@@ -352,38 +480,141 @@
             this.corruptionGroupBox.TabStop = false;
             this.corruptionGroupBox.Text = "Notice:";
             // 
+            // saveFileGroupBox
+            // 
+            this.saveFileGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.saveFileGroupBox.Controls.Add(this.saveFileTextBox);
+            this.saveFileGroupBox.Controls.Add(this.saveFileChooseButton);
+            this.saveFileGroupBox.Controls.Add(this.backupCheckBox);
+            this.saveFileGroupBox.Location = new System.Drawing.Point(10, 229);
+            this.saveFileGroupBox.Name = "saveFileGroupBox";
+            this.saveFileGroupBox.Size = new System.Drawing.Size(808, 55);
+            this.saveFileGroupBox.TabIndex = 23;
+            this.saveFileGroupBox.TabStop = false;
+            this.saveFileGroupBox.Text = "Save File";
+            // 
+            // saveFileTextBox
+            // 
+            this.saveFileTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.saveFileTextBox.Location = new System.Drawing.Point(143, 21);
+            this.saveFileTextBox.Name = "saveFileTextBox";
+            this.saveFileTextBox.ReadOnly = true;
+            this.saveFileTextBox.Size = new System.Drawing.Size(507, 20);
+            this.saveFileTextBox.TabIndex = 10;
+            this.saveFileTextBox.WordWrap = false;
+            // 
             // saveFileChooseButton
             // 
-            this.saveFileChooseButton.Location = new System.Drawing.Point(9, 155);
+            this.saveFileChooseButton.Location = new System.Drawing.Point(6, 19);
             this.saveFileChooseButton.Name = "saveFileChooseButton";
-            this.saveFileChooseButton.Size = new System.Drawing.Size(120, 23);
-            this.saveFileChooseButton.TabIndex = 5;
+            this.saveFileChooseButton.Size = new System.Drawing.Size(131, 23);
+            this.saveFileChooseButton.TabIndex = 9;
             this.saveFileChooseButton.Text = "Choose a Save File...";
             this.saveFileChooseButton.UseVisualStyleBackColor = true;
             this.saveFileChooseButton.Click += new System.EventHandler(this.saveFileChooseButton_Click);
             // 
-            // saveFileTextBox
+            // backupCheckBox
             // 
-            this.saveFileTextBox.Location = new System.Drawing.Point(135, 157);
-            this.saveFileTextBox.Name = "saveFileTextBox";
-            this.saveFileTextBox.ReadOnly = true;
-            this.saveFileTextBox.Size = new System.Drawing.Size(260, 20);
-            this.saveFileTextBox.TabIndex = 4;
-            this.saveFileTextBox.WordWrap = false;
+            this.backupCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.backupCheckBox.AutoSize = true;
+            this.backupCheckBox.Checked = true;
+            this.backupCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.backupCheckBox.Enabled = false;
+            this.backupCheckBox.Location = new System.Drawing.Point(656, 23);
+            this.backupCheckBox.Name = "backupCheckBox";
+            this.backupCheckBox.Size = new System.Drawing.Size(146, 17);
+            this.backupCheckBox.TabIndex = 11;
+            this.backupCheckBox.Text = "Backup original Save File";
+            this.backupCheckBox.UseVisualStyleBackColor = true;
             // 
             // openSaveFileDialog
             // 
             this.openSaveFileDialog.Filter = "TAB Save Files|*.zxsav";
             // 
+            // statusTextBox
+            // 
+            this.statusTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.statusTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.statusTextBox.Location = new System.Drawing.Point(8, 615);
+            this.statusTextBox.Multiline = true;
+            this.statusTextBox.Name = "statusTextBox";
+            this.statusTextBox.ReadOnly = true;
+            this.statusTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.statusTextBox.Size = new System.Drawing.Size(824, 59);
+            this.statusTextBox.TabIndex = 6;
+            this.statusTextBox.Text = "TABSAT Log:\r\n";
+            // 
+            // reflectorGroupBox
+            // 
+            this.reflectorGroupBox.Controls.Add(this.reflectorExtractRadioButton);
+            this.reflectorGroupBox.Controls.Add(this.reflectorRepackRadioButton);
+            this.reflectorGroupBox.Controls.Add(this.reflectorExitRadioButton);
+            this.reflectorGroupBox.Location = new System.Drawing.Point(10, 403);
+            this.reflectorGroupBox.Name = "reflectorGroupBox";
+            this.reflectorGroupBox.Size = new System.Drawing.Size(210, 91);
+            this.reflectorGroupBox.TabIndex = 27;
+            this.reflectorGroupBox.TabStop = false;
+            this.reflectorGroupBox.Text = "Reflector stop options:";
+            // 
+            // reflectorExitRadioButton
+            // 
+            this.reflectorExitRadioButton.AutoSize = true;
+            this.reflectorExitRadioButton.Enabled = false;
+            this.reflectorExitRadioButton.Location = new System.Drawing.Point(17, 19);
+            this.reflectorExitRadioButton.Name = "reflectorExitRadioButton";
+            this.reflectorExitRadioButton.Size = new System.Drawing.Size(124, 17);
+            this.reflectorExitRadioButton.TabIndex = 0;
+            this.reflectorExitRadioButton.Text = "Upon application exit";
+            this.reflectorExitRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // reflectorRepackRadioButton
+            // 
+            this.reflectorRepackRadioButton.AutoSize = true;
+            this.reflectorRepackRadioButton.Checked = true;
+            this.reflectorRepackRadioButton.Location = new System.Drawing.Point(17, 42);
+            this.reflectorRepackRadioButton.Name = "reflectorRepackRadioButton";
+            this.reflectorRepackRadioButton.Size = new System.Drawing.Size(144, 17);
+            this.reflectorRepackRadioButton.TabIndex = 1;
+            this.reflectorRepackRadioButton.TabStop = true;
+            this.reflectorRepackRadioButton.Text = "After repacking Save File";
+            this.reflectorRepackRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // reflectorExtractRadioButton
+            // 
+            this.reflectorExtractRadioButton.AutoSize = true;
+            this.reflectorExtractRadioButton.Enabled = false;
+            this.reflectorExtractRadioButton.Location = new System.Drawing.Point(17, 65);
+            this.reflectorExtractRadioButton.Name = "reflectorExtractRadioButton";
+            this.reflectorExtractRadioButton.Size = new System.Drawing.Size(143, 17);
+            this.reflectorExtractRadioButton.TabIndex = 2;
+            this.reflectorExtractRadioButton.Text = "After extracting Save File";
+            this.reflectorExtractRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // modifyGroupBox
+            // 
+            this.modifyGroupBox.Controls.Add(this.modifySaveButton);
+            this.modifyGroupBox.Location = new System.Drawing.Point(241, 306);
+            this.modifyGroupBox.Name = "modifyGroupBox";
+            this.modifyGroupBox.Size = new System.Drawing.Size(153, 59);
+            this.modifyGroupBox.TabIndex = 28;
+            this.modifyGroupBox.TabStop = false;
+            this.modifyGroupBox.Text = "Quick Mode";
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(844, 610);
+            this.ClientSize = new System.Drawing.Size(844, 686);
+            this.Controls.Add(this.statusTextBox);
             this.Controls.Add(this.tabControl1);
             this.Name = "MainWindow";
-            this.Text = "TABSAT: They Are Billions Save Automation Tool";
+            this.Text = "TABSAT - They Are Billions Save Automation Tool";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
+            this.Load += new System.EventHandler(this.MainWindow_Load);
             this.cloudGroupBox.ResumeLayout(false);
             this.cloudGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.propertiesPictureBox)).EndInit();
@@ -391,11 +622,24 @@
             ((System.ComponentModel.ISupportInitialize)(this.popupPictureBox)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.beforeUsingTabPage.ResumeLayout(false);
-            this.mutantEditorTabPage.ResumeLayout(false);
-            this.mutantEditorTabPage.PerformLayout();
+            this.saveEditorTabPage.ResumeLayout(false);
+            this.saveEditorTabPage.PerformLayout();
+            this.manualGroupBox.ResumeLayout(false);
+            this.extractGroupBox.ResumeLayout(false);
+            this.extractGroupBox.PerformLayout();
+            this.terrainGroupBox.ResumeLayout(false);
+            this.terrainGroupBox.PerformLayout();
+            this.mutantGroupBox.ResumeLayout(false);
+            this.mutantGroupBox.PerformLayout();
             this.corruptionGroupBox.ResumeLayout(false);
             this.corruptionGroupBox.PerformLayout();
+            this.saveFileGroupBox.ResumeLayout(false);
+            this.saveFileGroupBox.PerformLayout();
+            this.reflectorGroupBox.ResumeLayout(false);
+            this.reflectorGroupBox.PerformLayout();
+            this.modifyGroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -410,27 +654,42 @@
         private System.Windows.Forms.Label updatesLabel;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage beforeUsingTabPage;
-        private System.Windows.Forms.TabPage mutantEditorTabPage;
+        private System.Windows.Forms.TabPage saveEditorTabPage;
         private System.Windows.Forms.Button saveFileChooseButton;
         private System.Windows.Forms.TextBox saveFileTextBox;
         private System.Windows.Forms.OpenFileDialog openSaveFileDialog;
         private System.Windows.Forms.GroupBox corruptionGroupBox;
         private System.Windows.Forms.Button extractSaveButton;
-        private System.Windows.Forms.TextBox reflectorDirTextBox;
-        private System.Windows.Forms.Label reflectorDirLabel;
-        private System.Windows.Forms.TextBox tabDirTextBox;
-        private System.Windows.Forms.Label tabDirLabel;
-        private System.Windows.Forms.Label extractedDirLlabel;
-        private System.Windows.Forms.TextBox extractedDirTextBox;
         private System.Windows.Forms.Label cloudDisableLabel;
-        private System.Windows.Forms.Label repackedSaveLabel;
-        private System.Windows.Forms.TextBox repackedSaveFileTextBox;
         private System.Windows.Forms.Button repackSaveButton;
-        private System.Windows.Forms.Button mutantModifyButton;
-        private System.Windows.Forms.Label backupSaveLavel;
-        private System.Windows.Forms.TextBox backupSaveFileTextBox;
         private System.Windows.Forms.Label reflectorOutputLabel;
         private System.Windows.Forms.TextBox reflectorTextBox;
+        private System.Windows.Forms.CheckBox backupCheckBox;
+        private System.Windows.Forms.GroupBox mutantGroupBox;
+        private System.Windows.Forms.RadioButton mutantsMoveRadio;
+        private System.Windows.Forms.RadioButton mutantsRemoveRadio;
+        private System.Windows.Forms.RadioButton mutantsNothingRadio;
+        private System.Windows.Forms.Label mutantMoveCCLabel;
+        private System.Windows.Forms.ComboBox mutantMoveWhatComboBox;
+        private System.Windows.Forms.ComboBox mutantMoveGlobalComboBox;
+        private System.Windows.Forms.GroupBox terrainGroupBox;
+        private System.Windows.Forms.CheckBox themeCheckBox;
+        private System.Windows.Forms.CheckBox showAllCheckBox;
+        private System.Windows.Forms.TextBox statusTextBox;
+        private System.Windows.Forms.ComboBox themeComboBox;
+        private System.Windows.Forms.GroupBox extractGroupBox;
+        private System.Windows.Forms.RadioButton extractLeaveRadioButton;
+        private System.Windows.Forms.RadioButton extractTidyRadioButton;
+        private System.Windows.Forms.RadioButton extractManualRadioButton;
+        private System.Windows.Forms.GroupBox manualGroupBox;
+        private System.Windows.Forms.GroupBox saveFileGroupBox;
+        private System.Windows.Forms.Button modifySaveButton;
+        private System.Windows.Forms.Button skipRepackButton;
+        private System.Windows.Forms.GroupBox reflectorGroupBox;
+        private System.Windows.Forms.RadioButton reflectorExtractRadioButton;
+        private System.Windows.Forms.RadioButton reflectorRepackRadioButton;
+        private System.Windows.Forms.RadioButton reflectorExitRadioButton;
+        private System.Windows.Forms.GroupBox modifyGroupBox;
     }
 }
 

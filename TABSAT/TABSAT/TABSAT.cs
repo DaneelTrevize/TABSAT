@@ -120,7 +120,7 @@ namespace TABSAT
             // Figure out a filename that isn't taken
             DirectoryInfo savesDirInfo = new DirectoryInfo( Path.GetDirectoryName( saveFile ) );
             string backupFilePrefix = Path.ChangeExtension( saveFile, TABReflector.TABReflector.saveExtension + ".bak" );
-            FileInfo[] savesInfo = savesDirInfo.GetFiles( Path.GetFileName( saveFile ) + ".bak*" );
+            FileInfo[] savesInfo = savesDirInfo.GetFiles( Path.GetFileName( saveFile ) + ".bak*" );	// This doesn't find all?
             string backupFile = backupFilePrefix + ( savesInfo.Length + 1 );
 
             if( File.Exists( backupFile ) )

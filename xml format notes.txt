@@ -64,3 +64,30 @@ The adjacent Info file also contains the save name twice. Here's the file in its
     <Null name="IDCurrentMission" />
   </Properties>
 </Complex>
+
+
+ThemeType values:
+Deep Forest			FA
+Dark Moorland		BR
+Peaceful Lowlands	TM
+Frozen Highlands	AL
+Desert Wasteland	DS
+Caustic Lands		VO
+
+<Complex name="Root" type="ZX.ZXGameState, TheyAreBillions">
+  <Properties>
+    <Complex name="LevelState">
+      <Properties>
+        <Complex name="CurrentGeneratedLevel">
+          <Properties>
+            <Complex name="Data">
+              <Properties>
+                <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+                  <Properties>
+                    <Complex name="MapDrawer">
+                      <Properties>
+                        <Simple name="ThemeType" value="VO" />
+
+    <Complex name="SurvivalModeParams">
+      <Properties>
+        <Simple name="ThemeType" value="DS" />

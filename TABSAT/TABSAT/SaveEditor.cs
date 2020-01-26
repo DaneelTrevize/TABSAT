@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -8,6 +9,28 @@ namespace TABSAT
 {
     class SaveEditor
     {
+
+        public enum ThemeType
+        {
+            FA,
+            BR,
+            TM,
+            AL,
+            DS,
+            VO
+        }
+        public static readonly ReadOnlyDictionary<ThemeType, string> themeTypeNames;
+        static SaveEditor()
+        {
+            Dictionary<ThemeType, string> ttn = new Dictionary<ThemeType, string>();
+            ttn.Add( ThemeType.FA, "Deep Forest" );
+            ttn.Add( ThemeType.BR, "Dark Moorland" );
+            ttn.Add( ThemeType.TM, "Peaceful Lowlands" );
+            ttn.Add( ThemeType.AL, "Frozen Highlands" );
+            ttn.Add( ThemeType.DS, "Desert Wasteland" );
+            ttn.Add( ThemeType.VO, "Caustic Lands" );
+            themeTypeNames = new ReadOnlyDictionary<ThemeType, string>( ttn );
+        }
 
         enum CompassDirection
         {
@@ -43,10 +66,14 @@ namespace TABSAT
             mutants = new SortedDictionary<ulong, XElement>();
             giants = new SortedDictionary<ulong, XElement>();
 
+            //<Complex name="Root" type="ZX.ZXGameState, TheyAreBillions">
+            //  < Properties >
+            //    <Complex name="LevelState">
             levelComplex = ( from c in data.Element( "Properties" ).Elements( "Complex" )
                                       where (string) c.Attribute( "name" ) == "LevelState"
                                       select c ).First();
-
+            //      <Properties>
+            //        <Simple name="CurrentCommandCenterCell"
             XElement currentCommandCenterCell = ( from s in levelComplex.Element( "Properties" ).Elements( "Simple" )
                                                   where (string) s.Attribute( "name" ) == "CurrentCommandCenterCell"
                                                   select s ).First();
@@ -59,8 +86,6 @@ namespace TABSAT
 
             mutantCells = new LinkedList<XElement>();
             farthestGiantIcon = null;
-
-            findMutantsAndGiants();
         }
 
         public void save( string dataFile )
@@ -190,6 +215,8 @@ namespace TABSAT
 
         public void relocateMutants()
         {
+            findMutantsAndGiants();
+
             XElement farthestID = ( from c in farthestGiantIcon.Element( "Properties" ).Elements( "Complex" )
                                     where (string) c.Attribute( "name" ) == "EntityRef"
                                     select c ).First().Element( "Properties" ).Element( "Simple" );
@@ -228,6 +255,50 @@ namespace TABSAT
                 //Console.WriteLine( "Mutant cell to change: " + cellSimple );
                 cellSimple.SetAttributeValue( "value", farthestCellString );
             }
+        }
+
+        public void changeTheme( ThemeType theme )
+        {
+            string themeValue = theme.ToString();
+            //Console.WriteLine( "Changing ThemeType to:" + themeValue );
+
+            //      <Properties>
+            //        <Complex name = "CurrentGeneratedLevel" >
+            XElement generatedLevel = ( from d in levelComplex.Element( "Properties" ).Elements( "Complex" )
+                                        where (string) d.Attribute( "name" ) == "CurrentGeneratedLevel"
+                                        select d ).First();
+            //          <Properties>
+            //            <Complex name="Data">
+            //              <Properties>
+            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+            XElement extension = ( from d in generatedLevel.Element( "Properties" ).Elements( "Complex" )
+                                   where (string) d.Attribute( "name" ) == "Data"                   // not Random
+                                   select d ).First().Element( "Properties" ).Element( "Complex" ); // only one Complex, named Extension
+            //                  <Properties>
+            //                    <Complex name="MapDrawer">
+            XElement mapDrawer = ( from c in extension.Element( "Properties" ).Elements( "Complex" )
+                                   where (string) c.Attribute( "name" ) == "MapDrawer"
+                                   select c ).First();
+            //                      <Properties>
+            //                        <Simple name="ThemeType" value=
+            XElement levelThemeType = ( from s in mapDrawer.Element( "Properties" ).Elements( "Simple" )
+                               where (string) s.Attribute( "name" ) == "ThemeType"
+                               select s ).First();
+
+            //<Complex name="Root" type="ZX.ZXGameState, TheyAreBillions">
+            //  < Properties >
+            //    <Complex name="SurvivalModeParams">
+            XElement paramsComplex = ( from c in data.Element( "Properties" ).Elements( "Complex" )
+                                       where (string) c.Attribute( "name" ) == "SurvivalModeParams"
+                                       select c ).First();
+            //      <Properties>
+            //        <Simple name="ThemeType"
+            XElement paramsThemeType = ( from s in paramsComplex.Element( "Properties" ).Elements( "Simple" )
+                                         where (string) s.Attribute( "name" ) == "ThemeType"
+                                         select s ).First();
+
+            levelThemeType.SetAttributeValue( "value", themeValue );
+            paramsThemeType.SetAttributeValue( "value", themeValue );
         }
     }
 }

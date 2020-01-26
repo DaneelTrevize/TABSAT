@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
+using System.Runtime.InteropServices;
 
 namespace TABSAT
 {
@@ -20,6 +21,12 @@ namespace TABSAT
         private NamedPipeServerStream reflectorPipe;
         private StreamWriter reflectorWriter;
         private StreamReader reflectorReader;
+
+
+        [DllImport( "user32.dll" )]
+        [return: MarshalAs( UnmanagedType.Bool )]
+        static extern bool ShowWindow( IntPtr hWnd, int nCmdShow );
+        private const int SW_MINIMIZE = 6;
 
 
         private static bool testReflectorDirectory( string reflectorDir )
@@ -73,7 +80,7 @@ namespace TABSAT
         {
             deployReflector( true );
 
-            startReflector( outputHandler);
+            startReflector( outputHandler );
         }
 
         public void stopAndRemove()
@@ -162,8 +169,18 @@ namespace TABSAT
             reflectorReader = new StreamReader( reflectorPipe );
 
             reflectorPipe.WaitForConnection();
-
-            //return reflector.StandardOutput;
+            try
+            {
+                //reflector.WaitForInputIdle( 1000 );
+                //Console.WriteLine( "Reflector window title: " + reflector.MainWindowTitle );
+                IntPtr popup = reflector.MainWindowHandle;
+                ShowWindow( popup, SW_MINIMIZE );
+                Console.WriteLine( "Reflector window minimised." );
+            }
+            catch( InvalidOperationException ioe )
+            {
+                Console.WriteLine( "Unable to obtain the Reflector's main window handle." );
+            }
         }
 
         private void endReflector()
