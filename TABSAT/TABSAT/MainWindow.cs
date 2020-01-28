@@ -228,18 +228,31 @@ namespace TABSAT
         private void modifyExtractedSave()
         {
             SaveEditor dataEditor = new SaveEditor( dataFile );
-            if( mutantsMoveRadio.Checked )
+            try
             {
-                statusTextBox.AppendText( "Relocating Mutants." + Environment.NewLine );
-                dataEditor.relocateMutants();
+                if( mutantsMoveRadio.Checked )
+                {
+                    statusTextBox.AppendText( "Relocating Mutants." + Environment.NewLine );
+                    dataEditor.relocateMutants();
+                }
+                if( showFullCheckBox.Checked )
+                {
+                    statusTextBox.AppendText( "Revealing the map." + Environment.NewLine );
+                    dataEditor.showFullMap();
+                }
+                if( themeCheckBox.Checked )
+                {
+                    KeyValuePair<SaveEditor.ThemeType, string> kv = (KeyValuePair<SaveEditor.ThemeType, string>) themeComboBox.SelectedItem;
+                    statusTextBox.AppendText( "Changing Theme to " + kv.Value + '.' + Environment.NewLine );
+                    dataEditor.changeTheme( kv.Key );
+                }
+                dataEditor.save( dataFile );
             }
-            if( themeCheckBox.Checked )
+            catch (Exception e )
             {
-                KeyValuePair<SaveEditor.ThemeType, string> kv = (KeyValuePair<SaveEditor.ThemeType, string>) themeComboBox.SelectedItem;
-                statusTextBox.AppendText( "Changing Theme to " + kv.Value + '.' + Environment.NewLine );
-                dataEditor.changeTheme( kv.Key );
+                Console.Error.WriteLine( "Problem modifying save file: " + e.Message + Environment.NewLine + e.StackTrace );
+                statusTextBox.AppendText( "Problem modifying save file: " + e.Message + Environment.NewLine );
             }
-            dataEditor.save( dataFile );
         }
 
         private void backupAndRepackSave()

@@ -1,5 +1,8 @@
 
 
+Verify more parameters & returns, files/directories existing, Mutants/Giants existing, etc.
+
+
 Improve the save file choosing UI to default to the most recently modified .zxsav in the given saves directory?
 
 Provide an option to stop the Reflector as often as possible, requiring restarting it between uses during a single usage of TABSAT? Would also need to split out stop/start and deploy/delete in ReflectorManager.

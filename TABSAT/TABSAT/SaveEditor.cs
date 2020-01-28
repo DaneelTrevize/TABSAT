@@ -42,6 +42,8 @@ namespace TABSAT
 
         private const string mutantType = @"ZX.Entities.ZombieMutant, TheyAreBillions";
         private const string giantType = @"ZX.Entities.ZombieGiant, TheyAreBillions";
+        private const string cBehaviourType = @"ZX.Components.CBehaviour, TheyAreBillions";
+        private const string cMovableType = @"ZX.Components.CMovable, TheyAreBillions";
         private const string mutantProjectImage = @"3097669356589096184";
         private const string giantProjectImage = @"5072922660204167778";
 
@@ -237,17 +239,11 @@ namespace TABSAT
             string farthestPositionString = (string) farthestPosition.Attribute( "value" );
             //Console.WriteLine( "Farthest Giant position: " + farthestPositionString );
 
+            //Console.WriteLine( "Mutants count: " + mutants.Count() );
             // Use this farthest position value to move all the mutants
             foreach( XElement mutant in mutants.Values )
             {
-                XElement currentPosition = ( from s in farthestGiant.Element( "Complex" ).Element( "Properties" ).Elements( "Simple" )
-                                             where (string) s.Attribute( "name" ) == "Position"
-                                             select s ).First();
-                XElement currentLastPosition = ( from s in farthestGiant.Element( "Complex" ).Element( "Properties" ).Elements( "Simple" )
-                                                 where (string) s.Attribute( "name" ) == "LastPosition"
-                                                 select s ).First();
-                currentPosition.SetAttributeValue( "value", farthestPositionString );
-                currentLastPosition.SetAttributeValue( "value", farthestPositionString );
+                tryRelocateMutantItem( mutant, farthestPositionString );
             }
             // And move all the mutant icons
             foreach( XElement cellSimple in mutantCells )
@@ -255,6 +251,73 @@ namespace TABSAT
                 //Console.WriteLine( "Mutant cell to change: " + cellSimple );
                 cellSimple.SetAttributeValue( "value", farthestCellString );
             }
+        }
+
+        private void tryRelocateMutantItem( XElement mutant, string farthestPositionString )
+        {
+            XElement currentPosition = ( from s in mutant.Element( "Complex" ).Element( "Properties" ).Elements( "Simple" )
+                                         where (string) s.Attribute( "name" ) == "Position"
+                                         select s ).First();
+
+            XElement currentLastPosition = ( from s in mutant.Element( "Complex" ).Element( "Properties" ).Elements( "Simple" )
+                                             where (string) s.Attribute( "name" ) == "LastPosition"
+                                             select s ).First();
+
+            
+            XElement currentComponents = ( from c in mutant.Element( "Complex" ).Element( "Properties" ).Elements( "Collection" )
+                                           where (string) c.Attribute( "name" ) == "Components"
+                                           select c ).First();
+            // We're after 3 different values in 2 different <Complex under Components
+            XElement currentCBehaviour = ( from c in currentComponents.Element( "Items" ).Elements( "Complex" )
+                                           where (string) c.Attribute( "type" ) == cBehaviourType
+                                           select c ).First();
+
+            XElement currentBehaviour = ( from c in currentCBehaviour.Element( "Properties" ).Elements( "Complex" )
+                                              where (string) c.Attribute( "name" ) == "Behaviour"
+                                          select c ).First();
+            XElement currentBehaviourData = ( from c in currentBehaviour.Element( "Properties" ).Elements( "Complex" )
+                                              where (string) c.Attribute( "name" ) == "Data"
+                                              select c ).First();
+            // 1
+            XElement currentBehaviourTargetPosition = ( from s in currentBehaviourData.Element( "Properties" ).Elements( "Simple" )
+                                               where (string) s.Attribute( "name" ) == "TargetPosition"
+                                               select s ).FirstOrDefault();
+            
+            XElement currentCMovable = ( from c in currentComponents.Element( "Items" ).Elements( "Complex" )
+                                         where (string) c.Attribute( "type" ) == cMovableType
+                                         select c ).First();
+            // 2
+            XElement currentMovableTargetPosition = ( from s in currentCMovable.Element( "Properties" ).Elements( "Simple" )
+                                               where (string) s.Attribute( "name" ) == "TargetPosition"
+                                               select s ).FirstOrDefault();
+            // 3
+            XElement currentLastDestinyProcessed = ( from s in currentCMovable.Element( "Properties" ).Elements( "Simple" )
+                                                      where (string) s.Attribute( "name" ) == "LastDestinyProcessed"
+                                                     select s ).FirstOrDefault();
+            
+            currentPosition.SetAttributeValue( "value", farthestPositionString );
+            currentLastPosition.SetAttributeValue( "value", farthestPositionString );
+            if( currentBehaviourTargetPosition != null )
+            {
+                currentBehaviourTargetPosition.SetAttributeValue( "value", farthestPositionString );
+            }
+            if( currentMovableTargetPosition != null )
+            {
+                currentMovableTargetPosition.SetAttributeValue( "value", farthestPositionString );
+            }
+            if( currentLastDestinyProcessed != null )
+            {
+                currentLastDestinyProcessed.SetAttributeValue( "value", farthestPositionString );
+            }
+        }
+
+        public void showFullMap()
+        {
+            //        <Simple name="ShowFullMap" value="False" />
+            XElement ShowFullMap = ( from s in levelComplex.Element( "Properties" ).Elements( "Simple" )
+                                     where (string) s.Attribute( "name" ) == "ShowFullMap"
+                                     select s ).First();
+            ShowFullMap.SetAttributeValue( "value", "True" );
         }
 
         public void changeTheme( ThemeType theme )

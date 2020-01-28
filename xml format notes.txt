@@ -30,6 +30,47 @@ Later there occurs:
 
 IDEntity value here matches previous ID and Item values.
 
+There is also TargetPosition in 2 places:
+
+              <Complex type="ZX.Entities.ZombieMutant, TheyAreBillions">
+                <Properties>
+                  <Collection name="Components" elementType="DXVision.DXComponent, DXVision">
+                    <Items>
+
+                      <Complex type="ZX.Components.CBehaviour, TheyAreBillions">
+                        <Properties>
+                          <Complex name="Behaviour" type="ZX.Behaviours.BHZombie, TheyAreBillions">
+                            <Properties>
+                              <Complex name="Data">
+                                <Properties>
+                                  <Simple name="TargetPosition" type="System.Drawing.PointF, System.Drawing" value="134.7038;223.6412" />
+
+                      <Complex type="ZX.Components.CMovable, TheyAreBillions">
+                        <Properties>
+                          <Simple name="TargetPosition" type="System.Drawing.PointF, System.Drawing" value="134.7038;223.6412" />
+                          <Simple name="LastDestinyProcessed" value="134.7038;223.6412" />
+
+For Giants this is similar but different Behaviour:
+
+                          <Complex name="Behaviour" type="ZX.Behaviours.BHZombieGiant, TheyAreBillions">
+                            <Properties>
+                              <Complex name="Data">
+                                <Properties>
+                                  <Null name="StandPosition" />
+								  
+                                  <Null name="TargetPosition" />
+
+                      <Complex type="ZX.Components.CMovable, TheyAreBillions">
+                        <Properties>
+                          <Null name="TargetPosition" />
+                          <Simple name="LastDestinyProcessed" value="0;0" />
+
+
+        <Dictionary name="LevelFastSerializedEntities" keyType="System.UInt64, mscorlib" valueType="System.Collections.Generic.List`1[[DXVision.DXTupla2`2[[System.UInt64, mscorlib],[System.Drawing.PointF, System.Drawing]], DXVision]], mscorlib">
+          <Items>
+            <Item>
+
+
 Near the end of the file, the save name occurs, twice:
 
     <Complex name="SurvivalModeParams">
@@ -91,3 +132,9 @@ Caustic Lands		VO
     <Complex name="SurvivalModeParams">
       <Properties>
         <Simple name="ThemeType" value="DS" />
+
+
+    <Complex name="LevelState">
+      <Properties>
+        <Simple name="ShowFullMap" value="False" />
+
