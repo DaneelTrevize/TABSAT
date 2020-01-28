@@ -3,7 +3,7 @@ TAB Save Automation Tool
 Purposes:
 1) Automate backing up save files as they're generated, to ease "save-scumming".
 
-2) Remove some/all Mutants from saves, because they're not very fun.
+2) Remove some/all Mutants from saves, because they're not very fun (and 800% was the same score multiplier without them).
 
 
 Positions:
@@ -15,6 +15,7 @@ They Are Billions now comes with a Custom Level editor. Players now can create a
 Nevertheless, any alteration of game files, de-compiling the game or creating external applications to edit maps or save games are not allowed in any case . Any reference to those tools will be banned from the forum. Indeed, that's a copyright infringement."
 
 Editing save games isn't copyright infringement, nor is using the game's own legally-obtained assemblies to do it, it's Fair Use.
+
 
 Requirement:
 DISABLE STEAM CLOUD for TAB!
@@ -39,33 +40,14 @@ Edited saves must be repacked & encrypted, and have fresh checksums generated.
 Source "From 17 July": https://steamcommunity.com/app/644930/discussions/0/1643168996826432722/
 "The current save format uses the decades-old PKzip crypto, which is vulnerable to KP attacks and also limits the *effective* password length to 13 or so characters regardless of how long the password is. This is because since there's only 13 bytes in the state, many different passwords (aka shorter than the ones you've picked) will also map to the same internal state, similar to how X mod Y will have many different X that map to Y. In this case, it's Password mod 13chars, which means the password on the encrypted save files are vulnerable to attack."
 
-Double-check whether filename is involved in saves' passwords. Investigate whether timestamps are.
+If saves can be successfully shared with other players, the passwords cannot involve: hardware IDs, Steam IDs, per game install unique keys.
 23rd Jan 2020: Advancing unzipped file's timestamps to 'DateTime.Now' doesn't seem to be required to repack, password and load successfully. Probably only filenames drive the password?
-If saves can be successfully shared with other players, the passwords cannot involve: hardware IDs, Steam IDs, per game install unique keys. Possibly not timestamps either, depending on how file transfers might preserve/restore these.
 
 --------
+Existing peers:
 https://github.com/ash47/TheyAreBillionsModKit
-
-ZXCheckGenerator:
-Uses C# Reflection to leverage the game's own savefile passwording methods to decrypt them.
-Throws a Game Data error popup
-Requires the tool binaries be placed in the TAB program directory, typically within a Steam Library folder hierarchy.
-Requires the save file be drag & dropped onto the tool binary.
-Requires a second tool binary for generating check files.
-Has race conditions from using Threads & Sleep() to wait for steps to complete.
-
---
-Use Ionic.ZipFile and its Password property to ExtractAll() files from 'pathToSaveFile' to a temp directory.
-https://documentation.help/DotNetZip/4444d7a5-3324-8af9-3ed3-5bf6551d3cd1.htm
-"when extracting an archive with ExtractAll, DotNetZip will extract all the file and directory entries ..., but it will then make a second pass on the directories, and reset the times on the directories to reflect what is stored in the zip archive."
-This preserves the potential that file creation timestamps form a part of the file password.
-
 TAB assembly Type name:	#=z9Y87TGUD3$LwpLQJig==
 Flag method name:		#=zPm4jjaldzI58qQjY8Q==
 Helper method name:		#=zROvIN_INIxlbR$Vh4g==
 
-TAB assemblies appear to have been obfuscating using Eazfuscator. Tools such as EaxFixer exist to attempt to reverse this.
---
-
-MapEditorHtml:
-Seems to lose all accumulated resources from the player/Command Center, when manually using it to remove all Mutant entities and repack the save.
+TAB assemblies appear to have been obfuscating using Eazfuscator. Tools such as EazFixer exist to attempt to reverse this.

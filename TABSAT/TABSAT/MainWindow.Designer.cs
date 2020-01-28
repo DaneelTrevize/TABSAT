@@ -334,12 +334,10 @@
             // extractLeaveRadioButton
             // 
             this.extractLeaveRadioButton.AutoSize = true;
-            this.extractLeaveRadioButton.Checked = true;
             this.extractLeaveRadioButton.Location = new System.Drawing.Point(17, 42);
             this.extractLeaveRadioButton.Name = "extractLeaveRadioButton";
             this.extractLeaveRadioButton.Size = new System.Drawing.Size(55, 17);
             this.extractLeaveRadioButton.TabIndex = 13;
-            this.extractLeaveRadioButton.TabStop = true;
             this.extractLeaveRadioButton.Text = "Leave";
             this.extractLeaveRadioButton.UseVisualStyleBackColor = true;
             this.extractLeaveRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
@@ -347,11 +345,12 @@
             // extractTidyRadioButton
             // 
             this.extractTidyRadioButton.AutoSize = true;
-            this.extractTidyRadioButton.Enabled = false;
+            this.extractTidyRadioButton.Checked = true;
             this.extractTidyRadioButton.Location = new System.Drawing.Point(17, 19);
             this.extractTidyRadioButton.Name = "extractTidyRadioButton";
             this.extractTidyRadioButton.Size = new System.Drawing.Size(65, 17);
             this.extractTidyRadioButton.TabIndex = 12;
+            this.extractTidyRadioButton.TabStop = true;
             this.extractTidyRadioButton.Text = "Remove";
             this.extractTidyRadioButton.UseVisualStyleBackColor = true;
             this.extractTidyRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
@@ -437,7 +436,6 @@
             // mutantMoveWhatComboBox
             // 
             this.mutantMoveWhatComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.mutantMoveWhatComboBox.Enabled = false;
             this.mutantMoveWhatComboBox.FormattingEnabled = true;
             this.mutantMoveWhatComboBox.Items.AddRange(new object[] {
             "Giant",
@@ -460,7 +458,6 @@
             // mutantsRemoveRadio
             // 
             this.mutantsRemoveRadio.AutoSize = true;
-            this.mutantsRemoveRadio.Enabled = false;
             this.mutantsRemoveRadio.Location = new System.Drawing.Point(17, 42);
             this.mutantsRemoveRadio.Name = "mutantsRemoveRadio";
             this.mutantsRemoveRadio.Size = new System.Drawing.Size(65, 17);
@@ -556,7 +553,6 @@
             this.backupCheckBox.AutoSize = true;
             this.backupCheckBox.Checked = true;
             this.backupCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.backupCheckBox.Enabled = false;
             this.backupCheckBox.Location = new System.Drawing.Point(656, 23);
             this.backupCheckBox.Name = "backupCheckBox";
             this.backupCheckBox.Size = new System.Drawing.Size(146, 17);

@@ -3,8 +3,6 @@
 Verify more parameters & returns, files/directories existing, Mutants/Giants existing, etc.
 
 
-Improve the save file choosing UI to default to the most recently modified .zxsav in the given saves directory?
-
 Provide an option to stop the Reflector as often as possible, requiring restarting it between uses during a single usage of TABSAT? Would also need to split out stop/start and deploy/delete in ReflectorManager.
 
 
@@ -18,12 +16,14 @@ Would TABReflector need to technically be a graphical application, with a hidden
 
 Options for Mutant modification/max % restoration:
 
-Delete all mutants.
+#Delete all mutants.
 
 Relocate mutants onto giants:
 nearest giant per mutant;
-giant furthest from CC;
+#giant furthest from CC;
 giant furthest from CC within cardinal map quarter (divide diagonally), if non in quadrant find next nearest/furthest from CC globally?
+
+Relocate if within l distance of CC? To those Giants/Mutants at least l distance from CC?
 
 Relocate mutants onto smaller zombies at the map edge/at least l distance from the CC? Less likely to avoid terrain clipping than relocating onto giants.
 
@@ -39,8 +39,11 @@ Potentially also increase the % score scale factor for such maps?
 
 Without needing to generate new zombie IDs, we could just swap the locations of different types to affect distribution difficulty. Depends upon generating LevelFastSerializedEntities?
 
-Set <Simple name="ShowFullMap"... true to effectively give Beholder for free.
 Modify <Simple name="LayerFog"... to potentially reveal all terrain but not zombies?
+
+Upgrade all smaller VOD buildings (Dwelling, Tavern) to City Halls of Doom? To try recreate UberVOD(s) on other ThemeTypes?
+
+Remove all Pickable resources & reclaimable buildings? To remove potential early Radar vision or resources chiefly accessed via kiting?
 
 ----
 

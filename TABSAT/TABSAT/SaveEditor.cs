@@ -51,9 +51,12 @@ namespace TABSAT
         private SortedDictionary<ulong,XElement> mutants;
         private SortedDictionary<ulong, XElement> giants;
         XElement levelComplex;
+        private XElement iconsColl;
+
         private int commandCenterX;
         private int commandCenterY;
         private LinkedList<XElement> mutantCells;
+        private XElement farthestMutantIcon;
         private XElement farthestGiantIcon;
 
         public SaveEditor( string dataFile )
@@ -74,6 +77,9 @@ namespace TABSAT
             levelComplex = ( from c in data.Element( "Properties" ).Elements( "Complex" )
                                       where (string) c.Attribute( "name" ) == "LevelState"
                                       select c ).First();
+
+            iconsColl = null;
+
             //      <Properties>
             //        <Simple name="CurrentCommandCenterCell"
             XElement currentCommandCenterCell = ( from s in levelComplex.Element( "Properties" ).Elements( "Simple" )
@@ -87,6 +93,7 @@ namespace TABSAT
             Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
 
             mutantCells = new LinkedList<XElement>();
+            farthestMutantIcon = null;
             farthestGiantIcon = null;
         }
 
@@ -97,7 +104,11 @@ namespace TABSAT
 
         private void findMutantsAndGiants()
         {
-            XElement itemsDict = levelComplex.Element( "Properties" ).Element( "Dictionary" );
+            // Finds the related Items in the LevelEntities Dictionary
+
+            XElement itemsDict = ( from d in levelComplex.Element( "Properties" ).Elements( "Dictionary" )
+                                   where (string) d.Attribute( "name" ) == "LevelEntities"
+                                   select d ).First();
 
             //Console.WriteLine( "LevelEntities keyType: " + (string) items.Attribute( "keyType" ) );
 
@@ -139,16 +150,21 @@ namespace TABSAT
                 }
             }
 
-            XElement iconsColl = ( from c in levelComplex.Element( "Properties" ).Elements( "Collection" )
+            iconsColl = ( from c in levelComplex.Element( "Properties" ).Elements( "Collection" )
                                    where (string) c.Attribute( "name" ) == "MiniMapIndicators"
                                    select c ).First();
+        }
+
+        private void assessDistances()
+        {
 
             //Console.WriteLine( "icons count: " + iconsColl.Element( "Items" ).Elements( "Complex" ).Count() );
 
-            int farthestDistanceSquared = 0;
-            foreach( XElement i in iconsColl.Element( "Items" ).Elements( "Complex" ) )
+            int farthestGiantDistanceSquared = 0;
+            int farthestMutantDistanceSquared = 0;
+            foreach( XElement c in iconsColl.Element( "Items" ).Elements( "Complex" ) )
             {
-                XElement cellSimple = ( from s in i.Element( "Properties" ).Elements( "Simple" )
+                XElement cellSimple = ( from s in c.Element( "Properties" ).Elements( "Simple" )
                                         where (string) s.Attribute( "name" ) == "Cell"
                                         select s ).First();
 
@@ -190,54 +206,98 @@ namespace TABSAT
                 }
                 Console.WriteLine( "Position: " + x + ", " + y + " is: " + dir );
                 */
-                XElement imageSimple = ( from s in i.Element( "Properties" ).Elements( "Simple" )
+
+                int distanceSquared = ( x - commandCenterX ) * ( x - commandCenterX ) + ( y - commandCenterY ) * ( y - commandCenterY );
+
+                XElement imageSimple = ( from s in c.Element( "Properties" ).Elements( "Simple" )
                                          where (string) s.Attribute( "name" ) == "IDProjectImage"
                                          select s ).First();
                 if( (string) imageSimple.Attribute( "value" ) == mutantProjectImage )
                 {
                     Console.WriteLine( "Mutant" );
-                    
+
                     mutantCells.AddLast( cellSimple );
+
+                    if( distanceSquared > farthestMutantDistanceSquared )
+                    {
+                        farthestMutantDistanceSquared = distanceSquared;
+                        farthestMutantIcon = c;
+                        Console.WriteLine( "New farthest Mutant: " + x + ", " + y + " distanceSquared: " + farthestMutantDistanceSquared );
+                    }
                 }
                 else
                 {
                     Console.WriteLine( "Giant" );
 
-                    int distanceSquared = ( x - commandCenterX ) * ( x - commandCenterX ) + ( y - commandCenterY ) * ( y - commandCenterY );
-                    if( distanceSquared > farthestDistanceSquared )
+                    if( distanceSquared > farthestGiantDistanceSquared )
                     {
-                        farthestDistanceSquared = distanceSquared;
-                        farthestGiantIcon = i;
-                        Console.WriteLine( "New farthest Giant: " + x + ", " + y + " distanceSquared: " + farthestDistanceSquared );
+                        farthestGiantDistanceSquared = distanceSquared;
+                        farthestGiantIcon = c;
+                        Console.WriteLine( "New farthest Giant: " + x + ", " + y + " distanceSquared: " + farthestGiantDistanceSquared );
                     }
                 }
+            }
+        }
+
+        public void removeMutants()
+        {
+            findMutantsAndGiants();
+
+            LinkedList<XElement> mutantIcons = new LinkedList<XElement>();
+            // Find all Mutant minimap icons
+            foreach( XElement c in iconsColl.Element( "Items" ).Elements( "Complex" ) )
+            {
+                XElement imageSimple = ( from s in c.Element( "Properties" ).Elements( "Simple" )
+                                         where (string) s.Attribute( "name" ) == "IDProjectImage"
+                                         select s ).First();
+                if( (string) imageSimple.Attribute( "value" ) == mutantProjectImage )
+                {
+                    mutantIcons.AddLast( c );
+                }
+            }
+
+            Console.WriteLine( "Mutants count: " + mutants.Count() );
+            Console.WriteLine( "Icons count: " + mutantIcons.Count() );
+
+            // Remove mutants and their icons
+            foreach( XElement m in mutants.Values )
+            {
+                m.Remove();
+            }
+            foreach( XElement m in mutantIcons )
+            {
+                m.Remove();
             }
 
         }
 
-        public void relocateMutants()
+        public void relocateMutants( bool toGiantNotMutant = true )
         {
             findMutantsAndGiants();
 
-            XElement farthestID = ( from c in farthestGiantIcon.Element( "Properties" ).Elements( "Complex" )
+            assessDistances();
+
+            XElement farthestIcon = toGiantNotMutant ? farthestGiantIcon : farthestMutantIcon;
+
+            XElement farthestID = ( from c in farthestIcon.Element( "Properties" ).Elements( "Complex" )
                                     where (string) c.Attribute( "name" ) == "EntityRef"
                                     select c ).First().Element( "Properties" ).Element( "Simple" );
-            Console.WriteLine( (string) farthestID.Attribute( "name" ) + ":\t" + (string) farthestID.Attribute( "value" ) );
+            //Console.WriteLine( (string) farthestID.Attribute( "name" ) + ":\t" + (string) farthestID.Attribute( "value" ) );
 
-            XElement farthestIconCell = ( from s in farthestGiantIcon.Element( "Properties" ).Elements( "Simple" )
-                                          where (string) s.Attribute( "name" ) == "Cell"
-                                          select s ).First();
-            string farthestCellString = (string) farthestIconCell.Attribute( "value" );
-            //Console.WriteLine( "Farthest Giant cell: " + farthestCellString );
+            string farthestCellString = (string) ( from s in farthestIcon.Element( "Properties" ).Elements( "Simple" )
+                                                   where (string) s.Attribute( "name" ) == "Cell"
+                                                   select s ).First().Attribute( "value" );
+            //Console.WriteLine( "Farthest cell: " + farthestCellString );
 
-            XElement farthestGiant = giants[(ulong) farthestID.Attribute( "value" )];
-            //Console.WriteLine( "Farthest Giant: " + farthestGiant );
+            ulong farthestID_ulong = (ulong) farthestID.Attribute( "value" );
+            XElement farthestBig = toGiantNotMutant ? giants[farthestID_ulong] : mutants[farthestID_ulong];
+            //Console.WriteLine( "Farthest Big: " + farthestBig );
 
-            XElement farthestPosition = ( from s in farthestGiant.Element( "Complex" ).Element( "Properties" ).Elements( "Simple" )
+            XElement farthestPosition = ( from s in farthestBig.Element( "Complex" ).Element( "Properties" ).Elements( "Simple" )
                                           where (string) s.Attribute( "name" ) == "Position"
                                           select s ).First();
             string farthestPositionString = (string) farthestPosition.Attribute( "value" );
-            //Console.WriteLine( "Farthest Giant position: " + farthestPositionString );
+            //Console.WriteLine( "Farthest position: " + farthestPositionString );
 
             //Console.WriteLine( "Mutants count: " + mutants.Count() );
             // Use this farthest position value to move all the mutants

@@ -27,6 +27,13 @@ namespace TABSAT
 
             openSaveFileDialog.InitialDirectory = savesDirectory;
 
+            string saveFile = TABSAT.findMostRecentSave( savesDirectory );
+            if( saveFile != null )
+            {
+                openSaveFileDialog.FileName = saveFile; // No need to Path.GetFileName( saveFile ), doesn't help FileDialog only displaying the last ~8.3 chars
+                setSaveFile( saveFile );
+            }
+
             reflectorDir = Directory.GetCurrentDirectory();
 
             tabDir = TABSAT.findTABdirectory();
@@ -68,15 +75,20 @@ namespace TABSAT
         {
             if( openSaveFileDialog.ShowDialog() == DialogResult.OK )
             {
-                saveFileTextBox.Text = openSaveFileDialog.FileName;
-                shiftTextViewRight( saveFileTextBox );
-
-                // Refactor this path formation into a TABSAT static method?
-                decryptDir = Path.ChangeExtension( openSaveFileDialog.FileName, null ) + "_decrypted";
-                dataFile = Path.Combine( decryptDir, "Data" );
-
-                reassessExtractionOption();
+                setSaveFile( openSaveFileDialog.FileName );
             }
+        }
+
+        private void setSaveFile( string saveFile )
+        {
+            saveFileTextBox.Text = openSaveFileDialog.FileName;
+            shiftTextViewRight( saveFileTextBox );
+
+            // Refactor this path formation into a TABSAT static method?
+            decryptDir = Path.ChangeExtension( saveFile, null ) + "_decrypted";
+            dataFile = Path.Combine( decryptDir, "Data" );
+
+            reassessExtractionOption();
         }
 
         private void extractRadioButtons_CheckedChanged( object sender, EventArgs e )
@@ -135,9 +147,12 @@ namespace TABSAT
 
             if( extractTidyRadioButton.Checked )
             {
-                // Remove the extracted files...
-                statusTextBox.AppendText( "Should now remove the extracted files..." + Environment.NewLine );
+                // Remove the extracted files
+                Directory.Delete( decryptDir, true );
+                statusTextBox.AppendText( "Removed extracted files." + Environment.NewLine );
             }
+
+            resetSaveFileChoice();
         }
 
         private void disableChoices()
@@ -194,6 +209,8 @@ namespace TABSAT
             // Assume this is single use only for now
             tabSAT.tidyUp();
             tabSAT = null;
+
+            resetSaveFileChoice();
         }
 
         private void skipRepackButton_Click( object sender, EventArgs e )
@@ -201,11 +218,11 @@ namespace TABSAT
             repackSaveButton.Enabled = false;
             skipRepackButton.Enabled = false;
 
-            resetSaveFileChoice();
-
             // Assume this is single use only for now
             tabSAT.tidyUp();
             tabSAT = null;
+
+            resetSaveFileChoice();
         }
 
         private bool extractSave( string saveFile )
@@ -230,10 +247,16 @@ namespace TABSAT
             SaveEditor dataEditor = new SaveEditor( dataFile );
             try
             {
+                if( mutantsRemoveRadio.Checked )
+                {
+                    statusTextBox.AppendText( "Removing Mutants." + Environment.NewLine );
+                    dataEditor.removeMutants();
+                }
                 if( mutantsMoveRadio.Checked )
                 {
-                    statusTextBox.AppendText( "Relocating Mutants." + Environment.NewLine );
-                    dataEditor.relocateMutants();
+                    bool toGiantNotMutant = mutantMoveWhatComboBox.SelectedIndex == 0;
+                    statusTextBox.AppendText( "Relocating Mutants to farthest " + (toGiantNotMutant ? "Giant":"Mutant") + '.' + Environment.NewLine );
+                    dataEditor.relocateMutants( toGiantNotMutant );
                 }
                 if( showFullCheckBox.Checked )
                 {
@@ -258,26 +281,28 @@ namespace TABSAT
         private void backupAndRepackSave()
         {
             string saveFile = openSaveFileDialog.FileName;
-            string backupFile = TABSAT.backupSave( saveFile );
-            if( backupFile == null )
+            if( backupCheckBox.Checked )
             {
-                statusTextBox.AppendText( "Unable to backup save file." + Environment.NewLine );
-            }
-            else
-            {
-                statusTextBox.AppendText( "Save File backed up to:\t" + backupFile + Environment.NewLine );
-
-                string newSaveFile = getTABSAT().repackDirAsSave( decryptDir, saveFile );
-                statusTextBox.AppendText( "New Save File created:\t" + newSaveFile + Environment.NewLine );
-
-                // Purge the temporary decrypted versions of this new save file
-                string decryptedSave = decryptDir + TABReflector.TABReflector.saveExtension;
-                string decryptedCheck = decryptDir + TABReflector.TABReflector.checkExtension;
-                File.Delete( decryptedSave );
-                File.Delete( decryptedCheck );
+                string backupFile = TABSAT.backupSave( saveFile );
+                if( backupFile == null )
+                {
+                    statusTextBox.AppendText( "Unable to backup save file." + Environment.NewLine );
+                    return;
+                }
+                else
+                {
+                    statusTextBox.AppendText( "Save File backed up to:\t" + backupFile + Environment.NewLine );
+                }
             }
 
-            resetSaveFileChoice();
+            string newSaveFile = getTABSAT().repackDirAsSave( decryptDir, saveFile );
+            statusTextBox.AppendText( "New Save File created:\t" + newSaveFile + Environment.NewLine );
+
+            // Purge the temporary decrypted versions of this new save file
+            string decryptedSave = decryptDir + TABReflector.TABReflector.saveExtension;
+            string decryptedCheck = decryptDir + TABReflector.TABReflector.checkExtension;
+            File.Delete( decryptedSave );
+            File.Delete( decryptedCheck );
         }
 
         private void resetSaveFileChoice()

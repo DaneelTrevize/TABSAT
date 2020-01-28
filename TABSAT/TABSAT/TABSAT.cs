@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -109,11 +110,28 @@ namespace TABSAT
             return steamLibraries;
         }
 
+        public static string findMostRecentSave( string savesDir )
+        {
+            if( !Directory.Exists( savesDir ) )
+            {
+                throw new ArgumentException( "The provided saves directory does not exist." );
+            }
+            DirectoryInfo savesDirInfo = new DirectoryInfo( savesDir );
+            FileInfo[] savesInfo = savesDirInfo.GetFiles( "*" + TABReflector.TABReflector.saveExtension );
+            if( savesInfo.Length > 0 )
+            {
+                IOrderedEnumerable<FileInfo> sortedSavesInfo = savesInfo.OrderByDescending( s => s.CreationTimeUtc );
+                FileInfo newestSave = sortedSavesInfo.First();
+                return newestSave.FullName;
+            }
+            return null;
+        }
+
         public static string backupSave( string saveFile )
         {
             if( !File.Exists( saveFile ) )
             {
-                Console.WriteLine( "Save file does not exist: " + saveFile );
+                Console.Error.WriteLine( "Save file does not exist: " + saveFile );
                 return null;
             }
 
@@ -219,15 +237,7 @@ namespace TABSAT
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
             Application.Run( new MainWindow( defaultSavesDirectory  ) );
-            /*
-            // Get the most recent save file, pipe it to the reflector
-            DirectoryInfo savesDirInfo = new DirectoryInfo( tabSAT.savesDirectory );
-            FileInfo[] savesInfo = savesDirInfo.GetFiles( "*" + TABReflector.TABReflector.saveExtension );
-            IOrderedEnumerable<FileInfo> sortedSavesInfo = savesInfo.OrderByDescending( s => s.CreationTimeUtc );
-            FileInfo newestSave = sortedSavesInfo.First();
-            string saveFile = newestSave.FullName;
-            //Console.WriteLine( "Found save file: " + saveFile );
-            */
+
         }
 
         public void decryptSaveToDir( string saveFile, string decryptDir )
