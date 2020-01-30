@@ -90,7 +90,7 @@ namespace TABSAT
             commandCenterX = int.Parse( xySplit[0] );
             commandCenterY = int.Parse( xySplit[1] );
 
-            Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
+            //Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
 
             mutantCells = new LinkedList<XElement>();
             farthestMutantIcon = null;
@@ -371,6 +371,40 @@ namespace TABSAT
             }
         }
 
+        public void removeAllFog()
+        {
+            //      <Properties>
+            //        <Complex name = "CurrentGeneratedLevel" >
+            XElement generatedLevel = ( from c in levelComplex.Element( "Properties" ).Elements( "Complex" )
+                                        where (string) c.Attribute( "name" ) == "CurrentGeneratedLevel"
+                                        select c ).First();
+            //          <Properties>
+            //            <Simple name="NCells" value="256" />
+            XElement ncells = ( from s in generatedLevel.Element( "Properties" ).Elements( "Simple" )
+                                where (string) s.Attribute( "name" ) == "NCells"
+                                select s ).First();
+
+            string cells = (string) ncells.Attribute( "value" );
+            int size;
+            if( ! Int32.TryParse( cells, out size ) )
+            {
+                Console.Error.WriteLine( "Unable to find the number of cells in the map." );
+                return;
+            }
+            int rawLength = 4 * size * size;        // 4 bytes just to store 00 00 00 FF or 00 00 00 00, yuck
+
+            // Sadly we can't use String.Create<TState>(Int32, TState, SpanAction<Char,TState>) to avoid duplicate allocation prior to creating the final string
+
+            byte[] clearFog = new byte[rawLength];  // Defaulting to 00 00 00 00, good if we want less than 50% fog...
+            string layerFog = Convert.ToBase64String( clearFog );
+            //Console.WriteLine( layerFog );
+
+            XElement layerFogSimple = ( from s in levelComplex.Element( "Properties" ).Elements( "Simple" )
+                                        where (string) s.Attribute( "name" ) == "LayerFog"
+                                        select s ).First();
+            layerFogSimple.SetAttributeValue( "value", layerFog );
+        }
+
         public void showFullMap()
         {
             //        <Simple name="ShowFullMap" value="False" />
@@ -387,9 +421,9 @@ namespace TABSAT
 
             //      <Properties>
             //        <Complex name = "CurrentGeneratedLevel" >
-            XElement generatedLevel = ( from d in levelComplex.Element( "Properties" ).Elements( "Complex" )
-                                        where (string) d.Attribute( "name" ) == "CurrentGeneratedLevel"
-                                        select d ).First();
+            XElement generatedLevel = ( from c in levelComplex.Element( "Properties" ).Elements( "Complex" )
+                                        where (string) c.Attribute( "name" ) == "CurrentGeneratedLevel"
+                                        select c ).First();
             //          <Properties>
             //            <Complex name="Data">
             //              <Properties>

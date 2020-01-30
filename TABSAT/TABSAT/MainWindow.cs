@@ -45,15 +45,8 @@ namespace TABSAT
             */
             statusTextBox.AppendText( "Reflector directory:\t\t" + reflectorDir + Environment.NewLine );
             statusTextBox.AppendText( "They Are Billions directory:\t" + tabDir + Environment.NewLine );
-        }
 
-        private TABSAT getTABSAT()
-        {
-            if( tabSAT == null )
-            {
-                tabSAT = new TABSAT( reflectorDir, tabDir, openSaveFileDialog.InitialDirectory, new DataReceivedEventHandler(reflectorOutputHandler) );
-            }
-            return tabSAT;
+            tabSAT = new TABSAT( reflectorDir, tabDir, openSaveFileDialog.InitialDirectory, new DataReceivedEventHandler( reflectorOutputHandler ) );
         }
 
         private void reflectorOutputHandler( object sendingProcess, DataReceivedEventArgs outLine )
@@ -106,14 +99,18 @@ namespace TABSAT
             {
                 modifyGroupBox.Enabled = false;
                 manualGroupBox.Enabled = true;
-                //reflectorExtractRadioButton.Enabled = true;
+                reflectorExtractRadioButton.Enabled = true;
                 extractSaveButton.Enabled = decryptDir != null;
             }
             else
             {
                 modifyGroupBox.Enabled = true;
                 manualGroupBox.Enabled = false;
-                //reflectorExtractRadioButton.Enabled = false;
+                reflectorExtractRadioButton.Enabled = false;
+                if( reflectorExtractRadioButton.Checked )
+                {
+                    reflectorRepackRadioButton.Checked = true;
+                }
                 modifySaveButton.Enabled = decryptDir != null;
             }
         }
@@ -141,9 +138,10 @@ namespace TABSAT
                 backupAndRepackSave();
             }
 
-            // Assume this is single use only for now
-            tabSAT.tidyUp();
-            tabSAT = null;
+            if( reflectorRepackRadioButton.Checked )
+            {
+                tabSAT.stopReflector();
+            }
 
             if( extractTidyRadioButton.Checked )
             {
@@ -159,7 +157,8 @@ namespace TABSAT
         {
             // Don't let different options be chosen during file operations
             mutantGroupBox.Enabled = false;
-            terrainGroupBox.Enabled = false;
+            fogGroupBox.Enabled = false;
+            themeGroupBox.Enabled = false;
             saveFileGroupBox.Enabled = false;
             extractGroupBox.Enabled = false;
             modifyGroupBox.Enabled = false;
@@ -168,7 +167,8 @@ namespace TABSAT
         private void enableChoices()
         {
             mutantGroupBox.Enabled = true;
-            terrainGroupBox.Enabled = true;
+            fogGroupBox.Enabled = true;
+            themeGroupBox.Enabled = true;
             saveFileGroupBox.Enabled = true;
             extractGroupBox.Enabled = true;
             modifyGroupBox.Enabled = true;
@@ -188,6 +188,11 @@ namespace TABSAT
             if( !extractSave( saveFile ) )
             {
                 resetSaveFileChoice();
+
+                if( reflectorExtractRadioButton.Checked )
+                {
+                    tabSAT.stopReflector();
+                }
                 return;
             }
             else
@@ -196,6 +201,11 @@ namespace TABSAT
 
                 repackSaveButton.Enabled = true;
                 skipRepackButton.Enabled = true;
+            }
+
+            if( reflectorExtractRadioButton.Checked )
+            {
+                tabSAT.stopReflector();
             }
         }
 
@@ -206,9 +216,10 @@ namespace TABSAT
 
             backupAndRepackSave();
 
-            // Assume this is single use only for now
-            tabSAT.tidyUp();
-            tabSAT = null;
+            if( reflectorRepackRadioButton.Checked )
+            {
+                tabSAT.stopReflector();
+            }
 
             resetSaveFileChoice();
         }
@@ -218,9 +229,10 @@ namespace TABSAT
             repackSaveButton.Enabled = false;
             skipRepackButton.Enabled = false;
 
-            // Assume this is single use only for now
-            tabSAT.tidyUp();
-            tabSAT = null;
+            if( reflectorRepackRadioButton.Checked )
+            {
+                tabSAT.stopReflector();
+            }
 
             resetSaveFileChoice();
         }
@@ -237,7 +249,7 @@ namespace TABSAT
                 extractSaveButton.Enabled = false;
                 statusTextBox.AppendText( "Extracted files to:\t\t" + decryptDir + Environment.NewLine );
 
-                getTABSAT().decryptSaveToDir( saveFile, decryptDir );
+                tabSAT.decryptSaveToDir( saveFile, decryptDir );
                 return true;
             }
         }
@@ -245,6 +257,7 @@ namespace TABSAT
         private void modifyExtractedSave()
         {
             SaveEditor dataEditor = new SaveEditor( dataFile );
+
             try
             {
                 if( mutantsRemoveRadio.Checked )
@@ -258,7 +271,12 @@ namespace TABSAT
                     statusTextBox.AppendText( "Relocating Mutants to farthest " + (toGiantNotMutant ? "Giant":"Mutant") + '.' + Environment.NewLine );
                     dataEditor.relocateMutants( toGiantNotMutant );
                 }
-                if( showFullCheckBox.Checked )
+                if( removeFogRadioButton.Checked )
+                {
+                    statusTextBox.AppendText( "Removing the fog." + Environment.NewLine );
+                    dataEditor.removeAllFog();
+                }
+                if( showFullRadioButton.Checked )
                 {
                     statusTextBox.AppendText( "Revealing the map." + Environment.NewLine );
                     dataEditor.showFullMap();
@@ -295,7 +313,7 @@ namespace TABSAT
                 }
             }
 
-            string newSaveFile = getTABSAT().repackDirAsSave( decryptDir, saveFile );
+            string newSaveFile = tabSAT.repackDirAsSave( decryptDir, saveFile );
             statusTextBox.AppendText( "New Save File created:\t" + newSaveFile + Environment.NewLine );
 
             // Purge the temporary decrypted versions of this new save file
@@ -330,11 +348,8 @@ namespace TABSAT
         private void MainWindow_FormClosing( object sender, FormClosingEventArgs e )
         {
             // Need to synchronise/mutex access to tabSAT?
-            if( tabSAT != null )
-            {
-                tabSAT.tidyUp();
-                tabSAT = null;
-            }
+            tabSAT.stopReflector();
+            tabSAT.removeReflector();
         }
     }
 }

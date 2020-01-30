@@ -1,9 +1,13 @@
 
 
+Better handle _decrypted already exist? Use a temp directory if set to Tidy Away extracted files anyway?
+
 Verify more parameters & returns, files/directories existing, Mutants/Giants existing, etc.
 
 
-Provide an option to stop the Reflector as often as possible, requiring restarting it between uses during a single usage of TABSAT? Would also need to split out stop/start and deploy/delete in ReflectorManager.
+Provide a button to stop the Reflector whenever it's running?
+
+Provide an option to leave the Reflector deployed, and verify whether it is during ReflectorManager initialisation? Including file checksum?
 
 
 Refactor TABSAT's own Console...WriteLine() to use a UI textfield/list, at the bottom of the UI/on another pane?
@@ -39,9 +43,15 @@ Potentially also increase the % score scale factor for such maps?
 
 Without needing to generate new zombie IDs, we could just swap the locations of different types to affect distribution difficulty. Depends upon generating LevelFastSerializedEntities?
 
-Modify <Simple name="LayerFog"... to potentially reveal all terrain but not zombies?
+Alter the size and composition of waves?
+Alter the number and timing of waves?
+
+Offer to enlarge the default fog-clearing as a circle of adjustable radius around the CC.
 
 Upgrade all smaller VOD buildings (Dwelling, Tavern) to City Halls of Doom? To try recreate UberVOD(s) on other ThemeTypes?
+Or multi-stack the same sized buildings in the same position?
+
+Or, to offset other changes and make things easier, offer to remove Taverns/City Halls?
 
 Remove all Pickable resources & reclaimable buildings? To remove potential early Radar vision or resources chiefly accessed via kiting?
 

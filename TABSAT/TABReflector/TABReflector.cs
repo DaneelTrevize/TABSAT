@@ -67,6 +67,7 @@ namespace TABReflector
                         string signature = generateZXCheck( value );
                         if( signature != null )
                         {
+                            Console.WriteLine( "Signature: " + signature );
                             writePipe( signature );
                         } else
                         {
@@ -85,7 +86,7 @@ namespace TABReflector
                         } else
                         {
                             string password = generatePassword( value );
-                            //Console.WriteLine( "Found password = " + password );
+                            Console.WriteLine( "Password: " + password );
                             writePipe( password );
                         }
                         break;
@@ -295,7 +296,7 @@ namespace TABReflector
                         if( parInfo[0].ParameterType.Name == "String" && parInfo[1].ParameterType.Name == "Int32" )
                         {
                             // Located our method
-                            Console.WriteLine( "Found signing method: " + info.Name + "." );
+                            Console.WriteLine( "Found signing method:\t" + info.Name );
                             signingMethod = info;
 
                             break;
@@ -467,7 +468,10 @@ namespace TABReflector
                             // Did we find the password?
                             if( password == null || password.Length <= 0 ) continue;
 
-                            Console.WriteLine( "Found password generator, used Type: " + candidateType.Name + ", flag method: " + candidateFlagMethod.Name + ", generator method: " + candidateGeneratorMethod.Name );
+                            Console.WriteLine( "Found password generator, used:" );
+                            Console.WriteLine( "Type:\t\t\t" + candidateType.Name );
+                            Console.WriteLine( "Flag method:\t\t" + candidateFlagMethod.Name );
+                            Console.WriteLine( "Generator method:\t\t" + candidateGeneratorMethod.Name );
                             flagMethod = candidateFlagMethod;
                             generatorMethod = candidateGeneratorMethod;
 

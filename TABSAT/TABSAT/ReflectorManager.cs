@@ -8,6 +8,13 @@ namespace TABSAT
 {
     class ReflectorManager
     {
+        public enum ReflectorState
+        {
+            UNDEPLOYED,
+            DEPLOYED,
+            STARTED,
+            PROCESSING
+        }
 
         private const string defaultReflectorDirectory = ".";
         private const string reflectorExe = "TABReflector.exe";
@@ -21,6 +28,9 @@ namespace TABSAT
         private NamedPipeServerStream reflectorPipe;
         private StreamWriter reflectorWriter;
         private StreamReader reflectorReader;
+
+        private DataReceivedEventHandler outputHandler;
+        private ReflectorState state;   // Should lock() access?
 
 
         [DllImport( "user32.dll" )]
@@ -48,7 +58,8 @@ namespace TABSAT
             return true;
         }
 
-        public ReflectorManager( string reflectorDir, string TABdir )
+
+        public ReflectorManager( string reflectorDir, string TABdir, DataReceivedEventHandler outHandler )
         {
             if( reflectorDir != null && testReflectorDirectory( reflectorDir ) )
             {
@@ -70,149 +81,19 @@ namespace TABSAT
                 throw new ArgumentException( "The provided TAB directory does not exist." );
             }
 
+            resetReflector();
+
+            outputHandler = outHandler;
+
+            state = ReflectorState.UNDEPLOYED;  // An assumption?
+        }
+
+        private void resetReflector()
+        {
             reflector = null;
             reflectorPipe = null;
             reflectorWriter = null;
             reflectorReader = null;
-        }
-
-        public void deployAndStart( DataReceivedEventHandler outputHandler )
-        {
-            deployReflector( true );
-
-            startReflector( outputHandler );
-        }
-
-        public void stopAndRemove()
-        {
-            writePipe( Char.ToString( (char) TABReflector.PipeFlowControl.Quit ) );
-
-            endReflector();
-
-            removeReflector();
-        }
-
-        private void deployReflector( bool overwrite )
-        {
-            foreach( String binary in reflectorFiles )
-            {
-                string binSourcePath = Path.Combine( reflectorDirectory, binary );
-                string binTargetPath = Path.Combine( TABdirectory, binary );
-                if( overwrite )
-                {
-                    if( File.Exists( binTargetPath ) )
-                    {
-                        Console.WriteLine( "Reflector file: " + binary + " was already deployed, overwriting." );
-                    }
-                    File.Copy( binSourcePath, binTargetPath, true );
-                }
-                else
-                {
-                    if( File.Exists( binTargetPath ) )
-                    {
-                        Console.WriteLine( "Reflector file: " + binary + " was already deployed." );
-                    }
-                    else
-                    {
-                        File.Copy( binSourcePath, binTargetPath, false );
-                    }
-                }
-            }
-            Console.WriteLine( "Reflector deployed." );
-        }
-
-        private void removeReflector()
-        {
-            foreach( String binary in reflectorFiles )
-            {
-                string binTargetPath = Path.Combine( TABdirectory, binary );
-                if( !File.Exists( binTargetPath ) )
-                {
-                    Console.WriteLine( "Reflector file: " + binary + " was not already deployed." );
-                }
-                else
-                {
-                    File.Delete( binTargetPath );
-                }
-            }
-            Console.WriteLine( "Reflector removed." );
-        }
-
-        private void startReflector( DataReceivedEventHandler outputHandler )
-        {
-            if( reflector != null )
-            {
-                throw new InvalidOperationException( "Reflector process has already been initialised." );
-            }
-            reflector = new Process();
-            reflector.StartInfo.FileName = Path.Combine( TABdirectory, reflectorExe );
-
-            reflectorPipe = new NamedPipeServerStream( pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Message );
-            //Console.WriteLine( "Pipe TransmissionMode: {0}.", reflectorPipe.TransmissionMode );
-
-            reflector.StartInfo.Arguments = pipeName;
-            reflector.StartInfo.UseShellExecute = false;
-            // Redirect all console writes to the 1 handler
-            reflector.StartInfo.CreateNoWindow = true;
-            reflector.StartInfo.RedirectStandardOutput = true; 
-            reflector.OutputDataReceived += outputHandler;
-            reflector.StartInfo.RedirectStandardError = true;
-            reflector.ErrorDataReceived += outputHandler;
-
-            reflector.Start();
-            reflector.BeginOutputReadLine();
-            reflector.BeginErrorReadLine();
-            Console.WriteLine( "Reflector started." );
-
-            reflectorWriter = new StreamWriter( reflectorPipe );
-            //reflectorWriter.AutoFlush = true;
-            reflectorReader = new StreamReader( reflectorPipe );
-
-            reflectorPipe.WaitForConnection();
-            try
-            {
-                //reflector.WaitForInputIdle( 1000 );
-                //Console.WriteLine( "Reflector window title: " + reflector.MainWindowTitle );
-                IntPtr popup = reflector.MainWindowHandle;
-                ShowWindow( popup, SW_MINIMIZE );
-                Console.WriteLine( "Reflector window minimised." );
-            }
-            catch( InvalidOperationException ioe )
-            {
-                Console.WriteLine( "Unable to obtain the Reflector's main window handle." );
-            }
-        }
-
-        private void endReflector()
-        {
-            if( reflectorPipe != null )
-            {
-                reflectorPipe.Close();
-                //Console.WriteLine( "Pipe closed." );
-            }
-
-            if( reflector != null )
-            {
-                reflector.WaitForExit();
-                reflector.Close();
-                Console.WriteLine( "Reflector finished." );
-            }
-        }
-
-        public string generatePassword( string saveFile )
-        {
-            writePipe( Char.ToString( (char) TABReflector.PipeFlowControl.Generate ) );
-            writePipe( saveFile );
-            string password = readPipe();
-            return password;
-        }
-
-        public string checksum( string saveFile )
-        {
-            writePipe( Char.ToString( (char) TABReflector.PipeFlowControl.Checksum ) );
-            writePipe( saveFile );
-            string signature = readPipe();
-            return signature;
         }
 
         private void writePipe( string value )
@@ -252,6 +133,174 @@ namespace TABSAT
                 Console.Error.WriteLine( "Reading pipe error: {0}", e.Message );
             }
             return temp;
+        }
+
+
+        public ReflectorState getState()
+        {
+            return state;
+        }
+
+        public void deployReflector( bool overwrite = true )
+        {
+            if( state != ReflectorState.UNDEPLOYED )
+            {
+                throw new InvalidOperationException( "Reflector is not awaiting deployment." );
+            }
+
+            foreach( String binary in reflectorFiles )
+            {
+                string binSourcePath = Path.Combine( reflectorDirectory, binary );
+                string binTargetPath = Path.Combine( TABdirectory, binary );
+                if( overwrite )
+                {
+                    if( File.Exists( binTargetPath ) )
+                    {
+                        Console.WriteLine( "Reflector file: " + binary + " was already deployed, overwriting." );
+                    }
+                    File.Copy( binSourcePath, binTargetPath, true );
+                }
+                else
+                {
+                    if( File.Exists( binTargetPath ) )
+                    {
+                        Console.WriteLine( "Reflector file: " + binary + " was already deployed." );
+                    }
+                    else
+                    {
+                        File.Copy( binSourcePath, binTargetPath, false );
+                    }
+                }
+            }
+            state = ReflectorState.DEPLOYED;
+            Console.WriteLine( "Reflector deployed." );
+        }
+
+        public void removeReflector()
+        {
+            if( state != ReflectorState.DEPLOYED )
+            {
+                throw new InvalidOperationException( "Reflector is not awaiting removal." );
+            }
+
+            foreach( String binary in reflectorFiles )
+            {
+                string binTargetPath = Path.Combine( TABdirectory, binary );
+                if( !File.Exists( binTargetPath ) )
+                {
+                    Console.WriteLine( "Reflector file: " + binary + " was not already deployed." );
+                }
+                else
+                {
+                    File.Delete( binTargetPath );
+                }
+            }
+            state = ReflectorState.UNDEPLOYED;
+            Console.WriteLine( "Reflector removed." );
+        }
+
+        public void startReflector()
+        {
+            if( state != ReflectorState.DEPLOYED )
+            {
+                throw new InvalidOperationException( "Reflector is not awaiting starting." );
+            }
+
+            reflector = new Process();
+            reflector.StartInfo.FileName = Path.Combine( TABdirectory, reflectorExe );
+
+            reflectorPipe = new NamedPipeServerStream( pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Message );
+            //Console.WriteLine( "Pipe TransmissionMode: {0}.", reflectorPipe.TransmissionMode );
+
+            reflector.StartInfo.Arguments = pipeName;
+            reflector.StartInfo.UseShellExecute = false;
+            // Redirect all console writes to the 1 handler
+            reflector.StartInfo.CreateNoWindow = true;
+            reflector.StartInfo.RedirectStandardOutput = true; 
+            reflector.OutputDataReceived += outputHandler;
+            reflector.StartInfo.RedirectStandardError = true;
+            reflector.ErrorDataReceived += outputHandler;
+
+            reflector.Start();
+            reflector.BeginOutputReadLine();
+            reflector.BeginErrorReadLine();
+            Console.WriteLine( "Reflector started." );
+
+            reflectorWriter = new StreamWriter( reflectorPipe );
+            //reflectorWriter.AutoFlush = true;
+            reflectorReader = new StreamReader( reflectorPipe );
+
+            reflectorPipe.WaitForConnection();
+            try
+            {
+                //reflector.WaitForInputIdle( 1000 );
+                //Console.WriteLine( "Reflector window title: " + reflector.MainWindowTitle );
+                IntPtr popup = reflector.MainWindowHandle;
+                ShowWindow( popup, SW_MINIMIZE );
+                Console.WriteLine( "Reflector window minimised." );
+            }
+            catch( InvalidOperationException ioe )
+            {
+                Console.WriteLine( "Unable to obtain the Reflector's main window handle." );
+            }
+            state = ReflectorState.STARTED;
+        }
+
+        public void stopReflector()
+        {
+            if( state != ReflectorState.STARTED )
+            {
+                throw new InvalidOperationException( "Reflector is not awaiting stopping." );
+            }
+
+            state = ReflectorState.PROCESSING;
+
+            writePipe( Char.ToString( (char) TABReflector.PipeFlowControl.Quit ) );
+
+            reflectorPipe.Close();
+            //Console.WriteLine( "Pipe closed." );
+
+            reflector.WaitForExit();
+            reflector.Close();
+
+            resetReflector();
+
+            state = ReflectorState.DEPLOYED;
+            Console.WriteLine( "Reflector stopped." );
+        }
+
+        public string generatePassword( string saveFile )
+        {
+            if( state != ReflectorState.STARTED )
+            {
+                throw new InvalidOperationException( "Reflector is not awaiting processing." );
+            }
+
+            state = ReflectorState.PROCESSING;
+
+            writePipe( Char.ToString( (char) TABReflector.PipeFlowControl.Generate ) );
+            writePipe( saveFile );
+            string password = readPipe();
+
+            state = ReflectorState.STARTED;
+            return password;
+        }
+
+        public string checksum( string saveFile )
+        {
+            if( state != ReflectorState.STARTED )
+            {
+                throw new InvalidOperationException( "Reflector is not awaiting processing." );
+            }
+
+            state = ReflectorState.PROCESSING;
+
+            writePipe( Char.ToString( (char) TABReflector.PipeFlowControl.Checksum ) );
+            writePipe( saveFile );
+            string signature = readPipe();
+
+            state = ReflectorState.STARTED;
+            return signature;
         }
     }
 }

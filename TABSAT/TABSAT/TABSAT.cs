@@ -48,7 +48,7 @@ namespace TABSAT
             string steamConfigPath = findSteamConfig();
             if( steamConfigPath != null )
             {
-                Console.WriteLine( "Steam Libraries listed within: " + steamConfigPath );
+                //Console.WriteLine( "Steam Libraries listed within: " + steamConfigPath );
 
                 LinkedList<string> steamLibraries = findSteamLibraries( steamConfigPath );
 
@@ -57,7 +57,7 @@ namespace TABSAT
                     string TABdirectory = library + steamTABsubDirectory;
                     if( Directory.Exists( TABdirectory ) )
                     {
-                        Console.WriteLine( "Located TAB: " + TABdirectory );
+                        //Console.WriteLine( "Located TAB: " + TABdirectory );
                         return TABdirectory;
                     }
                 }
@@ -143,7 +143,7 @@ namespace TABSAT
 
             if( File.Exists( backupFile ) )
             {
-                Console.WriteLine( "Backup already exists: " + backupFile );
+                Console.Error.WriteLine( "Backup already exists: " + backupFile );
                 return null;
             }
 
@@ -168,7 +168,7 @@ namespace TABSAT
                 throw new ArgumentNullException( "outputHandler should not be null." );
             }
 
-            reflectorManager = new ReflectorManager( reflectorDir, TABdir );
+            reflectorManager = new ReflectorManager( reflectorDir, TABdir, outputHandler );
 
             savesDirectory = savesDir;
             if( !Directory.Exists( savesDirectory ) )
@@ -176,7 +176,7 @@ namespace TABSAT
                 throw new ArgumentException( "The provided saves directory does not exist." );
             }
 
-            reflectorManager.deployAndStart( outputHandler );
+            reflectorManager.deployReflector();
         }
 
 
@@ -199,7 +199,7 @@ namespace TABSAT
                     Console.Error.WriteLine( e.Message );
                     return;
                 }
-                Console.WriteLine( "Extracted save file: " + saveFile );
+                //Console.WriteLine( "Extracted save file: " + saveFile );
             }
         }
 
@@ -216,7 +216,7 @@ namespace TABSAT
                 newZip.Name = saveFile;
 
                 newZip.Save();
-                Console.WriteLine( "Save repacked: " + saveFile );
+                //Console.WriteLine( "Save repacked: " + saveFile );
             }
         }
         
@@ -226,6 +226,7 @@ namespace TABSAT
             File.SetLastWriteTime( file, dt );
             File.SetLastAccessTime( file, dt );
         }
+
 
         /// <summary>
         ///  The main entry point for the application.
@@ -239,6 +240,7 @@ namespace TABSAT
             Application.Run( new MainWindow( defaultSavesDirectory  ) );
 
         }
+
 
         public void decryptSaveToDir( string saveFile, string decryptDir )
         {
@@ -290,22 +292,44 @@ namespace TABSAT
             return saveFile;
         }
 
-        private void sign( string saveFile )
+        private string sign( string saveFile )
         {
+            if( reflectorManager.getState() == ReflectorManager.ReflectorState.DEPLOYED )
+            {
+                reflectorManager.startReflector();
+            }
+            
             string signature = reflectorManager.checksum( saveFile );
-            Console.WriteLine( "Signature from reflector: " + signature );
+            //Console.WriteLine( "Signature from reflector: " + signature );
+            return signature;
         }
         
         private string generatePassword( string saveFile )
         {
+            if( reflectorManager.getState() == ReflectorManager.ReflectorState.DEPLOYED )
+            {
+                reflectorManager.startReflector();
+            }
+
             string password = reflectorManager.generatePassword( saveFile );
-            Console.WriteLine( "Password from reflector: " + password );
+            //Console.WriteLine( "Password from reflector: " + password );
             return password;
         }
 
-        public void tidyUp()
+        public void stopReflector()
         {
-            reflectorManager.stopAndRemove();
+            if( reflectorManager.getState() == ReflectorManager.ReflectorState.STARTED )
+            {
+                reflectorManager.stopReflector();
+            }
+        }
+
+        public void removeReflector()
+        {
+            if( reflectorManager.getState() == ReflectorManager.ReflectorState.DEPLOYED )
+            {
+                reflectorManager.removeReflector();
+            }
         }
     }
 }
