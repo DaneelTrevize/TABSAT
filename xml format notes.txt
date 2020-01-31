@@ -45,10 +45,16 @@ There is also TargetPosition in 2 places:
                                 <Properties>
                                   <Simple name="TargetPosition" type="System.Drawing.PointF, System.Drawing" value="134.7038;223.6412" />
 
+could be
+                                  <Null name="TargetPosition" />
+
                       <Complex type="ZX.Components.CMovable, TheyAreBillions">
                         <Properties>
                           <Simple name="TargetPosition" type="System.Drawing.PointF, System.Drawing" value="134.7038;223.6412" />
                           <Simple name="LastDestinyProcessed" value="134.7038;223.6412" />
+
+could be
+                          <Null name="TargetPosition" />
 
 For Giants this is similar but different Behaviour:
 
@@ -137,4 +143,62 @@ Caustic Lands		VO
     <Complex name="LevelState">
       <Properties>
         <Simple name="ShowFullMap" value="False" />
+
+
+Mayors:
+            <Complex name="Data">
+              <Properties>
+                <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+                  <Properties>
+                    <Simple name="AllowMayors" value="True" />
+
+
+    <Complex name="LevelState">
+      <Properties>
+        <Simple name="IDMayor" value="Mayor_007" />
+        <Collection name="IDImagesUsedByMayors" elementType="System.UInt64, mscorlib">
+          <Properties>
+            <Simple name="Capacity" value="4" />
+          </Properties>
+          <Items>
+            <Simple value="6794807854821715708" />
+            <Simple value="3694484469693870601" />
+          </Items>
+        </Collection>
+        <Collection name="MayorStates" elementType="ZX.ZXLevelState+MayorState, TheyAreBillions">
+          <Properties>
+            <Simple name="Capacity" value="4" />
+          </Properties>
+          <Items>
+            <Complex>
+              <Properties>
+                <Simple name="ID" value="Mayor_007" />
+                <Simple name="Day" value="0" />
+              </Properties>
+            </Complex>
+            <Complex>
+              <Properties>
+                <Simple name="ID" value="Mayor_200" />
+                <Simple name="Day" value="7" />
+              </Properties>
+            </Complex>
+          </Items>
+        </Collection>
+
+Bonus Lucifer?
+    <Complex name="LevelState">
+      <Properties>
+        <Dictionary name="BonusEntityTemplates" keyType="System.UInt64, mscorlib" valueType="System.Int32, mscorlib">
+          <Items>
+            <Item>
+              <Simple value="16241120227094315491" />
+              <Simple value="1" />
+            </Item>
+          </Items>
+        </Dictionary>
+
+Bonus resources from collecting pickables?
+        <Simple name="CommandCenterExtraFood" value="0" />
+        <Simple name="CommandCenterExtraEnergy" value="120" />
+        <Simple name="CommandCenterExtraWorkers" value="0" />
 

@@ -11,9 +11,9 @@ For more information about the goals of this project, see TABSAT.txt
 
 ----
 
-This tool is formed of 2 parts, the main application TABSAT.exe, and a sister binary TABReflector.exe
+This tool is formed of 2 parts, the main application: TABSAT.exe + Ionic.Zip.dll; and a sister binary TABReflector.exe
 
-Simply download both files to the same directory, and launch TABSAT.exe to be presented with the Graphical User Interface.
+Simply download these 3 files to the same directory, and launch TABSAT.exe to be presented with the Graphical User Interface.
 
 # Modifying save files - How it works
 

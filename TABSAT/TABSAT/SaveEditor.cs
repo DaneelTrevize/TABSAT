@@ -7,10 +7,10 @@ using System.Xml.Linq;
 
 namespace TABSAT
 {
-    class SaveEditor
+    internal class SaveEditor
     {
 
-        public enum ThemeType
+        internal enum ThemeType
         {
             FA,
             BR,
@@ -19,7 +19,7 @@ namespace TABSAT
             DS,
             VO
         }
-        public static readonly ReadOnlyDictionary<ThemeType, string> themeTypeNames;
+        internal static readonly ReadOnlyDictionary<ThemeType, string> themeTypeNames;
         static SaveEditor()
         {
             Dictionary<ThemeType, string> ttn = new Dictionary<ThemeType, string>();
@@ -32,6 +32,7 @@ namespace TABSAT
             themeTypeNames = new ReadOnlyDictionary<ThemeType, string>( ttn );
         }
 
+        // TAB cell coordinates are origin top left, before 45 degree rotation clockwise. Positive x is due SE, positive y is due SW.
         enum CompassDirection
         {
             North,
@@ -40,64 +41,264 @@ namespace TABSAT
             West
         }
 
+        private class HugeZombie
+        {
+            readonly XElement entityItem;
+            public readonly ulong id;
+            readonly XElement complex;
+            public readonly bool isMutantNotGiant;
+            XAttribute entityPositionValue;
+
+            public HugeZombie( XElement i )
+            {
+                entityItem = i;
+                id = (ulong) entityItem.Element( "Simple" ).Attribute( "value" );
+
+                complex = entityItem.Element( "Complex" );
+                isMutantNotGiant = ( string) complex.Attribute( "type" ) == mutantType;
+
+                Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant:\t\t" + id );
+            }
+
+            private XAttribute getPositionValue()
+            {
+                if( entityPositionValue == null )
+                {
+                    entityPositionValue  = getFirstSimplePropertyNamed( complex, "Position" ).Attribute( "value" );
+                }
+                return entityPositionValue;
+            }
+
+            internal void delete()
+            {
+                entityItem.Remove();
+            }
+
+            internal void relocate( HugeZombie other )
+            {
+                if( this.id == other.id )
+                {
+                    return;
+                }
+
+                XElement currentLastPosition = getFirstSimplePropertyNamed( complex, "LastPosition" );
+
+                XElement currentComponents = ( from c in complex.Element( "Properties" ).Elements( "Collection" )
+                                                where (string) c.Attribute( "name" ) == "Components"
+                                                select c ).First();
+                // We're after 3 different values in 2 different <Complex under Components
+                XElement currentCBehaviour = ( from c in currentComponents.Element( "Items" ).Elements( "Complex" )
+                                                where (string) c.Attribute( "type" ) == cBehaviourType
+                                                select c ).First();
+                
+                XElement currentBehaviour = getFirstComplexPropertyNamed( currentCBehaviour, "Behaviour" );
+                XElement currentBehaviourData = getFirstComplexPropertyNamed( currentBehaviour, "Data" );
+                // 1
+                XElement currentBehaviourTargetPosition = getFirstSimplePropertyNamed( currentBehaviourData, "TargetPosition" );
+                
+                XElement currentCMovable = ( from c in currentComponents.Element( "Items" ).Elements( "Complex" )
+                                                where (string) c.Attribute( "type" ) == cMovableType
+                                                select c ).First();
+                
+                // 2
+                XElement currentMovableTargetPosition = getFirstSimplePropertyNamed( currentCMovable, "TargetPosition" );
+                // 3
+                XElement currentLastDestinyProcessed = getFirstSimplePropertyNamed( currentCMovable, "LastDestinyProcessed" );
+                
+                string farthestPositionString = (string) other.getPositionValue();
+                
+                getPositionValue().SetValue( farthestPositionString );
+                currentLastPosition.SetAttributeValue( "value", farthestPositionString );
+                if( currentBehaviourTargetPosition != null )
+                {
+                    currentBehaviourTargetPosition.SetAttributeValue( "value", farthestPositionString );
+                }
+                if( currentMovableTargetPosition != null )
+                {
+                    currentMovableTargetPosition.SetAttributeValue( "value", farthestPositionString );
+                }
+                if( currentLastDestinyProcessed != null )
+                {
+                    currentLastDestinyProcessed.SetAttributeValue( "value", farthestPositionString );
+                }
+            }
+        }
+
+        private class HugeZombieIcon
+        {
+            readonly SaveEditor editor;
+            readonly XElement icon;
+            public readonly ulong id;
+            public readonly bool isMutantNotGiant;
+            XAttribute iconCellValue;
+            private CompassDirection? dir;  // Nullability tracks lazy calculating of this and distance
+            private int distanceSquared;
+
+            public HugeZombieIcon( SaveEditor e, XElement i )
+            {
+                editor = e;
+                icon = i;
+
+                //                 <Complex name="EntityRef">
+                //                   <Properties >
+                //                     <Simple name = "IDEntity"
+                id = (ulong) getFirstComplexPropertyNamed( icon, "EntityRef" ).Element( "Properties" ).Element( "Simple" ).Attribute( "value" );
+
+                XElement imageSimple = getFirstSimplePropertyNamed( icon, "IDProjectImage" );
+                isMutantNotGiant = (string) imageSimple.Attribute( "value" ) == mutantProjectImage;
+
+                dir = null;
+
+                Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant Icon:\t" + id );
+            }
+
+            private XAttribute getCellValue()
+            {
+                if( iconCellValue == null )
+                {
+                    XElement cellSimple = getFirstSimplePropertyNamed( icon, "Cell" );
+                    iconCellValue = cellSimple.Attribute( "value" );
+                }
+                return iconCellValue;
+            }
+
+            internal CompassDirection getDirection()
+            {
+                if( dir == null )
+                {
+                    assessPosition();
+                }
+                return (CompassDirection) dir;
+            }
+
+            internal int getDistanceSquared()
+            {
+                if( dir == null )
+                {
+                    assessPosition();
+                }
+                return distanceSquared;
+            }
+
+            private void assessPosition()
+            {
+                string xy = (string) getCellValue();
+                //Console.WriteLine( "Cell:\t\t" + xy );
+                string[] xySplit = xy.Split( ';' );
+                int x = int.Parse( xySplit[0] );
+                int y = int.Parse( xySplit[1] );
+
+                if( x <= editor.commandCenterX )
+                {
+                    // North or West
+                    dir = y <= editor.commandCenterY ? CompassDirection.North : CompassDirection.West;
+                }
+                else
+                {
+                    // East or South
+                    dir = y <= editor.commandCenterY ? CompassDirection.East : CompassDirection.South;
+                }
+
+                distanceSquared = ( x - editor.commandCenterX ) * ( x - editor.commandCenterX ) + ( y - editor.commandCenterY ) * ( y - editor.commandCenterY );
+
+                Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant:\t\t" + id + ",\tPosition: " + x + ", " + y + "\tis: " + dir + ",\tdistanceSquared: " + distanceSquared );
+            }
+
+            internal void relocate( HugeZombieIcon otherIcon )
+            {
+                if( this.id == otherIcon.id )
+                {
+                    return;
+                }
+
+                getCellValue().SetValue( otherIcon.getCellValue().Value );
+                dir = null;     // no need to trigger assessPosition() yet
+
+                Console.WriteLine( "Mutant icon: " + id + " relocated to: " + getCellValue().Value );
+            }
+
+            internal void delete()
+            {
+                icon.Remove();
+            }
+        }
+
+        private class HugeZombieIconComparer : IComparer<HugeZombieIcon>
+        {
+            public int Compare( HugeZombieIcon a, HugeZombieIcon b )
+            {
+                return b.getDistanceSquared().CompareTo( a.getDistanceSquared() );  // b.CompareTo( a ) for reversed order
+            }
+        }
+        private static readonly IComparer<HugeZombieIcon> iconDistanceComparer = new HugeZombieIconComparer();
+
         private const string mutantType = @"ZX.Entities.ZombieMutant, TheyAreBillions";
         private const string giantType = @"ZX.Entities.ZombieGiant, TheyAreBillions";
         private const string cBehaviourType = @"ZX.Components.CBehaviour, TheyAreBillions";
         private const string cMovableType = @"ZX.Components.CMovable, TheyAreBillions";
         private const string mutantProjectImage = @"3097669356589096184";
-        private const string giantProjectImage = @"5072922660204167778";
+        //private const string giantProjectImage = @"5072922660204167778";
 
+        private string dataFile;
         private XElement data;
-        private SortedDictionary<ulong,XElement> mutants;
-        private SortedDictionary<ulong, XElement> giants;
         XElement levelComplex;
-        private XElement iconsColl;
 
         private int commandCenterX;
         private int commandCenterY;
-        private LinkedList<XElement> mutantCells;
-        private XElement farthestMutantIcon;
-        private XElement farthestGiantIcon;
+        private SortedDictionary<ulong, HugeZombie> mutants;
+        private SortedDictionary<ulong, HugeZombie> giants;
+        private LinkedList<HugeZombieIcon> mutantIcons;
+        private LinkedList<HugeZombieIcon> giantIcons;
 
-        public SaveEditor( string dataFile )
+        private static XElement getFirstSimplePropertyNamed( XElement c, string name )
         {
-            if( !File.Exists( dataFile ) )
+            return ( from s in c.Element( "Properties" ).Elements( "Simple" )
+                     where (string) s.Attribute( "name" ) == name
+                     select s ).FirstOrDefault();
+        }
+
+        private static XElement getFirstComplexPropertyNamed( XElement c, string name )
+        {
+            return ( from s in c.Element( "Properties" ).Elements( "Complex" )
+                     where (string) s.Attribute( "name" ) == name
+                     select s ).FirstOrDefault();   // Avoid exception risk of First()?
+        }
+
+
+        public SaveEditor( string file )
+        {
+            if( !File.Exists( file ) )
             {
-                throw new ArgumentException( "Data file does not exist: " + dataFile );
+                throw new ArgumentException( "Data file does not exist: " + file );
             }
+            dataFile = file;
 
             data = XElement.Load( dataFile );
 
-            mutants = new SortedDictionary<ulong, XElement>();
-            giants = new SortedDictionary<ulong, XElement>();
+            mutants = new SortedDictionary<ulong, HugeZombie>();
+            giants = new SortedDictionary<ulong, HugeZombie>();
 
             //<Complex name="Root" type="ZX.ZXGameState, TheyAreBillions">
             //  < Properties >
             //    <Complex name="LevelState">
-            levelComplex = ( from c in data.Element( "Properties" ).Elements( "Complex" )
-                                      where (string) c.Attribute( "name" ) == "LevelState"
-                                      select c ).First();
+            levelComplex = getFirstComplexPropertyNamed( data, "LevelState" );
 
-            iconsColl = null;
 
             //      <Properties>
             //        <Simple name="CurrentCommandCenterCell"
-            XElement currentCommandCenterCell = ( from s in levelComplex.Element( "Properties" ).Elements( "Simple" )
-                                                  where (string) s.Attribute( "name" ) == "CurrentCommandCenterCell"
-                                                  select s ).First();
+            XElement currentCommandCenterCell = getFirstSimplePropertyNamed( levelComplex, "CurrentCommandCenterCell" );
             string xy = (string) currentCommandCenterCell.Attribute( "value" );
             string[] xySplit = xy.Split( ';' );
             commandCenterX = int.Parse( xySplit[0] );
             commandCenterY = int.Parse( xySplit[1] );
 
-            //Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
+            Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
 
-            mutantCells = new LinkedList<XElement>();
-            farthestMutantIcon = null;
-            farthestGiantIcon = null;
+            mutantIcons = new LinkedList<HugeZombieIcon>();
+            giantIcons = new LinkedList<HugeZombieIcon>();
         }
 
-        public void save( string dataFile )
+        internal void save()    // Doesn't take parameter to save modified file to a different location?
         {
             data.Save( dataFile );
         }
@@ -105,12 +306,9 @@ namespace TABSAT
         private void findMutantsAndGiants()
         {
             // Finds the related Items in the LevelEntities Dictionary
-
             XElement itemsDict = ( from d in levelComplex.Element( "Properties" ).Elements( "Dictionary" )
                                    where (string) d.Attribute( "name" ) == "LevelEntities"
                                    select d ).First();
-
-            //Console.WriteLine( "LevelEntities keyType: " + (string) items.Attribute( "keyType" ) );
 
             //Console.WriteLine( "Items count: " + items.Descendants( "Item" ).Count() );
 
@@ -124,265 +322,189 @@ namespace TABSAT
                 select i;
 
             //Console.WriteLine( "bigBoys count: " + bigBoys.Count() );
-
             foreach( XElement big in bigBoys )
             {
-                XAttribute id = big.Element( "Simple" ).Attribute( "value" );
-                XElement complex = big.Element( "Complex" );
-                if( (string) complex.Attribute( "type" ) == mutantType )
-                {
-                    Console.WriteLine( "Mutant:\t\t" + (string) id );
-                    mutants.Add( (ulong) id, big );
-                }
-                else
-                {
-                    Console.WriteLine( "Giant:\t\t" + (string) id );
-                    giants.Add( (ulong) id, big );
-                }
-
-                IEnumerable<XElement> positions =
-                    from s in complex.Element( "Properties" ).Elements( "Simple" )
-                    where (string) s.Attribute( "name" ) == "Position" || (string) s.Attribute( "name" ) == "LastPosition"
-                    select s;
-                foreach( XElement p in positions )
-                {
-                    Console.WriteLine( (string) p.Attribute( "name" ) + ":\t" + (string) p.Attribute( "value" ) );
-                }
+                HugeZombie z = new HugeZombie( big );
+                ( z.isMutantNotGiant ? mutants : giants ).Add( z.id, z );
             }
 
-            iconsColl = ( from c in levelComplex.Element( "Properties" ).Elements( "Collection" )
+            XElement iconsColl = ( from c in levelComplex.Element( "Properties" ).Elements( "Collection" )
                                    where (string) c.Attribute( "name" ) == "MiniMapIndicators"
                                    select c ).First();
-        }
 
-        private void assessDistances()
-        {
-
-            //Console.WriteLine( "icons count: " + iconsColl.Element( "Items" ).Elements( "Complex" ).Count() );
-
-            int farthestGiantDistanceSquared = 0;
-            int farthestMutantDistanceSquared = 0;
-            foreach( XElement c in iconsColl.Element( "Items" ).Elements( "Complex" ) )
-            {
-                XElement cellSimple = ( from s in c.Element( "Properties" ).Elements( "Simple" )
-                                        where (string) s.Attribute( "name" ) == "Cell"
-                                        select s ).First();
-
-                string xy = (string) cellSimple.Attribute( "value" );
-                Console.WriteLine( "Cell:\t\t" + xy );
-                string[] xySplit = xy.Split( ';' );
-                int x = int.Parse( xySplit[0] );
-                int y = int.Parse( xySplit[1] );
-                /*
-                // Try to work per compass quadrant?
-                CompassDirection dir;
-                if( x <= commandCenterX )
-                {
-                    // West half
-                    if( y <= commandCenterY )
-                    {
-                        // North half
-                        dir = ( commandCenterY - y > commandCenterX - x ) ? CompassDirection.North : CompassDirection.West;
-                    }
-                    else
-                    {
-                        // South half
-                        dir = ( y - commandCenterY > commandCenterX - x ) ? CompassDirection.South : CompassDirection.West;
-                    }
-                }
-                else
-                {
-                    // East half
-                    if( y <= commandCenterY )
-                    {
-                        // North half
-                        dir = ( commandCenterY - y >  x - commandCenterX ) ? CompassDirection.North : CompassDirection.East;
-                    }
-                    else
-                    {
-                        // South half
-                        dir = ( commandCenterY - y > x - commandCenterX ) ? CompassDirection.South : CompassDirection.East;
-                    }
-                }
-                Console.WriteLine( "Position: " + x + ", " + y + " is: " + dir );
-                */
-
-                int distanceSquared = ( x - commandCenterX ) * ( x - commandCenterX ) + ( y - commandCenterY ) * ( y - commandCenterY );
-
-                XElement imageSimple = ( from s in c.Element( "Properties" ).Elements( "Simple" )
-                                         where (string) s.Attribute( "name" ) == "IDProjectImage"
-                                         select s ).First();
-                if( (string) imageSimple.Attribute( "value" ) == mutantProjectImage )
-                {
-                    Console.WriteLine( "Mutant" );
-
-                    mutantCells.AddLast( cellSimple );
-
-                    if( distanceSquared > farthestMutantDistanceSquared )
-                    {
-                        farthestMutantDistanceSquared = distanceSquared;
-                        farthestMutantIcon = c;
-                        Console.WriteLine( "New farthest Mutant: " + x + ", " + y + " distanceSquared: " + farthestMutantDistanceSquared );
-                    }
-                }
-                else
-                {
-                    Console.WriteLine( "Giant" );
-
-                    if( distanceSquared > farthestGiantDistanceSquared )
-                    {
-                        farthestGiantDistanceSquared = distanceSquared;
-                        farthestGiantIcon = c;
-                        Console.WriteLine( "New farthest Giant: " + x + ", " + y + " distanceSquared: " + farthestGiantDistanceSquared );
-                    }
-                }
-            }
-        }
-
-        public void removeMutants()
-        {
-            findMutantsAndGiants();
-
-            LinkedList<XElement> mutantIcons = new LinkedList<XElement>();
             // Find all Mutant minimap icons
             foreach( XElement c in iconsColl.Element( "Items" ).Elements( "Complex" ) )
             {
-                XElement imageSimple = ( from s in c.Element( "Properties" ).Elements( "Simple" )
-                                         where (string) s.Attribute( "name" ) == "IDProjectImage"
-                                         select s ).First();
-                if( (string) imageSimple.Attribute( "value" ) == mutantProjectImage )
+                HugeZombieIcon z = new HugeZombieIcon( this, c );
+                if( z.isMutantNotGiant )
                 {
-                    mutantIcons.AddLast( c );
+                    mutantIcons.AddLast( z );
+                }
+                else
+                {
+                    giantIcons.AddLast( z );
                 }
             }
 
-            Console.WriteLine( "Mutants count: " + mutants.Count() );
-            Console.WriteLine( "Icons count: " + mutantIcons.Count() );
-
-            // Remove mutants and their icons
-            foreach( XElement m in mutants.Values )
-            {
-                m.Remove();
-            }
-            foreach( XElement m in mutantIcons )
-            {
-                m.Remove();
-            }
-
+            Console.WriteLine( "Mutants count: " + mutants.Count() +", icons count: " + mutantIcons.Count() );
+            Console.WriteLine( "Giants count: " + giants.Count() + ", icons count: " + giantIcons.Count() );
         }
 
-        public void relocateMutants( bool toGiantNotMutant = true )
+        internal void removeMutants()
         {
             findMutantsAndGiants();
 
-            assessDistances();
-
-            XElement farthestIcon = toGiantNotMutant ? farthestGiantIcon : farthestMutantIcon;
-
-            XElement farthestID = ( from c in farthestIcon.Element( "Properties" ).Elements( "Complex" )
-                                    where (string) c.Attribute( "name" ) == "EntityRef"
-                                    select c ).First().Element( "Properties" ).Element( "Simple" );
-            //Console.WriteLine( (string) farthestID.Attribute( "name" ) + ":\t" + (string) farthestID.Attribute( "value" ) );
-
-            string farthestCellString = (string) ( from s in farthestIcon.Element( "Properties" ).Elements( "Simple" )
-                                                   where (string) s.Attribute( "name" ) == "Cell"
-                                                   select s ).First().Attribute( "value" );
-            //Console.WriteLine( "Farthest cell: " + farthestCellString );
-
-            ulong farthestID_ulong = (ulong) farthestID.Attribute( "value" );
-            XElement farthestBig = toGiantNotMutant ? giants[farthestID_ulong] : mutants[farthestID_ulong];
-            //Console.WriteLine( "Farthest Big: " + farthestBig );
-
-            XElement farthestPosition = ( from s in farthestBig.Element( "Complex" ).Element( "Properties" ).Elements( "Simple" )
-                                          where (string) s.Attribute( "name" ) == "Position"
-                                          select s ).First();
-            string farthestPositionString = (string) farthestPosition.Attribute( "value" );
-            //Console.WriteLine( "Farthest position: " + farthestPositionString );
-
-            //Console.WriteLine( "Mutants count: " + mutants.Count() );
-            // Use this farthest position value to move all the mutants
-            foreach( XElement mutant in mutants.Values )
+            // Remove mutants and their icons
+            foreach( HugeZombie z in mutants.Values )
             {
-                tryRelocateMutantItem( mutant, farthestPositionString );
+                z.delete();
             }
-            // And move all the mutant icons
-            foreach( XElement cellSimple in mutantCells )
+            foreach( HugeZombieIcon i in mutantIcons )
             {
-                //Console.WriteLine( "Mutant cell to change: " + cellSimple );
-                cellSimple.SetAttributeValue( "value", farthestCellString );
+                i.delete();
             }
+
         }
 
-        private void tryRelocateMutantItem( XElement mutant, string farthestPositionString )
+        internal void relocateMutants( bool toGiantNotMutant, bool perDirection )
         {
-            XElement currentPosition = ( from s in mutant.Element( "Complex" ).Element( "Properties" ).Elements( "Simple" )
-                                         where (string) s.Attribute( "name" ) == "Position"
-                                         select s ).First();
+            findMutantsAndGiants();
 
-            XElement currentLastPosition = ( from s in mutant.Element( "Complex" ).Element( "Properties" ).Elements( "Simple" )
-                                             where (string) s.Attribute( "name" ) == "LastPosition"
-                                             select s ).First();
-
-            
-            XElement currentComponents = ( from c in mutant.Element( "Complex" ).Element( "Properties" ).Elements( "Collection" )
-                                           where (string) c.Attribute( "name" ) == "Components"
-                                           select c ).First();
-            // We're after 3 different values in 2 different <Complex under Components
-            XElement currentCBehaviour = ( from c in currentComponents.Element( "Items" ).Elements( "Complex" )
-                                           where (string) c.Attribute( "type" ) == cBehaviourType
-                                           select c ).First();
-
-            XElement currentBehaviour = ( from c in currentCBehaviour.Element( "Properties" ).Elements( "Complex" )
-                                              where (string) c.Attribute( "name" ) == "Behaviour"
-                                          select c ).First();
-            XElement currentBehaviourData = ( from c in currentBehaviour.Element( "Properties" ).Elements( "Complex" )
-                                              where (string) c.Attribute( "name" ) == "Data"
-                                              select c ).First();
-            // 1
-            XElement currentBehaviourTargetPosition = ( from s in currentBehaviourData.Element( "Properties" ).Elements( "Simple" )
-                                               where (string) s.Attribute( "name" ) == "TargetPosition"
-                                               select s ).FirstOrDefault();
-            
-            XElement currentCMovable = ( from c in currentComponents.Element( "Items" ).Elements( "Complex" )
-                                         where (string) c.Attribute( "type" ) == cMovableType
-                                         select c ).First();
-            // 2
-            XElement currentMovableTargetPosition = ( from s in currentCMovable.Element( "Properties" ).Elements( "Simple" )
-                                               where (string) s.Attribute( "name" ) == "TargetPosition"
-                                               select s ).FirstOrDefault();
-            // 3
-            XElement currentLastDestinyProcessed = ( from s in currentCMovable.Element( "Properties" ).Elements( "Simple" )
-                                                      where (string) s.Attribute( "name" ) == "LastDestinyProcessed"
-                                                     select s ).FirstOrDefault();
-            
-            currentPosition.SetAttributeValue( "value", farthestPositionString );
-            currentLastPosition.SetAttributeValue( "value", farthestPositionString );
-            if( currentBehaviourTargetPosition != null )
+            if( mutants.Count == 0 )
             {
-                currentBehaviourTargetPosition.SetAttributeValue( "value", farthestPositionString );
+                Console.WriteLine( "No Mutants to relocate." );
+                return;
             }
-            if( currentMovableTargetPosition != null )
+
+            // Globally, or per direction, we'll have a list of huge zombie icons to find the farthest of, and a list of mutants to relocate, as well as their corresponding icons?
+
+            SortedDictionary<CompassDirection,List<HugeZombieIcon>> mutantsPerDirection = new SortedDictionary<CompassDirection,List<HugeZombieIcon>>();
+            foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
             {
-                currentMovableTargetPosition.SetAttributeValue( "value", farthestPositionString );
+                mutantsPerDirection.Add( d, new List<HugeZombieIcon>( mutants.Count ) );
             }
-            if( currentLastDestinyProcessed != null )
+            SortedDictionary<CompassDirection,List<HugeZombieIcon>> giantsPerDirection = new SortedDictionary<CompassDirection,List<HugeZombieIcon>>();
+            foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
             {
-                currentLastDestinyProcessed.SetAttributeValue( "value", farthestPositionString );
+                giantsPerDirection.Add( d, new List<HugeZombieIcon>( giants.Count ) );
+            }
+            List<HugeZombieIcon> farthestMutantShortlist = new List<HugeZombieIcon>();
+            List<HugeZombieIcon> farthestGiantShortlist = new List<HugeZombieIcon>();
+
+
+            // Split icons by direction
+            foreach( HugeZombieIcon mutant in mutantIcons )
+            {
+                mutantsPerDirection[mutant.getDirection()].Add(  mutant );
+            }
+            foreach( HugeZombieIcon giant in giantIcons )
+            {
+                giantsPerDirection[giant.getDirection()].Add( giant );
+            }
+
+            // Sort each direction, take the farthest, form a new shortlist and sort that for the overall farthest
+            foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
+            {
+                List<HugeZombieIcon> mutantsInDirection = mutantsPerDirection[d];
+                if( mutantsInDirection.Count > 0 )
+                {
+                    mutantsInDirection.Sort( iconDistanceComparer );
+                    farthestMutantShortlist.Add( mutantsInDirection.First() );
+                }
+            }
+            foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
+            {
+                List<HugeZombieIcon> giantsInDirection = giantsPerDirection[d];
+                if( giantsInDirection.Count > 0 )
+                {
+                    giantsInDirection.Sort( iconDistanceComparer );
+                    farthestGiantShortlist.Add( giantsInDirection.First() );
+                }
+            }
+
+            farthestMutantShortlist.Sort( iconDistanceComparer );
+            farthestGiantShortlist.Sort( iconDistanceComparer );
+            HugeZombieIcon globalFarthestMutant = farthestMutantShortlist.FirstOrDefault();
+            HugeZombieIcon globalFarthestGiant = farthestGiantShortlist.FirstOrDefault();
+            
+
+            if( perDirection )
+            {
+                // Get sorted mutant group per direction, also giants if toGiantNotMutant
+                // Get farthest group mutant, or giant if toGiantNotMutant, or global farthest (could be either) if no local giant
+                // relocate all group mutants to chosen farthest
+
+                foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
+                {
+                    List<HugeZombieIcon> mutantsInDirection = mutantsPerDirection[d];
+                    if( mutantsInDirection.Count > 0 )
+                    {
+                        // There are mutants in this direction to relocation
+
+                        HugeZombieIcon relocateTo = null;
+                        // Should and could we use a Giant?
+                        if( toGiantNotMutant )
+                        {
+                            List<HugeZombieIcon> giantsInDirection = giantsPerDirection[d];
+                            if( giantsInDirection.Count > 0 )
+                            {
+                                relocateTo = giantsInDirection.First();
+                            }
+                            else
+                            {
+                                Console.WriteLine( "No Giants to relocate Mutants onto in direction: " + d + ", using global farthest Giant." );
+                                relocateTo = globalFarthestGiant;
+                                if( relocateTo == null )
+                                {
+                                    Console.WriteLine( "No Giants to relocate Mutants onto, using farthest Mutant." );
+                                    relocateTo = globalFarthestMutant;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            relocateTo = mutantsInDirection.First();
+                        }
+
+                        relocateMutants( mutantsInDirection, relocateTo );
+                    }
+                }
+            }
+            else
+            {
+                // Should and could we use a Giant?
+                HugeZombieIcon farthestIcon = toGiantNotMutant ? globalFarthestGiant : globalFarthestMutant;
+                if( farthestIcon == null )
+                {
+                    Console.WriteLine( "No Giants to relocate Mutants onto, using farthest Mutant." );
+                    farthestIcon = globalFarthestMutant;
+                }
+
+                relocateMutants( mutantIcons, farthestIcon );
+            }
+
+        }
+
+        private void relocateMutants( ICollection<HugeZombieIcon> mutantIcons, HugeZombieIcon farthestIcon )
+        {
+            foreach( HugeZombieIcon icon in mutantIcons )
+            {
+                HugeZombie mutant = mutants[icon.id];
+                icon.relocate( farthestIcon );
+                HugeZombie farthest = (farthestIcon.isMutantNotGiant ? mutants : giants)[farthestIcon.id];
+                mutant.relocate( farthest );
             }
         }
 
-        public void removeAllFog()
+
+        internal void removeFog( int radius = 0 )
         {
             //      <Properties>
             //        <Complex name = "CurrentGeneratedLevel" >
-            XElement generatedLevel = ( from c in levelComplex.Element( "Properties" ).Elements( "Complex" )
-                                        where (string) c.Attribute( "name" ) == "CurrentGeneratedLevel"
-                                        select c ).First();
+            XElement generatedLevel = getFirstComplexPropertyNamed( levelComplex, "CurrentGeneratedLevel" );
             //          <Properties>
             //            <Simple name="NCells" value="256" />
-            XElement ncells = ( from s in generatedLevel.Element( "Properties" ).Elements( "Simple" )
-                                where (string) s.Attribute( "name" ) == "NCells"
-                                select s ).First();
+            XElement ncells = getFirstSimplePropertyNamed( generatedLevel, "NCells" );
 
             string cells = (string) ncells.Attribute( "value" );
             int size;
@@ -396,63 +518,135 @@ namespace TABSAT
             // Sadly we can't use String.Create<TState>(Int32, TState, SpanAction<Char,TState>) to avoid duplicate allocation prior to creating the final string
 
             byte[] clearFog = new byte[rawLength];  // Defaulting to 00 00 00 00, good if we want less than 50% fog...
+
+            if( radius > 0 )
+            {
+                circularFog( size, clearFog, radius );
+            }
+
             string layerFog = Convert.ToBase64String( clearFog );
             //Console.WriteLine( layerFog );
 
-            XElement layerFogSimple = ( from s in levelComplex.Element( "Properties" ).Elements( "Simple" )
-                                        where (string) s.Attribute( "name" ) == "LayerFog"
-                                        select s ).First();
+            XElement layerFogSimple = getFirstSimplePropertyNamed( levelComplex, "LayerFog" );
             layerFogSimple.SetAttributeValue( "value", layerFog );
         }
 
-        public void showFullMap()
+        private void circularFog( int size, byte[] clearFog, int radius )
+        {
+            void setFog( int s, byte[] f, int x, int y )
+            {
+                // Assuming linear assignment, rather than anything fancy like a Hilbert curve...
+                int wordIndex = ( ( y * s ) + x ) * 4;
+                f[wordIndex + 3] = 0xFF;
+            }
+
+            void setFogLine( int s, byte[] f, int xStart, int y, int xEnd )
+            {
+                for( int x = xStart; x < xEnd; x++ )
+                {
+                    setFog( s, f, x, y );
+                }
+            }
+
+            // Fill outside the circle with 00 00 00 FF, aka step 4 bytes at a time. Centered on CC
+            int beforeCCx = commandCenterX - radius;
+            int beforeCCy = commandCenterY - radius;
+            int afterCCx = commandCenterX + radius;
+            int afterCCy = commandCenterY + radius;
+
+            // Quick fill in "thirds" of before, adjacent, after (CC +- radius)
+            for( int x = 0; x < size; x++ )
+            {
+                // 1/3 before
+                for( int y = 0; y < beforeCCy; y++ )
+                {
+                    setFog( size, clearFog, x, y );
+                }
+                // 1/3 after
+                for( int y = afterCCy; y < size; y++ )
+                {
+                    setFog( size, clearFog, x, y );
+                }
+            }
+
+            for( int y = beforeCCy; y < afterCCy; y++ )
+            {
+                // 1/9 adjacent before
+                for( int x = 0; x < beforeCCx; x++ )
+                {
+                    setFog( size, clearFog, x, y );
+                }
+                // 1/9 adjacent after
+                for( int x = afterCCx; x < size; x++ )
+                {
+                    setFog( size, clearFog, x, y );
+                }
+            }
+            // Central 1/9 left to do
+
+            // In calculating the xFromCC to the circle edge in a single anticlockwise 45degree octant between y=0 and y=x, we would have all the values to duplicate the octant & its mirror in all 4 corners.
+
+            // We'll just skip messing with Bresenham and use square roots, for a 90degree arc quadrant, and mirror 4 times.
+            int radiusSquared = radius * radius;
+            int radiusBeforeCommandCenterX = commandCenterX - radius;
+            int radiusAfterCommandCenterX = commandCenterX + radius;
+
+            int xFromCC;// = radius;
+            int yFromCC = 0;
+            while( yFromCC <= radius )
+            {
+                xFromCC = Convert.ToInt32( Math.Sqrt( radiusSquared - (yFromCC * yFromCC) ) );
+
+                // E to SE to S
+                setFogLine( size, clearFog, commandCenterX + xFromCC, commandCenterY + yFromCC, radiusAfterCommandCenterX );
+
+                // W to SW to S
+                setFogLine( size, clearFog, radiusBeforeCommandCenterX, commandCenterY + yFromCC, commandCenterX - xFromCC );
+
+                // W to NW to N
+                setFogLine( size, clearFog, radiusBeforeCommandCenterX, commandCenterY - yFromCC, commandCenterX - xFromCC );
+
+                // E to NE to N
+                setFogLine( size, clearFog, commandCenterX + xFromCC, commandCenterY - yFromCC, radiusAfterCommandCenterX );
+
+                yFromCC += 1;
+            }
+        }
+
+        internal void showFullMap()
         {
             //        <Simple name="ShowFullMap" value="False" />
-            XElement ShowFullMap = ( from s in levelComplex.Element( "Properties" ).Elements( "Simple" )
-                                     where (string) s.Attribute( "name" ) == "ShowFullMap"
-                                     select s ).First();
+            XElement ShowFullMap = getFirstSimplePropertyNamed( levelComplex, "ShowFullMap" );
             ShowFullMap.SetAttributeValue( "value", "True" );
         }
 
-        public void changeTheme( ThemeType theme )
+        internal void changeTheme( ThemeType theme )
         {
             string themeValue = theme.ToString();
             //Console.WriteLine( "Changing ThemeType to:" + themeValue );
 
             //      <Properties>
             //        <Complex name = "CurrentGeneratedLevel" >
-            XElement generatedLevel = ( from c in levelComplex.Element( "Properties" ).Elements( "Complex" )
-                                        where (string) c.Attribute( "name" ) == "CurrentGeneratedLevel"
-                                        select c ).First();
+            XElement generatedLevel = getFirstComplexPropertyNamed( levelComplex, "CurrentGeneratedLevel" );
             //          <Properties>
             //            <Complex name="Data">
             //              <Properties>
             //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
-            XElement extension = ( from d in generatedLevel.Element( "Properties" ).Elements( "Complex" )
-                                   where (string) d.Attribute( "name" ) == "Data"                   // not Random
-                                   select d ).First().Element( "Properties" ).Element( "Complex" ); // only one Complex, named Extension
+            XElement extension = getFirstComplexPropertyNamed( generatedLevel, "Data" ).Element( "Properties" ).Element( "Complex" ); // only one Complex, named Extension
             //                  <Properties>
             //                    <Complex name="MapDrawer">
-            XElement mapDrawer = ( from c in extension.Element( "Properties" ).Elements( "Complex" )
-                                   where (string) c.Attribute( "name" ) == "MapDrawer"
-                                   select c ).First();
+            XElement mapDrawer = getFirstComplexPropertyNamed( extension, "MapDrawer" );
             //                      <Properties>
             //                        <Simple name="ThemeType" value=
-            XElement levelThemeType = ( from s in mapDrawer.Element( "Properties" ).Elements( "Simple" )
-                               where (string) s.Attribute( "name" ) == "ThemeType"
-                               select s ).First();
+            XElement levelThemeType = getFirstSimplePropertyNamed( mapDrawer, "ThemeType" );
 
             //<Complex name="Root" type="ZX.ZXGameState, TheyAreBillions">
             //  < Properties >
             //    <Complex name="SurvivalModeParams">
-            XElement paramsComplex = ( from c in data.Element( "Properties" ).Elements( "Complex" )
-                                       where (string) c.Attribute( "name" ) == "SurvivalModeParams"
-                                       select c ).First();
+            XElement paramsComplex = getFirstComplexPropertyNamed( data, "SurvivalModeParams" );
             //      <Properties>
             //        <Simple name="ThemeType"
-            XElement paramsThemeType = ( from s in paramsComplex.Element( "Properties" ).Elements( "Simple" )
-                                         where (string) s.Attribute( "name" ) == "ThemeType"
-                                         select s ).First();
+            XElement paramsThemeType = getFirstSimplePropertyNamed( paramsComplex, "ThemeType" );
 
             levelThemeType.SetAttributeValue( "value", themeValue );
             paramsThemeType.SetAttributeValue( "value", themeValue );

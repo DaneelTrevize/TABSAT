@@ -201,7 +201,7 @@ namespace TABReflector
             return billionsMain;
         }
 
-        public static void initialiseBillionsAndStall( string[] args )
+        private static void initialiseBillionsAndStall( string[] args )
         {
             try
             {
@@ -312,7 +312,7 @@ namespace TABReflector
             return signingMethod;
         }
 
-        public static string generateZXCheck( string saveFile )
+        private static string generateZXCheck( string saveFile )
         {
             MethodInfo signingMethod = getSigningMethod();
             if( signingMethod == null || getGameAccountMethod == null )

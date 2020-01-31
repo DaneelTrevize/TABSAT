@@ -8,7 +8,7 @@ namespace TABSAT
 {
     class ReflectorManager
     {
-        public enum ReflectorState
+        internal enum ReflectorState
         {
             UNDEPLOYED,
             DEPLOYED,
@@ -136,12 +136,12 @@ namespace TABSAT
         }
 
 
-        public ReflectorState getState()
+        internal ReflectorState getState()
         {
             return state;
         }
 
-        public void deployReflector( bool overwrite = true )
+        internal void deployReflector( bool overwrite = true )
         {
             if( state != ReflectorState.UNDEPLOYED )
             {
@@ -176,7 +176,7 @@ namespace TABSAT
             Console.WriteLine( "Reflector deployed." );
         }
 
-        public void removeReflector()
+        internal void removeReflector()
         {
             if( state != ReflectorState.DEPLOYED )
             {
@@ -199,7 +199,7 @@ namespace TABSAT
             Console.WriteLine( "Reflector removed." );
         }
 
-        public void startReflector()
+        internal void startReflector()
         {
             if( state != ReflectorState.DEPLOYED )
             {
@@ -246,7 +246,7 @@ namespace TABSAT
             state = ReflectorState.STARTED;
         }
 
-        public void stopReflector()
+        internal void stopReflector()
         {
             if( state != ReflectorState.STARTED )
             {
@@ -269,7 +269,7 @@ namespace TABSAT
             Console.WriteLine( "Reflector stopped." );
         }
 
-        public string generatePassword( string saveFile )
+        internal string generatePassword( string saveFile )
         {
             if( state != ReflectorState.STARTED )
             {
@@ -286,7 +286,7 @@ namespace TABSAT
             return password;
         }
 
-        public string checksum( string saveFile )
+        internal string checksum( string saveFile )
         {
             if( state != ReflectorState.STARTED )
             {

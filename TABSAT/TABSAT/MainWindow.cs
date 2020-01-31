@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Windows.Forms;
 
 namespace TABSAT
 {
     public partial class MainWindow : Form
     {
-        private string reflectorDir;
-        private string tabDir;
         private TABSAT tabSAT;
-        private string decryptDir;
-        private string dataFile;
 
         private static void shiftTextViewRight( TextBox textBox )
         {
@@ -25,18 +20,9 @@ namespace TABSAT
         {
             InitializeComponent();
 
-            openSaveFileDialog.InitialDirectory = savesDirectory;
+            string reflectorDir = TABSAT.getReflectorDirectory();
 
-            string saveFile = TABSAT.findMostRecentSave( savesDirectory );
-            if( saveFile != null )
-            {
-                openSaveFileDialog.FileName = saveFile; // No need to Path.GetFileName( saveFile ), doesn't help FileDialog only displaying the last ~8.3 chars
-                setSaveFile( saveFile );
-            }
-
-            reflectorDir = Directory.GetCurrentDirectory();
-
-            tabDir = TABSAT.findTABdirectory();
+            string tabDir = TABSAT.findTABdirectory();
             /*
             while( tabDir == null )
             {
@@ -46,7 +32,16 @@ namespace TABSAT
             statusTextBox.AppendText( "Reflector directory:\t\t" + reflectorDir + Environment.NewLine );
             statusTextBox.AppendText( "They Are Billions directory:\t" + tabDir + Environment.NewLine );
 
+            openSaveFileDialog.InitialDirectory = savesDirectory;
+
             tabSAT = new TABSAT( reflectorDir, tabDir, openSaveFileDialog.InitialDirectory, new DataReceivedEventHandler( reflectorOutputHandler ) );
+
+            string saveFile = TABSAT.findMostRecentSave( savesDirectory );
+            if( saveFile != null )
+            {
+                openSaveFileDialog.FileName = saveFile; // No need to Path.GetFileName( saveFile ), doesn't help FileDialog only displaying the last ~8.3 chars
+                setSaveFile( saveFile );
+            }
         }
 
         private void reflectorOutputHandler( object sendingProcess, DataReceivedEventArgs outLine )
@@ -68,18 +63,16 @@ namespace TABSAT
         {
             if( openSaveFileDialog.ShowDialog() == DialogResult.OK )
             {
-                setSaveFile( openSaveFileDialog.FileName );
+                setSaveFile( openSaveFileDialog.FileName  );
             }
         }
 
         private void setSaveFile( string saveFile )
         {
-            saveFileTextBox.Text = openSaveFileDialog.FileName;
+            saveFileTextBox.Text = saveFile;
             shiftTextViewRight( saveFileTextBox );
 
-            // Refactor this path formation into a TABSAT static method?
-            decryptDir = Path.ChangeExtension( saveFile, null ) + "_decrypted";
-            dataFile = Path.Combine( decryptDir, "Data" );
+            tabSAT.setSaveFile( saveFile );
 
             reassessExtractionOption();
         }
@@ -100,7 +93,7 @@ namespace TABSAT
                 modifyGroupBox.Enabled = false;
                 manualGroupBox.Enabled = true;
                 reflectorExtractRadioButton.Enabled = true;
-                extractSaveButton.Enabled = decryptDir != null;
+                extractSaveButton.Enabled = tabSAT.hasSaveFile();
             }
             else
             {
@@ -111,7 +104,7 @@ namespace TABSAT
                 {
                     reflectorRepackRadioButton.Checked = true;
                 }
-                modifySaveButton.Enabled = decryptDir != null;
+                modifySaveButton.Enabled = tabSAT.hasSaveFile();
             }
         }
 
@@ -121,16 +114,32 @@ namespace TABSAT
 
             if( !extractManualRadioButton.Checked )
             {
+                //tabSAT.hasSaveFile(); // When could this _Click be called if we didn't already have a saveFile set?
+                //tabSAT.setSaveFile( openSaveFileDialog.FileName );
                 // Firstly extract the save
-                if( !extractSave( openSaveFileDialog.FileName ) )
+                if( !extractSave() )
                 {
+                    if( reflectorRepackRadioButton.Checked )    // Refactor how this _Click handles potentially failing in 2+ places and trying to stop the Reflector in 3...
+                    {
+                        tabSAT.stopReflector();
+                    }
+
                     resetSaveFileChoice();
                     return;
                 }
             }
 
             // Make modifications
-            modifyExtractedSave();
+            if( !modifyExtractedSave() )
+            {
+                if( reflectorRepackRadioButton.Checked )
+                {
+                    tabSAT.stopReflector();
+                }
+
+                resetSaveFileChoice();
+                return;
+            }
 
             if( !extractManualRadioButton.Checked )
             {
@@ -146,7 +155,7 @@ namespace TABSAT
             if( extractTidyRadioButton.Checked )
             {
                 // Remove the extracted files
-                Directory.Delete( decryptDir, true );
+                tabSAT.removeDecryptedDir();
                 statusTextBox.AppendText( "Removed extracted files." + Environment.NewLine );
             }
 
@@ -176,8 +185,7 @@ namespace TABSAT
 
         private void extractSaveButton_Click( object sender, EventArgs e )
         {
-            string saveFile = openSaveFileDialog.FileName;
-            if( saveFile == "" )
+            if( !tabSAT.hasSaveFile() )
             {
                 // Error?
                 return;
@@ -185,7 +193,7 @@ namespace TABSAT
 
             disableChoices();
 
-            if( !extractSave( saveFile ) )
+            if( !extractSave() )
             {
                 resetSaveFileChoice();
 
@@ -197,7 +205,7 @@ namespace TABSAT
             }
             else
             {
-                modifyExtractedSave();
+                modifyExtractedSave();  // Unchecked
 
                 repackSaveButton.Enabled = true;
                 skipRepackButton.Enabled = true;
@@ -237,26 +245,26 @@ namespace TABSAT
             resetSaveFileChoice();
         }
 
-        private bool extractSave( string saveFile )
+        private bool extractSave()
         {
-            if( Directory.Exists( decryptDir ) )
+            extractSaveButton.Enabled = false;  // Should live in extractSaveButton_Click(), thus not be triggered by modifySaveButton_Click()?
+
+            string saveFile = tabSAT.extractSave();
+            if( saveFile == null )
             {
-                statusTextBox.AppendText( "Unable to extract, directory already exists: " + decryptDir + Environment.NewLine );
+                statusTextBox.AppendText( "Unable to extract save file." + Environment.NewLine );
                 return false;
             }
             else
             {
-                extractSaveButton.Enabled = false;
-                statusTextBox.AppendText( "Extracted files to:\t\t" + decryptDir + Environment.NewLine );
-
-                tabSAT.decryptSaveToDir( saveFile, decryptDir );
+                statusTextBox.AppendText( "Extracted save file:\t\t" + saveFile + Environment.NewLine );
                 return true;
             }
         }
 
-        private void modifyExtractedSave()
+        private bool modifyExtractedSave()
         {
-            SaveEditor dataEditor = new SaveEditor( dataFile );
+            SaveEditor dataEditor = tabSAT.getSaveEditor();
 
             try
             {
@@ -265,43 +273,53 @@ namespace TABSAT
                     statusTextBox.AppendText( "Removing Mutants." + Environment.NewLine );
                     dataEditor.removeMutants();
                 }
-                if( mutantsMoveRadio.Checked )
+                else if( mutantsMoveRadio.Checked )
                 {
                     bool toGiantNotMutant = mutantMoveWhatComboBox.SelectedIndex == 0;
-                    statusTextBox.AppendText( "Relocating Mutants to farthest " + (toGiantNotMutant ? "Giant":"Mutant") + '.' + Environment.NewLine );
-                    dataEditor.relocateMutants( toGiantNotMutant );
+                    bool perDirection = mutantMoveGlobalComboBox.SelectedIndex == 1;
+                    statusTextBox.AppendText( "Relocating Mutants to farthest " + (toGiantNotMutant ? "Giant":"Mutant") + (perDirection ? " per Compass quadrant if possible." : " on the map.") + Environment.NewLine );
+                    dataEditor.relocateMutants( toGiantNotMutant, perDirection );
                 }
+
                 if( removeFogRadioButton.Checked )
                 {
-                    statusTextBox.AppendText( "Removing the fog." + Environment.NewLine );
-                    dataEditor.removeAllFog();
+                    statusTextBox.AppendText( "Removing all the fog." + Environment.NewLine );
+                    dataEditor.removeFog();
                 }
-                if( showFullRadioButton.Checked )
+                else if( reduceFogRadioButton.Checked )
+                {
+                    int radius = Convert.ToInt32( fogNumericUpDown.Value );
+                    statusTextBox.AppendText( "Removing the fog with cell range: " + radius + Environment.NewLine );
+                    dataEditor.removeFog( radius );
+                }
+                else if( showFullRadioButton.Checked )
                 {
                     statusTextBox.AppendText( "Revealing the map." + Environment.NewLine );
                     dataEditor.showFullMap();
                 }
+
                 if( themeCheckBox.Checked )
                 {
                     KeyValuePair<SaveEditor.ThemeType, string> kv = (KeyValuePair<SaveEditor.ThemeType, string>) themeComboBox.SelectedItem;
                     statusTextBox.AppendText( "Changing Theme to " + kv.Value + '.' + Environment.NewLine );
                     dataEditor.changeTheme( kv.Key );
                 }
-                dataEditor.save( dataFile );
+                dataEditor.save();
             }
-            catch (Exception e )
+            catch( Exception e )
             {
                 Console.Error.WriteLine( "Problem modifying save file: " + e.Message + Environment.NewLine + e.StackTrace );
                 statusTextBox.AppendText( "Problem modifying save file: " + e.Message + Environment.NewLine );
+                return false;
             }
+            return true;
         }
 
         private void backupAndRepackSave()
         {
-            string saveFile = openSaveFileDialog.FileName;
             if( backupCheckBox.Checked )
             {
-                string backupFile = TABSAT.backupSave( saveFile );
+                string backupFile = tabSAT.backupSave();
                 if( backupFile == null )
                 {
                     statusTextBox.AppendText( "Unable to backup save file." + Environment.NewLine );
@@ -313,21 +331,14 @@ namespace TABSAT
                 }
             }
 
-            string newSaveFile = tabSAT.repackDirAsSave( decryptDir, saveFile );
+            string newSaveFile = tabSAT.repackDirAsSave();
             statusTextBox.AppendText( "New Save File created:\t" + newSaveFile + Environment.NewLine );
-
-            // Purge the temporary decrypted versions of this new save file
-            string decryptedSave = decryptDir + TABReflector.TABReflector.saveExtension;
-            string decryptedCheck = decryptDir + TABReflector.TABReflector.checkExtension;
-            File.Delete( decryptedSave );
-            File.Delete( decryptedCheck );
         }
 
         private void resetSaveFileChoice()
         {
             saveFileTextBox.Text = "";
-            decryptDir = null;
-            dataFile = null;
+            tabSAT.setSaveFile( null );
 
             enableChoices();
 

@@ -1,8 +1,10 @@
 
 
+Use state Enums, FSM and change listeners for GUI/TABSAT when modifying file, and ReflectorManager?
+
 Better handle _decrypted already exist? Use a temp directory if set to Tidy Away extracted files anyway?
 
-Verify more parameters & returns, files/directories existing, Mutants/Giants existing, etc.
+Verify more parameters & returns, files/directories existing, LINQ XML elements, etc.
 
 
 Provide a button to stop the Reflector whenever it's running?
@@ -15,6 +17,8 @@ Refactor TABSAT's own Console...WriteLine() to use a UI textfield/list, at the b
 
 Would TABReflector need to technically be a graphical application, with a hidden window, in order for Process.WaitForInputIdle() to best solve the Sleep() race condition?
 
+
+Consider using something like Octokit.net or Squirrel.Windows for auto-updating TABSAT from Github?
 
 ----
 
@@ -38,22 +42,49 @@ Replace all mutants with smaller zombies. Harpies?
 
 Wide-ranging editor options:
 
-Adjust zombie type ratios for even harder procedurally-generated maps.
+--
+Make games harder:
+
+Remove Mutants and/or Giant minimap icons?
+
+Adjust zombie type ratios for even harder procedurally-generated maps. Would probably need to generate new zombie IDs.
 Potentially also increase the % score scale factor for such maps?
-
-Without needing to generate new zombie IDs, we could just swap the locations of different types to affect distribution difficulty. Depends upon generating LevelFastSerializedEntities?
-
-Alter the size and composition of waves?
-Alter the number and timing of waves?
-
-Offer to enlarge the default fog-clearing as a circle of adjustable radius around the CC.
 
 Upgrade all smaller VOD buildings (Dwelling, Tavern) to City Halls of Doom? To try recreate UberVOD(s) on other ThemeTypes?
 Or multi-stack the same sized buildings in the same position?
 
-Or, to offset other changes and make things easier, offer to remove Taverns/City Halls?
-
 Remove all Pickable resources & reclaimable buildings? To remove potential early Radar vision or resources chiefly accessed via kiting?
+
+Disable Mayors.
+
+
+--
+Could affect difficulty either way:
+
+Swap the locations of different types to affect distribution difficulty. Depends upon generating LevelFastSerializedEntities?
+
+Swap the closest Mutants with the farthest Giants?
+
+Alter the size and composition of waves?
+Alter the number and timing of waves?
+Effectively could offer 50-day challenge map on demand?
+
+Set certain mayors as already chosen? To benefit or miss out on their benefits, depending how they're handled.
+
+Alter the starting troops?
+
+
+--
+Make games easier:
+
+Reposition Ravens to indicate direction to Mutants/Giants/VODs?
+
+Offer to enlarge the default fog-clearing as a circle of adjustable radius around the CC.
+
+Offer to remove Taverns/City Halls?
+
+Add bonus units/buildings ready to use/place, as though from mayors?
+
 
 ----
 

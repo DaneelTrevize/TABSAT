@@ -24,26 +24,41 @@ namespace TABSAT
          *  pipe the paths to specific save files to manipulate;
          *  
          *  The reflector binary will:
-         *  open a pipe to recieve the save file paths;
+         *  open a pipe to receive instructions and file paths;
          *  start a thread to launch the TAB assembly;
          *  wait for the TAB assembly to have launched, then use reflection to find the required methods to checksum and decrypt/encrypt saves;
-         *  repeatedly invoke decryption/encryption for each save file path supplied
-         *  Exit? Or wait for a piped signal to do so, as subsequent paths may be determined? If so, would also need to know whether to decrypt or encrypt.
+         *  repeatedly invoke signing or decryption/encryption for each file path supplied
          *  Exiting will have to terminate the reflector's environment, in order to end the stalled TAB assembly thread.
          */
+
+        /*
+        enum SaveState
+        {
+            WAITING_FOR_FILE,
+            HAVE_FILE,
+            EXTRACTING,
+            HAVE_EXTRACTED,
+            //BACKING_UP,
+            REPACKING
+        };
+        */
 
         private const string steamVDFsubPath = @"config\config.vdf";
         //example string libraryLine =        @"    ""BaseInstallFolder_1""		          ""K:\\SteamLibrary""";
         private const string libraryPattern = @"^\s+""BaseInstallFolder_(?<count>\d+)""\s+""(?<path>.+)""$";
         private const string steamTABsubDirectory = @"\steamapps\common\They Are Billions\";
-
         private static string defaultSavesDirectory = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\My Games\They Are Billions\Saves\" );
+        private const string decryptionSuffix = @"_decrypted";
 
         private ReflectorManager reflectorManager;
+
         private string savesDirectory;
+        private string currentSaveFile;
+        private string decryptDir;
+        private string dataFile;
 
 
-        public static string findTABdirectory()
+        internal static string findTABdirectory()
         {
             string steamConfigPath = findSteamConfig();
             if( steamConfigPath != null )
@@ -65,7 +80,7 @@ namespace TABSAT
             return null;
         }
 
-        public static string findSteamConfig()
+        internal static string findSteamConfig()
         {
             using( RegistryKey steamKey = Registry.CurrentUser.OpenSubKey( @"Software\Valve\Steam" ) )
             {
@@ -110,7 +125,12 @@ namespace TABSAT
             return steamLibraries;
         }
 
-        public static string findMostRecentSave( string savesDir )
+        internal static string getReflectorDirectory()
+        {
+            return Directory.GetCurrentDirectory();
+        }
+
+        internal static string findMostRecentSave( string savesDir )
         {
             if( !Directory.Exists( savesDir ) )
             {
@@ -127,7 +147,8 @@ namespace TABSAT
             return null;
         }
 
-        public static string backupSave( string saveFile )
+
+        private static string backupSave( string saveFile )
         {
             if( !File.Exists( saveFile ) )
             {
@@ -160,26 +181,6 @@ namespace TABSAT
             return backupFile;
         }
 
-
-        public TABSAT( string reflectorDir, string TABdir, string savesDir, DataReceivedEventHandler outputHandler )
-        {
-            if( outputHandler == null )
-            {
-                throw new ArgumentNullException( "outputHandler should not be null." );
-            }
-
-            reflectorManager = new ReflectorManager( reflectorDir, TABdir, outputHandler );
-
-            savesDirectory = savesDir;
-            if( !Directory.Exists( savesDirectory ) )
-            {
-                throw new ArgumentException( "The provided saves directory does not exist." );
-            }
-
-            reflectorManager.deployReflector();
-        }
-
-
         private static void unpackSave( string saveFile, string decryptDir, string password = null )
         {
             using( ZipFile zip = ZipFile.Read( saveFile ) )
@@ -203,7 +204,6 @@ namespace TABSAT
             }
         }
 
-
         private static void repackExtracted( string saveFile, string decryptDir, string password = null )
         {
             using( ZipFile newZip = new ZipFile() )
@@ -219,14 +219,14 @@ namespace TABSAT
                 //Console.WriteLine( "Save repacked: " + saveFile );
             }
         }
-        
+        /*
         private static void setFileTimes( string file, DateTime dt )
         {
             File.SetCreationTime( file, dt );
             File.SetLastWriteTime( file, dt );
             File.SetLastAccessTime( file, dt );
         }
-
+        */
 
         /// <summary>
         ///  The main entry point for the application.
@@ -237,27 +237,81 @@ namespace TABSAT
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
-            Application.Run( new MainWindow( defaultSavesDirectory  ) );
+            Application.Run( new MainWindow( defaultSavesDirectory ) );
 
         }
 
 
-        public void decryptSaveToDir( string saveFile, string decryptDir )
+        public TABSAT( string reflectorDir, string TABdir, string savesDir, DataReceivedEventHandler outputHandler )
         {
-            sign( saveFile );
-
-            string password = generatePassword( saveFile );
-
-            Directory.CreateDirectory( decryptDir );
-            unpackSave( saveFile, decryptDir, password );
-        }
-
-        public string repackDirAsSave( string decryptDir, string saveFile = null )
-        {
-            if( saveFile == null )
+            if( outputHandler == null )
             {
-                saveFile = decryptDir + TABReflector.TABReflector.saveExtension;
+                throw new ArgumentNullException( "outputHandler should not be null." );
             }
+
+            reflectorManager = new ReflectorManager( reflectorDir, TABdir, outputHandler );
+
+            savesDirectory = savesDir;
+            if( !Directory.Exists( savesDirectory ) )
+            {
+                throw new ArgumentException( "The provided saves directory does not exist." );
+            }
+
+            setSaveFile( null );
+
+            reflectorManager.deployReflector();
+        }
+
+
+        internal void setSaveFile( string file )
+        {
+            if( file == null )
+            {
+                currentSaveFile = null;
+                decryptDir = null;
+                dataFile = null;
+            }
+            else
+            {
+                currentSaveFile = file;
+                decryptDir = Path.ChangeExtension( currentSaveFile, null ) + decryptionSuffix;
+                dataFile = Path.Combine( decryptDir, "Data" );
+            }
+        }
+
+        internal bool hasSaveFile()
+        {
+            return decryptDir != null;
+        }
+
+        internal string extractSave()
+        {
+            if( Directory.Exists( decryptDir ) )
+            {
+                return null;
+            }
+            else
+            {
+                Directory.CreateDirectory( decryptDir );
+
+                decryptSaveToDir();
+                return currentSaveFile;
+            }
+        }
+
+        internal SaveEditor getSaveEditor()
+        {
+            return new SaveEditor( dataFile );
+        }
+
+        internal string backupSave()
+        {
+            return backupSave( currentSaveFile );
+        }
+
+        internal string repackDirAsSave()
+        {
+            string saveFile = currentSaveFile;  // decryptDir + TABReflector.TABReflector.saveExtension;
 
             repackExtracted( saveFile, decryptDir );
 
@@ -289,7 +343,50 @@ namespace TABSAT
             // Update edit time. Must it be done before and after the passwording & signing?
             setFileTimes( saveFile, now );
             */
+            
+            removeDecryptedSaveAndCheck();
+
             return saveFile;
+        }
+
+        private void removeDecryptedSaveAndCheck()
+        {
+            // Purge the temporary decrypted versions of this new save file
+            string decryptedSave = decryptDir + TABReflector.TABReflector.saveExtension;
+            string decryptedCheck = decryptDir + TABReflector.TABReflector.checkExtension;
+            File.Delete( decryptedSave );
+            File.Delete( decryptedCheck );
+        }
+
+        internal void removeDecryptedDir()
+        {
+            Directory.Delete( decryptDir, true );
+        }
+
+        internal void stopReflector()
+        {
+            if( reflectorManager.getState() == ReflectorManager.ReflectorState.STARTED )
+            {
+                reflectorManager.stopReflector();
+            }
+        }
+
+        internal void removeReflector()
+        {
+            if( reflectorManager.getState() == ReflectorManager.ReflectorState.DEPLOYED )
+            {
+                reflectorManager.removeReflector();
+            }
+        }
+
+
+        private void decryptSaveToDir()
+        {
+            sign( currentSaveFile );
+
+            string password = generatePassword( currentSaveFile );
+
+            unpackSave( currentSaveFile, decryptDir, password );
         }
 
         private string sign( string saveFile )
@@ -314,22 +411,6 @@ namespace TABSAT
             string password = reflectorManager.generatePassword( saveFile );
             //Console.WriteLine( "Password from reflector: " + password );
             return password;
-        }
-
-        public void stopReflector()
-        {
-            if( reflectorManager.getState() == ReflectorManager.ReflectorState.STARTED )
-            {
-                reflectorManager.stopReflector();
-            }
-        }
-
-        public void removeReflector()
-        {
-            if( reflectorManager.getState() == ReflectorManager.ReflectorState.DEPLOYED )
-            {
-                reflectorManager.removeReflector();
-            }
         }
     }
 }
