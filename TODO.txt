@@ -1,8 +1,12 @@
 
+Consider approaches to keeping Backups TreeView sorted by baseName, then lastWriteUtc. Either via custom sorter, or careful insertion of single backups when generated.
+
+Consider how to watch Active saves directory without getting spammed by FileSystemWatcher 'feature', to keep Active saves list updated.
+
 
 Use state Enums, FSM and change listeners for GUI/TABSAT when modifying file, and ReflectorManager?
 
-Better handle _decrypted already exist? Use a temp directory if set to Tidy Away extracted files anyway?
+Better handle _decrypted already existing? Use a temp directory if set to Tidy Away extracted files anyway?
 
 Verify more parameters & returns, files/directories existing, LINQ XML elements, etc.
 
@@ -29,7 +33,7 @@ Options for Mutant modification/max % restoration:
 Relocate mutants onto giants:
 nearest giant per mutant;
 #giant furthest from CC;
-giant furthest from CC within cardinal map quarter (divide diagonally), if non in quadrant find next nearest/furthest from CC globally?
+#giant furthest from CC within cardinal map quarter (divide diagonally), if non in quadrant find next nearest/furthest from CC globally?
 
 Relocate if within l distance of CC? To those Giants/Mutants at least l distance from CC?
 
@@ -57,6 +61,9 @@ Remove all Pickable resources & reclaimable buildings? To remove potential early
 
 Disable Mayors.
 
+Possibly add a script element (that constantly loops?) to spawns a new zombie per troop loss, with specific loss type to zombie spawned pairing. E.g. Harpy for each ranger, Spitter for each Sniper, Mutant for each Thanatos?
+Might have to have a pseudo daily/8-hourly/faster wave, that spawns unit types & numbers depending on a diff between previous and current troop counts? So quickly replaced units might not trigger snowballing?
+
 
 --
 Could affect difficulty either way:
@@ -79,12 +86,13 @@ Make games easier:
 
 Reposition Ravens to indicate direction to Mutants/Giants/VODs?
 
-Offer to enlarge the default fog-clearing as a circle of adjustable radius around the CC.
+#Offer to enlarge the default fog-clearing as a circle of adjustable radius around the CC.
 
 Offer to remove Taverns/City Halls?
 
 Add bonus units/buildings ready to use/place, as though from mayors?
 
+Make starting troops veterans.
 
 ----
 

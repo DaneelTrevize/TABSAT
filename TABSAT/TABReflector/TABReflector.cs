@@ -506,25 +506,27 @@ namespace TABReflector
                 initialiseBillionsAndStall( new string[] { "" } );
             } ).Start();
             // Now give the TAB thread time to do what we need
-            //Thread.Sleep( 1000 );
-            Process self = Process.GetCurrentProcess();
-            for( int i = 0; i < 5; i++ )
+            //Thread.Sleep( 2000 );
+            using( Process self = Process.GetCurrentProcess() )
             {
-                Thread.Sleep( 200 );
-                try
+                for( int i = 0; i < 10; i++ )
                 {
-                    IntPtr popup = self.MainWindowHandle;
-                    if( popup != IntPtr.Zero )
+                    Thread.Sleep( 200 );
+                    try
                     {
-                        Console.WriteLine( "Popup detected, cycles: " + i );
+                        IntPtr popup = self.MainWindowHandle;
+                        if( popup != IntPtr.Zero )
+                        {
+                            Console.WriteLine( "Popup detected, cycles: " + i );
+                            break;
+                        }
+                    }
+                    catch( InvalidOperationException ioe )
+                    {
+                        Console.WriteLine( "Waiting for popup." );
+                        Thread.Sleep( 1800 );
                         break;
                     }
-                }
-                catch( InvalidOperationException ioe )
-                {
-                    Console.WriteLine( "Waiting for popup." );
-                    Thread.Sleep( 800 );
-                    break;
                 }
             }
 

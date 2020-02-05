@@ -1,29 +1,37 @@
 TAB Save Automation Tool
 
-Purposes:
+Initial Purposes:
 1) Automate backing up save files as they're generated, to ease "save-scumming".
 
 2) Remove some/all Mutants from saves, because they're not very fun (and 800% was the same score multiplier without them).
 
 
+Requirement:
+Disable Steam Cloud for TAB.
+
+--------
 Positions:
-Source "Updated 12 Dec, 2018 @ 12:01pm": https://steamcommunity.com/sharedfiles/filedetails/?id=1558159867
+
+Numantian Games:
 "Mods, Editing Save Games, and Creating Game Maps
 
 They Are Billions now comes with a Custom Level editor. Players now can create and play custom levels and this is officially supported.
 
 Nevertheless, any alteration of game files, de-compiling the game or creating external applications to edit maps or save games are not allowed in any case . Any reference to those tools will be banned from the forum. Indeed, that's a copyright infringement."
+Source https://steamcommunity.com/app/644930/discussions/0/1692659135919671514/
+(was previously "Updated 12 Dec, 2018 @ 12:01pm": https://steamcommunity.com/sharedfiles/filedetails/?id=1558159867 but seems to have become stale?)
 
-Editing save games isn't copyright infringement, nor is using the game's own legally-obtained assemblies to do it, it's Fair Use.
-
-
-Requirement:
-DISABLE STEAM CLOUD for TAB!
+TABSAT developers:
+Editing save games isn't copyright infringement, nor is using the game's own legally-obtained assemblies to do it via reverse engineering, it's Fair Use.  
+Save files produced via seeded procedural generation are not *authored* by the game nor *original* due to their completely mechanical construction. The results of the players' actions (choice of map options, then where to explore, what to build) are what provides originality to the contained data and thus they are the authors of these works.
+The archive, compression and encryption schemes used are not owned or invented by Numantian Games.
+Loading of unmodified assemblies into RAM is not a copyright violation. This tool does not distribute any part of TAB, it completely depends upon the user having a legally-obtained copy of the game installed.
 
 --------
 1)
-The game auto-saves when you choose to exit, and periodically and/or around waves starting/ending.
-There's also a Backup second set of files produced (after the 2nd and subsequent saves?). Currently unsure if files are renamed to become backups, or if they are edited in situ.
+The game auto-saves when you choose to exit, as well as periodically (perhaps specifically around waves starting/ending).
+There's also a _Backup second set of files produced (after the 2nd and subsequent saves of a game?).
+Currently unsure if files are renamed to become backups, or if they are edited in situ.
 These saves & their check files can be copied after creation, and later restored to roll back game progress.
 Games are keyed by filename, multiple copies of a single game's saves will have the same name, thus a saves folder structure is required.
 Saves are deleted once a game is won/lost, thus over time saves' names can repeat.

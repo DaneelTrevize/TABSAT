@@ -1,0 +1,21 @@
+
+Upon game launch, all saves are somehow 'changed'.
+
+
+Upon save & exit:
+
+Saves folder change (Changed) detected:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5.zxsav
+Saves folder rename detected, from:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5.zxsav to:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5._old
+Saves folder rename detected, from:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5.zxsav.tmp to:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5.zxsav
+Saves folder change (Changed) detected:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5.zxsav
+Saves folder change (Changed) detected:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5.zxsav
+
+Then the last line repeated as all saves are somehow 'changed' again.
+
+Without CreationTime NotifyFilter:
+Saves folder change (Changed) detected:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5.zxsav
+Saves folder rename detected, from:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5.zxsav to:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5._old
+Saves folder rename detected, from:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5.zxsav.tmp to:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5.zxsav
+Saves folder change (Changed) detected:	...\Documents\My Games\They Are Billions\Saves\Surv snow fun5.zxsav
+
+The last line still repeated as all saves are somehow 'changed' again as the main menu loads back up.

@@ -2,22 +2,15 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace TABSAT
 {
     class TABSAT
     {
         /*
-         *  This program will:
-         *  Take a path to the TAB installation, or attempt to determine it;
-         *  Take a path to the TAB save files to manipulate, or attempt to determine them;
-         *  Present a GUI to determine what operation to perform on which save files;
-         *  
          *  To decrypt/encrypt save files:
          *  copy the reflector binary to the TAB installation;
          *  invoke the reflector and open a pipe to it;
@@ -47,12 +40,12 @@ namespace TABSAT
         //example string libraryLine =        @"    ""BaseInstallFolder_1""		          ""K:\\SteamLibrary""";
         private const string libraryPattern = @"^\s+""BaseInstallFolder_(?<count>\d+)""\s+""(?<path>.+)""$";
         private const string steamTABsubDirectory = @"\steamapps\common\They Are Billions\";
-        private static string defaultSavesDirectory = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\My Games\They Are Billions\Saves\" );
+        internal static readonly string defaultSavesDirectory = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\My Games\They Are Billions\Saves\" );
+        internal static readonly string saveFilesFilter = "*" + TABReflector.TABReflector.saveExtension;
+        internal static readonly string checkFilesFilter = "*" + TABReflector.TABReflector.checkExtension;
         private const string decryptionSuffix = @"_decrypted";
-
         private ReflectorManager reflectorManager;
 
-        private string savesDirectory;
         private string currentSaveFile;
         private string decryptDir;
         private string dataFile;
@@ -137,7 +130,7 @@ namespace TABSAT
                 throw new ArgumentException( "The provided saves directory does not exist." );
             }
             DirectoryInfo savesDirInfo = new DirectoryInfo( savesDir );
-            FileInfo[] savesInfo = savesDirInfo.GetFiles( "*" + TABReflector.TABReflector.saveExtension );
+            FileInfo[] savesInfo = savesDirInfo.GetFiles( saveFilesFilter );
             if( savesInfo.Length > 0 )
             {
                 IOrderedEnumerable<FileInfo> sortedSavesInfo = savesInfo.OrderByDescending( s => s.CreationTimeUtc );
@@ -148,7 +141,7 @@ namespace TABSAT
         }
 
 
-        private static string backupSave( string saveFile )
+        private static string backupSave( string saveFile )     // Refactor this into new BackupsManager features?
         {
             if( !File.Exists( saveFile ) )
             {
@@ -228,38 +221,19 @@ namespace TABSAT
         }
         */
 
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main( string[] args )
+
+        public TABSAT( ReflectorManager r )
         {
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault( false );
-            Application.Run( new MainWindow( defaultSavesDirectory ) );
-
-        }
-
-
-        public TABSAT( string reflectorDir, string TABdir, string savesDir, DataReceivedEventHandler outputHandler )
-        {
-            if( outputHandler == null )
+            if( r == null )
             {
-                throw new ArgumentNullException( "outputHandler should not be null." );
+                throw new ArgumentNullException( "ReflectorManager should not be null." );
             }
 
-            reflectorManager = new ReflectorManager( reflectorDir, TABdir, outputHandler );
-
-            savesDirectory = savesDir;
-            if( !Directory.Exists( savesDirectory ) )
-            {
-                throw new ArgumentException( "The provided saves directory does not exist." );
-            }
+            reflectorManager = r;
 
             setSaveFile( null );
 
-            reflectorManager.deployReflector();
+            //reflectorManager.deployReflector();   // Don't automatically do this at initialisation, we might not need it
         }
 
 
@@ -391,6 +365,11 @@ namespace TABSAT
 
         private string sign( string saveFile )
         {
+            if( reflectorManager.getState() == ReflectorManager.ReflectorState.UNDEPLOYED )
+            {
+                reflectorManager.deployReflector();
+            }
+
             if( reflectorManager.getState() == ReflectorManager.ReflectorState.DEPLOYED )
             {
                 reflectorManager.startReflector();
@@ -403,6 +382,11 @@ namespace TABSAT
         
         private string generatePassword( string saveFile )
         {
+            if( reflectorManager.getState() == ReflectorManager.ReflectorState.UNDEPLOYED )
+            {
+                reflectorManager.deployReflector();
+            }
+
             if( reflectorManager.getState() == ReflectorManager.ReflectorState.DEPLOYED )
             {
                 reflectorManager.startReflector();

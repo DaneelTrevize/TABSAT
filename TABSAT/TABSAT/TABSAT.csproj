@@ -8,10 +8,11 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>TABSAT</RootNamespace>
     <AssemblyName>TABSAT</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -55,7 +56,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>TABSAT.TABSAT</StartupObject>
+    <StartupObject>TABSAT.MainWindow</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ionic.Zip, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
@@ -74,18 +75,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoBackupControls.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AutoBackupControls.Designer.cs">
+      <DependentUpon>AutoBackupControls.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BackupsManager.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="ModifySaveControls.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ModifySaveControls.Designer.cs">
+      <DependentUpon>ModifySaveControls.cs</DependentUpon>
+    </Compile>
     <Compile Include="ReflectorManager.cs" />
     <Compile Include="SaveEditor.cs" />
     <Compile Include="TABSAT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AutoBackupControls.resx">
+      <DependentUpon>AutoBackupControls.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModifySaveControls.resx">
+      <DependentUpon>ModifySaveControls.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

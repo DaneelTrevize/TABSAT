@@ -370,7 +370,7 @@ namespace TABSAT
         {
             findMutantsAndGiants();
 
-            if( mutants.Count == 0 )
+            if( !mutants.Any() )
             {
                 Console.WriteLine( "No Mutants to relocate." );
                 return;

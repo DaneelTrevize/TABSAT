@@ -59,7 +59,7 @@ namespace TABSAT
         }
 
 
-        public ReflectorManager( string reflectorDir, string TABdir, DataReceivedEventHandler outHandler )
+        public ReflectorManager( string reflectorDir, string TABdir )
         {
             if( reflectorDir != null && testReflectorDirectory( reflectorDir ) )
             {
@@ -83,10 +83,31 @@ namespace TABSAT
 
             resetReflector();
 
-            outputHandler = outHandler;
+            outputHandler = defaultOutputHandler;
 
             state = ReflectorState.UNDEPLOYED;  // An assumption?
         }
+
+        private void defaultOutputHandler( object sendingProcess, DataReceivedEventArgs outLine )
+        {
+            /*if( reflectorTextBox.InvokeRequired )     // Waiting for the right thread stalls the realtime displaying of Reflector process output
+            {
+                reflectorTextBox.BeginInvoke( new DataReceivedEventHandler( reflectorOutputHandler ), new[] { sendingProcess, outLine } );
+            }
+            else
+            {*/
+            if( !String.IsNullOrEmpty( outLine.Data ) )
+            {
+                //Console.WriteLine( outLine.Data );
+            }
+            //}
+        }
+
+        internal void setOutputHandler( DataReceivedEventHandler outHandler )
+        {
+            outputHandler = outHandler;
+        }
+
 
         private void resetReflector()
         {
@@ -263,6 +284,7 @@ namespace TABSAT
             reflector.WaitForExit();
             reflector.Close();
 
+            reflector.Dispose();
             resetReflector();
 
             state = ReflectorState.DEPLOYED;
