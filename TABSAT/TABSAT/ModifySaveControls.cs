@@ -8,8 +8,8 @@ namespace TABSAT
 {
     internal partial class ModifySaveControls : UserControl
     {
-        private TABSAT tabSAT;
-        private StatusWriterDelegate statusWriter;
+        private readonly TABSAT tabSAT;
+        private readonly StatusWriterDelegate statusWriter;
 
         public ModifySaveControls( TABSAT t, StatusWriterDelegate sW, string savesDirectory )
         {

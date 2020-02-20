@@ -5,6 +5,8 @@ namespace TABSAT
 {
     public partial class MainWindow : Form
     {
+        private const string nowUtcFormat = "yyyy/MM/dd HH:mm:ss.fff";
+
         private ModifySaveControls modifySaveC;
         private AutoBackupControls autoBackupC;
 
@@ -60,7 +62,7 @@ namespace TABSAT
             }
             else
             {
-                statusTextBox.AppendText( status + Environment.NewLine );
+                statusTextBox.AppendText( DateTime.UtcNow.ToString( nowUtcFormat ) + " - " +  status + Environment.NewLine );
             }
         }
 
@@ -90,6 +92,7 @@ namespace TABSAT
         private void MainWindow_FormClosing( object sender, FormClosingEventArgs e )
         {
             modifySaveC.removeReflector();
+            autoBackupC.stopWatcher();
         }
     }
 }

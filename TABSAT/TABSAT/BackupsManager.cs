@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -13,10 +14,8 @@ namespace TABSAT
     class BackupsManager
     {
         /*
-         *  Each active save file can be checksummed, and that compared to a sorted map of files in the backups directory tree.
+         *  Each active save file can be checksummed, and that compared to a sorted set of checksums from the backups directory tree.
          *  
-         *  Rebuild backup tree structures only on backup directory change?
-         *  Except backing up saves might create new folders and certainly new files, so those need to be added to the tree to mirror the file system.
          *  Assumes no user manual modification inside backup directory. Could instead watch it too (including subdirs)?
          *  
          *  Each save file has a base name, which also determines the paired check file, and related pair of _Backup save and check files.
@@ -29,6 +28,7 @@ namespace TABSAT
          */
 
         private const string defaultBackupDirectoryName = @"TABSAT\saves";
+        private const string lastWriteUtcFormat = "yyyyMMdd HHmmss fff";
         /*
         internal enum State
         {
@@ -39,17 +39,41 @@ namespace TABSAT
             RESTORING
         }
         */
-        private static HashAlgorithm algo = HMACMD5.Create();   // Don't need SHA256 or better for this purpose, MD5 is faster
+        public class ActiveSavesChangedEventArgs : EventArgs
+        {
+            public ICollection<KeyValuePair<string,CheckState>> ActiveSaves { get; }
+            public ActiveSavesChangedEventArgs ()
+            {
+                ActiveSaves = new LinkedList<KeyValuePair<string, CheckState>>();
+            }
+        }
 
-        private StatusWriterDelegate statusWriter;
-        private DirectoryInfo activeSavesDirInfo;
+        public class BackupSavesChangedEventArgs : EventArgs
+        {
+            public TreeNode[] Backups { get; set; }
+            public int Count { get; set; }
+        }
+
+        private readonly static HashAlgorithm algo = HMACMD5.Create();   // Don't need SHA256 or better for this purpose, MD5 is faster
+
+        private readonly StatusWriterDelegate statusWriter;
+        private readonly DirectoryInfo activeSavesDirInfo;
         private DirectoryInfo backupsDirectory;
-        private SortedDictionary<string,ActiveSaveFile> activeSaves;
-        private TreeNode backupsTree;
-        private SortedDictionary<string,BackupSaveFile> checksummedBackups;
+        private readonly ConcurrentDictionary<string,SaveFile> activeSaves;
+        private readonly SortedDictionary<string,SortedSet<string>> backupsTree;
+        private readonly SortedSet<string> checksummedBackups;
+        private bool autoBackup;
         private FileSystemWatcher savesFolderWatcher;
+        private string ignoreRestoredSave;
+        public event EventHandler<ActiveSavesChangedEventArgs> ActiveSavesChanged;
+        public event EventHandler<BackupSavesChangedEventArgs> BackupSavesChanged;
 
-        private abstract class SaveFile
+        internal static string getDefaultBackupDirectory()
+        {
+            return Path.Combine( Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\" ), defaultBackupDirectoryName );
+        }
+
+        private class SaveFile
         {
             /*
             internal enum BackedUp
@@ -59,14 +83,17 @@ namespace TABSAT
                 NO
             }
             */
-            protected readonly FileInfo file;
+            internal readonly FileInfo file;
             internal readonly string baseName;
+            internal readonly DateTime lastWriteUtc;
             private string checksum;
 
             internal SaveFile( FileInfo f )
             {
                 file = f;
                 baseName = Path.GetFileNameWithoutExtension( file.Name );
+                file.Refresh();
+                lastWriteUtc = file.LastWriteTimeUtc;
                 checksum = null;
             }
 
@@ -113,119 +140,27 @@ namespace TABSAT
             }
         }
 
-        private class ActiveSaveFile : SaveFile
+        private void addBackup( FileInfo file )
         {
-            internal readonly DateTime lastWriteUtc;
+            SaveFile backup = new SaveFile( file );
 
-            internal ActiveSaveFile( FileInfo f ) : base ( f )
+            backup.calculateChecksum( algo );
+            checksummedBackups.Add( backup.getChecksum() );   // Need to check for dupes and remove newer ones here..?
+
+            // Ensure tree has top level baseName key, and that the value set contains file's parent timestamped directory
+            string baseNameDirectory = ( file.Directory ).Parent.Name;
+            string timeDirectory = file.Directory.Name;
+
+            SortedSet<string> timesDirectories;
+            if( !backupsTree.ContainsKey( baseNameDirectory ) )
             {
-                file.Refresh();
-                lastWriteUtc = file.LastWriteTimeUtc;
+                backupsTree[baseNameDirectory] = new SortedSet<string>();
             }
+            timesDirectories = backupsTree[baseNameDirectory];
 
-            internal BackupSaveFile backup( DirectoryInfo backupDir, TreeNode backupsTree )
+            if( !timesDirectories.Contains( timeDirectory ) )
             {
-                try
-                {
-                    string backupNameDir = Path.Combine( backupDir.FullName, baseName );
-                    TreeNode backupNameDirNode;
-                    if( !Directory.Exists( backupNameDir ) )
-                    {
-                        //Console.WriteLine( "Creating: " + backupNameDir );
-                        DirectoryInfo backupNameDirInfo = Directory.CreateDirectory( backupNameDir );
-                        backupNameDirNode = new TreeNode( backupNameDirInfo.Name );
-                        backupsTree.Nodes.Add( backupNameDirNode );
-                    }
-                    else
-                    {
-                        backupNameDirNode = backupsTree.Nodes.Find( backupNameDir, false ).First();
-                        // Tree node might not exist even if empty folder does..?
-                    }
-                    backupsTree.Expand();
-
-                    string backupTimeDir = Path.Combine( backupNameDir, file.LastWriteTimeUtc.ToString( "yyyyMMdd HHmmss fff" ) );
-                    TreeNode backupTimeDirNode;
-                    if( !Directory.Exists( backupTimeDir ) )
-                    {
-                        //Console.WriteLine( "Creating: " + backupTimeDir );
-                        DirectoryInfo backupTimeDirInfo = Directory.CreateDirectory( backupTimeDir );
-
-                        backupTimeDirNode = new TreeNode( backupTimeDirInfo.Name );
-                        backupNameDirNode.Nodes.Add( backupTimeDirNode );
-                    }
-                    else
-                    {
-                        backupTimeDirNode = backupNameDirNode.Nodes.Find( backupTimeDir, false ).First();
-                        // Tree node might not exist even if empty folder does..?
-                    }
-                    backupNameDirNode.Expand();
-
-                    string saveFileBackupPath = Path.Combine( backupTimeDir, baseName + TABReflector.TABReflector.saveExtension );
-                    string checkFileBackupPath = Path.Combine( backupTimeDir, baseName + TABReflector.TABReflector.checkExtension );
-                    if( File.Exists( saveFileBackupPath ) || File.Exists( checkFileBackupPath ) )
-                    {
-                        Console.Error.WriteLine( "The save file backup already exists for the same name and last write time: " + file.FullName );
-                        return null;
-                    }
-
-                    //Console.WriteLine( "Copying: " + saveFileBackupPath );
-                    File.Copy( file.FullName, saveFileBackupPath );
-                    // Also copy over timestamps
-                    copyFileTimes( saveFileBackupPath, file );
-
-                    FileInfo backupFileInfo = new FileInfo( saveFileBackupPath );
-                    BackupSaveFile backup = BackupSaveFile.create( backupFileInfo, backupTimeDirNode.Nodes );
-
-                    string checkFileActivePath = Path.Combine( file.DirectoryName, baseName + TABReflector.TABReflector.checkExtension );
-                    if( !File.Exists( checkFileActivePath ) )
-                    {
-                        Console.Error.WriteLine( "The check file does not exist: " + checkFileActivePath );
-                        return null;
-                    }
-                    //Console.WriteLine( "Copying: " + checkFileBackupPath );
-                    File.Copy( checkFileActivePath, checkFileBackupPath );
-                    // Also copy over timestamps
-                    copyFileTimes( checkFileBackupPath, new FileInfo( checkFileActivePath ) );
-                    // No tree node for check files
-
-                    return backup;
-                }
-                catch ( Exception e )
-                {
-                    Console.Error.WriteLine( e.Message );
-                    return null;
-                }
-            }
-        }
-
-        private class BackupSaveFile : SaveFile
-        {
-            private TreeNode node;
-
-            internal static BackupSaveFile create( FileInfo file, TreeNodeCollection nodes )
-            {
-                BackupSaveFile save = new BackupSaveFile( file );
-
-                TreeNode node = new TreeNode( save.ToString() );
-                save.setNode( node );
-                nodes.Add( node );
-                
-                return save;
-            }
-            
-            private BackupSaveFile( FileInfo f ) : base( f )
-            {
-                node = null;
-            }
-            
-            internal void setNode( TreeNode n )
-            {
-                node = n;
-            }
-
-            internal void displayNode()
-            {
-                (node.Parent).Parent.EnsureVisible();
+                timesDirectories.Add( timeDirectory );
             }
         }
 
@@ -234,12 +169,6 @@ namespace TABSAT
             File.SetCreationTimeUtc( to, from.CreationTimeUtc );
             File.SetLastWriteTimeUtc( to, from.LastWriteTimeUtc );
             File.SetLastAccessTimeUtc( to, from.LastAccessTimeUtc );
-        }
-
-
-        internal static string getDefaultBackupDirectory()
-        {
-            return Path.Combine( Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\" ), defaultBackupDirectoryName );
         }
 
 
@@ -253,9 +182,11 @@ namespace TABSAT
             }
 
             activeSavesDirInfo = new DirectoryInfo( savesDir );
-            activeSaves = new SortedDictionary<string,ActiveSaveFile>();
-            backupsTree = new TreeNode();
-            checksummedBackups = new SortedDictionary<string,BackupSaveFile>();
+            activeSaves = new ConcurrentDictionary<string,SaveFile>();
+            backupsTree = new SortedDictionary<string,SortedSet<string>>();
+            checksummedBackups = new SortedSet<string>();
+            autoBackup = false;
+            ignoreRestoredSave = null;
 
             setupWatcher();
         }
@@ -263,47 +194,170 @@ namespace TABSAT
         private void setupWatcher()
         {
             savesFolderWatcher = new FileSystemWatcher();
-            //( (ISupportInitialize) ( this.savesFolderWatcher ) ).BeginInit();
-            //savesFolderWatcher.EnableRaisingEvents = false;
-
+            savesFolderWatcher.InternalBufferSize = 64 * 1024;              // Max, 64KB
             savesFolderWatcher.Filter = TABSAT.checkFilesFilter;
-            //savesFolderWatcher.SynchronizingObject = this;   // No longer syncing on form component
-
             savesFolderWatcher.Path = activeSavesDirInfo.FullName;
-            savesFolderWatcher.NotifyFilter = NotifyFilters.FileName;       // For Created/Renamed/Deleted events
-            //                                | NotifyFilters.LastWrite;    // For Changed events (so as to pick up file modified in our case)
-
+            savesFolderWatcher.NotifyFilter = NotifyFilters.FileName        // For Created/Renamed/Deleted events
+                                            | NotifyFilters.LastWrite;      // For Changed events
             savesFolderWatcher.Created += savesFolderWatcher_OnChanged;
-            //savesFolderWatcher.Changed += savesFolderWatcher_OnChanged;   // We can actually ignore Changed events, because all save modifications are done by TAB via renames to ._old and from .zxsav.tmp?
+            savesFolderWatcher.Changed += savesFolderWatcher_OnChanged;
             savesFolderWatcher.Deleted += savesFolderWatcher_OnChanged;
-            savesFolderWatcher.Renamed += savesFolderWatcher_OnRenamed;
-            
-            //( (ISupportInitialize) ( savesFolderWatcher ) ).EndInit();
+            //savesFolderWatcher.Renamed += savesFolderWatcher_OnRenamed;
         }
 
         private void savesFolderWatcher_OnChanged( object sender, FileSystemEventArgs e )
         {
-            statusWriter( "Saves folder change (" + e.ChangeType + ") detected:\t" + e.FullPath );
+            //statusWriter( "Saves change (" + e.ChangeType + ") detected:\t" + e.FullPath );
+            string baseName = Path.GetFileNameWithoutExtension( e.FullPath );
+
+            //FileInfo checkInfo = new FileInfo( e.FullPath );
+            FileInfo newSaveInfo = new FileInfo( Path.ChangeExtension( e.FullPath, TABReflector.TABReflector.saveExtension ) );
+            SaveFile newSave;
+            SaveFile oldSave;
+            switch( e.ChangeType )
+            {
+                case WatcherChangeTypes.Created:
+                    statusWriter( "New Save detected: " + baseName );
+                    newSave = new SaveFile( newSaveInfo );
+                    newSave.calculateChecksum( algo );
+                    if( !activeSaves.TryAdd( baseName, newSave ) )
+                    {
+                        statusWriter( "Conflict attempting to add a new Active Save record for: " + baseName );
+                    }
+                    else
+                    {
+                        tryAutoBackup( newSave );
+                    }
+                    break;
+                case WatcherChangeTypes.Deleted:
+                    statusWriter( "Save deletion detected: " + baseName );
+                    if( !activeSaves.TryRemove( baseName, out oldSave ) )
+                    {
+                        statusWriter( "Conflict attempting to remove the Active Save record for: " + baseName );
+                    }
+                    else
+                    {
+                        OnActiveSavesChanged( new ActiveSavesChangedEventArgs() );
+                    }
+                    break;
+                case WatcherChangeTypes.Changed:
+                    if( activeSaves.TryGetValue( baseName, out oldSave ) )
+                    {
+                        // Check for actual changes first, to preserve potentially calculated checksums
+                        newSaveInfo.Refresh();
+                        if( oldSave.lastWriteUtc != newSaveInfo.LastWriteTimeUtc )
+                        {
+                            newSave = new SaveFile( newSaveInfo );
+                            newSave.calculateChecksum( algo );
+                            if( !activeSaves.TryUpdate( baseName, newSave, oldSave ) )
+                            {
+                                statusWriter( "Conflict attempting to replace an existing Active Save record for: " + baseName );
+                            }
+                            else
+                            {
+                                tryAutoBackup( newSave );
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine( "Save change detected but ignored for: " + baseName );
+                        }
+                    }
+                    break;
+                default:
+                    statusWriter( "Unhandled Save change (" + e.ChangeType + ") detected:\t" + baseName );
+                    break;
+            }
         }
 
-        private void savesFolderWatcher_OnRenamed( object sender, RenamedEventArgs e )
+        private void tryAutoBackup( SaveFile save )
         {
-            statusWriter( "Saves folder rename detected, from:\t" + e.OldFullPath + " to:\t" + e.FullPath );
+
+            if( ignoreRestoredSave == save.baseName )
+            {
+                Console.WriteLine( "Save restoration detected, skipping autobackup for: " + save.baseName );
+                ignoreRestoredSave = null;
+            }
+            else if( autoBackup )
+            {
+                if( tryBackup( save ) )
+                {
+                    statusWriter( "Automatically backed up:\t" + save.baseName );
+                }
+                else
+                {
+                    statusWriter( "Failed to automatically back up:\t" + save.baseName );
+                }
+            }
+
+            // We assume the active save is new and still needs to be signalled to interested parties anyway
+            OnActiveSavesChanged( new ActiveSavesChangedEventArgs() );
         }
 
-
-        internal bool isWatching()
+        protected virtual void OnActiveSavesChanged( ActiveSavesChangedEventArgs e )
         {
-            return savesFolderWatcher.EnableRaisingEvents;
+            IOrderedEnumerable<SaveFile> currentSaves = activeSaves.Values.OrderByDescending( s => s.lastWriteUtc );
+            foreach( var save in currentSaves )
+            {
+                e.ActiveSaves.Add( new KeyValuePair<string,CheckState>( save.ToString(), isBackedUp( save ) ) );
+            }
+            ActiveSavesChanged?.Invoke( this, e );
+        }
+
+        protected virtual void OnBackupSavesChanged( BackupSavesChangedEventArgs e )
+        {
+            e.Backups = new TreeNode[backupsTree.Count];
+
+            List<KeyValuePair<string,string>> backupsNamesToNewest = new List<KeyValuePair<string,string>>( backupsTree.Count );
+            foreach( var saveSet in backupsTree )
+            {
+                backupsNamesToNewest.Add( new KeyValuePair<string,string>( saveSet.Key, saveSet.Value.Last() ) );   // Pair baseNames and newest timeDirs
+            }
+            backupsNamesToNewest.Sort( ( pair1, pair2 ) => pair2.Value.CompareTo( pair1.Value ) );                  // Sort by timeDirs
+
+            int i = 0;
+            foreach( var pair in backupsNamesToNewest )
+            {
+                string baseName = pair.Key;
+                TreeNode baseNode = new TreeNode( baseName ) { Name = baseName };
+                e.Backups[i++] = baseNode;
+
+                SortedSet<string> timeDirs;
+                backupsTree.TryGetValue( baseName, out timeDirs );  // Not checking concurrency issues, but then again the nested SortedSets aren't thread-safe anyway...
+                foreach( string time in timeDirs.Reverse() )
+                {
+                    baseNode.Nodes.Add( time );
+                }
+                baseNode.Expand();
+            }
+
+            e.Count = checksummedBackups.Count();
+            BackupSavesChanged?.Invoke( this, e );
+        }
+
+        internal void setAutoBackup( bool enabled )
+        {
+            autoBackup = enabled;
+            statusWriter( "Automatic Backup: " + ( enabled ? "Enabled." : "Disabled.") );
         }
 
         internal void startWatcher()
         {
-            if( !isWatching() )
+            if( !savesFolderWatcher.EnableRaisingEvents )
             {
                 statusWriter( "Started monitoring TAB saves directory."/*: " + savesFolderWatcher.Path*/ );
                 savesFolderWatcher.EnableRaisingEvents = true;
             }
+        }
+
+        internal void stopWatcher()
+        {
+            if( savesFolderWatcher.EnableRaisingEvents )
+            {
+                savesFolderWatcher.EnableRaisingEvents = false;
+                statusWriter( "Stopped monitoring TAB saves directory." );
+            }
+            savesFolderWatcher.Dispose();   // Assuming only stopping on app quit
         }
 
         internal bool setBackupsDirectory( BackgroundWorker worker, DoWorkEventArgs e )
@@ -324,78 +378,33 @@ namespace TABSAT
             }
             backupsDirectory = new DirectoryInfo( backupsDir );
 
-            // Is it more efficient to filter through all subdirs first to know the count, and maybe prefetch, or cache bump?
-            //var allBackupSaveFiles = backupsDirectory.GetFiles( TABSAT.saveFilesFilter, SearchOption.AllDirectories );
-            IList<BackupSaveFile> backups = new List<BackupSaveFile>( /*allBackupSaveFiles.Length*/ );
-
-            backupsTree = new TreeNode( backupsDirectory.Name ) { Tag = backupsDirectory };
-            backupsTree.Expand();
-
-            var stack = new Stack<TreeNode>();
-            stack.Push( backupsTree );
-
-            do
-            {
-                var currentNode = stack.Pop();
-                var directoryInfo = (DirectoryInfo) currentNode.Tag;
-                currentNode.Tag = null;     // Don't keep DirectoryInfo handles around, only use Tag when building the tree
-                var subDirectories = directoryInfo.GetDirectories();
-                //IOrderedEnumerable<DirectoryInfo> subDirectories = subDirectories.OrderByDescending( d => d.LastWriteTimeUtc );    // We can just use the timestamped folder names to sort after populating the tree
-                foreach( var directory in subDirectories )
-                {
-                    var childDirectoryNode = new TreeNode( directory.Name ) { Tag = directory };
-                    currentNode.Nodes.Add( childDirectoryNode );
-                    stack.Push( childDirectoryNode );
-                }
-                var saveFiles = directoryInfo.GetFiles( TABSAT.saveFilesFilter );
-                foreach( var file in saveFiles )
-                {
-                    BackupSaveFile backup = BackupSaveFile.create( file, currentNode.Nodes );
-                    backups.Add( backup );
-                }
-
-                if( currentNode.Parent == backupsTree )    // || saveFiles.Length > 0
-                {
-                    currentNode.Expand();
-                }
-
-                if( !subDirectories.Any() && !saveFiles.Any() )
-                {
-                    currentNode.Remove();
-                }
-
-            } while( stack.Any() );
-
-            return calculateBackupsChecksums( backups, worker );
-        }
-
-        private bool calculateBackupsChecksums( IList<BackupSaveFile> backups, BackgroundWorker worker )
-        {
-            statusWriter( "Started recalculating " + backups.Count + " Backups checksums." );
-
-            bool anyIssues = false;
-
+            int backupsCount = backupsDirectory.GetFiles( TABSAT.saveFilesFilter, SearchOption.AllDirectories ).Length;
+            statusWriter( "Calculating " + backupsCount + " Backups checksums." );
             checksummedBackups.Clear();
-
             int i = 0;
-            foreach( BackupSaveFile backup in backups )
+
+            var baseNameDirectories = backupsDirectory.GetDirectories();
+            foreach( var baseNameDirectory in baseNameDirectories )
             {
-                anyIssues &= !backup.calculateChecksum( algo );
-
-                // Need to check for dupes and remove newer ones here?
-                checksummedBackups.Add( backup.getChecksum(), backup );
-
-                i += 100;
-                worker.ReportProgress( i / backups.Count );
+                foreach( var timeDirectory in baseNameDirectory.GetDirectories()/*.OrderByDescending( d => d.LastWriteTimeUtc )*/ )
+                {
+                    var saveFiles = timeDirectory.GetFiles( TABSAT.saveFilesFilter );
+                    if( saveFiles.Length != 1 )
+                    {
+                        statusWriter( "Unexpected number of Backup Saves in: " + timeDirectory.FullName );
+                    }
+                    else
+                    {
+                        addBackup( saveFiles[0] );
+                        i += 100;
+                        worker.ReportProgress( i / backupsCount );
+                    }
+                }
             }
 
-            return !anyIssues;
-        }
+            OnBackupSavesChanged( new BackupSavesChangedEventArgs() );
 
-
-        internal int getBackupsCount()
-        {
-            return checksummedBackups.Count();
+            return true;
         }
 
         internal string getBackupsDirectory()
@@ -407,133 +416,168 @@ namespace TABSAT
             return backupsDirectory.FullName;
         }
 
-        internal void displayBackups( TreeView backupsTreeView )
-        {
-            backupsTreeView.BeginUpdate();
-            backupsTreeView.Nodes.Clear();
-            backupsTreeView.Nodes.Add( backupsTree );
-            // Sort the tree top 2 levels by descending 2nd level folder name (the timestamped folders)...
-            backupsTreeView.Sort();
-
-            backupsTreeView.EndUpdate();
-        }
-
-        internal void reloadActiveSaves()
+        internal void loadActiveSaves()
         {
             FileInfo[] newActiveSavesInfo = activeSavesDirInfo.GetFiles( TABSAT.saveFilesFilter );
             if( !newActiveSavesInfo.Any() )
             {
                 statusWriter( "No Active Save Files found." );
                 activeSaves.Clear();
+                OnActiveSavesChanged( new ActiveSavesChangedEventArgs() );
                 return;
             }
 
             // Make a new dictionary, carry over existing ActiveSaveFiles that haven't been modified because they might have checksums, add new ones without (and remove references to saves no longer active?)
 
-            SortedDictionary<string,ActiveSaveFile> newActiveSaves = new SortedDictionary<string,ActiveSaveFile>();
+            IDictionary<string,SaveFile> newActiveSaves = new SortedDictionary<string,SaveFile>();
             foreach( FileInfo newSaveInfo in newActiveSavesInfo )
             {
                 string baseName = Path.GetFileNameWithoutExtension( newSaveInfo.Name );
-                ActiveSaveFile newSave = null;
                 if( activeSaves.ContainsKey( baseName ) )
                 {
-                    ActiveSaveFile oldSave = activeSaves[baseName];
-                    newSaveInfo.Refresh();
-                    if( oldSave.lastWriteUtc == newSaveInfo.LastWriteTimeUtc )
+                    SaveFile oldSave;
+                    if( !activeSaves.TryGetValue( baseName, out oldSave ) )
                     {
-                        newSave = oldSave;      // To preserve potentially calculated checksums
+                        statusWriter( "Conflict attempting to compare an existing Active Save record for: " + baseName );
+                        // It already just got deleted? So don't try add it now?
+                    }
+                    else
+                    {
+                        // Check for actual changes first, to preserve potentially calculated checksums
+                        newSaveInfo.Refresh();
+                        if( oldSave.lastWriteUtc == newSaveInfo.LastWriteTimeUtc )
+                        {
+                            newActiveSaves.Add( baseName, oldSave );
+                        }
+                        else
+                        {
+                            newActiveSaves.Add( baseName, new SaveFile( newSaveInfo ) );
+                        }
                     }
                 }
-                if( newSave == null )
+                else
                 {
-                    newSave = new ActiveSaveFile( newSaveInfo );
+                    newActiveSaves.Add( baseName, new SaveFile( newSaveInfo ) );
                 }
-                newActiveSaves.Add( newSave.baseName, newSave );
             }
 
-            activeSaves = newActiveSaves;
-        }
-
-        internal void displayActiveSaves( CheckedListBox checkedListBox )
-        {
-            checkedListBox.Items.Clear();
-            //checkedListBox.SuspendLayout();
-            foreach( ActiveSaveFile save in activeSaves.Values.OrderByDescending( s => s.lastWriteUtc ) )
+            activeSaves.Clear();
+            foreach( var entry in newActiveSaves )
             {
-                checkedListBox.Items.Add( save, getCheckState( save ) );
+                if( !activeSaves.TryAdd( entry.Key, entry.Value ) )
+                {
+                    statusWriter( "Conflict attempting to add a new Active Save record for: " + entry.Key );
+                    // Already just been added? So don't try to add it now?
+                }
             }
-            //checkedListBox.ResumeLayout();
+            OnActiveSavesChanged( new ActiveSavesChangedEventArgs() );
         }
 
         internal bool calculateActiveChecksums( BackgroundWorker worker )
         {
-            statusWriter( "Started recalculating " + activeSaves.Count + " Active Save File checksums." );
+            int savesCount = activeSaves.Count;
+            statusWriter( "Calculating " + savesCount + " Active Save File checksums." );
 
             bool anyIssues = false;
 
             int i = 0;
-            foreach( ActiveSaveFile save in activeSaves.Values )
+            foreach( SaveFile save in activeSaves.Values )
             {
                 anyIssues &= !save.calculateChecksum( algo );
+                //OnActiveSavesChanged( new ActiveSavesChangedEventArgs() );    // Crushingly inefficient
+
                 i += 100;
-                worker.ReportProgress( i / activeSaves.Count );
+                worker.ReportProgress( Math.Min( i / savesCount, 100 ) );       // In case extra active saves were added, we mustn't report over 100%
             }
+            OnActiveSavesChanged( new ActiveSavesChangedEventArgs() );
 
             return !anyIssues;
         }
 
-        internal void tryDisplayBackupNode( string baseName )
-        {
-            if( !activeSaves.ContainsKey( baseName ) )
-            {
-                throw new ArgumentException( "Invalid active save file name." );
-            }
-            ActiveSaveFile save = activeSaves[baseName];
-
-            string checksum = save.getChecksum();
-            if( checksum == null )
-            {
-                //throw new InvalidOperationException( "This save file has not been checksummed to compare against backed up files." );
-                return;
-            }
-
-            if( !checksummedBackups.ContainsKey( checksum ) )
-            {
-                return;
-            }
-            BackupSaveFile backup = checksummedBackups[checksum];
-            backup.displayNode();
-        }
-
         internal CheckState backupActiveSave( string baseName )
         {
-            if( !activeSaves.ContainsKey( baseName ) )
+            SaveFile save;
+            if( !activeSaves.TryGetValue( baseName, out save ) )
             {
                 throw new ArgumentException( "Invalid active save file name." );
             }
-            ActiveSaveFile save = activeSaves[baseName];
 
             if( save.getChecksum() == null )
             {
                 throw new InvalidOperationException( "This save file has not been checksummed to compare against backed up files." );
             }
 
-            BackupSaveFile backup = save.backup( backupsDirectory, backupsTree );
-            if( backup != null )
+            if( tryBackup( save ) )
             {
-                statusWriter( "Successfully backed up: " + save );
-
-                backup.calculateChecksum( algo );
-                checksummedBackups.Add( backup.getChecksum(), backup );
+                statusWriter( "Backed up:\t\t\t" + save.baseName );
             }
             else
             {
-                statusWriter( "Failed to back up: " + save );
+                statusWriter( "Failed to back up:\t\t" + save.baseName );
             }
-            return getCheckState( save );
+
+            return isBackedUp( save );
         }
 
-        private CheckState getCheckState( ActiveSaveFile save )
+        private bool tryBackup( SaveFile save )
+        {
+            try
+            {
+                string backupNameDir = Path.Combine( backupsDirectory.FullName, save.baseName );
+                string backupTimeDir = Path.Combine( backupNameDir, save.lastWriteUtc.ToString( lastWriteUtcFormat ) );     // Not Refresh()'d file.lastWriteTimeUtc?
+
+                string saveFileBackupPath = Path.Combine( backupTimeDir, save.baseName + TABReflector.TABReflector.saveExtension );
+                string checkFileBackupPath = Path.Combine( backupTimeDir, save.baseName + TABReflector.TABReflector.checkExtension );
+                if( File.Exists( saveFileBackupPath ) || File.Exists( checkFileBackupPath ) )
+                {
+                    statusWriter( "The save file backup already exists for the same name and last write time: " + save.file.FullName );
+                    return false;
+                }
+
+                if( !Directory.Exists( backupTimeDir ) )
+                {
+                    try
+                    {
+                        Directory.CreateDirectory( backupTimeDir );
+                    }
+                    catch( Exception e )
+                    {
+                        statusWriter( "There was a problem creating the directory for the backup file: " + backupTimeDir );
+                        return false;
+                    }
+                }
+
+                //statusWriter( "Copying: " + saveFileBackupPath );
+                File.Copy( save.file.FullName, saveFileBackupPath );
+                // Also copy over timestamps
+                copyFileTimes( saveFileBackupPath, save.file );
+
+                addBackup( new FileInfo( saveFileBackupPath ) );
+
+                string checkFileActivePath = Path.Combine( save.file.DirectoryName, save.baseName + TABReflector.TABReflector.checkExtension );
+                if( !File.Exists( checkFileActivePath ) )
+                {
+                    statusWriter( "The check file does not exist: " + checkFileActivePath );
+                    return false;
+                }
+                //statusWriter( "Copying: " + checkFileBackupPath );
+                File.Copy( checkFileActivePath, checkFileBackupPath );
+                // Also copy over timestamps
+                copyFileTimes( checkFileBackupPath, new FileInfo( checkFileActivePath ) );
+                // No tree node for check files
+
+                OnBackupSavesChanged( new BackupSavesChangedEventArgs() );
+
+                return true;
+            }
+            catch( Exception e )
+            {
+                Console.Error.WriteLine( e.Message );
+                return false;
+            }
+        }
+
+        private CheckState isBackedUp( SaveFile save )
         {
             CheckState checkState;
 
@@ -542,10 +586,9 @@ namespace TABSAT
             {
                 checkState = CheckState.Indeterminate;
             }
-            else if( checksummedBackups.ContainsKey( checksum ) )
+            else if( checksummedBackups.Contains( checksum ) )
             {
                 checkState = CheckState.Checked;
-                //Console.WriteLine( "Display check for active save file: " + save );
             }
             else
             {
@@ -555,11 +598,12 @@ namespace TABSAT
             return checkState;
         }
 
-        internal bool restoreBackup( string backupSubPath )
+
+        internal bool restoreBackup( string baseName, string timeDir )
         {
             try
             {
-                string backupPathWithoutExtension = Path.Combine( backupsDirectory.Parent.FullName, backupSubPath );
+                string backupPathWithoutExtension = Path.Combine( Path.Combine( Path.Combine( backupsDirectory.FullName, baseName ), timeDir ), baseName );
 
                 string backupSavePath = Path.ChangeExtension( backupPathWithoutExtension, TABReflector.TABReflector.saveExtension );
                 if( !File.Exists( backupSavePath ) )
@@ -579,15 +623,21 @@ namespace TABSAT
 
                 //statusWriter( "Would now restore Backup File: " + Path.GetFileName( backupSavePath ) );
                 string restoreSavePath = Path.Combine( activeSavesDirInfo.FullName, Path.GetFileName( backupSavePath ) );
-                bool overwroteExisting = false;
+                //bool overwroteExisting = false;
                 if( File.Exists( restoreSavePath ) )
                 {
                     Console.WriteLine( "Overwriting existing Save File: " + restoreSavePath );
-                    overwroteExisting = true;
+                    //overwroteExisting = true;
                 }
                 File.Copy( backupSavePath, restoreSavePath, true );
                 // Also copy over timestamps
                 copyFileTimes( restoreSavePath, new FileInfo( backupSavePath ) );
+
+                // Flag for autobackup to ignore this change we're about to make, so as to not try to back it up to the existing path
+                if( autoBackup )
+                {
+                    ignoreRestoredSave = baseName;
+                }
 
                 string restoreCheckPath = Path.Combine( activeSavesDirInfo.FullName, Path.GetFileName( backupCheckPath ) );
                 if( File.Exists( restoreCheckPath ) )
@@ -597,15 +647,20 @@ namespace TABSAT
                 File.Copy( backupCheckPath, restoreCheckPath, true );
                 // Also copy over timestamps
                 copyFileTimes( restoreCheckPath, new FileInfo( backupSavePath ) );
-                
+                /*
                 // Updating activeSaves. Or should the watcher see this?
                 if( !overwroteExisting )
                 {
                     ActiveSaveFile newSave = new ActiveSaveFile( new FileInfo( restoreSavePath ) );
                     newSave.calculateChecksum( algo );
-                    activeSaves.Add( newSave.baseName, newSave );
+                    //activeSaves[newSave.baseName] = newSave;
+                    if( !activeSaves.TryAdd( newSave.baseName, newSave ) )
+                    {
+                        statusWriter( "Conflict attempting to add a new Active Save record for: " + newSave.baseName );
+                        // Already just been added? So don't try to add it now?
+                    }
                 }
-                
+                */
             }
             catch( Exception e )
             {

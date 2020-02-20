@@ -18,24 +18,20 @@ namespace TABSAT
          *  recalculate which active saves have backups
          *  
          *  Upon saves watcher notification:
-         *  We need to determine if _Backup generation by the game is via Rename("move") or Created + Deleted...
+         *  Review if _Backup generation by the game is via Rename("move") or Created + Deleted...
          *  
-         *  For deletions, remove item from active saves list (& unpair from backups treeview?)
+         *  For deletions, remove item from active saves list
          *  
          *  For renames, just update name in active saves list?
          *  
-         *  For creations, busy wait for the check file to also exist, before assuming the save file writing is done?
-         *  Or filter for check files too, track internal state of expected check creation/change?
+         *  For creations, once the check file exists, assume the save file writing is done?
          *  Then add new active save to list, checksum, check for backup?
          *  
          *  For changes, re-checksum active save & check for backup
-         *  
-         *  
-         *  Need to avoid calculating both sets of checksums at the same time? Or at least don't both try use the single progressBar?
          */
 
-        private string savesDirectory;
-        private StatusWriterDelegate statusWriter;
+        private readonly string savesDirectory;
+        private readonly StatusWriterDelegate statusWriter;
         private BackupsManager backupsManager;
 
         public AutoBackupControls( string savesDir, StatusWriterDelegate sW )
@@ -47,6 +43,11 @@ namespace TABSAT
             savesDirectory = savesDir;
             statusWriter = sW;
             backupsManager = null;
+        }
+
+        private void autoBackupCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            backupsManager.setAutoBackup( autoBackupCheckBox.Checked );
         }
 
         private void backupFolderChooseButton_Click( object sender, EventArgs e )
@@ -78,7 +79,15 @@ namespace TABSAT
                 {
                     backupButton.Enabled = true;
                 }
-                backupsManager.tryDisplayBackupNode( savesCheckedListBox.SelectedItem.ToString() );
+                else if( savesCheckedListBox.GetItemCheckState( i ) == CheckState.Checked )
+                {
+                    TreeNode[] backupNodes = backupsTreeView.Nodes.Find( savesCheckedListBox.SelectedItem.ToString(), false );
+                    if( backupNodes.Length > 0 )
+                    {
+                        TreeNode backupNode = backupNodes[0];
+                        backupNode.EnsureVisible();
+                    }
+                }
             }
         }
 
@@ -92,11 +101,12 @@ namespace TABSAT
                 return;
             }
             //statusWriter( "SelectedIndex: " + i );
-            CheckState c = backupsManager.backupActiveSave( savesCheckedListBox.SelectedItem.ToString() );
+            string baseName = savesCheckedListBox.SelectedItem.ToString();
+            CheckState c = backupsManager.backupActiveSave( baseName );
 
-            refreshBackupsView();
+            //backupsManager.tryDisplayBackupNode( baseName );    // Seems to cause unpredictable TreeNode selection, which drives possible CheckedListBox paired selection/scrolling
 
-            // No need to refreshActiveSaves() when we can update the item directly
+            // tryDisplayBackupNode() doesn't fire ActiveSavesChanged event, but we can update the item directly
             savesCheckedListBox.Enabled = false;    // Temporarily enable ItemCheck events to take effect
             savesCheckedListBox.SetItemCheckState( i, c );
             savesCheckedListBox.Enabled = true;
@@ -106,25 +116,30 @@ namespace TABSAT
             enableControls();
         }
 
+        internal void stopWatcher()         // Should instead implement IDisposable?
+        {
+            if( backupsManager != null )
+            {
+                backupsManager.setAutoBackup( false );
+
+                backupsManager.stopWatcher();
+            }
+        }
+
         private void backupsTreeView_AfterSelect( object sender, TreeViewEventArgs e )
         {
             TreeNode backupNode = backupsTreeView.SelectedNode;
-            restoreButton.Enabled = backupNode != null && (
-                                    ( backupNode.Level == 2 && backupNode.GetNodeCount( true ) == 1 )
-                                    || ( backupNode.Level == 3 && backupNode.GetNodeCount( true ) == 0 ) );
+            restoreButton.Enabled = backupNode != null && backupNode.Level == 1;
             
-            // We can try ScrollIntoView a paired ActiveSave item in the ListBox
+            // We can try make visible a paired ActiveSave item in the ListBox
             string baseName;
             switch( backupNode.Level )
             {
-                case 1:
+                case 0:
                     baseName = backupNode.Text;
                     break;
-                case 2:
+                case 1:
                     baseName = backupNode.Parent.Text;
-                    break;
-                case 3:
-                    baseName = backupNode.Parent.Parent.Text;
                     break;
                 default:
                     baseName = null;
@@ -155,24 +170,15 @@ namespace TABSAT
             }
 
             TreeNode backupNode = backupsTreeView.SelectedNode;
-            if( backupNode.Level == 2 && backupNode.GetNodeCount( true ) == 1 )
-            {
-                backupNode = backupNode.FirstNode;
-            }
 
-            if( backupsManager.restoreBackup( backupNode.FullPath ) )
+            if( backupsManager.restoreBackup( backupNode.Parent.Text, backupNode.Text ) )
             {
-                statusWriter( "Successfully restored: " + backupNode.Text );
+                statusWriter( "Successfully restored from:\t\\" + backupNode.FullPath + "\\" );
             }
             else
             {
-                statusWriter( "Failed to restore: " + backupNode.Text );
+                statusWriter( "Failed to restore from:\t\t\\" + backupNode.FullPath + "\\" );
             }
-
-            backupsTreeView.SelectedNode = backupNode.Parent.Parent;    // The top level save name set folder, rather than the specific timestamped entry we were trying to restore
-            // Don't set SelectedNode = null else the _AfterSelect event won't occur and the restore button won't indirectly disable
-
-            refreshActiveSaves();
 
             enableControls();
         }
@@ -180,25 +186,56 @@ namespace TABSAT
         private void AutoBackupControls_Load( object sender, EventArgs e )
         {
             backupsManager = new BackupsManager( savesDirectory, statusWriter );
-            
-            backupsManager.reloadActiveSaves();
-            refreshActiveSaves();
+
+            backupsManager.ActiveSavesChanged += refreshActiveSaves;
+            backupsManager.BackupSavesChanged += refreshBackupSaves;
+
+            backupsManager.loadActiveSaves();
             
             changeBackupsDirectory( BackupsManager.getDefaultBackupDirectory() );
         }
 
-        private void refreshActiveSaves()
+        public void refreshActiveSaves( object sender, BackupsManager.ActiveSavesChangedEventArgs e )
         {
-            savesCheckedListBox.Enabled = false;    // Temporarily allow ItemCheck events to take effect
-            backupsManager.displayActiveSaves( savesCheckedListBox );
-            savesGroupBox.Text = "Active Save Files: " + savesCheckedListBox.Items.Count;
-            savesCheckedListBox.Enabled = true;
+            if( savesCheckedListBox.InvokeRequired )
+            {
+                savesCheckedListBox.BeginInvoke( new Action( () => refreshActiveSaves( sender, e ) ) );
+            }
+            else
+            {
+                savesCheckedListBox.Enabled = false;    // Temporarily allow ItemCheck events to take effect
+
+                savesCheckedListBox.Items.Clear();
+                savesCheckedListBox.SuspendLayout();
+                foreach( var entry in e.ActiveSaves )
+                {
+                    savesCheckedListBox.Items.Add( entry.Key, entry.Value );
+                }
+                savesCheckedListBox.ResumeLayout();
+
+                savesGroupBox.Text = "Active Save Files: " + savesCheckedListBox.Items.Count;
+                savesCheckedListBox.Enabled = true;
+            }
         }
 
-        private void refreshBackupsView()
+        private void refreshBackupSaves( object sender, BackupsManager.BackupSavesChangedEventArgs e  )
         {
-            backupsManager.displayBackups( backupsTreeView );
-            backupsGroupBox.Text = "Backups: " + backupsManager.getBackupsCount();//backupsTreeView.GetNodeCount( true );
+            if( backupsTreeView.InvokeRequired )
+            {
+                backupsTreeView.BeginInvoke( new Action( () => refreshBackupSaves( sender, e ) ) );
+            }
+            else
+            {
+                backupsTreeView.Enabled = false;
+
+                backupsTreeView.BeginUpdate();
+                backupsTreeView.Nodes.Clear();
+                backupsTreeView.Nodes.AddRange( e.Backups );
+                backupsTreeView.EndUpdate();
+
+                backupsGroupBox.Text = "Backups: " + e.Count;
+                backupsTreeView.Enabled = true;
+            }
         }
 
         private void changeBackupsDirectory( string backupsDir )
@@ -243,19 +280,13 @@ namespace TABSAT
         {
             if( e.Error != null )
             {
-                statusWriter( " Error:" + Environment.NewLine + e.Error.Message );
-            }
-            else
-            {
-                statusWriter( "Finished recalculating Backups checksums." );
+                statusWriter( "Error calculating Backups checksums: " + Environment.NewLine + e.Error.Message );
             }
             progressBar.Value = 0;
 
             backupsFolderBrowserDialog.SelectedPath = backupsManager.getBackupsDirectory();
             backupsDirectoryTextBox.Text = backupsFolderBrowserDialog.SelectedPath;
             MainWindow.shiftTextViewRight( backupsDirectoryTextBox );
-
-            refreshBackupsView();
 
             autoBackupsBackgroundWorker = new BackgroundWorker();
             autoBackupsBackgroundWorker.WorkerReportsProgress = true;
@@ -275,21 +306,15 @@ namespace TABSAT
         {
             if( e.Error != null )
             {
-                statusWriter( " Error:" + Environment.NewLine + e.Error.Message );
-            }
-            else
-            {
-                statusWriter( "Finished recalculating Active Save File checksums." );
+                statusWriter( "Error calculating Active Save File checksums: " + Environment.NewLine + e.Error.Message );
             }
             progressBar.Value = 0;
-
-            refreshActiveSaves();
 
             backupFolderChooseButton.Enabled = true;
 
             enableControls();
 
-            //backupsManager.startWatcher();
+            backupsManager.startWatcher();
         }
     }
 }

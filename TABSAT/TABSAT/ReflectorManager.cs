@@ -262,7 +262,7 @@ namespace TABSAT
             }
             catch( InvalidOperationException ioe )
             {
-                Console.WriteLine( "Unable to obtain the Reflector's main window handle." );
+                Console.WriteLine( "Unable to obtain the Reflector's main window handle. " + ioe.Message );
             }
             state = ReflectorState.STARTED;
         }
