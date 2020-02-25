@@ -1,14 +1,7 @@
 
 Consider approaches to keeping Backups TreeView sorted by baseName, then lastWriteUtc. Either via custom sorter, or careful insertion of single backups when generated.
 
-Consider how to watch Active saves directory without getting spammed by FileSystemWatcher 'feature', to keep Active saves list updated.
-
-
 Use state Enums, FSM and change listeners for GUI/TABSAT when modifying file, and ReflectorManager?
-
-Better handle _decrypted already existing? Use a temp directory if set to Tidy Away extracted files anyway?
-
-Verify more parameters & returns, files/directories existing, LINQ XML elements, etc.
 
 
 Provide a button to stop the Reflector whenever it's running?
@@ -100,3 +93,4 @@ Other features:
 
 Use a series of auto-backed-up saves during a game to chart the player's economy, pause ratio, zombie kill rate, potential turret & army dps, etc.
 
+Offer to apply or revert Modded Mayors game-wide rules change?

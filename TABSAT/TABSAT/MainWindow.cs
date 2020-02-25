@@ -69,7 +69,7 @@ namespace TABSAT
         private void initModifySaveControl( string reflectorDir, string tabDir, string savesDirectory )
         {
             ReflectorManager reflectorManager = new ReflectorManager( reflectorDir, tabDir );
-            TABSAT tabSAT = new TABSAT( reflectorManager );
+            TABSAT tabSAT = new TABSAT( reflectorManager, TABSAT.getDefaultEditsDirectory() );
 
             modifySaveC = new ModifySaveControls( tabSAT, statusWriter, savesDirectory );
             //modifySaveC.Location = new System.Drawing.Point( 4, 4 );

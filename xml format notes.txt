@@ -185,7 +185,7 @@ Mayors:
           </Items>
         </Collection>
 
-Bonus Lucifer?
+Bonus Lucifer
     <Complex name="LevelState">
       <Properties>
         <Dictionary name="BonusEntityTemplates" keyType="System.UInt64, mscorlib" valueType="System.Int32, mscorlib">
@@ -196,6 +196,16 @@ Bonus Lucifer?
             </Item>
           </Items>
         </Dictionary>
+
+Bonus Thanatos
+              <Simple value="13687916016325214957" />
+Bonus Titan
+              <Simple value="15625692077980454078" />
+
+Sniper:		6536008488763521408
+Soldier:	8122295062332983407
+Ranger:		11462509610414451330
+
 
 Bonus resources from collecting pickables?
         <Simple name="CommandCenterExtraFood" value="0" />

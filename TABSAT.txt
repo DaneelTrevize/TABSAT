@@ -29,13 +29,12 @@ Loading of unmodified assemblies into RAM is not a copyright violation. This too
 
 --------
 1)
-The game auto-saves when you choose to exit, as well as periodically (every 20 minutes?).
-There's also a _Backup second set of files produced (after the 2nd and subsequent saves of a game?).
-Currently unsure if files are renamed to become backups, or if they are edited in situ.
+The game auto-saves when you choose to exit.
+There's also a _Backup second set of files produced every 20 minutes.
 These saves & their check files can be copied after creation, and later restored to roll back game progress.
 Games are keyed by filename, multiple copies of a single game's saves will have the same name, thus a saves folder structure is required.
 Saves are deleted once a game is won/lost, thus over time saves' names can repeat.
-Automate save versioning via FileSystemWatcher?
+Automate save versioning via FileSystemWatcher.
 
 --------
 2)

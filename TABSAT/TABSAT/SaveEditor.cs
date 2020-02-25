@@ -265,13 +265,13 @@ namespace TABSAT
         }
 
 
-        public SaveEditor( string file )
+        public SaveEditor( string filesPath )
         {
-            if( !File.Exists( file ) )
+            dataFile = Path.Combine( filesPath, "Data" );
+            if( !File.Exists( dataFile ) )
             {
-                throw new ArgumentException( "Data file does not exist: " + file );
+                throw new ArgumentException( "Data file does not exist: " + dataFile );
             }
-            dataFile = file;
 
             data = XElement.Load( dataFile );
 

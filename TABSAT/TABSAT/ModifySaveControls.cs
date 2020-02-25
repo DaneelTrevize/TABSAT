@@ -68,7 +68,16 @@ namespace TABSAT
         {
             if( saveOpenFileDialog.ShowDialog() == DialogResult.OK )
             {
-                setSaveFile( saveOpenFileDialog.FileName );
+                string file = saveOpenFileDialog.FileName;
+                if( TABSAT.fileIsWithinDirectory( file, BackupsManager.getDefaultBackupDirectory() ) )   // Doesn't use a dynamic value for the current backups directory, from the other tab's BackupManager...
+                {
+                    // Editing a backup will not trigger a checksum update once the modified file is repacked, confuses AutoBackup UI
+                    statusWriter( "Please do not modify files within the backups directory: " + file );
+                }
+                else
+                {
+                    setSaveFile( file );
+                }
             }
         }
 
@@ -304,7 +313,7 @@ namespace TABSAT
         {
             extractSaveButton.Enabled = false;  // Should live in extractSaveButton_Click(), thus not be triggered by modifySaveButton_Click()?
 
-            string saveFile = tabSAT.extractSave();
+            string saveFile = tabSAT.extractSave( extractTidyRadioButton.Checked );
             if( saveFile == null )
             {
                 statusWriter( "Unable to extract save file." );

@@ -19,8 +19,8 @@ namespace TABSAT
          *  The reflector binary will:
          *  open a pipe to receive instructions and file paths;
          *  start a thread to launch the TAB assembly;
-         *  wait for the TAB assembly to have launched, then use reflection to find the required methods to checksum and decrypt/encrypt saves;
-         *  repeatedly invoke signing or decryption/encryption for each file path supplied
+         *  wait for the TAB assembly to have launched, then use reflection to find the required methods to sign or generate passwords for saves;
+         *  repeatedly, invoke signing or password generation for each file path supplied
          *  Exiting will have to terminate the reflector's environment, in order to end the stalled TAB assembly thread.
          */
 
@@ -41,14 +41,14 @@ namespace TABSAT
         private const string libraryPattern = @"^\s+""BaseInstallFolder_(?<count>\d+)""\s+""(?<path>.+)""$";
         private const string steamTABsubDirectory = @"\steamapps\common\They Are Billions\";
         internal static readonly string defaultSavesDirectory = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\My Games\They Are Billions\Saves\" );
+        private const string defaultEditsDirectoryName = @"TABSAT\edits";
         internal static readonly string saveFilesFilter = "*" + TABReflector.TABReflector.saveExtension;
         internal static readonly string checkFilesFilter = "*" + TABReflector.TABReflector.checkExtension;
-        private const string decryptionSuffix = @"_decrypted";
-        private ReflectorManager reflectorManager;
 
+        private ReflectorManager reflectorManager;
+        private readonly string editsDir;
         private string currentSaveFile;
-        private string decryptDir;
-        private string dataFile;
+        private string currentDecryptDir;
 
 
         internal static string findTABdirectory()
@@ -140,8 +140,18 @@ namespace TABSAT
             return null;
         }
 
+        internal static string getDefaultEditsDirectory()
+        {
+            return Path.Combine( Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\" ), defaultEditsDirectoryName );
+        }
 
-        private static string backupSave( string saveFile )     // Refactor this into new BackupsManager features?
+        internal static bool fileIsWithinDirectory( string file, string directory )
+        {
+            return Path.GetFullPath( file ).StartsWith( Path.GetFullPath( directory ) );
+        }
+
+
+        private static string backupSave( string saveFile, string backupDir, bool tryCheckFile )     // Refactor this into new BackupsManager features?
         {
             if( !File.Exists( saveFile ) )
             {
@@ -150,10 +160,10 @@ namespace TABSAT
             }
 
             // Figure out a filename that isn't taken
-            DirectoryInfo savesDirInfo = new DirectoryInfo( Path.GetDirectoryName( saveFile ) );
-            string backupFilePrefix = Path.ChangeExtension( saveFile, TABReflector.TABReflector.saveExtension + ".bak" );
-            FileInfo[] savesInfo = savesDirInfo.GetFiles( Path.GetFileName( saveFile ) + ".bak*" );	// This doesn't find all?
-            string backupFile = backupFilePrefix + ( savesInfo.Length + 1 );
+            string saveFileName = Path.GetFileName( saveFile );
+            FileInfo[] backupsInfo = new DirectoryInfo( backupDir ).GetFiles( saveFileName + ".*" );
+            int suffix = backupsInfo.Length + 1;
+            string backupFile = Path.Combine( backupDir, saveFileName ) + '.' + suffix;
 
             if( File.Exists( backupFile ) )
             {
@@ -171,6 +181,36 @@ namespace TABSAT
                 Console.Error.WriteLine( "Unable to backup: " + saveFile + " to: " + backupFile );
                 return null;
             }
+
+            if( tryCheckFile )
+            {
+                // Try to backup the check file too, but don't fail the overall method if this can't be done
+                string checkFile = Path.ChangeExtension( saveFile, TABReflector.TABReflector.checkExtension );
+                if( !File.Exists( checkFile ) )
+                {
+                    Console.Error.WriteLine( "Check file does not exist: " + checkFile );
+                }
+                else
+                {
+                    string backupCheckFile = Path.Combine( backupDir, Path.GetFileName( checkFile ) ) + '.' + suffix;
+                    if( File.Exists( backupCheckFile ) )
+                    {
+                        Console.Error.WriteLine( "Check backup already exists: " + backupCheckFile );
+                    }
+                    else
+                    {
+                        try
+                        {
+                            File.Move( checkFile, backupCheckFile );
+                        }
+                        catch
+                        {
+                            Console.Error.WriteLine( "Unable to backup: " + checkFile + " to: " + backupCheckFile );
+                        }
+                    }
+                }
+            }
+
             return backupFile;
         }
 
@@ -212,17 +252,9 @@ namespace TABSAT
                 //Console.WriteLine( "Save repacked: " + saveFile );
             }
         }
-        /*
-        private static void setFileTimes( string file, DateTime dt )
-        {
-            File.SetCreationTime( file, dt );
-            File.SetLastWriteTime( file, dt );
-            File.SetLastAccessTime( file, dt );
-        }
-        */
 
 
-        public TABSAT( ReflectorManager r )
+        public TABSAT( ReflectorManager r, string e )
         {
             if( r == null )
             {
@@ -230,10 +262,21 @@ namespace TABSAT
             }
 
             reflectorManager = r;
+            editsDir = e;
+
+            if( !Directory.Exists( editsDir ) )
+            {
+                try
+                {
+                    Directory.CreateDirectory( editsDir );
+                }
+                catch( Exception ex )
+                {
+                    throw new ArgumentException( "The edits backup directory does not exist amd could not be created.", ex );
+                }
+            }
 
             setSaveFile( null );
-
-            //reflectorManager.deployReflector();   // Don't automatically do this at initialisation, we might not need it
         }
 
 
@@ -242,99 +285,95 @@ namespace TABSAT
             if( file == null )
             {
                 currentSaveFile = null;
-                decryptDir = null;
-                dataFile = null;
             }
             else
             {
                 currentSaveFile = file;
-                decryptDir = Path.ChangeExtension( currentSaveFile, null ) + decryptionSuffix;
-                dataFile = Path.Combine( decryptDir, "Data" );
             }
+            currentDecryptDir = null;
         }
 
         internal bool hasSaveFile()
         {
-            return decryptDir != null;
+            return currentSaveFile != null;
         }
 
-        internal string extractSave()
+        internal string extractSave( bool useTempDir )
         {
-            if( Directory.Exists( decryptDir ) )
+            if( useTempDir )
             {
-                return null;
+                currentDecryptDir = Path.Combine( Path.GetTempPath(), Path.GetRandomFileName() );  // A random "file"/folder name under the user's temp directory
             }
             else
             {
-                Directory.CreateDirectory( decryptDir );
-
-                decryptSaveToDir();
-                return currentSaveFile;
+                currentDecryptDir = Path.Combine( editsDir, Path.GetFileNameWithoutExtension( currentSaveFile ) );
             }
+            if( Directory.Exists( currentDecryptDir ) )
+            {
+                // Dynamically generate decrypted file folders for leaving files after modification or for manual edits?
+
+                // Nuke existing files
+                Console.WriteLine( "Deleting the contents of: " + currentDecryptDir );
+                DirectoryInfo decDir = new DirectoryInfo( currentDecryptDir );
+                foreach( FileInfo file in decDir.GetFiles() )
+                {
+                    file.Delete();
+                }
+                foreach( DirectoryInfo dir in decDir.GetDirectories() )
+                {
+                    dir.Delete( true );
+                }
+            }
+            else
+            {
+                Directory.CreateDirectory( currentDecryptDir );
+            }
+
+            sign( currentSaveFile );
+
+            string password = generatePassword( currentSaveFile );
+
+            unpackSave( currentSaveFile, currentDecryptDir, password );
+
+            return currentSaveFile;
         }
 
         internal SaveEditor getSaveEditor()
         {
-            return new SaveEditor( dataFile );
+            return new SaveEditor( currentDecryptDir );
         }
 
         internal string backupSave()
         {
-            return backupSave( currentSaveFile );
+            return backupSave( currentSaveFile, editsDir, true );
         }
 
         internal string repackDirAsSave()
         {
-            string saveFile = currentSaveFile;  // decryptDir + TABReflector.TABReflector.saveExtension;
+            // Don't create unencrypted saves where TAB or auto-backup watchers might see them
+            string unencryptedSaveFile = Path.Combine( Path.GetTempPath(), Path.GetFileName( currentSaveFile ) );
 
-            repackExtracted( saveFile, decryptDir );
+            repackExtracted( unencryptedSaveFile, currentDecryptDir );
 
-            sign( saveFile );
+            sign( unencryptedSaveFile );
 
-            string password = generatePassword( saveFile );
+            string password = generatePassword( unencryptedSaveFile );
 
-            /*
-            DateTime now = DateTime.Now;
+            // Purge the temporary unencrypted versions of this new save file
+            File.Delete( unencryptedSaveFile );
+            File.Delete( Path.ChangeExtension( unencryptedSaveFile, TABReflector.TABReflector.checkExtension ) );
 
-            // Let's modify the times on the dir
-            Directory.SetCreationTime( decryptDir, now );
-            Directory.SetLastWriteTime( decryptDir, now );
-            Directory.SetLastAccessTime( decryptDir, now );
+            repackExtracted( currentSaveFile, currentDecryptDir, password );
 
-            foreach( string fileName in Directory.GetFiles( decryptDir ) )
-            {
-                setFileTimes( Path.Combine( decryptDir, fileName ), now );
-            }
+            sign( currentSaveFile );
 
-            // Update edit time. Must it be done before and after the passwording & signing?
-            setFileTimes( saveFile, now );
-            */
-
-            repackExtracted( saveFile, decryptDir, password );
-
-            sign( saveFile );
-            /*
-            // Update edit time. Must it be done before and after the passwording & signing?
-            setFileTimes( saveFile, now );
-            */
-            
-            removeDecryptedSaveAndCheck();
-
-            return saveFile;
-        }
-
-        private void removeDecryptedSaveAndCheck()
-        {
-            // Purge the temporary decrypted versions of this new save file
-            string decryptedSave = decryptDir + TABReflector.TABReflector.saveExtension;
-            string decryptedCheck = decryptDir + TABReflector.TABReflector.checkExtension;
-            File.Delete( decryptedSave );
-            File.Delete( decryptedCheck );
+            return currentSaveFile;
         }
 
         internal void removeDecryptedDir()
         {
-            Directory.Delete( decryptDir, true );
+            // Completely unguarded w.r.t. state, or IO exceptions...
+            Directory.Delete( currentDecryptDir, true );
         }
 
         internal void stopReflector()
@@ -353,15 +392,6 @@ namespace TABSAT
             }
         }
 
-
-        private void decryptSaveToDir()
-        {
-            sign( currentSaveFile );
-
-            string password = generatePassword( currentSaveFile );
-
-            unpackSave( currentSaveFile, decryptDir, password );
-        }
 
         private string sign( string saveFile )
         {
