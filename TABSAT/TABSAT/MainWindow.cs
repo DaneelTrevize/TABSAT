@@ -62,7 +62,7 @@ namespace TABSAT
             }
             else
             {
-                statusTextBox.AppendText( DateTime.UtcNow.ToString( nowUtcFormat ) + " - " +  status + Environment.NewLine );
+                statusTextBox.AppendText( DateTime.UtcNow.ToString( nowUtcFormat ) + " - " + status + Environment.NewLine );
             }
         }
 

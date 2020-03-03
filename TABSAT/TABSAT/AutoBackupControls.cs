@@ -218,7 +218,7 @@ namespace TABSAT
             }
         }
 
-        private void refreshBackupSaves( object sender, BackupsManager.BackupSavesChangedEventArgs e  )
+        private void refreshBackupSaves( object sender, BackupsManager.BackupSavesChangedEventArgs e )
         {
             if( backupsTreeView.InvokeRequired )
             {

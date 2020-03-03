@@ -237,7 +237,7 @@ namespace TABSAT
             reflector.StartInfo.UseShellExecute = false;
             // Redirect all console writes to the 1 handler
             reflector.StartInfo.CreateNoWindow = true;
-            reflector.StartInfo.RedirectStandardOutput = true; 
+            reflector.StartInfo.RedirectStandardOutput = true;
             reflector.OutputDataReceived += outputHandler;
             reflector.StartInfo.RedirectStandardError = true;
             reflector.ErrorDataReceived += outputHandler;

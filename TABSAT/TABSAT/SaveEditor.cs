@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -19,7 +18,7 @@ namespace TABSAT
             DS,
             VO
         }
-        internal static readonly ReadOnlyDictionary<ThemeType, string> themeTypeNames;
+        internal static readonly Dictionary<ThemeType, string> themeTypeNames;
         static SaveEditor()
         {
             Dictionary<ThemeType, string> ttn = new Dictionary<ThemeType, string>();
@@ -29,7 +28,7 @@ namespace TABSAT
             ttn.Add( ThemeType.AL, "Frozen Highlands" );
             ttn.Add( ThemeType.DS, "Desert Wasteland" );
             ttn.Add( ThemeType.VO, "Caustic Lands" );
-            themeTypeNames = new ReadOnlyDictionary<ThemeType, string>( ttn );
+            themeTypeNames = new Dictionary<ThemeType, string>( ttn );
         }
 
         // TAB cell coordinates are origin top left, before 45 degree rotation clockwise. Positive x is due SE, positive y is due SW.
@@ -55,7 +54,7 @@ namespace TABSAT
                 id = (ulong) entityItem.Element( "Simple" ).Attribute( "value" );
 
                 complex = entityItem.Element( "Complex" );
-                isMutantNotGiant = ( string) complex.Attribute( "type" ) == mutantType;
+                isMutantNotGiant = (string) complex.Attribute( "type" ) == mutantType;
 
                 Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant:\t\t" + id );
             }
@@ -64,7 +63,7 @@ namespace TABSAT
             {
                 if( entityPositionValue == null )
                 {
-                    entityPositionValue  = getFirstSimplePropertyNamed( complex, "Position" ).Attribute( "value" );
+                    entityPositionValue = getFirstSimplePropertyNamed( complex, "Position" ).Attribute( "value" );
                 }
                 return entityPositionValue;
             }
@@ -84,22 +83,22 @@ namespace TABSAT
                 XElement currentLastPosition = getFirstSimplePropertyNamed( complex, "LastPosition" );
 
                 XElement currentComponents = ( from c in complex.Element( "Properties" ).Elements( "Collection" )
-                                                where (string) c.Attribute( "name" ) == "Components"
-                                                select c ).First();
+                                               where (string) c.Attribute( "name" ) == "Components"
+                                               select c ).First();
                 // We're after 3 different values in 2 different <Complex under Components
                 XElement currentCBehaviour = ( from c in currentComponents.Element( "Items" ).Elements( "Complex" )
-                                                where (string) c.Attribute( "type" ) == cBehaviourType
-                                                select c ).First();
-                
+                                               where (string) c.Attribute( "type" ) == cBehaviourType
+                                               select c ).First();
+
                 XElement currentBehaviour = getFirstComplexPropertyNamed( currentCBehaviour, "Behaviour" );
                 XElement currentBehaviourData = getFirstComplexPropertyNamed( currentBehaviour, "Data" );
                 // 1
                 XElement currentBehaviourTargetPosition = getFirstSimplePropertyNamed( currentBehaviourData, "TargetPosition" );
                 
                 XElement currentCMovable = ( from c in currentComponents.Element( "Items" ).Elements( "Complex" )
-                                                where (string) c.Attribute( "type" ) == cMovableType
-                                                select c ).First();
-                
+                                             where (string) c.Attribute( "type" ) == cMovableType
+                                             select c ).First();
+
                 // 2
                 XElement currentMovableTargetPosition = getFirstSimplePropertyNamed( currentCMovable, "TargetPosition" );
                 // 3
@@ -126,11 +125,11 @@ namespace TABSAT
 
         private class HugeZombieIcon
         {
-            readonly SaveEditor editor;
-            readonly XElement icon;
+            private readonly SaveEditor editor;
+            private readonly XElement icon;
             public readonly ulong id;
             public readonly bool isMutantNotGiant;
-            XAttribute iconCellValue;
+            private XAttribute iconCellValue;
             private CompassDirection? dir;  // Nullability tracks lazy calculating of this and distance
             private int distanceSquared;
 
@@ -241,7 +240,7 @@ namespace TABSAT
 
         private string dataFile;
         private XElement data;
-        XElement levelComplex;
+        private XElement levelComplex;
 
         private int commandCenterX;
         private int commandCenterY;
@@ -346,7 +345,7 @@ namespace TABSAT
                 }
             }
 
-            Console.WriteLine( "Mutants count: " + mutants.Count() +", icons count: " + mutantIcons.Count() );
+            Console.WriteLine( "Mutants count: " + mutants.Count() + ", icons count: " + mutantIcons.Count() );
             Console.WriteLine( "Giants count: " + giants.Count() + ", icons count: " + giantIcons.Count() );
         }
 
@@ -395,7 +394,7 @@ namespace TABSAT
             // Split icons by direction
             foreach( HugeZombieIcon mutant in mutantIcons )
             {
-                mutantsPerDirection[mutant.getDirection()].Add(  mutant );
+                mutantsPerDirection[mutant.getDirection()].Add( mutant );
             }
             foreach( HugeZombieIcon giant in giantIcons )
             {
@@ -491,7 +490,7 @@ namespace TABSAT
             {
                 HugeZombie mutant = mutants[icon.id];
                 icon.relocate( farthestIcon );
-                HugeZombie farthest = (farthestIcon.isMutantNotGiant ? mutants : giants)[farthestIcon.id];
+                HugeZombie farthest = ( farthestIcon.isMutantNotGiant ? mutants : giants )[farthestIcon.id];
                 mutant.relocate( farthest );
             }
         }
@@ -508,7 +507,7 @@ namespace TABSAT
 
             string cells = (string) ncells.Attribute( "value" );
             int size;
-            if( ! Int32.TryParse( cells, out size ) )
+            if( !Int32.TryParse( cells, out size ) )
             {
                 Console.Error.WriteLine( "Unable to find the number of cells in the map." );
                 return;

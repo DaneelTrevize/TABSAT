@@ -338,7 +338,7 @@ namespace TABSAT
         internal void setAutoBackup( bool enabled )
         {
             autoBackup = enabled;
-            statusWriter( "Automatic Backup: " + ( enabled ? "Enabled." : "Disabled.") );
+            statusWriter( "Automatic Backup: " + ( enabled ? "Enabled." : "Disabled." ) );
         }
 
         internal void startWatcher()

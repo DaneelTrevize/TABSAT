@@ -69,7 +69,8 @@ namespace TABReflector
                         {
                             Console.WriteLine( "Signature: " + signature );
                             writePipe( signature );
-                        } else
+                        }
+                        else
                         {
                             writePipe( "Failed to generated zxcheck." );
                         }
@@ -83,7 +84,8 @@ namespace TABReflector
                             //generateZXCheck( value );
                             //Console.Error.WriteLine( "No zxcheck found." );
                             writePipe( "No zxcheck found." );
-                        } else
+                        }
+                        else
                         {
                             string password = generatePassword( value );
                             Console.WriteLine( "Password: " + password );
@@ -340,9 +342,9 @@ namespace TABReflector
 
                 return signature;
             }
-            catch(Exception e )
+            catch( Exception e )
             {
-                Console.Error.WriteLine(e.Message );
+                Console.Error.WriteLine( e.Message );
                 return null;
             }
         }
@@ -398,11 +400,11 @@ namespace TABReflector
 
                 object activeZip = getCurrentZip().GetValue( null, null );
                 //Console.WriteLine( "activeZip: " + activeZip.ToString() );
-                return (string) getZipPassword().GetValue( activeZip );
+                return (string) getZipPassword().GetValue( activeZip, null );
             }
-            catch(Exception e )
+            catch( Exception e )
             {
-                Console.Error.WriteLine(e.Message );
+                Console.Error.WriteLine( e.Message );
                 return null;
             }
         }
