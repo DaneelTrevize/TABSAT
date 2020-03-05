@@ -96,7 +96,7 @@
     </Compile>
     <Compile Include="ReflectorManager.cs" />
     <Compile Include="SaveEditor.cs" />
-    <Compile Include="TABSAT.cs" />
+    <Compile Include="ModifyManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AutoBackupControls.resx">
       <DependentUpon>AutoBackupControls.cs</DependentUpon>

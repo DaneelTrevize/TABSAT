@@ -65,6 +65,8 @@ Swap the locations of different types to affect distribution difficulty. Depends
 
 Swap the closest Mutants with the farthest Giants?
 
+Replace all Giants with Mutants, or all Mutants with Giants?
+
 Alter the size and composition of waves?
 Alter the number and timing of waves?
 Effectively could offer 50-day challenge map on demand?

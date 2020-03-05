@@ -116,7 +116,7 @@ namespace TABSAT
             enableControls();
         }
 
-        internal void stopWatcher()         // Should instead implement IDisposable?
+        internal void stopWatcher()
         {
             if( backupsManager != null )
             {
@@ -192,7 +192,7 @@ namespace TABSAT
 
             backupsManager.loadActiveSaves();
             
-            changeBackupsDirectory( BackupsManager.getDefaultBackupDirectory() );
+            changeBackupsDirectory( BackupsManager.DEFAULT_BACKUP_DIRECTORY );
         }
 
         public void refreshActiveSaves( object sender, BackupsManager.ActiveSavesChangedEventArgs e )

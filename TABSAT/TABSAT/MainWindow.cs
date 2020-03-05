@@ -5,7 +5,7 @@ namespace TABSAT
 {
     public partial class MainWindow : Form
     {
-        private const string nowUtcFormat = "yyyy/MM/dd HH:mm:ss.fff";
+        private const string NOW_UTC_FORMAT = "yyyy/MM/dd HH:mm:ss.fff";
 
         private ModifySaveControls modifySaveC;
         private AutoBackupControls autoBackupC;
@@ -28,7 +28,7 @@ namespace TABSAT
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
-            Application.Run( new MainWindow( TABSAT.defaultSavesDirectory ) );
+            Application.Run( new MainWindow( TAB.DEFAULT_SAVES_DIRECTORY ) );
 
         }
 
@@ -37,9 +37,9 @@ namespace TABSAT
             InitializeComponent();
             //Height = 900;
 
-            string reflectorDir = TABSAT.getReflectorDirectory();
+            string reflectorDir = ModifyManager.getReflectorDirectory();
 
-            string tabDir = TABSAT.findTABdirectory();
+            string tabDir = TAB.GetExeDirectory();
             /*
             while( tabDir == null )
             {
@@ -52,6 +52,8 @@ namespace TABSAT
             initModifySaveControl( reflectorDir, tabDir, savesDirectory );
 
             initAutoBackupControl( savesDirectory );
+
+            tabControl1.SelectedIndexChanged += tabControl_SelectedIndexChanged;
         }
 
         private void statusWriter( string status )
@@ -62,16 +64,16 @@ namespace TABSAT
             }
             else
             {
-                statusTextBox.AppendText( DateTime.UtcNow.ToString( nowUtcFormat ) + " - " + status + Environment.NewLine );
+                statusTextBox.AppendText( DateTime.UtcNow.ToString( NOW_UTC_FORMAT ) + " - " + status + Environment.NewLine );
             }
         }
 
         private void initModifySaveControl( string reflectorDir, string tabDir, string savesDirectory )
         {
             ReflectorManager reflectorManager = new ReflectorManager( reflectorDir, tabDir );
-            TABSAT tabSAT = new TABSAT( reflectorManager, TABSAT.getDefaultEditsDirectory() );
+            ModifyManager modifyManager = new ModifyManager( reflectorManager, ModifyManager.DEFAULT_EDITS_DIRECTORY );
 
-            modifySaveC = new ModifySaveControls( tabSAT, statusWriter, savesDirectory );
+            modifySaveC = new ModifySaveControls( modifyManager, statusWriter, savesDirectory );
             //modifySaveC.Location = new System.Drawing.Point( 4, 4 );
             modifySaveC.Anchor = (AnchorStyles) ( ( ( ( AnchorStyles.Top | AnchorStyles.Bottom ) | AnchorStyles.Left ) | AnchorStyles.Right ) );
             modifySaveC.Name = "modifySaveC";
@@ -87,6 +89,14 @@ namespace TABSAT
             autoBackupC.Anchor = (AnchorStyles) ( ( ( ( AnchorStyles.Top | AnchorStyles.Bottom ) | AnchorStyles.Left ) | AnchorStyles.Right ) );
             autoBackupC.Name = "autoBackupC";
             autoBackupTabPage.Controls.Add( autoBackupC );
+        }
+
+        private void tabControl_SelectedIndexChanged( object sender, EventArgs e )
+        {
+            if( tabControl1.SelectedIndex == 1 )    // Assumes Modify tab page is 2nd
+            {
+                modifySaveC.refreshSaveFileChoice();
+            }
         }
 
         private void MainWindow_FormClosing( object sender, FormClosingEventArgs e )

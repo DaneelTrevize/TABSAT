@@ -331,6 +331,7 @@
             this.extractGroupBox.TabIndex = 4;
             this.extractGroupBox.TabStop = false;
             this.extractGroupBox.Text = "Extracted Files";
+            this.extractGroupBox.Enter += new System.EventHandler(this.extractGroupBox_Enter);
             // 
             // extractManualRadioButton
             // 

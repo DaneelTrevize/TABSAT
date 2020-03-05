@@ -8,17 +8,25 @@ namespace TABSAT
 {
     internal partial class ModifySaveControls : UserControl
     {
-        private readonly TABSAT tabSAT;
+        private readonly ModifyManager modifyManager;
         private readonly StatusWriterDelegate statusWriter;
 
-        public ModifySaveControls( TABSAT t, StatusWriterDelegate sW, string savesDirectory )
+        private LinkedList<GroupBox> overwhelmingUI;
+
+        public ModifySaveControls( ModifyManager m, StatusWriterDelegate sW, string savesDirectory )
         {
             InitializeComponent();
 
-            tabSAT = t;
+            modifyManager = m;
             statusWriter = sW;
 
-            saveOpenFileDialog.Filter = "TAB Save Files|*" + TABReflector.TABReflector.saveExtension;// + "|Data files|*.dat";
+            overwhelmingUI = new LinkedList<GroupBox>();
+            overwhelmingUI.AddLast( reflectorGroupBox );
+            overwhelmingUI.AddLast( processGroupBox );
+            overwhelmingUI.AddLast( corruptionGroupBox );
+            setOverwhelmingUIVisible( false );
+
+            saveOpenFileDialog.Filter = "TAB Save Files|*" + TAB.SAVE_EXTENSION;// + "|Data files|*.dat";
             saveOpenFileDialog.InitialDirectory = savesDirectory;
 
             themeComboBox.DataSource = new BindingSource( SaveEditor.themeTypeNames, null );
@@ -39,13 +47,6 @@ namespace TABSAT
             leaveFogRadioButton.CheckedChanged += fogNotReduceHandler;
             removeFogRadioButton.CheckedChanged += fogNotReduceHandler;
             showFullRadioButton.CheckedChanged += fogNotReduceHandler;
-
-            string saveFile = TABSAT.findMostRecentSave( savesDirectory );
-            if( saveFile != null )
-            {
-                saveOpenFileDialog.FileName = saveFile; // No need to Path.GetFileName( saveFile ), doesn't help FileDialog only displaying the last ~8.3 chars
-                setSaveFile( saveFile );
-            }
         }
 
         internal void reflectorOutputHandler( object sendingProcess, DataReceivedEventArgs outLine )
@@ -63,13 +64,40 @@ namespace TABSAT
             //}
         }
 
+        internal void refreshSaveFileChoice()
+        {
+            if( saveFileGroupBox.Enabled )  // Don't permit tabbing out and back during modification operations to risk changing the save file
+            {
+                string saveFile = TAB.GetMostRecentSave( saveOpenFileDialog.InitialDirectory );
+                if( saveFile != null )
+                {
+                    saveOpenFileDialog.FileName = saveFile; // No need to Path.GetFileName( saveFile ), doesn't help FileDialog only displaying the last ~8.3 chars
+                    setSaveFile( saveFile );
+                }
+            }
+        }
+
+
+        private void setOverwhelmingUIVisible( bool newVisible )
+        {
+            if( overwhelmingUI.First.Value.Visible != newVisible )
+            {
+                foreach( GroupBox g in overwhelmingUI )
+                {
+                    g.Visible = newVisible;
+                }
+                Update();   // Force immediate repaint
+            }
+        }
 
         private void saveFileChooseButton_Click( object sender, EventArgs e )
         {
             if( saveOpenFileDialog.ShowDialog() == DialogResult.OK )
             {
+                setOverwhelmingUIVisible( true );
+
                 string file = saveOpenFileDialog.FileName;
-                if( TABSAT.fileIsWithinDirectory( file, BackupsManager.getDefaultBackupDirectory() ) )   // Doesn't use a dynamic value for the current backups directory, from the other tab's BackupManager...
+                if( TAB.IsFileWithinDirectory( file, BackupsManager.DEFAULT_BACKUP_DIRECTORY ) )    // Doesn't use a dynamic value for the current backups directory, from the other tab's BackupManager...
                 {
                     // Editing a backup will not trigger a checksum update once the modified file is repacked, confuses AutoBackup UI
                     statusWriter( "Please do not modify files within the backups directory: " + file );
@@ -86,7 +114,7 @@ namespace TABSAT
             saveFileTextBox.Text = saveFile;
             MainWindow.shiftTextViewRight( saveFileTextBox );
 
-            tabSAT.setSaveFile( saveFile );
+            modifyManager.setSaveFile( saveFile );
 
             reassessExtractionOption();
         }
@@ -141,6 +169,11 @@ namespace TABSAT
             }
         }
 
+        private void extractGroupBox_Enter( object sender, EventArgs e )
+        {
+            setOverwhelmingUIVisible( true );
+        }
+
         private void extractRadioButtons_CheckedChanged( object sender, EventArgs e )
         {
             // Do stuff only if the radio button is checked (or the action will run twice).
@@ -157,7 +190,7 @@ namespace TABSAT
                 modifyGroupBox.Enabled = false;
                 manualGroupBox.Enabled = true;
                 reflectorExtractRadioButton.Enabled = true;
-                extractSaveButton.Enabled = tabSAT.hasSaveFile();
+                extractSaveButton.Enabled = modifyManager.hasSaveFile();
             }
             else
             {
@@ -168,13 +201,15 @@ namespace TABSAT
                 {
                     reflectorRepackRadioButton.Checked = true;
                 }
-                modifySaveButton.Enabled = tabSAT.hasSaveFile();
+                modifySaveButton.Enabled = modifyManager.hasSaveFile();
             }
         }
 
         private void modifySaveButton_Click( object sender, EventArgs e )
         {
             disableChoices();
+
+            setOverwhelmingUIVisible( true );
 
             if( !extractManualRadioButton.Checked )
             {
@@ -185,7 +220,7 @@ namespace TABSAT
                 {
                     if( reflectorRepackRadioButton.Checked )    // Refactor how this _Click handles potentially failing in 2+ places and trying to stop the Reflector in 3...
                     {
-                        tabSAT.stopReflector();
+                        modifyManager.stopReflector();
                     }
 
                     resetSaveFileChoice();
@@ -198,7 +233,7 @@ namespace TABSAT
             {
                 if( reflectorRepackRadioButton.Checked )
                 {
-                    tabSAT.stopReflector();
+                    modifyManager.stopReflector();
                 }
 
                 resetSaveFileChoice();
@@ -213,13 +248,13 @@ namespace TABSAT
 
             if( reflectorRepackRadioButton.Checked )
             {
-                tabSAT.stopReflector();
+                modifyManager.stopReflector();
             }
 
             if( extractTidyRadioButton.Checked )
             {
                 // Remove the extracted files
-                tabSAT.removeDecryptedDir();
+                modifyManager.removeDecryptedDir();
                 statusWriter( "Removed extracted files." );
             }
 
@@ -249,7 +284,7 @@ namespace TABSAT
 
         private void extractSaveButton_Click( object sender, EventArgs e )
         {
-            if( !tabSAT.hasSaveFile() )
+            if( !modifyManager.hasSaveFile() )
             {
                 // Error?
                 return;
@@ -263,7 +298,7 @@ namespace TABSAT
 
                 if( reflectorExtractRadioButton.Checked )
                 {
-                    tabSAT.stopReflector();
+                    modifyManager.stopReflector();
                 }
                 return;
             }
@@ -277,7 +312,7 @@ namespace TABSAT
 
             if( reflectorExtractRadioButton.Checked )
             {
-                tabSAT.stopReflector();
+                modifyManager.stopReflector();
             }
         }
 
@@ -290,7 +325,7 @@ namespace TABSAT
 
             if( reflectorRepackRadioButton.Checked )
             {
-                tabSAT.stopReflector();
+                modifyManager.stopReflector();
             }
 
             resetSaveFileChoice();
@@ -303,7 +338,7 @@ namespace TABSAT
 
             if( reflectorRepackRadioButton.Checked )
             {
-                tabSAT.stopReflector();
+                modifyManager.stopReflector();
             }
 
             resetSaveFileChoice();
@@ -313,7 +348,7 @@ namespace TABSAT
         {
             extractSaveButton.Enabled = false;  // Should live in extractSaveButton_Click(), thus not be triggered by modifySaveButton_Click()?
 
-            string saveFile = tabSAT.extractSave( extractTidyRadioButton.Checked );
+            string saveFile = modifyManager.extractSave( extractTidyRadioButton.Checked );
             if( saveFile == null )
             {
                 statusWriter( "Unable to extract save file." );
@@ -334,7 +369,7 @@ namespace TABSAT
                 return true;
             }
 
-            SaveEditor dataEditor = tabSAT.getSaveEditor();
+            SaveEditor dataEditor = modifyManager.getSaveEditor();
 
             try
             {
@@ -389,7 +424,7 @@ namespace TABSAT
         {
             if( backupCheckBox.Checked )
             {
-                string backupFile = tabSAT.backupSave();
+                string backupFile = modifyManager.backupSave();
                 if( backupFile == null )
                 {
                     statusWriter( "Unable to backup save file." );
@@ -401,14 +436,14 @@ namespace TABSAT
                 }
             }
 
-            string newSaveFile = tabSAT.repackDirAsSave();
+            string newSaveFile = modifyManager.repackDirAsSave();
             statusWriter( "New Save File created:\t" + newSaveFile );
         }
 
         private void resetSaveFileChoice()
         {
             saveFileTextBox.Text = "";
-            tabSAT.setSaveFile( null );
+            modifyManager.setSaveFile( null );
 
             enableChoices();
 
@@ -418,8 +453,8 @@ namespace TABSAT
         internal void removeReflector()
         {
             // Need to synchronise/mutex access to tabSAT?
-            tabSAT.stopReflector();
-            tabSAT.removeReflector();
+            modifyManager.stopReflector();
+            modifyManager.removeReflector();
         }
     }
 }

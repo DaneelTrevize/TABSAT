@@ -186,6 +186,7 @@ namespace TABSAT
                     if( File.Exists( binTargetPath ) )
                     {
                         Console.WriteLine( "Reflector file: " + binary + " was already deployed." );
+                        // Should checksum that it's the same as the file we would have copied?
                     }
                     else
                     {
@@ -194,7 +195,7 @@ namespace TABSAT
                 }
             }
             state = ReflectorState.DEPLOYED;
-            Console.WriteLine( "Reflector deployed." );
+            //Console.WriteLine( "Reflector deployed." );
         }
 
         internal void removeReflector()
@@ -217,7 +218,7 @@ namespace TABSAT
                 }
             }
             state = ReflectorState.UNDEPLOYED;
-            Console.WriteLine( "Reflector removed." );
+            //Console.WriteLine( "Reflector removed." );
         }
 
         internal void startReflector()
@@ -245,7 +246,7 @@ namespace TABSAT
             reflector.Start();
             reflector.BeginOutputReadLine();
             reflector.BeginErrorReadLine();
-            Console.WriteLine( "Reflector started." );
+            //Console.WriteLine( "Reflector started." );
 
             reflectorWriter = new StreamWriter( reflectorPipe );
             //reflectorWriter.AutoFlush = true;
@@ -258,11 +259,12 @@ namespace TABSAT
                 //Console.WriteLine( "Reflector window title: " + reflector.MainWindowTitle );
                 IntPtr popup = reflector.MainWindowHandle;
                 ShowWindow( popup, SW_MINIMIZE );
-                Console.WriteLine( "Reflector window minimised." );
+                //Console.WriteLine( "Reflector window minimised." );
+                popup = IntPtr.Zero;    // Needless as it goes out of scope now anyway, and doesn't implement IDisposable/can't be wrapped in using()?
             }
             catch( InvalidOperationException ioe )
             {
-                Console.WriteLine( "Unable to obtain the Reflector's main window handle. " + ioe.Message );
+                Console.Error.WriteLine( "Unable to obtain the Reflector's main window handle. " + ioe.Message );
             }
             state = ReflectorState.STARTED;
         }
@@ -276,7 +278,7 @@ namespace TABSAT
 
             state = ReflectorState.PROCESSING;
 
-            writePipe( Char.ToString( (char) TABReflector.PipeFlowControl.Quit ) );
+            writePipe( Char.ToString( (char) PipeFlowControl.Quit ) );
 
             reflectorPipe.Close();
             //Console.WriteLine( "Pipe closed." );
@@ -288,7 +290,7 @@ namespace TABSAT
             resetReflector();
 
             state = ReflectorState.DEPLOYED;
-            Console.WriteLine( "Reflector stopped." );
+            //Console.WriteLine( "Reflector stopped." );
         }
 
         internal string generatePassword( string saveFile )
@@ -300,7 +302,7 @@ namespace TABSAT
 
             state = ReflectorState.PROCESSING;
 
-            writePipe( Char.ToString( (char) TABReflector.PipeFlowControl.Generate ) );
+            writePipe( Char.ToString( (char) PipeFlowControl.Generate ) );
             writePipe( saveFile );
             string password = readPipe();
 
@@ -317,7 +319,7 @@ namespace TABSAT
 
             state = ReflectorState.PROCESSING;
 
-            writePipe( Char.ToString( (char) TABReflector.PipeFlowControl.Checksum ) );
+            writePipe( Char.ToString( (char) PipeFlowControl.Checksum ) );
             writePipe( saveFile );
             string signature = readPipe();
 

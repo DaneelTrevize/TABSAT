@@ -27,8 +27,6 @@ namespace TABSAT
          *  When checksumming backups, if any duplicates are discovered, determine the oldest, and remove the newer, along with their paired check file, and potentially parent directory if now empty?
          */
 
-        private const string defaultBackupDirectoryName = @"TABSAT\saves";
-        private const string lastWriteUtcFormat = "yyyyMMdd HHmmss fff";
         /*
         internal enum State
         {
@@ -39,6 +37,10 @@ namespace TABSAT
             RESTORING
         }
         */
+        private const string LAST_WRITE_UTC_FORMAT = "yyyyMMdd HHmmss fff";
+
+        internal static readonly string DEFAULT_BACKUP_DIRECTORY = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\TABSAT\saves\" );
+
         public class ActiveSavesChangedEventArgs : EventArgs
         {
             public ICollection<KeyValuePair<string,CheckState>> ActiveSaves { get; }
@@ -68,10 +70,6 @@ namespace TABSAT
         public event EventHandler<ActiveSavesChangedEventArgs> ActiveSavesChanged;
         public event EventHandler<BackupSavesChangedEventArgs> BackupSavesChanged;
 
-        internal static string getDefaultBackupDirectory()
-        {
-            return Path.Combine( Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\" ), defaultBackupDirectoryName );
-        }
 
         private class SaveFile
         {
@@ -122,12 +120,12 @@ namespace TABSAT
                     }
                     catch( IOException e )
                     {
-                        Console.WriteLine( $"I/O Exception: {e.Message}" );
+                        Console.Error.WriteLine( $"I/O Exception: {e.Message}" );
                         return false;
                     }
                     catch( UnauthorizedAccessException e )
                     {
-                        Console.WriteLine( $"Access Exception: {e.Message}" );
+                        Console.Error.WriteLine( $"Access Exception: {e.Message}" );
                         return false;
                     }
                 }
@@ -195,7 +193,7 @@ namespace TABSAT
         {
             savesFolderWatcher = new FileSystemWatcher();
             savesFolderWatcher.InternalBufferSize = 64 * 1024;              // Max, 64KB
-            savesFolderWatcher.Filter = TABSAT.checkFilesFilter;
+            savesFolderWatcher.Filter = TAB.CHECKS_FILTER;
             savesFolderWatcher.Path = activeSavesDirInfo.FullName;
             savesFolderWatcher.NotifyFilter = NotifyFilters.FileName        // For Created/Renamed/Deleted events
                                             | NotifyFilters.LastWrite;      // For Changed events
@@ -211,7 +209,7 @@ namespace TABSAT
             string baseName = Path.GetFileNameWithoutExtension( e.FullPath );
 
             //FileInfo checkInfo = new FileInfo( e.FullPath );
-            FileInfo newSaveInfo = new FileInfo( Path.ChangeExtension( e.FullPath, TABReflector.TABReflector.saveExtension ) );
+            FileInfo newSaveInfo = new FileInfo( Path.ChangeExtension( e.FullPath, TAB.SAVE_EXTENSION ) );
             SaveFile newSave;
             SaveFile oldSave;
             switch( e.ChangeType )
@@ -357,7 +355,11 @@ namespace TABSAT
                 savesFolderWatcher.EnableRaisingEvents = false;
                 statusWriter( "Stopped monitoring TAB saves directory." );
             }
-            savesFolderWatcher.Dispose();   // Assuming only stopping on app quit
+        }
+            
+        public void Dispose()
+        {
+            savesFolderWatcher.Dispose();
         }
 
         internal bool setBackupsDirectory( BackgroundWorker worker, DoWorkEventArgs e )
@@ -378,7 +380,7 @@ namespace TABSAT
             }
             backupsDirectory = new DirectoryInfo( backupsDir );
 
-            int backupsCount = backupsDirectory.GetFiles( TABSAT.saveFilesFilter, SearchOption.AllDirectories ).Length;
+            int backupsCount = backupsDirectory.GetFiles( TAB.SAVES_FILTER, SearchOption.AllDirectories ).Length;
             statusWriter( "Calculating " + backupsCount + " Backups checksums." );
             checksummedBackups.Clear();
             int i = 0;
@@ -388,7 +390,7 @@ namespace TABSAT
             {
                 foreach( var timeDirectory in baseNameDirectory.GetDirectories()/*.OrderByDescending( d => d.LastWriteTimeUtc )*/ )
                 {
-                    var saveFiles = timeDirectory.GetFiles( TABSAT.saveFilesFilter );
+                    var saveFiles = timeDirectory.GetFiles( TAB.SAVES_FILTER );
                     if( saveFiles.Length != 1 )
                     {
                         statusWriter( "Unexpected number of Backup Saves in: " + timeDirectory.FullName );
@@ -418,7 +420,7 @@ namespace TABSAT
 
         internal void loadActiveSaves()
         {
-            FileInfo[] newActiveSavesInfo = activeSavesDirInfo.GetFiles( TABSAT.saveFilesFilter );
+            FileInfo[] newActiveSavesInfo = activeSavesDirInfo.GetFiles( TAB.SAVES_FILTER );
             if( !newActiveSavesInfo.Any() )
             {
                 statusWriter( "No Active Save Files found." );
@@ -524,10 +526,10 @@ namespace TABSAT
             try
             {
                 string backupNameDir = Path.Combine( backupsDirectory.FullName, save.baseName );
-                string backupTimeDir = Path.Combine( backupNameDir, save.lastWriteUtc.ToString( lastWriteUtcFormat ) );     // Not Refresh()'d file.lastWriteTimeUtc?
+                string backupTimeDir = Path.Combine( backupNameDir, save.lastWriteUtc.ToString( LAST_WRITE_UTC_FORMAT ) );     // Not Refresh()'d file.lastWriteTimeUtc?
 
-                string saveFileBackupPath = Path.Combine( backupTimeDir, save.baseName + TABReflector.TABReflector.saveExtension );
-                string checkFileBackupPath = Path.Combine( backupTimeDir, save.baseName + TABReflector.TABReflector.checkExtension );
+                string saveFileBackupPath = Path.Combine( backupTimeDir, save.baseName + TAB.SAVE_EXTENSION );
+                string checkFileBackupPath = Path.Combine( backupTimeDir, save.baseName + TAB.CHECK_EXTENSION );
                 if( File.Exists( saveFileBackupPath ) || File.Exists( checkFileBackupPath ) )
                 {
                     statusWriter( "The save file backup already exists for the same name and last write time: " + save.file.FullName );
@@ -542,6 +544,7 @@ namespace TABSAT
                     }
                     catch( Exception e )
                     {
+                        Console.Error.WriteLine( e.Message );
                         statusWriter( "There was a problem creating the directory for the backup file: " + backupTimeDir );
                         return false;
                     }
@@ -554,7 +557,7 @@ namespace TABSAT
 
                 addBackup( new FileInfo( saveFileBackupPath ) );
 
-                string checkFileActivePath = Path.Combine( save.file.DirectoryName, save.baseName + TABReflector.TABReflector.checkExtension );
+                string checkFileActivePath = Path.Combine( save.file.DirectoryName, save.baseName + TAB.CHECK_EXTENSION );
                 if( !File.Exists( checkFileActivePath ) )
                 {
                     statusWriter( "The check file does not exist: " + checkFileActivePath );
@@ -605,7 +608,7 @@ namespace TABSAT
             {
                 string backupPathWithoutExtension = Path.Combine( Path.Combine( Path.Combine( backupsDirectory.FullName, baseName ), timeDir ), baseName );
 
-                string backupSavePath = Path.ChangeExtension( backupPathWithoutExtension, TABReflector.TABReflector.saveExtension );
+                string backupSavePath = Path.ChangeExtension( backupPathWithoutExtension, TAB.SAVE_EXTENSION );
                 if( !File.Exists( backupSavePath ) )
                 {
                     //throw new ArgumentException
@@ -613,7 +616,7 @@ namespace TABSAT
                     return false;
                 }
 
-                string backupCheckPath = Path.ChangeExtension( backupPathWithoutExtension, TABReflector.TABReflector.checkExtension );
+                string backupCheckPath = Path.ChangeExtension( backupPathWithoutExtension, TAB.CHECK_EXTENSION );
                 if( !File.Exists( backupCheckPath ) )
                 {
                     //throw new ArgumentException

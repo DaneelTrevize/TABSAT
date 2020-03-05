@@ -1,14 +1,10 @@
 ﻿using Ionic.Zip;
-using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace TABSAT
 {
-    class TABSAT
+    class ModifyManager
     {
         /*
          *  To decrypt/encrypt save files:
@@ -36,14 +32,7 @@ namespace TABSAT
         };
         */
 
-        private const string steamVDFsubPath = @"config\config.vdf";
-        //example string libraryLine =        @"    ""BaseInstallFolder_1""		          ""K:\\SteamLibrary""";
-        private const string libraryPattern = @"^\s+""BaseInstallFolder_(?<count>\d+)""\s+""(?<path>.+)""$";
-        private const string steamTABsubDirectory = @"\steamapps\common\They Are Billions\";
-        internal static readonly string defaultSavesDirectory = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\My Games\They Are Billions\Saves\" );
-        private const string defaultEditsDirectoryName = @"TABSAT\edits";
-        internal static readonly string saveFilesFilter = "*" + TABReflector.TABReflector.saveExtension;
-        internal static readonly string checkFilesFilter = "*" + TABReflector.TABReflector.checkExtension;
+        internal static readonly string DEFAULT_EDITS_DIRECTORY = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\TABSAT\edits\" );
 
         private ReflectorManager reflectorManager;
         private readonly string editsDir;
@@ -51,103 +40,9 @@ namespace TABSAT
         private string currentDecryptDir;
 
 
-        internal static string findTABdirectory()
-        {
-            string steamConfigPath = findSteamConfig();
-            if( steamConfigPath != null )
-            {
-                //Console.WriteLine( "Steam Libraries listed within: " + steamConfigPath );
-
-                LinkedList<string> steamLibraries = findSteamLibraries( steamConfigPath );
-
-                foreach( string library in steamLibraries )
-                {
-                    string TABdirectory = library + steamTABsubDirectory;
-                    if( Directory.Exists( TABdirectory ) )
-                    {
-                        //Console.WriteLine( "Located TAB: " + TABdirectory );
-                        return TABdirectory;
-                    }
-                }
-            }
-            return null;
-        }
-
-        internal static string findSteamConfig()
-        {
-            using( RegistryKey steamKey = Registry.CurrentUser.OpenSubKey( @"Software\Valve\Steam" ) )
-            {
-                if( steamKey != null )
-                {
-                    object SteamPathValue = steamKey.GetValue( "SteamPath" );
-                    //Console.WriteLine( "Located Steam: " + SteamPathValue );
-                    if( steamKey != null )
-                    {
-                        string steamConfigPath = Path.Combine( (string) SteamPathValue, steamVDFsubPath );
-                        if( File.Exists( steamConfigPath ) )
-                        {
-                            return steamConfigPath;
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        private static LinkedList<string> findSteamLibraries( string steamConfigPath )
-        {
-            LinkedList<string> steamLibraries = new LinkedList<string>();
-
-            Regex libraryRegex = new Regex( libraryPattern, RegexOptions.Compiled );
-
-            using( StreamReader config = new StreamReader( steamConfigPath ) )
-            {
-                string line;
-                while( ( line = config.ReadLine() ) != null )
-                {
-                    Match match = libraryRegex.Match( line );
-                    if( match.Success )
-                    {
-                        string libraryPath = match.Groups["path"].Value;
-                        //Console.WriteLine( "SteamLibrary #" + match.Groups["count"].Value + ": " + libraryPath );
-                        steamLibraries.AddFirst( libraryPath );
-                    }
-                }
-            }
-
-            return steamLibraries;
-        }
-
         internal static string getReflectorDirectory()
         {
-            return Directory.GetCurrentDirectory();
-        }
-
-        internal static string findMostRecentSave( string savesDir )
-        {
-            if( !Directory.Exists( savesDir ) )
-            {
-                throw new ArgumentException( "The provided saves directory does not exist." );
-            }
-            DirectoryInfo savesDirInfo = new DirectoryInfo( savesDir );
-            FileInfo[] savesInfo = savesDirInfo.GetFiles( saveFilesFilter );
-            if( savesInfo.Length > 0 )
-            {
-                IOrderedEnumerable<FileInfo> sortedSavesInfo = savesInfo.OrderByDescending( s => s.CreationTimeUtc );
-                FileInfo newestSave = sortedSavesInfo.First();
-                return newestSave.FullName;
-            }
-            return null;
-        }
-
-        internal static string getDefaultEditsDirectory()
-        {
-            return Path.Combine( Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\" ), defaultEditsDirectoryName );
-        }
-
-        internal static bool fileIsWithinDirectory( string file, string directory )
-        {
-            return Path.GetFullPath( file ).StartsWith( Path.GetFullPath( directory ) );
+            return Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar;
         }
 
 
@@ -185,7 +80,7 @@ namespace TABSAT
             if( tryCheckFile )
             {
                 // Try to backup the check file too, but don't fail the overall method if this can't be done
-                string checkFile = Path.ChangeExtension( saveFile, TABReflector.TABReflector.checkExtension );
+                string checkFile = Path.ChangeExtension( saveFile, TAB.CHECK_EXTENSION );
                 if( !File.Exists( checkFile ) )
                 {
                     Console.Error.WriteLine( "Check file does not exist: " + checkFile );
@@ -254,7 +149,7 @@ namespace TABSAT
         }
 
 
-        public TABSAT( ReflectorManager r, string e )
+        public ModifyManager( ReflectorManager r, string e )
         {
             if( r == null )
             {
@@ -361,7 +256,7 @@ namespace TABSAT
 
             // Purge the temporary unencrypted versions of this new save file
             File.Delete( unencryptedSaveFile );
-            File.Delete( Path.ChangeExtension( unencryptedSaveFile, TABReflector.TABReflector.checkExtension ) );
+            File.Delete( Path.ChangeExtension( unencryptedSaveFile, TAB.CHECK_EXTENSION ) );
 
             repackExtracted( currentSaveFile, currentDecryptDir, password );
 

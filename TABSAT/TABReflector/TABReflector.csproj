@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{8FA42090-BA4C-437B-A201-8973BDA0BEB4}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TABReflector</RootNamespace>
+    <RootNamespace>TABSAT</RootNamespace>
     <AssemblyName>TABReflector</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>TABReflector.TABReflector</StartupObject>
+    <StartupObject>TABSAT.TABReflector</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TAB.cs" />
     <Compile Include="TABReflector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

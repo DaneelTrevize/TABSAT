@@ -17,6 +17,10 @@
             {
                 components.Dispose();
             }
+            if( disposing && backupsManager != null )
+            {
+                backupsManager.Dispose();
+            }
             base.Dispose( disposing );
         }
 

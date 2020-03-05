@@ -6,7 +6,7 @@ using System.IO.Pipes;
 using System.Reflection;
 using System.Threading;
 
-namespace TABReflector
+namespace TABSAT
 {
     public enum PipeFlowControl
     {
@@ -17,10 +17,6 @@ namespace TABReflector
 
     public class TABReflector
     {
-        public const string tabExeName = "TheyAreBillions.exe";
-        public const string saveExtension = ".zxsav";
-        public const string checkExtension = ".zxcheck";
-
         private static Assembly tabAssembly;
         private static Type ZXProgram;
         private static MethodInfo billionsMain;
@@ -48,7 +44,7 @@ namespace TABReflector
             pipeWriter = new StreamWriter( pipe );
         }
 
-        private void start()
+        private void run()
         {
             pipe.Connect();
             Console.WriteLine( "Reflector listening." );
@@ -79,7 +75,7 @@ namespace TABReflector
                         //writePipe( "Awaiting file path." );
                         value = readPipe();
                         // Checksum file is required or passwork generator invocation will fail
-                        if( !File.Exists( Path.ChangeExtension( value, checkExtension ) ) )
+                        if( !File.Exists( Path.ChangeExtension( value, TAB.CHECK_EXTENSION ) ) )
                         {
                             //generateZXCheck( value );
                             //Console.Error.WriteLine( "No zxcheck found." );
@@ -96,6 +92,16 @@ namespace TABReflector
                         //writePipe( "Quitting." );
                         Console.WriteLine( "Reflector stopping." );
                         pipe.Close();
+                        /*try
+                        {
+                            pipeReader.Dispose();
+                        }
+                        catch( ObjectDisposedException ode ) { }
+                        try
+                        {
+                            pipeWriter.Dispose();
+                        }
+                        catch( ObjectDisposedException ode ) { }*/
                         keepRunning = false;
                         break;
                     default:
@@ -152,7 +158,7 @@ namespace TABReflector
                 // Attempt to load the assembly
                 try
                 {
-                    tabAssembly = Assembly.LoadFile( AppDomain.CurrentDomain.BaseDirectory + tabExeName );
+                    tabAssembly = Assembly.LoadFile( AppDomain.CurrentDomain.BaseDirectory + TAB.EXE_NAME );
 
                     if( tabAssembly == null )
                     {
@@ -335,7 +341,7 @@ namespace TABReflector
                 object sigObj = signingMethod.Invoke( getGameAccountMethod, new object[] { saveFile, 2 } );
                 string signature = (string) sigObj;
 
-                string checkFile = Path.ChangeExtension( saveFile, checkExtension );
+                string checkFile = Path.ChangeExtension( saveFile, TAB.CHECK_EXTENSION );
                 File.WriteAllText( checkFile, signature );
 
                 //Console.WriteLine( "Created " + checkExtension + " file. Signature = " + signature );
@@ -498,7 +504,7 @@ namespace TABReflector
                 Environment.Exit( -1 );
             }
 
-            if( !File.Exists( AppDomain.CurrentDomain.BaseDirectory + tabExeName ) )
+            if( !File.Exists( AppDomain.CurrentDomain.BaseDirectory + TAB.EXE_NAME ) )
             {
                 Console.Error.WriteLine( "TAB executable not found." );
                 Environment.Exit( -1 );
@@ -532,9 +538,9 @@ namespace TABReflector
                 }
             }
 
-            TABReflector tabref = new TABReflector( args[0] );
+            TABReflector reflector = new TABReflector( args[0] );
 
-            tabref.start();
+            reflector.run();
 
             Environment.Exit( 0 );
         }
