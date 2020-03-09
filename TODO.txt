@@ -9,6 +9,9 @@ Provide a button to stop the Reflector whenever it's running?
 Provide an option to leave the Reflector deployed, and verify whether it is during ReflectorManager initialisation? Including file checksum?
 
 
+Add a blank "Log" Tab Control page, which when chosen collapses the control's height and the enclosing SplitContainer.Panel's, to maximise the log panel's height?
+
+
 Refactor TABSAT's own Console...WriteLine() to use a UI textfield/list, at the bottom of the UI/on another pane?
 
 
@@ -62,10 +65,13 @@ Might have to have a pseudo daily/8-hourly/faster wave, that spawns unit types &
 Could affect difficulty either way:
 
 Swap the locations of different types to affect distribution difficulty. Depends upon generating LevelFastSerializedEntities?
+Specifically, could:
+place most/all special infected in concentric rings, e.g. Fatties closest, then Spitters, then Harpies?
+place most/all Spitters in 1 cardinal direction, all Harpies in another, all Fatties, etc?
 
 Swap the closest Mutants with the farthest Giants?
 
-Replace all Giants with Mutants, or all Mutants with Giants?
+#Replace all Giants with Mutants, or all Mutants with Giants?
 
 Alter the size and composition of waves?
 Alter the number and timing of waves?
@@ -80,6 +86,8 @@ Alter the starting troops?
 Make games easier:
 
 Reposition Ravens to indicate direction to Mutants/Giants/VODs?
+Or use sign post assets from custom/campaign maps?
+For VODs, convert each building relative position from CC into an angle, consolidate similar-enough angles into a single marker.
 
 #Offer to enlarge the default fog-clearing as a circle of adjustable radius around the CC.
 

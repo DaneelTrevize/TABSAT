@@ -365,6 +365,31 @@ namespace TABSAT
 
         }
 
+        internal void replaceMutants( bool toGiantNotMutant )
+        {
+            findMutantsAndGiants();
+
+            if( toGiantNotMutant && !mutants.Any() )
+            {
+                Console.WriteLine( "No Mutants to replace." );
+                return;
+            }
+            if( !toGiantNotMutant && !giants.Any() )
+            {
+                Console.WriteLine( "No Giants to replace." );
+                return;
+            }
+
+            /*
+             * for each HugeZombie:
+             * change the <Item><Complex type=> from ZX.Entities.ZombieMutant to ZombieGiant
+             * change the <Item><Complex><Properties><Simple name="IDTemplate" value=> ID template number
+             * change the behaviour?
+             * reset the movement/pathing?
+             *
+             */
+        }
+
         internal void relocateMutants( bool toGiantNotMutant, bool perDirection )
         {
             findMutantsAndGiants();

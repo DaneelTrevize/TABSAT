@@ -11,20 +11,12 @@ namespace TABSAT
         private readonly ModifyManager modifyManager;
         private readonly StatusWriterDelegate statusWriter;
 
-        private LinkedList<GroupBox> overwhelmingUI;
-
         public ModifySaveControls( ModifyManager m, StatusWriterDelegate sW, string savesDirectory )
         {
             InitializeComponent();
 
             modifyManager = m;
             statusWriter = sW;
-
-            overwhelmingUI = new LinkedList<GroupBox>();
-            overwhelmingUI.AddLast( reflectorGroupBox );
-            overwhelmingUI.AddLast( processGroupBox );
-            overwhelmingUI.AddLast( corruptionGroupBox );
-            setOverwhelmingUIVisible( false );
 
             saveOpenFileDialog.Filter = "TAB Save Files|*" + TAB.SAVE_EXTENSION;// + "|Data files|*.dat";
             saveOpenFileDialog.InitialDirectory = savesDirectory;
@@ -33,10 +25,12 @@ namespace TABSAT
             themeComboBox.DisplayMember = "Value";
             themeComboBox.ValueMember = "Key";
 
+            mutantReplaceAllComboBox.SelectedIndex = 0;
             mutantMoveWhatComboBox.SelectedIndex = 0;
             mutantMoveGlobalComboBox.SelectedIndex = 0;
             themeComboBox.SelectedIndex = 3;
             // Register these event handlers after the above 'default' choices, to avoid handling non-user events.
+            mutantReplaceAllComboBox.SelectedIndexChanged += new System.EventHandler( replaceAllComboBox_SelectedIndexChanged );
             var mutantChoicesHandler = new System.EventHandler( mutantMoveEitherComboBox_SelectedIndexChanged );
             mutantMoveGlobalComboBox.SelectedIndexChanged += mutantChoicesHandler;
             mutantMoveWhatComboBox.SelectedIndexChanged += mutantChoicesHandler;
@@ -77,25 +71,10 @@ namespace TABSAT
             }
         }
 
-
-        private void setOverwhelmingUIVisible( bool newVisible )
-        {
-            if( overwhelmingUI.First.Value.Visible != newVisible )
-            {
-                foreach( GroupBox g in overwhelmingUI )
-                {
-                    g.Visible = newVisible;
-                }
-                Update();   // Force immediate repaint
-            }
-        }
-
         private void saveFileChooseButton_Click( object sender, EventArgs e )
         {
             if( saveOpenFileDialog.ShowDialog() == DialogResult.OK )
             {
-                setOverwhelmingUIVisible( true );
-
                 string file = saveOpenFileDialog.FileName;
                 if( TAB.IsFileWithinDirectory( file, BackupsManager.DEFAULT_BACKUP_DIRECTORY ) )    // Doesn't use a dynamic value for the current backups directory, from the other tab's BackupManager...
                 {
@@ -124,10 +103,26 @@ namespace TABSAT
             themeCheckBox.Checked = true;
         }
 
-        private void mutantsNotMoveRadio_CheckedChanged( object sender, EventArgs e )
+        private void mutantsSimpleRadio_CheckedChanged( object sender, EventArgs e )
         {
             if( ( (RadioButton) sender ).Checked )
             {
+                mutantReplaceAllRadio.Checked = false;
+                mutantsMoveRadio.Checked = false;
+            }
+        }
+
+        private void replaceAllComboBox_SelectedIndexChanged( object sender, EventArgs e )
+        {
+            mutantReplaceAllRadio.Checked = true;
+        }
+
+        private void mutantReplaceAllRadio_CheckedChanged( object sender, EventArgs e )
+        {
+            if( ( (RadioButton) sender ).Checked )
+            {
+                mutantsNothingRadio.Checked = false;
+                mutantsRemoveRadio.Checked = false;
                 mutantsMoveRadio.Checked = false;
             }
         }
@@ -136,6 +131,7 @@ namespace TABSAT
         {
             if( ( (RadioButton) sender ).Checked )
             {
+                mutantReplaceAllRadio.Checked = false;
                 mutantsNothingRadio.Checked = false;
                 mutantsRemoveRadio.Checked = false;
             }
@@ -169,16 +165,19 @@ namespace TABSAT
             }
         }
 
-        private void extractGroupBox_Enter( object sender, EventArgs e )
-        {
-            setOverwhelmingUIVisible( true );
-        }
-
         private void extractRadioButtons_CheckedChanged( object sender, EventArgs e )
         {
             // Do stuff only if the radio button is checked (or the action will run twice).
             if( ( (RadioButton) sender ).Checked )
             {
+                if( extractManualRadioButton.Checked )
+                {
+                    if( !manualGroupBox.Visible )
+                    {
+                        manualGroupBox.Visible = true;
+                    }
+                }
+                
                 reassessExtractionOption();
             }
         }
@@ -208,8 +207,6 @@ namespace TABSAT
         private void modifySaveButton_Click( object sender, EventArgs e )
         {
             disableChoices();
-
-            setOverwhelmingUIVisible( true );
 
             if( !extractManualRadioButton.Checked )
             {
@@ -363,7 +360,7 @@ namespace TABSAT
 
         private bool modifyExtractedSave()
         {
-            if( !mutantsRemoveRadio.Checked && !mutantsMoveRadio.Checked && !showFullRadioButton.Checked && !removeFogRadioButton.Checked && !reduceFogRadioButton.Checked && !themeCheckBox.Checked )
+            if( !mutantsRemoveRadio.Checked && !mutantReplaceAllRadio.Checked && !mutantsMoveRadio.Checked && !showFullRadioButton.Checked && !removeFogRadioButton.Checked && !reduceFogRadioButton.Checked && !themeCheckBox.Checked )
             {
                 // Nothing to do
                 return true;
@@ -377,6 +374,12 @@ namespace TABSAT
                 {
                     statusWriter( "Removing Mutants." );
                     dataEditor.removeMutants();
+                }
+                else if( mutantReplaceAllRadio.Checked )
+                {
+                    bool toGiantNotMutant = mutantReplaceAllComboBox.SelectedIndex == 0;
+                    statusWriter( "Replacing all " + ( toGiantNotMutant ? "Mutants with Giants." : "Giants with Mutants." ) );
+                    dataEditor.replaceMutants( toGiantNotMutant );
                 }
                 else if( mutantsMoveRadio.Checked )
                 {

@@ -35,7 +35,9 @@ namespace TABSAT
         public MainWindow( string savesDirectory )
         {
             InitializeComponent();
+            //Width = 950;
             //Height = 900;
+            //MinimumSize = new System.Drawing.Size( 800, 825 );
 
             string reflectorDir = ModifyManager.getReflectorDirectory();
 
@@ -74,8 +76,7 @@ namespace TABSAT
             ModifyManager modifyManager = new ModifyManager( reflectorManager, ModifyManager.DEFAULT_EDITS_DIRECTORY );
 
             modifySaveC = new ModifySaveControls( modifyManager, statusWriter, savesDirectory );
-            //modifySaveC.Location = new System.Drawing.Point( 4, 4 );
-            modifySaveC.Anchor = (AnchorStyles) ( ( ( ( AnchorStyles.Top | AnchorStyles.Bottom ) | AnchorStyles.Left ) | AnchorStyles.Right ) );
+            modifySaveC.Dock = DockStyle.Fill;
             modifySaveC.Name = "modifySaveC";
             saveEditorTabPage.Controls.Add( modifySaveC );
 
@@ -85,8 +86,7 @@ namespace TABSAT
         private void initAutoBackupControl( string savesDirectory )
         {
             autoBackupC = new AutoBackupControls( savesDirectory, statusWriter );
-            //autoBackupC.Location = new System.Drawing.Point( 4, 4 );
-            autoBackupC.Anchor = (AnchorStyles) ( ( ( ( AnchorStyles.Top | AnchorStyles.Bottom ) | AnchorStyles.Left ) | AnchorStyles.Right ) );
+            autoBackupC.Dock = DockStyle.Fill;
             autoBackupC.Name = "autoBackupC";
             autoBackupTabPage.Controls.Add( autoBackupC );
         }

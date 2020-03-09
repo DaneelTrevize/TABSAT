@@ -212,3 +212,54 @@ Bonus resources from collecting pickables?
         <Simple name="CommandCenterExtraEnergy" value="120" />
         <Simple name="CommandCenterExtraWorkers" value="0" />
 
+Oil Pools:
+        <Complex name="CurrentGeneratedLevel">
+          <Properties>
+
+            <Complex name="Data">
+              <Properties>
+
+                <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+                  <Properties>
+                    <Complex name="MapDrawer">
+                      <Properties>
+
+                        <Collection name="ExtraEntities" elementType="DXVision.DXEntity, DXVision">
+                          <Properties>
+                            <Simple name="Capacity" value="256" />
+                          </Properties>
+                          <Items>
+
+                            <Complex type="ZX.Entities.OilSource, TheyAreBillions">
+                              <Properties>
+                                <Simple name="Flags" value="None" />
+                                <Simple name="IDTemplate" type="System.UInt64, mscorlib" value="14597207313853823957" />
+                                <Collection name="Components" elementType="DXVision.DXComponent, DXVision">
+                                  <Properties>
+                                    <Simple name="Capacity" value="4" />
+                                  </Properties>
+                                  <Items>
+                                    <Complex type="DXVision.DXComponentClip, DXVision">
+                                      <Properties>
+                                        <Null name="ClipStartingTime" />
+                                        <Null name="ClipDelay" />
+                                        <Null name="ClipSpeed" />
+                                        <Null name="ClipTileParametersScaling" />
+                                        <Null name="IDSpecificClip" />
+                                      </Properties>
+                                    </Complex>
+                                    <Complex type="ZX.Components.CTerrainResource, TheyAreBillions" />
+                                  </Items>
+                                </Collection>
+                                <Simple name="ID" value="3129969984335741815" />
+                                <Null name="Name" />
+                                <Simple name="Position" value="36;101" />
+                                <Simple name="H" value="0" />
+                                <Simple name="LastH" value="0" />
+                                <Simple name="Size" value="2;2" />
+                                <Simple name="LastPosition" value="36;101" />
+                                <Simple name="Angle" value="0" />
+                                <Simple name="LevelZ_Offset" value="0" />
+                                <Simple name="Z_Offset" value="0" />
+                              </Properties>
+                            </Complex>
