@@ -71,8 +71,6 @@ place most/all Spitters in 1 cardinal direction, all Harpies in another, all Fat
 
 Swap the closest Mutants with the farthest Giants?
 
-#Replace all Giants with Mutants, or all Mutants with Giants?
-
 Alter the size and composition of waves?
 Alter the number and timing of waves?
 Effectively could offer 50-day challenge map on demand?

@@ -263,3 +263,21 @@ Oil Pools:
                                 <Simple name="Z_Offset" value="0" />
                               </Properties>
                             </Complex>
+
+Always visible Mutant/HugeZombies?
+              <Complex type="ZX.Entities.ZombieMutant, TheyAreBillions">
+                <Properties>
+                  <Collection name="Components" elementType="DXVision.DXComponent, DXVision">
+                    <Items>
+                      <Complex type="ZX.Components.CInvisibleWhenNotWatched, TheyAreBillions">
+                        <Properties>
+                          <Simple name="Enabled" value="True" />
+
+Disable Mayors?
+        <Complex name="CurrentGeneratedLevel">
+          <Properties>
+            <Complex name="Data">
+              <Properties>
+                <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+                  <Properties>
+                    <Simple name="AllowMayors" value="True" />

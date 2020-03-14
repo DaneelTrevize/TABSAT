@@ -379,7 +379,7 @@ namespace TABSAT
                 {
                     bool toGiantNotMutant = mutantReplaceAllComboBox.SelectedIndex == 0;
                     statusWriter( "Replacing all " + ( toGiantNotMutant ? "Mutants with Giants." : "Giants with Mutants." ) );
-                    dataEditor.replaceMutants( toGiantNotMutant );
+                    dataEditor.replaceHugeZombies( toGiantNotMutant );
                 }
                 else if( mutantsMoveRadio.Checked )
                 {

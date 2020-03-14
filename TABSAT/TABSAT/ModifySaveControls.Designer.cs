@@ -101,7 +101,7 @@
             this.extractGroupBox.Controls.Add(this.extractManualRadioButton);
             this.extractGroupBox.Controls.Add(this.extractLeaveRadioButton);
             this.extractGroupBox.Controls.Add(this.extractTidyRadioButton);
-            this.extractGroupBox.Location = new System.Drawing.Point(161, 3);
+            this.extractGroupBox.Location = new System.Drawing.Point(76, 3);
             this.extractGroupBox.Name = "extractGroupBox";
             this.extractGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.extractGroupBox.Size = new System.Drawing.Size(132, 100);
@@ -125,9 +125,9 @@
             this.extractLeaveRadioButton.AutoSize = true;
             this.extractLeaveRadioButton.Location = new System.Drawing.Point(6, 42);
             this.extractLeaveRadioButton.Name = "extractLeaveRadioButton";
-            this.extractLeaveRadioButton.Size = new System.Drawing.Size(55, 17);
+            this.extractLeaveRadioButton.Size = new System.Drawing.Size(102, 17);
             this.extractLeaveRadioButton.TabIndex = 1;
-            this.extractLeaveRadioButton.Text = "Leave";
+            this.extractLeaveRadioButton.Text = "Leave After Use";
             this.extractLeaveRadioButton.UseVisualStyleBackColor = true;
             this.extractLeaveRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
             // 
@@ -137,10 +137,10 @@
             this.extractTidyRadioButton.Checked = true;
             this.extractTidyRadioButton.Location = new System.Drawing.Point(6, 19);
             this.extractTidyRadioButton.Name = "extractTidyRadioButton";
-            this.extractTidyRadioButton.Size = new System.Drawing.Size(74, 17);
+            this.extractTidyRadioButton.Size = new System.Drawing.Size(112, 17);
             this.extractTidyRadioButton.TabIndex = 0;
             this.extractTidyRadioButton.TabStop = true;
-            this.extractTidyRadioButton.Text = "Tidy Away";
+            this.extractTidyRadioButton.Text = "Remove After Use";
             this.extractTidyRadioButton.UseVisualStyleBackColor = true;
             this.extractTidyRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
             // 
@@ -150,7 +150,7 @@
             this.manualGroupBox.Controls.Add(this.repackSaveButton);
             this.manualGroupBox.Controls.Add(this.extractSaveButton);
             this.manualGroupBox.Enabled = false;
-            this.manualGroupBox.Location = new System.Drawing.Point(299, 3);
+            this.manualGroupBox.Location = new System.Drawing.Point(214, 3);
             this.manualGroupBox.Name = "manualGroupBox";
             this.manualGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.manualGroupBox.Size = new System.Drawing.Size(132, 130);
@@ -193,34 +193,32 @@
             // 
             // saveFileGroupBox
             // 
-            this.saveFileGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.saveFileGroupBox.Controls.Add(this.saveFileTextBox);
             this.saveFileGroupBox.Controls.Add(this.saveFileChooseButton);
             this.saveFileGroupBox.Controls.Add(this.backupCheckBox);
-            this.saveFileGroupBox.Location = new System.Drawing.Point(6, 274);
+            this.saveFileGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.saveFileGroupBox.Location = new System.Drawing.Point(6, 244);
             this.saveFileGroupBox.Margin = new System.Windows.Forms.Padding(6);
-            this.saveFileGroupBox.MinimumSize = new System.Drawing.Size(0, 60);
             this.saveFileGroupBox.Name = "saveFileGroupBox";
-            this.saveFileGroupBox.Size = new System.Drawing.Size(498, 60);
+            this.saveFileGroupBox.Size = new System.Drawing.Size(498, 50);
             this.saveFileGroupBox.TabIndex = 3;
             this.saveFileGroupBox.TabStop = false;
             this.saveFileGroupBox.Text = "Save File";
             // 
             // saveFileTextBox
             // 
-            this.saveFileTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveFileTextBox.Location = new System.Drawing.Point(114, 23);
+            this.saveFileTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.saveFileTextBox.Location = new System.Drawing.Point(111, 18);
             this.saveFileTextBox.Name = "saveFileTextBox";
             this.saveFileTextBox.ReadOnly = true;
-            this.saveFileTextBox.Size = new System.Drawing.Size(252, 20);
+            this.saveFileTextBox.Size = new System.Drawing.Size(255, 20);
             this.saveFileTextBox.TabIndex = 1;
             this.saveFileTextBox.WordWrap = false;
             // 
             // saveFileChooseButton
             // 
-            this.saveFileChooseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveFileChooseButton.Location = new System.Drawing.Point(372, 17);
+            this.saveFileChooseButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.saveFileChooseButton.Location = new System.Drawing.Point(372, 12);
             this.saveFileChooseButton.Name = "saveFileChooseButton";
             this.saveFileChooseButton.Size = new System.Drawing.Size(120, 30);
             this.saveFileChooseButton.TabIndex = 2;
@@ -230,10 +228,11 @@
             // 
             // backupCheckBox
             // 
+            this.backupCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.backupCheckBox.AutoSize = true;
             this.backupCheckBox.Checked = true;
             this.backupCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.backupCheckBox.Location = new System.Drawing.Point(9, 25);
+            this.backupCheckBox.Location = new System.Drawing.Point(6, 21);
             this.backupCheckBox.Name = "backupCheckBox";
             this.backupCheckBox.Size = new System.Drawing.Size(99, 17);
             this.backupCheckBox.TabIndex = 0;
@@ -243,7 +242,7 @@
             // modifyGroupBox
             // 
             this.modifyGroupBox.Controls.Add(this.modifySaveButton);
-            this.modifyGroupBox.Location = new System.Drawing.Point(437, 3);
+            this.modifyGroupBox.Location = new System.Drawing.Point(352, 3);
             this.modifyGroupBox.Name = "modifyGroupBox";
             this.modifyGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.modifyGroupBox.Size = new System.Drawing.Size(132, 60);
@@ -420,7 +419,6 @@
             // 
             this.replaceAllPanel.Controls.Add(this.mutantReplaceAllRadio);
             this.replaceAllPanel.Controls.Add(this.mutantReplaceAllComboBox);
-            this.replaceAllPanel.Enabled = false;
             this.replaceAllPanel.Location = new System.Drawing.Point(3, 49);
             this.replaceAllPanel.Name = "replaceAllPanel";
             this.replaceAllPanel.Size = new System.Drawing.Size(206, 21);
@@ -514,7 +512,7 @@
             this.reflectorGroupBox.Controls.Add(this.reflectorExtractRadioButton);
             this.reflectorGroupBox.Controls.Add(this.reflectorRepackRadioButton);
             this.reflectorGroupBox.Controls.Add(this.reflectorExitRadioButton);
-            this.reflectorGroupBox.Location = new System.Drawing.Point(3, 3);
+            this.reflectorGroupBox.Location = new System.Drawing.Point(332, 139);
             this.reflectorGroupBox.Name = "reflectorGroupBox";
             this.reflectorGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.reflectorGroupBox.Size = new System.Drawing.Size(152, 100);
@@ -559,14 +557,14 @@
             // 
             this.processGroupBox.Controls.Add(this.reflectorTextBox);
             this.processGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.processGroupBox.Location = new System.Drawing.Point(6, 533);
+            this.processGroupBox.Location = new System.Drawing.Point(6, 456);
             this.processGroupBox.Margin = new System.Windows.Forms.Padding(6);
             this.processGroupBox.MinimumSize = new System.Drawing.Size(200, 60);
             this.processGroupBox.Name = "processGroupBox";
-            this.processGroupBox.Size = new System.Drawing.Size(498, 131);
+            this.processGroupBox.Size = new System.Drawing.Size(498, 138);
             this.processGroupBox.TabIndex = 29;
             this.processGroupBox.TabStop = false;
-            this.processGroupBox.Text = "Reflector process output";
+            this.processGroupBox.Text = "Reflector Process";
             // 
             // reflectorTextBox
             // 
@@ -577,7 +575,7 @@
             this.reflectorTextBox.Name = "reflectorTextBox";
             this.reflectorTextBox.ReadOnly = true;
             this.reflectorTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.reflectorTextBox.Size = new System.Drawing.Size(492, 112);
+            this.reflectorTextBox.Size = new System.Drawing.Size(492, 119);
             this.reflectorTextBox.TabIndex = 0;
             this.reflectorTextBox.WordWrap = false;
             // 
@@ -585,13 +583,14 @@
             // 
             this.modifyHintLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.modifyHintLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.modifyHintLabel.Location = new System.Drawing.Point(6, 2);
+            this.modifyHintLabel.Location = new System.Drawing.Point(6, 4);
+            this.modifyHintLabel.MinimumSize = new System.Drawing.Size(0, 30);
             this.modifyHintLabel.Name = "modifyHintLabel";
-            this.modifyHintLabel.Size = new System.Drawing.Size(497, 35);
+            this.modifyHintLabel.Size = new System.Drawing.Size(497, 30);
             this.modifyHintLabel.TabIndex = 36;
             this.modifyHintLabel.Text = "1) Choose which Modifications to make.   2) Choose which Save File to modify.   3" +
     ") Start the Process.";
-            this.modifyHintLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.modifyHintLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // themeGroupBox
             // 
@@ -632,9 +631,9 @@
             this.dataFlowLayoutPanel.Controls.Add(this.fogGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.themeGroupBox);
             this.dataFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataFlowLayoutPanel.Location = new System.Drawing.Point(3, 43);
+            this.dataFlowLayoutPanel.Location = new System.Drawing.Point(3, 41);
             this.dataFlowLayoutPanel.Name = "dataFlowLayoutPanel";
-            this.dataFlowLayoutPanel.Size = new System.Drawing.Size(504, 222);
+            this.dataFlowLayoutPanel.Size = new System.Drawing.Size(504, 194);
             this.dataFlowLayoutPanel.TabIndex = 3;
             // 
             // processFlowLayoutPanel
@@ -646,9 +645,9 @@
             this.processFlowLayoutPanel.Controls.Add(this.reflectorGroupBox);
             this.processFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.processFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.processFlowLayoutPanel.Location = new System.Drawing.Point(3, 331);
+            this.processFlowLayoutPanel.Location = new System.Drawing.Point(3, 303);
             this.processFlowLayoutPanel.Name = "processFlowLayoutPanel";
-            this.processFlowLayoutPanel.Size = new System.Drawing.Size(504, 193);
+            this.processFlowLayoutPanel.Size = new System.Drawing.Size(504, 144);
             this.processFlowLayoutPanel.TabIndex = 37;
             // 
             // tableLayoutPanel
@@ -665,12 +664,12 @@
             this.tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
             this.tableLayoutPanel.RowCount = 5;
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 40F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 35F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(510, 670);
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 62F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
+            this.tableLayoutPanel.Size = new System.Drawing.Size(510, 600);
             this.tableLayoutPanel.TabIndex = 38;
             // 
             // ModifySaveControls
@@ -678,9 +677,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tableLayoutPanel);
-            this.MinimumSize = new System.Drawing.Size(506, 0);
+            this.MinimumSize = new System.Drawing.Size(390, 465);
             this.Name = "ModifySaveControls";
-            this.Size = new System.Drawing.Size(510, 670);
+            this.Size = new System.Drawing.Size(510, 600);
             this.extractGroupBox.ResumeLayout(false);
             this.extractGroupBox.PerformLayout();
             this.manualGroupBox.ResumeLayout(false);

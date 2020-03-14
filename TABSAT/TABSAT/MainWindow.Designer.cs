@@ -134,7 +134,7 @@ namespace TABSAT
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(766, 820);
+            this.tabControl1.Size = new System.Drawing.Size(766, 819);
             this.tabControl1.TabIndex = 0;
             // 
             // beforeUsingTabPage
@@ -146,7 +146,7 @@ namespace TABSAT
             this.beforeUsingTabPage.Location = new System.Drawing.Point(4, 22);
             this.beforeUsingTabPage.Name = "beforeUsingTabPage";
             this.beforeUsingTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.beforeUsingTabPage.Size = new System.Drawing.Size(758, 794);
+            this.beforeUsingTabPage.Size = new System.Drawing.Size(758, 793);
             this.beforeUsingTabPage.TabIndex = 0;
             this.beforeUsingTabPage.Text = " Before using TABSAT ";
             this.beforeUsingTabPage.UseVisualStyleBackColor = true;
@@ -200,7 +200,7 @@ namespace TABSAT
             this.saveEditorTabPage.Location = new System.Drawing.Point(4, 22);
             this.saveEditorTabPage.Name = "saveEditorTabPage";
             this.saveEditorTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.saveEditorTabPage.Size = new System.Drawing.Size(752, 792);
+            this.saveEditorTabPage.Size = new System.Drawing.Size(758, 794);
             this.saveEditorTabPage.TabIndex = 1;
             this.saveEditorTabPage.Text = " Modify Save Files ";
             this.saveEditorTabPage.UseVisualStyleBackColor = true;
@@ -209,7 +209,7 @@ namespace TABSAT
             // 
             this.autoBackupTabPage.Location = new System.Drawing.Point(4, 22);
             this.autoBackupTabPage.Name = "autoBackupTabPage";
-            this.autoBackupTabPage.Size = new System.Drawing.Size(752, 792);
+            this.autoBackupTabPage.Size = new System.Drawing.Size(758, 794);
             this.autoBackupTabPage.TabIndex = 2;
             this.autoBackupTabPage.Text = "Automatically Backup Save Files";
             this.autoBackupTabPage.UseVisualStyleBackColor = true;
@@ -226,7 +226,7 @@ namespace TABSAT
             this.statusTextBox.Name = "statusTextBox";
             this.statusTextBox.ReadOnly = true;
             this.statusTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.statusTextBox.Size = new System.Drawing.Size(760, 56);
+            this.statusTextBox.Size = new System.Drawing.Size(760, 57);
             this.statusTextBox.TabIndex = 1;
             this.statusTextBox.Text = "Latest version available at:\thttps://github.com/DaneelTrevize/TABSAT/releases\r\nTA" +
     "BSAT Log:\r\n";
@@ -249,7 +249,7 @@ namespace TABSAT
             // 
             this.tabsLogSplitContainer.Panel2.Controls.Add(this.statusTextBox);
             this.tabsLogSplitContainer.Size = new System.Drawing.Size(766, 891);
-            this.tabsLogSplitContainer.SplitterDistance = 820;
+            this.tabsLogSplitContainer.SplitterDistance = 819;
             this.tabsLogSplitContainer.TabIndex = 2;
             // 
             // MainWindow
@@ -258,6 +258,7 @@ namespace TABSAT
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(790, 915);
             this.Controls.Add(this.tabsLogSplitContainer);
+            this.MinimumSize = new System.Drawing.Size(440, 405);
             this.Name = "MainWindow";
             this.Text = "TABSAT - They Are Billions Save Automation Tool";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);

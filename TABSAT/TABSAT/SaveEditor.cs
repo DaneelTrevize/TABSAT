@@ -40,13 +40,37 @@ namespace TABSAT
             West
         }
 
+        private const string CLIFE_TYPE = @"ZX.Components.CLife, TheyAreBillions";
+        private const string CINFLAMABLE = @"ZX.Components.CInflamable, TheyAreBillions";
+        private const string CBEHAVIOUR_TYPE = @"ZX.Components.CBehaviour, TheyAreBillions";
+        private const string CMOVABLE_TYPE = @"ZX.Components.CMovable, TheyAreBillions";
+        private const string MUTANT_TYPE = @"ZX.Entities.ZombieMutant, TheyAreBillions";
+        private const string GIANT_TYPE = @"ZX.Entities.ZombieGiant, TheyAreBillions";
+        private const string MUTANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombie, TheyAreBillions";
+        private const string GIANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombieGiant, TheyAreBillions";
+        private const string MUTANT_ID_TEMPLATE = @"4885015758634569309";
+        private const string GIANT_ID_TEMPLATE = @"6179780658058987152";
+        private const string MUTANT_PROJECT_IMAGE = @"3097669356589096184";
+        private const string GIANT_PROJECT_IMAGE = @"5072922660204167778";
+        private class HugeZombieIconComparer : IComparer<HugeZombieIcon>
+        {
+            public int Compare( HugeZombieIcon a, HugeZombieIcon b )
+            {
+                return b.getDistanceSquared().CompareTo( a.getDistanceSquared() );  // b.CompareTo( a ) for reversed order
+            }
+        }
+        private static readonly IComparer<HugeZombieIcon> iconDistanceComparer = new HugeZombieIconComparer();
+
         private class HugeZombie
         {
             readonly XElement entityItem;
             public readonly ulong id;
-            readonly XElement complex;
-            public readonly bool isMutantNotGiant;
-            XAttribute entityPositionValue;
+            private readonly XElement complex;
+            private bool isMutantNotGiant;
+            private XElement components;
+            private XElement behaviour;
+            private XElement cMovable;
+            private XAttribute entityPositionValue;
 
             public HugeZombie( XElement i )
             {
@@ -54,9 +78,48 @@ namespace TABSAT
                 id = (ulong) entityItem.Element( "Simple" ).Attribute( "value" );
 
                 complex = entityItem.Element( "Complex" );
-                isMutantNotGiant = (string) complex.Attribute( "type" ) == mutantType;
+                isMutantNotGiant = (string) complex.Attribute( "type" ) == MUTANT_TYPE;
 
                 Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant:\t\t" + id );
+            }
+
+            internal bool IsMutantNotGiant()
+            {
+                return isMutantNotGiant;
+            }
+
+            private XElement getComponents()
+            {
+                if( components == null )
+                {
+                    components = ( from c in complex.Element( "Properties" ).Elements( "Collection" )
+                                   where (string) c.Attribute( "name" ) == "Components"
+                                   select c ).Single();
+                }
+                return components;
+            }
+
+            private XElement getBehaviour()
+            {
+                if( behaviour == null )
+                {
+                    XElement currentCBehaviour = ( from c in getComponents().Element( "Items" ).Elements( "Complex" )
+                                                   where (string) c.Attribute( "type" ) == CBEHAVIOUR_TYPE
+                                                   select c ).Single();
+                    behaviour = getFirstComplexPropertyNamed( currentCBehaviour, "Behaviour" );
+                }
+                return behaviour;
+            }
+
+            private XElement getMovable()
+            {
+                if( cMovable == null )
+                {
+                    cMovable = ( from c in getComponents().Element( "Items" ).Elements( "Complex" )
+                                 where (string) c.Attribute( "type" ) == CMOVABLE_TYPE
+                                 select c ).Single();
+                }
+                return cMovable;
             }
 
             private XAttribute getPositionValue()
@@ -68,11 +131,6 @@ namespace TABSAT
                 return entityPositionValue;
             }
 
-            internal void delete()
-            {
-                entityItem.Remove();
-            }
-
             internal void relocate( HugeZombie other )
             {
                 if( this.id == other.id )
@@ -80,34 +138,19 @@ namespace TABSAT
                     return;
                 }
 
-                XElement currentLastPosition = getFirstSimplePropertyNamed( complex, "LastPosition" );
-
-                XElement currentComponents = ( from c in complex.Element( "Properties" ).Elements( "Collection" )
-                                               where (string) c.Attribute( "name" ) == "Components"
-                                               select c ).First();
                 // We're after 3 different values in 2 different <Complex under Components
-                XElement currentCBehaviour = ( from c in currentComponents.Element( "Items" ).Elements( "Complex" )
-                                               where (string) c.Attribute( "type" ) == cBehaviourType
-                                               select c ).First();
-
-                XElement currentBehaviour = getFirstComplexPropertyNamed( currentCBehaviour, "Behaviour" );
-                XElement currentBehaviourData = getFirstComplexPropertyNamed( currentBehaviour, "Data" );
                 // 1
-                XElement currentBehaviourTargetPosition = getFirstSimplePropertyNamed( currentBehaviourData, "TargetPosition" );
+                XElement currentBehaviourTargetPosition = getFirstSimplePropertyNamed( getFirstComplexPropertyNamed( getBehaviour(), "Data" ), "TargetPosition" );
                 
-                XElement currentCMovable = ( from c in currentComponents.Element( "Items" ).Elements( "Complex" )
-                                             where (string) c.Attribute( "type" ) == cMovableType
-                                             select c ).First();
-
                 // 2
-                XElement currentMovableTargetPosition = getFirstSimplePropertyNamed( currentCMovable, "TargetPosition" );
+                XElement currentMovableTargetPosition = getFirstSimplePropertyNamed( getMovable(), "TargetPosition" );
                 // 3
-                XElement currentLastDestinyProcessed = getFirstSimplePropertyNamed( currentCMovable, "LastDestinyProcessed" );
+                XElement currentLastDestinyProcessed = getFirstSimplePropertyNamed( getMovable(), "LastDestinyProcessed" );
                 
                 string farthestPositionString = (string) other.getPositionValue();
                 
                 getPositionValue().SetValue( farthestPositionString );
-                currentLastPosition.SetAttributeValue( "value", farthestPositionString );
+                getFirstSimplePropertyNamed( complex, "LastPosition" ).SetAttributeValue( "value", farthestPositionString );
                 if( currentBehaviourTargetPosition != null )
                 {
                     currentBehaviourTargetPosition.SetAttributeValue( "value", farthestPositionString );
@@ -121,14 +164,111 @@ namespace TABSAT
                     currentLastDestinyProcessed.SetAttributeValue( "value", farthestPositionString );
                 }
             }
+
+            internal void delete()
+            {
+                entityItem.Remove();
+            }
+
+            internal void swapZombieType()
+            {
+                /*
+                 * change the <Item><Complex type=> from ZX.Entities.ZombieMutant to ZombieGiant
+                 * change the <Item><Complex><Properties><Simple name= value=> IDTemplate, Flags, Size
+                 * change the <Item><Complex><Properties><Collection name="Components"><Items><Complex type="ZX.Components.CLife..."><Simple name="Life" value="4000" /> life value
+                 * 
+                 * mutants have <Item><Complex><Properties><Collection name="Components"><Items><Complex type="ZX.Components.CInflamable..."> but giants don't
+                 * 
+                 * replace all <Item><Complex><Properties><Collection name="Components"><Items><Complex type="ZX.Components.CBehaviour...>? But keep all
+                 * ...<Properties><Complex name="Behaviour"><Properties><Complex name="Data"><Properties><Complex name="InternalData"><Properties><Collection name="OpenNodes"><Items><Simple value=...> values?
+                 * A lot of ID numbers are paired with state numbers under ..<Complex name="InternalData"><Properties><Dictionary name="MemCompositorCurrentChild"><Items><Item><Simple value=>
+                 * 
+                 * The NodeStates Dictionary has Items that aren't unique to each zombie entity, or uncommon between save files...
+                 * 
+                 * <Complex type="ZX.Components.CMovable...><Properties><Collection name="Path"><Properties><Simple name="Capacity" value="0" /> is value 4 for Giants
+                 * 
+                 * (It seems <Simple name="BehaviourModelCheckSum" value=> is always "2014060645", for Mutants or Giants, or Rangers, Ravens, etc)
+                 * 
+                 * and reset <Item><Complex><Properties><Collection name="Components"><Items><Complex type="ZX.Components.CMovable..."><Properties><Null name="TargetPosition" /> ?
+                 * 
+                 */
+
+                XElement cLife = ( from c in getComponents().Element( "Items" ).Elements( "Complex" )
+                                   where (string) c.Attribute( "type" ) == CLIFE_TYPE
+                                   select c ).Single();
+
+                XElement path = ( from c in getMovable().Element( "Properties" ).Elements( "Collection" )
+                                  where (string) c.Attribute( "name" ) == "Path"
+                                  select c ).Single();
+
+                string type;
+                string flags;
+                string template;
+                string life;
+                string behaviour;
+                string pathCapacity;
+                string size;
+                if( isMutantNotGiant )
+                {
+                    type = GIANT_TYPE;
+                    flags = "None";
+                    template = GIANT_ID_TEMPLATE;
+                    life = "10000";
+                    behaviour = GIANT_BEHAVIOUR_TYPE;
+                    pathCapacity = "4";
+                    size = @"1.6;1.6";
+
+                    XElement cInflamable = ( from c in getComponents().Element( "Items" ).Elements( "Complex" )
+                                       where (string) c.Attribute( "type" ) == CINFLAMABLE
+                                       select c ).SingleOrDefault();
+                    if( cInflamable != null )
+                    {
+                        cInflamable.Remove();
+                    }
+                }
+                else
+                {
+                    type = MUTANT_TYPE;
+                    flags = "IsOneCellSize";
+                    template = MUTANT_ID_TEMPLATE;
+                    life = "4000";
+                    behaviour = MUTANT_BEHAVIOUR_TYPE;
+                    pathCapacity = "0";
+                    size = @"0.8;0.8";
+
+                    // Doesn't yet add this element for Giants that lack it...
+                    string cInflamable = @"<Complex type=""ZX.Components.CInflamable, TheyAreBillions"">
+                        <Properties>
+                          <Complex name=""EntityRef"">
+                            <Properties>
+                              <Simple name=""IDEntity"" value=""0"" />
+                            </Properties>
+                          </Complex>
+                          <Null name=""Fire"" />
+                          <Simple name=""TimeUnderFire"" value=""0"" />
+                        </Properties>
+                      </Complex>";
+                }
+
+                complex.Attribute( "type" ).SetValue( type );
+                getFirstSimplePropertyNamed( complex, "Flags" ).Attribute( "value" ).SetValue( flags );
+                getFirstSimplePropertyNamed( complex, "IDTemplate" ).Attribute( "value" ).SetValue( template );
+                getFirstSimplePropertyNamed( cLife, "Life" ).Attribute( "value" ).SetValue( life );
+                getBehaviour().Attribute( "type" ).SetValue( behaviour );
+                getFirstSimplePropertyNamed( path, "Capacity" ).Attribute( "value" ).SetValue( pathCapacity );
+                getFirstSimplePropertyNamed( complex, "Size" ).Attribute( "value" ).SetValue( size );
+
+                isMutantNotGiant = !isMutantNotGiant;
+            }
         }
 
         private class HugeZombieIcon
         {
             private readonly SaveEditor editor;
-            private readonly XElement icon;
+            private readonly XElement icon; //<Complex type="ZX.ZXMiniMapIndicatorInfo...">
             public readonly ulong id;
-            public readonly bool isMutantNotGiant;
+            private readonly XElement image;    //<Simple name="IDProjectImage">
+            private bool isMutantNotGiant;
             private XAttribute iconCellValue;
             private CompassDirection? dir;  // Nullability tracks lazy calculating of this and distance
             private int distanceSquared;
@@ -143,8 +283,8 @@ namespace TABSAT
                 //                     <Simple name = "IDEntity"
                 id = (ulong) getFirstComplexPropertyNamed( icon, "EntityRef" ).Element( "Properties" ).Element( "Simple" ).Attribute( "value" );
 
-                XElement imageSimple = getFirstSimplePropertyNamed( icon, "IDProjectImage" );
-                isMutantNotGiant = (string) imageSimple.Attribute( "value" ) == mutantProjectImage;
+                image = getFirstSimplePropertyNamed( icon, "IDProjectImage" );
+                isMutantNotGiant = (string) image.Attribute( "value" ) == MUTANT_PROJECT_IMAGE;
 
                 dir = null;
 
@@ -159,6 +299,11 @@ namespace TABSAT
                     iconCellValue = cellSimple.Attribute( "value" );
                 }
                 return iconCellValue;
+            }
+
+            internal bool IsMutantNotGiant()
+            {
+                return isMutantNotGiant;
             }
 
             internal CompassDirection getDirection()
@@ -220,34 +365,46 @@ namespace TABSAT
             {
                 icon.Remove();
             }
-        }
 
-        private class HugeZombieIconComparer : IComparer<HugeZombieIcon>
-        {
-            public int Compare( HugeZombieIcon a, HugeZombieIcon b )
+            internal void swapZombieType()
             {
-                return b.getDistanceSquared().CompareTo( a.getDistanceSquared() );  // b.CompareTo( a ) for reversed order
+                // replace the <Complex type="ZX.ZXMiniMapIndicatorInfo...><Properties> minimap icon's <Simple name="IDProjectImage" value=> and <Simple name="Title" value=> & "Text"
+
+                string project_image;
+                string text;
+                string title;
+                if( isMutantNotGiant )
+                {
+                    project_image = GIANT_PROJECT_IMAGE;
+                    text = @"It was previously detected as a Mutant.";
+                    title = @"Infected Giant";
+                }
+                else
+                {
+                    project_image = MUTANT_PROJECT_IMAGE;
+                    text = @"It was previously detected as a Giant.";
+                    title = @"Infected Mutant";
+                }
+
+                image.Attribute( "value" ).SetValue( project_image );
+                getFirstSimplePropertyNamed( icon, "Text" ).Attribute( "value" ).SetValue( text );
+                getFirstSimplePropertyNamed( icon, "Title" ).Attribute( "value" ).SetValue( title );
+
+                isMutantNotGiant = !isMutantNotGiant;
             }
         }
-        private static readonly IComparer<HugeZombieIcon> iconDistanceComparer = new HugeZombieIconComparer();
 
-        private const string mutantType = @"ZX.Entities.ZombieMutant, TheyAreBillions";
-        private const string giantType = @"ZX.Entities.ZombieGiant, TheyAreBillions";
-        private const string cBehaviourType = @"ZX.Components.CBehaviour, TheyAreBillions";
-        private const string cMovableType = @"ZX.Components.CMovable, TheyAreBillions";
-        private const string mutantProjectImage = @"3097669356589096184";
-        //private const string giantProjectImage = @"5072922660204167778";
 
-        private string dataFile;
-        private XElement data;
-        private XElement levelComplex;
+        private readonly string dataFile;
+        private readonly XElement data;
+        private readonly XElement levelComplex;
 
-        private int commandCenterX;
-        private int commandCenterY;
-        private SortedDictionary<ulong, HugeZombie> mutants;
-        private SortedDictionary<ulong, HugeZombie> giants;
-        private LinkedList<HugeZombieIcon> mutantIcons;
-        private LinkedList<HugeZombieIcon> giantIcons;
+        private readonly int commandCenterX;
+        private readonly int commandCenterY;
+        private readonly SortedDictionary<ulong, HugeZombie> mutants;
+        private readonly SortedDictionary<ulong, HugeZombie> giants;
+        private readonly LinkedList<HugeZombieIcon> mutantIcons;
+        private readonly LinkedList<HugeZombieIcon> giantIcons;
 
         private static XElement getFirstSimplePropertyNamed( XElement c, string name )
         {
@@ -315,8 +472,8 @@ namespace TABSAT
                 from i in itemsDict.Element( "Items" ).Elements( "Item" )
                 where
                     ( from big in i.Elements( "Complex" )
-                      where (string) big.Attribute( "type" ) == mutantType
-                      || (string) big.Attribute( "type" ) == giantType
+                      where (string) big.Attribute( "type" ) == MUTANT_TYPE
+                      || (string) big.Attribute( "type" ) == GIANT_TYPE
                       select big ).Any()
                 select i;
 
@@ -324,7 +481,7 @@ namespace TABSAT
             foreach( XElement big in bigBoys )
             {
                 HugeZombie z = new HugeZombie( big );
-                ( z.isMutantNotGiant ? mutants : giants ).Add( z.id, z );
+                ( z.IsMutantNotGiant() ? mutants : giants ).Add( z.id, z );
             }
 
             XElement iconsColl = ( from c in levelComplex.Element( "Properties" ).Elements( "Collection" )
@@ -335,7 +492,7 @@ namespace TABSAT
             foreach( XElement c in iconsColl.Element( "Items" ).Elements( "Complex" ) )
             {
                 HugeZombieIcon z = new HugeZombieIcon( this, c );
-                if( z.isMutantNotGiant )
+                if( z.IsMutantNotGiant() )
                 {
                     mutantIcons.AddLast( z );
                 }
@@ -365,7 +522,7 @@ namespace TABSAT
 
         }
 
-        internal void replaceMutants( bool toGiantNotMutant )
+        internal void replaceHugeZombies( bool toGiantNotMutant )
         {
             findMutantsAndGiants();
 
@@ -382,12 +539,29 @@ namespace TABSAT
 
             /*
              * for each HugeZombie:
-             * change the <Item><Complex type=> from ZX.Entities.ZombieMutant to ZombieGiant
-             * change the <Item><Complex><Properties><Simple name="IDTemplate" value=> ID template number
-             * change the behaviour?
-             * reset the movement/pathing?
-             *
+             * 
+             * Change their Type, Life, etc.
+             * Reset their behaviour, and target positions, but keep OpenNodes IDs?
+             * 
              */
+            var fromDictionary = toGiantNotMutant ? mutants : giants;
+            var toDictionary = toGiantNotMutant ? giants : mutants;
+            foreach( var z in fromDictionary.Values )
+            {
+                z.swapZombieType();
+                toDictionary.Add( z.id, z );
+            }
+            fromDictionary.Clear();
+
+            // Also swap the Icons types for associated EntityRef IDEntity values
+            LinkedList<HugeZombieIcon> fromList = toGiantNotMutant ? mutantIcons : giantIcons;
+            LinkedList<HugeZombieIcon> toList = toGiantNotMutant ? giantIcons : mutantIcons;
+            foreach( var icon in fromList )
+            {
+                icon.swapZombieType();
+                toList.AddLast( icon );
+            }
+            fromList.Clear();
         }
 
         internal void relocateMutants( bool toGiantNotMutant, bool perDirection )
@@ -515,7 +689,7 @@ namespace TABSAT
             {
                 HugeZombie mutant = mutants[icon.id];
                 icon.relocate( farthestIcon );
-                HugeZombie farthest = ( farthestIcon.isMutantNotGiant ? mutants : giants )[farthestIcon.id];
+                HugeZombie farthest = ( farthestIcon.IsMutantNotGiant() ? mutants : giants )[farthestIcon.id];
                 mutant.relocate( farthest );
             }
         }
