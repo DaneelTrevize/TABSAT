@@ -146,6 +146,8 @@ Caustic Lands		VO
 
 
 Mayors:
+        <Complex name="CurrentGeneratedLevel">
+          <Properties>
             <Complex name="Data">
               <Properties>
                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
@@ -197,11 +199,8 @@ Bonus Lucifer
           </Items>
         </Dictionary>
 
-Bonus Thanatos
-              <Simple value="13687916016325214957" />
-Bonus Titan
-              <Simple value="15625692077980454078" />
-
+Thanatos:	13687916016325214957
+Titan:		15625692077980454078
 Sniper:		6536008488763521408
 Soldier:	8122295062332983407
 Ranger:		11462509610414451330
@@ -272,12 +271,3 @@ Always visible Mutant/HugeZombies?
                       <Complex type="ZX.Components.CInvisibleWhenNotWatched, TheyAreBillions">
                         <Properties>
                           <Simple name="Enabled" value="True" />
-
-Disable Mayors?
-        <Complex name="CurrentGeneratedLevel">
-          <Properties>
-            <Complex name="Data">
-              <Properties>
-                <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
-                  <Properties>
-                    <Simple name="AllowMayors" value="True" />

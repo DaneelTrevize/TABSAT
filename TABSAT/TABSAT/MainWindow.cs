@@ -55,6 +55,17 @@ namespace TABSAT
             tabControl1.SelectedIndexChanged += tabControl_SelectedIndexChanged;
         }
 
+        // We don't care for using the Opacity or TransparencyKey properties, so we can reduce flicker from drawing many controls
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
+                return cp;
+            }
+        }
+
         private void statusWriter( string status )
         {
             if( statusTextBox.InvokeRequired )

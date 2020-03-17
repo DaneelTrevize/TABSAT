@@ -1,4 +1,12 @@
 
+Offer to toggle Enable/Disable state of Mayors, Showing full map, etc? So users needn't manually edit to revert such options.
+
+Potentially decrypt any save file upon selection, in order to assess and present the current state? Requires triggering the reflector popup though.
+Check the time elapsed in a save before permitting some changes?
+Check if any changes have actually been made by a given option set, and thus if repacking can be skipped?
+
+Also update Info file, just to be consistent with Data file?
+
 Consider approaches to keeping Backups TreeView sorted by baseName, then lastWriteUtc. Either via custom sorter, or careful insertion of single backups when generated.
 
 Use state Enums, FSM and change listeners for GUI/TABSAT when modifying file, and ReflectorManager?
@@ -24,12 +32,8 @@ Consider using something like Octokit.net or Squirrel.Windows for auto-updating 
 
 Options for Mutant modification/max % restoration:
 
-#Delete all mutants.
-
 Relocate mutants onto giants:
 nearest giant per mutant;
-#giant furthest from CC;
-#giant furthest from CC within cardinal map quarter (divide diagonally), if non in quadrant find next nearest/furthest from CC globally?
 
 Relocate if within l distance of CC? To those Giants/Mutants at least l distance from CC?
 
@@ -54,8 +58,6 @@ Upgrade all smaller VOD buildings (Dwelling, Tavern) to City Halls of Doom? To t
 Or multi-stack the same sized buildings in the same position?
 
 Remove all Pickable resources & reclaimable buildings? To remove potential early Radar vision or resources chiefly accessed via kiting?
-
-Disable Mayors.
 
 Possibly add a script element (that constantly loops?) to spawns a new zombie per troop loss, with specific loss type to zombie spawned pairing. E.g. Harpy for each ranger, Spitter for each Sniper, Mutant for each Thanatos?
 Might have to have a pseudo daily/8-hourly/faster wave, that spawns unit types & numbers depending on a diff between previous and current troop counts? So quickly replaced units might not trigger snowballing?
@@ -87,9 +89,7 @@ Reposition Ravens to indicate direction to Mutants/Giants/VODs?
 Or use sign post assets from custom/campaign maps?
 For VODs, convert each building relative position from CC into an angle, consolidate similar-enough angles into a single marker.
 
-#Offer to enlarge the default fog-clearing as a circle of adjustable radius around the CC.
-
-Offer to remove Taverns/City Halls?
+Offer to remove or downgrade Taverns/City Halls?
 
 Add bonus units/buildings ready to use/place, as though from mayors?
 
@@ -100,5 +100,8 @@ Make starting troops veterans.
 Other features:
 
 Use a series of auto-backed-up saves during a game to chart the player's economy, pause ratio, zombie kill rate, potential turret & army dps, etc.
+Charts could be compared across games to see averages and long term trends.
 
 Offer to apply or revert Modded Mayors game-wide rules change?
+
+Also Sound/Texture/Font packs such as https://www.reddit.com/r/TheyAreBillions/comments/ekc8gx/starcraft_warcraft_diablo2_dow2_soundpacks_like_a/

@@ -19,6 +19,20 @@ namespace TABSAT
             VO
         }
         internal static readonly Dictionary<ThemeType, string> themeTypeNames;
+
+        internal enum GiftableTypes : UInt64
+        {
+            RANGER = 11462509610414451330,
+            SOLDIER = 8122295062332983407,
+            SNIPER = 6536008488763521408,
+            LUCIFER = 16241120227094315491,
+            THANATOS = 13687916016325214957,
+            TITAN = 15625692077980454078/*,
+            // MUTANT, buildings
+            SHOCKING_TOWER*/
+        }
+        internal static readonly Dictionary<GiftableTypes, string> giftableTypeNames;
+
         static SaveEditor()
         {
             Dictionary<ThemeType, string> ttn = new Dictionary<ThemeType, string>();
@@ -29,6 +43,16 @@ namespace TABSAT
             ttn.Add( ThemeType.DS, "Desert Wasteland" );
             ttn.Add( ThemeType.VO, "Caustic Lands" );
             themeTypeNames = new Dictionary<ThemeType, string>( ttn );
+
+            Dictionary<GiftableTypes, string> gtn = new Dictionary<GiftableTypes, string>();
+            gtn.Add( GiftableTypes.RANGER, "Ranger" );
+            gtn.Add( GiftableTypes.SOLDIER, "Soldier" );
+            gtn.Add( GiftableTypes.SNIPER, "Sniper" );
+            gtn.Add( GiftableTypes.LUCIFER, "Lucifer" );
+            gtn.Add( GiftableTypes.THANATOS, "Thanatos" );
+            gtn.Add( GiftableTypes.TITAN, "Titan" );
+            //gtn.Add( GiftableTypes.SHOCKING_TOWER, "Shocking Tower" );
+            giftableTypeNames = new Dictionary<GiftableTypes, string>( gtn );
         }
 
         // TAB cell coordinates are origin top left, before 45 degree rotation clockwise. Positive x is due SE, positive y is due SW.
@@ -394,10 +418,11 @@ namespace TABSAT
             }
         }
 
-
         private readonly string dataFile;
         private readonly XElement data;
         private readonly XElement levelComplex;
+        private XElement generatedLevel;
+        private XElement extension;
 
         private readonly int commandCenterX;
         private readonly int commandCenterY;
@@ -406,18 +431,21 @@ namespace TABSAT
         private readonly LinkedList<HugeZombieIcon> mutantIcons;
         private readonly LinkedList<HugeZombieIcon> giantIcons;
 
+        private static XElement getFirstPropertyOfTypeNamed( XElement c, string type, string name )
+        {
+            return ( from s in c.Element( "Properties" ).Elements( type )
+                     where (string) s.Attribute( "name" ) == name
+                     select s ).FirstOrDefault();   // Avoid exception risk of First()?
+        }
+        
         private static XElement getFirstSimplePropertyNamed( XElement c, string name )
         {
-            return ( from s in c.Element( "Properties" ).Elements( "Simple" )
-                     where (string) s.Attribute( "name" ) == name
-                     select s ).FirstOrDefault();
+            return getFirstPropertyOfTypeNamed( c, "Simple", name );
         }
 
         private static XElement getFirstComplexPropertyNamed( XElement c, string name )
         {
-            return ( from s in c.Element( "Properties" ).Elements( "Complex" )
-                     where (string) s.Attribute( "name" ) == name
-                     select s ).FirstOrDefault();   // Avoid exception risk of First()?
+            return getFirstPropertyOfTypeNamed( c, "Complex", name );
         }
 
 
@@ -459,12 +487,35 @@ namespace TABSAT
             data.Save( dataFile );
         }
 
+        private XElement getGeneratedLevel()
+        {
+            if( generatedLevel == null )
+            {
+                generatedLevel = getFirstComplexPropertyNamed( levelComplex, "CurrentGeneratedLevel" );
+            }
+            return generatedLevel;
+        }
+
+        private XElement getDataExtension()
+        {
+            //      <Properties>
+            //        <Complex name = "CurrentGeneratedLevel" >
+            //          <Properties>
+            //            <Complex name="Data">
+            //              <Properties>
+            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+            if( extension == null )
+            {
+                extension = getFirstComplexPropertyNamed( getGeneratedLevel(), "Data" ).Element( "Properties" ).Element( "Complex" );   // only one Complex, named Extension
+            }
+            return extension;
+        }
+
+
         private void findMutantsAndGiants()
         {
             // Finds the related Items in the LevelEntities Dictionary
-            XElement itemsDict = ( from d in levelComplex.Element( "Properties" ).Elements( "Dictionary" )
-                                   where (string) d.Attribute( "name" ) == "LevelEntities"
-                                   select d ).First();
+            XElement itemsDict = getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelEntities" );
 
             //Console.WriteLine( "Items count: " + items.Descendants( "Item" ).Count() );
 
@@ -484,9 +535,7 @@ namespace TABSAT
                 ( z.IsMutantNotGiant() ? mutants : giants ).Add( z.id, z );
             }
 
-            XElement iconsColl = ( from c in levelComplex.Element( "Properties" ).Elements( "Collection" )
-                                   where (string) c.Attribute( "name" ) == "MiniMapIndicators"
-                                   select c ).First();
+            XElement iconsColl = getFirstPropertyOfTypeNamed( levelComplex, "Collection", "MiniMapIndicators" );
 
             // Find all Mutant minimap icons
             foreach( XElement c in iconsColl.Element( "Items" ).Elements( "Complex" ) )
@@ -694,15 +743,63 @@ namespace TABSAT
             }
         }
 
+        internal void disableMayors()
+        {
+            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+            //                  <Properties>
+            //                    <Simple name="AllowMayors" value="True" />
+            XElement allowMayors = getFirstSimplePropertyNamed( getDataExtension(), "AllowMayors" );
+            allowMayors.SetAttributeValue( "value", "False" );
+        }
+
+        internal void giftEntities( GiftableTypes giftable, int count )
+        {
+            string giftableID = giftable.ToString( "D" );
+            XElement templates = getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "BonusEntityTemplates" );
+            /*if( templates == null )
+            {
+                Console.Error.WriteLine( "Unable to find BonusEntityTemplates." );
+                return;
+            }*/
+            XElement items = templates.Element( "Items" );
+            if( items.HasElements )
+            {
+                // Add to the existing gifted entities if this type already has some
+                foreach( XElement i in items.Elements( "Item" ) )
+                {
+                    var simples = ( from s in i.Elements( "Simple" ) select s );
+                    if( simples.First().Attribute( "value" ).Value == giftableID )    // Template/TypeID matches
+                    {
+                        XAttribute secondSimpleValue = simples.Skip( 1 ).First().Attribute( "value" );
+                        int existing;
+                        Int32.TryParse( secondSimpleValue.Value, out existing );
+                        secondSimpleValue.SetValue( existing + count );
+
+                        return;
+                    }
+                }
+            }
+            // Else add a new gifted entity pairing to this dictionary
+            XElement giftItem = new XElement( "Item" );
+
+            XElement simple = new XElement( "Simple" );
+            simple.SetAttributeValue( "value", giftableID );
+            giftItem.Add( simple  );
+
+            simple = new XElement( "Simple" );
+            simple.SetAttributeValue( "value", count );
+            giftItem.Add( simple );
+
+            items.Add( giftItem );
+        }
 
         internal void removeFog( int radius = 0 )
         {
             //      <Properties>
             //        <Complex name = "CurrentGeneratedLevel" >
-            XElement generatedLevel = getFirstComplexPropertyNamed( levelComplex, "CurrentGeneratedLevel" );
             //          <Properties>
             //            <Simple name="NCells" value="256" />
-            XElement ncells = getFirstSimplePropertyNamed( generatedLevel, "NCells" );
+            XElement ncells = getFirstSimplePropertyNamed( getGeneratedLevel(), "NCells" );
 
             string cells = (string) ncells.Attribute( "value" );
             int size;
@@ -823,17 +920,10 @@ namespace TABSAT
             string themeValue = theme.ToString();
             //Console.WriteLine( "Changing ThemeType to:" + themeValue );
 
-            //      <Properties>
-            //        <Complex name = "CurrentGeneratedLevel" >
-            XElement generatedLevel = getFirstComplexPropertyNamed( levelComplex, "CurrentGeneratedLevel" );
-            //          <Properties>
-            //            <Complex name="Data">
-            //              <Properties>
             //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
-            XElement extension = getFirstComplexPropertyNamed( generatedLevel, "Data" ).Element( "Properties" ).Element( "Complex" ); // only one Complex, named Extension
             //                  <Properties>
             //                    <Complex name="MapDrawer">
-            XElement mapDrawer = getFirstComplexPropertyNamed( extension, "MapDrawer" );
+            XElement mapDrawer = getFirstComplexPropertyNamed( getDataExtension(), "MapDrawer" );
             //                      <Properties>
             //                        <Simple name="ThemeType" value=
             XElement levelThemeType = getFirstSimplePropertyNamed( mapDrawer, "ThemeType" );

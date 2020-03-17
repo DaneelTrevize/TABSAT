@@ -21,6 +21,10 @@ namespace TABSAT
             saveOpenFileDialog.Filter = "TAB Save Files|*" + TAB.SAVE_EXTENSION;// + "|Data files|*.dat";
             saveOpenFileDialog.InitialDirectory = savesDirectory;
 
+            giftComboBox.DataSource = new BindingSource( SaveEditor.giftableTypeNames, null );
+            giftComboBox.DisplayMember = "Value";
+            giftComboBox.ValueMember = "Key";
+
             themeComboBox.DataSource = new BindingSource( SaveEditor.themeTypeNames, null );
             themeComboBox.DisplayMember = "Value";
             themeComboBox.ValueMember = "Key";
@@ -28,19 +32,31 @@ namespace TABSAT
             mutantReplaceAllComboBox.SelectedIndex = 0;
             mutantMoveWhatComboBox.SelectedIndex = 0;
             mutantMoveGlobalComboBox.SelectedIndex = 0;
+            giftComboBox.SelectedIndex = 3;
             themeComboBox.SelectedIndex = 3;
-            // Register these event handlers after the above 'default' choices, to avoid handling non-user events.
-            mutantReplaceAllComboBox.SelectedIndexChanged += new System.EventHandler( replaceAllComboBox_SelectedIndexChanged );
-            var mutantChoicesHandler = new System.EventHandler( mutantMoveEitherComboBox_SelectedIndexChanged );
+            // Register these following event handlers after the above 'default' index choices, to avoid handling non-user events.
+
+            mutantReplaceAllComboBox.SelectedIndexChanged += new EventHandler( mutantReplaceAllComboBox_SelectedIndexChanged );
+            var mutantChoicesHandler = new EventHandler( mutantMoveEitherComboBox_SelectedIndexChanged );
             mutantMoveGlobalComboBox.SelectedIndexChanged += mutantChoicesHandler;
             mutantMoveWhatComboBox.SelectedIndexChanged += mutantChoicesHandler;
-            themeComboBox.SelectedIndexChanged += new System.EventHandler( themeComboBox_SelectedIndexChanged );
 
-            reduceFogRadioButton.CheckedChanged += new System.EventHandler( fogReduceRadio_CheckedChanged );
-            var fogNotReduceHandler = new System.EventHandler( fogNotReduceRadio_CheckedChanged );
-            leaveFogRadioButton.CheckedChanged += fogNotReduceHandler;
-            removeFogRadioButton.CheckedChanged += fogNotReduceHandler;
-            showFullRadioButton.CheckedChanged += fogNotReduceHandler;
+            fogClearRadioButton.CheckedChanged += new EventHandler( fogReduceRadio_CheckedChanged );
+            var fogNotReduceHandler = new EventHandler( fogNotReduceRadio_CheckedChanged );
+            fogLeaveRadioButton.CheckedChanged += fogNotReduceHandler;
+            fogRemoveRadioButton.CheckedChanged += fogNotReduceHandler;
+            fogShowFullRadioButton.CheckedChanged += fogNotReduceHandler;
+
+            var vodNotReduceHandler = new EventHandler( vodNotStackRadioButton_CheckedChanged );
+            vodLeaveRadioButton.CheckedChanged += vodNotReduceHandler;
+            vodRemoveRadioButton.CheckedChanged += vodNotReduceHandler;
+
+            var mayorsNotGiftChoicesHandler = new EventHandler( mayorsNotGiftRadioButton_CheckedChanged );
+            mayorsLeaveRadioButton.CheckedChanged += mayorsNotGiftChoicesHandler;
+            mayorsDisableRadioButton.CheckedChanged += mayorsNotGiftChoicesHandler;
+            giftComboBox.SelectedIndexChanged += new EventHandler( giftComboBox_SelectedIndexChanged );
+
+            themeComboBox.SelectedIndexChanged += new EventHandler( themeComboBox_SelectedIndexChanged );
         }
 
         internal void reflectorOutputHandler( object sendingProcess, DataReceivedEventArgs outLine )
@@ -98,11 +114,6 @@ namespace TABSAT
             reassessExtractionOption();
         }
 
-        private void themeComboBox_SelectedIndexChanged( object sender, EventArgs e )
-        {
-            themeCheckBox.Checked = true;
-        }
-
         private void mutantsSimpleRadio_CheckedChanged( object sender, EventArgs e )
         {
             if( ( (RadioButton) sender ).Checked )
@@ -112,7 +123,7 @@ namespace TABSAT
             }
         }
 
-        private void replaceAllComboBox_SelectedIndexChanged( object sender, EventArgs e )
+        private void mutantReplaceAllComboBox_SelectedIndexChanged( object sender, EventArgs e )
         {
             mutantReplaceAllRadio.Checked = true;
         }
@@ -144,14 +155,14 @@ namespace TABSAT
 
         private void fogNumericUpDown_ValueChanged( object sender, EventArgs e )
         {
-            reduceFogRadioButton.Checked = true;
+            fogClearRadioButton.Checked = true;
         }
 
         private void fogNotReduceRadio_CheckedChanged( object sender, EventArgs e )
         {
             if( ( (RadioButton) sender ).Checked )
             {
-                reduceFogRadioButton.Checked = false;
+                fogClearRadioButton.Checked = false;
             }
         }
 
@@ -159,10 +170,64 @@ namespace TABSAT
         {
             if( ( (RadioButton) sender ).Checked )
             {
-                leaveFogRadioButton.Checked = false;
-                removeFogRadioButton.Checked = false;
-                showFullRadioButton.Checked = false;
+                fogLeaveRadioButton.Checked = false;
+                fogRemoveRadioButton.Checked = false;
+                fogShowFullRadioButton.Checked = false;
             }
+        }
+
+        private void vodStackNumericUpDown_ValueChanged( object sender, EventArgs e )
+        {
+            vodStackRadioButton.Checked = true;
+        }
+
+        private void vodNotStackRadioButton_CheckedChanged( object sender, EventArgs e )
+        {
+            if( ( (RadioButton) sender ).Checked )
+            {
+                vodStackRadioButton.Checked = false;
+            }
+        }
+
+        private void vodStackRadioButton_CheckedChanged( object sender, EventArgs e )
+        {
+            if( ( (RadioButton) sender ).Checked )
+            {
+                vodLeaveRadioButton.Checked = false;
+                vodRemoveRadioButton.Checked = false;
+            }
+        }
+
+        private void mayorsGiftRadioButton_CheckedChanged( object sender, EventArgs e )
+        {
+            if( ( (RadioButton) sender ).Checked )
+            {
+                mayorsLeaveRadioButton.Checked = false;
+                mayorsDisableRadioButton.Checked = false;
+            }
+        }
+
+        private void mayorsNotGiftRadioButton_CheckedChanged( object sender, EventArgs e )
+        {
+            if( ( (RadioButton) sender ).Checked )
+            {
+                mayorsGiftRadioButton.Checked = false;
+            }
+        }
+
+        private void giftComboBox_SelectedIndexChanged( object sender, EventArgs e )
+        {
+            mayorsGiftRadioButton.Checked = true;
+        }
+
+        private void giftNumericUpDown_ValueChanged( object sender, EventArgs e )
+        {
+            mayorsGiftRadioButton.Checked = true;
+        }
+
+        private void themeComboBox_SelectedIndexChanged( object sender, EventArgs e )
+        {
+            themeCheckBox.Checked = true;
         }
 
         private void extractRadioButtons_CheckedChanged( object sender, EventArgs e )
@@ -170,14 +235,6 @@ namespace TABSAT
             // Do stuff only if the radio button is checked (or the action will run twice).
             if( ( (RadioButton) sender ).Checked )
             {
-                if( extractManualRadioButton.Checked )
-                {
-                    if( !manualGroupBox.Visible )
-                    {
-                        manualGroupBox.Visible = true;
-                    }
-                }
-                
                 reassessExtractionOption();
             }
         }
@@ -188,19 +245,19 @@ namespace TABSAT
             {
                 modifyGroupBox.Enabled = false;
                 manualGroupBox.Enabled = true;
-                reflectorExtractRadioButton.Enabled = true;
                 extractSaveButton.Enabled = modifyManager.hasSaveFile();
+                reflectorExtractRadioButton.Enabled = true;
             }
             else
             {
                 modifyGroupBox.Enabled = true;
+                modifySaveButton.Enabled = modifyManager.hasSaveFile();
                 manualGroupBox.Enabled = false;
                 reflectorExtractRadioButton.Enabled = false;
                 if( reflectorExtractRadioButton.Checked )
                 {
                     reflectorRepackRadioButton.Checked = true;
                 }
-                modifySaveButton.Enabled = modifyManager.hasSaveFile();
             }
         }
 
@@ -263,20 +320,28 @@ namespace TABSAT
             // Don't let different options be chosen during file operations
             mutantGroupBox.Enabled = false;
             fogGroupBox.Enabled = false;
+            //vodGroupBox.Enabled = false;
+            mayorsBonusesGroupBox.Enabled = false;
             themeGroupBox.Enabled = false;
             saveFileGroupBox.Enabled = false;
-            extractGroupBox.Enabled = false;
             modifyGroupBox.Enabled = false;
+            //manualGroupBox.Enabled = false;    // Don't disable this for when we're doing a multi-button-click-required manual cycle
+            extractGroupBox.Enabled = false;
+            reflectorGroupBox.Enabled = false;
         }
 
         private void enableChoices()
         {
             mutantGroupBox.Enabled = true;
             fogGroupBox.Enabled = true;
+            //vodGroupBox.Enabled = true;
+            mayorsBonusesGroupBox.Enabled = true;
             themeGroupBox.Enabled = true;
             saveFileGroupBox.Enabled = true;
-            extractGroupBox.Enabled = true;
             modifyGroupBox.Enabled = true;
+            //manualGroupBox.Enabled = true;
+            extractGroupBox.Enabled = true;
+            reflectorGroupBox.Enabled = true;
         }
 
         private void extractSaveButton_Click( object sender, EventArgs e )
@@ -360,9 +425,9 @@ namespace TABSAT
 
         private bool modifyExtractedSave()
         {
-            if( !mutantsRemoveRadio.Checked && !mutantReplaceAllRadio.Checked && !mutantsMoveRadio.Checked && !showFullRadioButton.Checked && !removeFogRadioButton.Checked && !reduceFogRadioButton.Checked && !themeCheckBox.Checked )
+            if( mutantsNothingRadio.Checked && mayorsLeaveRadioButton.Checked && fogLeaveRadioButton.Checked && vodLeaveRadioButton.Checked && !themeCheckBox.Checked )
             {
-                // Nothing to do
+                statusWriter( "No modifications chosen." );
                 return true;
             }
 
@@ -370,6 +435,7 @@ namespace TABSAT
 
             try
             {
+                // Mutants
                 if( mutantsRemoveRadio.Checked )
                 {
                     statusWriter( "Removing Mutants." );
@@ -389,23 +455,49 @@ namespace TABSAT
                     dataEditor.relocateMutants( toGiantNotMutant, perDirection );
                 }
 
-                if( removeFogRadioButton.Checked )
+                // Mayors
+                if( mayorsDisableRadioButton.Checked )
+                {
+                    statusWriter( "Disabling Mayors." );
+                    dataEditor.disableMayors();
+                }
+                else if( mayorsGiftRadioButton.Checked )
+                {
+                    KeyValuePair<SaveEditor.GiftableTypes, string> kv = (KeyValuePair<SaveEditor.GiftableTypes, string>) giftComboBox.SelectedItem;
+                    int typeID = Convert.ToInt32( giftNumericUpDown.Value );
+                    statusWriter( "Gifting " + typeID + "x " + kv.Value + "." );
+                    dataEditor.giftEntities( kv.Key, typeID );
+                }
+
+                // Fog
+                if( fogRemoveRadioButton.Checked )
                 {
                     statusWriter( "Removing all the fog." );
                     dataEditor.removeFog();
                 }
-                else if( reduceFogRadioButton.Checked )
+                else if( fogClearRadioButton.Checked )
                 {
                     int radius = Convert.ToInt32( fogNumericUpDown.Value );
                     statusWriter( "Removing the fog with cell range: " + radius );
                     dataEditor.removeFog( radius );
                 }
-                else if( showFullRadioButton.Checked )
+                else if( fogShowFullRadioButton.Checked )
                 {
                     statusWriter( "Revealing the map." );
                     dataEditor.showFullMap();
                 }
 
+                // VODs
+                if( vodRemoveRadioButton.Checked )
+                {
+                    statusWriter( "Would remove VODs." );
+                }
+                else if( vodStackRadioButton.Checked )
+                {
+                    statusWriter( "Would stack VODs." );
+                }
+
+                // Theme
                 if( themeCheckBox.Checked )
                 {
                     KeyValuePair<SaveEditor.ThemeType, string> kv = (KeyValuePair<SaveEditor.ThemeType, string>) themeComboBox.SelectedItem;
@@ -448,9 +540,9 @@ namespace TABSAT
             saveFileTextBox.Text = "";
             modifyManager.setSaveFile( null );
 
-            enableChoices();
-
             reassessExtractionOption();
+
+            enableChoices();
         }
 
         internal void removeReflector()
