@@ -30,7 +30,6 @@ namespace TABSAT
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.cloudGroupBox = new System.Windows.Forms.GroupBox();
             this.updatesPictureBox = new System.Windows.Forms.PictureBox();
             this.propertiesPictureBox = new System.Windows.Forms.PictureBox();
@@ -177,7 +176,7 @@ namespace TABSAT
             // popupPictureBox
             // 
             this.popupPictureBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.popupPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("popupPictureBox.Image")));
+            this.popupPictureBox.Image = global::TABSAT.Properties.Resources.TAB_ignore_popup;
             this.popupPictureBox.Location = new System.Drawing.Point(314, 19);
             this.popupPictureBox.Name = "popupPictureBox";
             this.popupPictureBox.Size = new System.Drawing.Size(386, 152);
@@ -200,7 +199,7 @@ namespace TABSAT
             this.saveEditorTabPage.Location = new System.Drawing.Point(4, 22);
             this.saveEditorTabPage.Name = "saveEditorTabPage";
             this.saveEditorTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.saveEditorTabPage.Size = new System.Drawing.Size(758, 794);
+            this.saveEditorTabPage.Size = new System.Drawing.Size(758, 793);
             this.saveEditorTabPage.TabIndex = 1;
             this.saveEditorTabPage.Text = " Modify Save Files ";
             this.saveEditorTabPage.UseVisualStyleBackColor = true;
@@ -209,7 +208,7 @@ namespace TABSAT
             // 
             this.autoBackupTabPage.Location = new System.Drawing.Point(4, 22);
             this.autoBackupTabPage.Name = "autoBackupTabPage";
-            this.autoBackupTabPage.Size = new System.Drawing.Size(758, 794);
+            this.autoBackupTabPage.Size = new System.Drawing.Size(758, 793);
             this.autoBackupTabPage.TabIndex = 2;
             this.autoBackupTabPage.Text = "Automatically Backup Save Files";
             this.autoBackupTabPage.UseVisualStyleBackColor = true;

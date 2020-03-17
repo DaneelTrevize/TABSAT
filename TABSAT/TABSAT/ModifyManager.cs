@@ -1,6 +1,7 @@
 ﻿using Ionic.Zip;
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace TABSAT
 {
@@ -38,12 +39,6 @@ namespace TABSAT
         private readonly string editsDir;
         private string currentSaveFile;
         private string currentDecryptDir;
-
-
-        internal static string getReflectorDirectory()
-        {
-            return Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar;
-        }
 
 
         private static string backupSave( string saveFile, string backupDir, bool tryCheckFile )     // Refactor this into new BackupsManager features?
@@ -149,8 +144,10 @@ namespace TABSAT
         }
 
 
-        public ModifyManager( ReflectorManager r, string e )
+        public ModifyManager( string TABdirectory, ReflectorManager r, string e )
         {
+            Assembly.LoadFile( Path.Combine( TABdirectory, @"Ionic.Zip.dll" ) );
+
             if( r == null )
             {
                 throw new ArgumentNullException( "ReflectorManager should not be null." );

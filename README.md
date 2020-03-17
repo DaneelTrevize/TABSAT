@@ -11,13 +11,13 @@ For more information about the goals of this project, see TABSAT.txt
 
 ----
 
-This tool is formed of 2 parts, the main application: TABSAT.exe + Ionic.Zip.dll; and a sister binary TABReflector.exe
-
-Simply download these 3 files to the same directory, and launch TABSAT.exe to be presented with the Graphical User Interface.
+Simply download a Release and launch TABSAT.exe to be presented with the Graphical User Interface.
 
 ![UI 1](https://raw.githubusercontent.com/DaneelTrevize/TABSAT/master/screenshots/UI%201.png)
 
 # Modifying save files - How it works
+
+This tool is formed of 2 parts, the main application: TABSAT.exe and a sister binary TABReflector.exe that is stored compressed within the main assembly. We also use the 3rd party Ionic.Zip.dll as found in the TAB install.
 
 TAB saves are encrypted with user-unknown passwords, yet TAB itself evidently can access these files, this tool therefore ironically creates a zombie process instance of TAB to then coerce into helping extract and repack save files for our needs.
 

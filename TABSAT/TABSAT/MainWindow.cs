@@ -39,19 +39,16 @@ namespace TABSAT
             //Height = 900;
             //MinimumSize = new System.Drawing.Size( 800, 825 );
 
-            string reflectorDir = ModifyManager.getReflectorDirectory();
-
-            string tabDir = TAB.GetExeDirectory();
+            string TABdirectory = TAB.GetExeDirectory();
             /*
-            while( tabDir == null )
+            while( TABdirectory == null )
             {
                 // open dialog to choose directory, test for TAB via TABSAT?
             }
             */
-            statusWriter( "Reflector directory:\t\t" + reflectorDir );
-            statusWriter( "They Are Billions directory:\t" + tabDir );
+            statusWriter( "They Are Billions directory:\t" + TABdirectory );
 
-            initModifySaveControl( reflectorDir, tabDir, savesDirectory );
+            initModifySaveControl( TABdirectory, savesDirectory );
 
             initAutoBackupControl( savesDirectory );
 
@@ -70,10 +67,10 @@ namespace TABSAT
             }
         }
 
-        private void initModifySaveControl( string reflectorDir, string tabDir, string savesDirectory )
+        private void initModifySaveControl( string TABdirectory, string savesDirectory )
         {
-            ReflectorManager reflectorManager = new ReflectorManager( reflectorDir, tabDir );
-            ModifyManager modifyManager = new ModifyManager( reflectorManager, ModifyManager.DEFAULT_EDITS_DIRECTORY );
+            ReflectorManager reflectorManager = new ReflectorManager( TABdirectory );
+            ModifyManager modifyManager = new ModifyManager( TABdirectory, reflectorManager, ModifyManager.DEFAULT_EDITS_DIRECTORY );
 
             modifySaveC = new ModifySaveControls( modifyManager, statusWriter, savesDirectory );
             modifySaveC.Dock = DockStyle.Fill;

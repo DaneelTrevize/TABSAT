@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.IO.Pipes;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace TABSAT
@@ -16,13 +18,11 @@ namespace TABSAT
             PROCESSING
         }
 
-        private const string defaultReflectorDirectory = ".";
-        private const string reflectorExe = "TABReflector.exe";
-        private static readonly string[] reflectorFiles = { reflectorExe/*, "TABReflector.dll", "TABReflector.runtimeconfig.json"*/ };
+        private const string REFLECTOR_EXE = "TABReflector.exe";
+        private const string REFLECTOR_RESOURCE_NAME = @"costura.tabreflector.exe.compressed";
         private const string pipeName = "reflectorpipe";
 
-        private string reflectorDirectory;
-        private string TABdirectory;
+        private string reflectorDeploymentPath;
 
         private Process reflector;
         private NamedPipeServerStream reflectorPipe;
@@ -38,48 +38,14 @@ namespace TABSAT
         static extern bool ShowWindow( IntPtr hWnd, int nCmdShow );
         private const int SW_MINIMIZE = 6;
 
-
-        private static bool testReflectorDirectory( string reflectorDir )
+        public ReflectorManager( string TABdirectory )
         {
-            if( !Directory.Exists( reflectorDir ) )
-            {
-                Console.Error.WriteLine( "The provided Reflector directory does not exist." );
-                return false;
-            }
-            foreach( String file in reflectorFiles )
-            {
-                string binPath = Path.Combine( reflectorDir, file );
-                if( !File.Exists( binPath ) )
-                {
-                    Console.Error.WriteLine( "The Reflector file: " + file + " does not exist." );
-                    return false;
-                }
-            }
-            return true;
-        }
-
-
-        public ReflectorManager( string reflectorDir, string TABdir )
-        {
-            if( reflectorDir != null && testReflectorDirectory( reflectorDir ) )
-            {
-                reflectorDirectory = reflectorDir;
-            }
-            else if( testReflectorDirectory( defaultReflectorDirectory ) )
-            {
-                Console.Error.WriteLine( "The provided Reflector directory is not valid, attempting to use default." );
-                reflectorDirectory = defaultReflectorDirectory;
-            }
-            else
-            {
-                throw new ArgumentException( "The Reflector directory could not be located." );
-            }
-
-            TABdirectory = TABdir;
             if( !Directory.Exists( TABdirectory ) )
             {
                 throw new ArgumentException( "The provided TAB directory does not exist." );
             }
+
+            reflectorDeploymentPath = Path.Combine( TABdirectory, REFLECTOR_EXE );
 
             resetReflector();
 
@@ -169,31 +135,21 @@ namespace TABSAT
                 throw new InvalidOperationException( "Reflector is not awaiting deployment." );
             }
 
-            foreach( String binary in reflectorFiles )
+            if( File.Exists( reflectorDeploymentPath ) && !overwrite )
             {
-                string binSourcePath = Path.Combine( reflectorDirectory, binary );
-                string binTargetPath = Path.Combine( TABdirectory, binary );
-                if( overwrite )
+                Console.WriteLine( "Reflector file: " + REFLECTOR_EXE + " was already deployed, skipping." );
+            }
+            else
+            {
+                using( var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream( REFLECTOR_RESOURCE_NAME ) )
+                using( var compressStream = new DeflateStream( stream, CompressionMode.Decompress ) )
+                using( var file = File.Create( reflectorDeploymentPath ) )
                 {
-                    if( File.Exists( binTargetPath ) )
-                    {
-                        Console.WriteLine( "Reflector file: " + binary + " was already deployed, overwriting." );
-                    }
-                    File.Copy( binSourcePath, binTargetPath, true );
-                }
-                else
-                {
-                    if( File.Exists( binTargetPath ) )
-                    {
-                        Console.WriteLine( "Reflector file: " + binary + " was already deployed." );
-                        // Should checksum that it's the same as the file we would have copied?
-                    }
-                    else
-                    {
-                        File.Copy( binSourcePath, binTargetPath, false );
-                    }
+                    compressStream.CopyTo( file );
                 }
             }
+            // Should checksum, whether overwriting or skipping?
+
             state = ReflectorState.DEPLOYED;
             //Console.WriteLine( "Reflector deployed." );
         }
@@ -205,18 +161,15 @@ namespace TABSAT
                 throw new InvalidOperationException( "Reflector is not awaiting removal." );
             }
 
-            foreach( String binary in reflectorFiles )
+            if( !File.Exists( reflectorDeploymentPath ) )
             {
-                string binTargetPath = Path.Combine( TABdirectory, binary );
-                if( !File.Exists( binTargetPath ) )
-                {
-                    Console.WriteLine( "Reflector file: " + binary + " was not already deployed." );
-                }
-                else
-                {
-                    File.Delete( binTargetPath );
-                }
+                Console.WriteLine( "Reflector file: " + REFLECTOR_EXE + " was not already deployed." );
             }
+            else
+            {
+                File.Delete( reflectorDeploymentPath );
+            }
+
             state = ReflectorState.UNDEPLOYED;
             //Console.WriteLine( "Reflector removed." );
         }
@@ -229,7 +182,7 @@ namespace TABSAT
             }
 
             reflector = new Process();
-            reflector.StartInfo.FileName = Path.Combine( TABdirectory, reflectorExe );
+            reflector.StartInfo.FileName = reflectorDeploymentPath;
 
             reflectorPipe = new NamedPipeServerStream( pipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Message );
             //Console.WriteLine( "Pipe TransmissionMode: {0}.", reflectorPipe.TransmissionMode );
