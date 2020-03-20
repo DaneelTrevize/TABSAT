@@ -56,6 +56,7 @@ Potentially also increase the % score scale factor for such maps?
 
 Upgrade all smaller VOD buildings (Dwelling, Tavern) to City Halls of Doom? To try recreate UberVOD(s) on other ThemeTypes?
 Or multi-stack the same sized buildings in the same position?
+Give individual duplication options (including 0x, excluding 1x) for each VOD building type?
 
 Remove all Pickable resources & reclaimable buildings? To remove potential early Radar vision or resources chiefly accessed via kiting?
 
@@ -81,6 +82,8 @@ Set certain mayors as already chosen? To benefit or miss out on their benefits, 
 
 Alter the starting troops?
 
+Add the scripted politics systems from some custom maps?
+
 
 --
 Make games easier:
@@ -89,11 +92,13 @@ Reposition Ravens to indicate direction to Mutants/Giants/VODs?
 Or use sign post assets from custom/campaign maps?
 For VODs, convert each building relative position from CC into an angle, consolidate similar-enough angles into a single marker.
 
-Offer to remove or downgrade Taverns/City Halls?
+Add extra Food/Energy(/Workers) to CC, as though from pickables?
+Or spawn new pickables by the CC.
+Or relocate existing pickables to be by the CC.
 
-Add bonus units/buildings ready to use/place, as though from mayors?
+Make all existing troops veterans.
 
-Make starting troops veterans.
+Add the scripted pseudo-train system from some custom maps, for regular delivery of chosen resources?
 
 ----
 

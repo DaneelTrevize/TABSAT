@@ -32,6 +32,7 @@ namespace TABSAT
             mutantReplaceAllComboBox.SelectedIndex = 0;
             mutantMoveWhatComboBox.SelectedIndex = 0;
             mutantMoveGlobalComboBox.SelectedIndex = 0;
+            vodReplaceComboBox.SelectedIndex = 0;
             giftComboBox.SelectedIndex = 3;
             themeComboBox.SelectedIndex = 3;
             // Register these following event handlers after the above 'default' index choices, to avoid handling non-user events.
@@ -47,9 +48,11 @@ namespace TABSAT
             fogRemoveRadioButton.CheckedChanged += fogNotReduceHandler;
             fogShowFullRadioButton.CheckedChanged += fogNotReduceHandler;
 
-            var vodNotReduceHandler = new EventHandler( vodNotStackRadioButton_CheckedChanged );
-            vodLeaveRadioButton.CheckedChanged += vodNotReduceHandler;
-            vodRemoveRadioButton.CheckedChanged += vodNotReduceHandler;
+            var vodNotPanelHandler = new EventHandler( vodNotPanelRadioButton_CheckedChanged );
+            vodLeaveRadioButton.CheckedChanged += vodNotPanelHandler;
+            vodRemoveRadioButton.CheckedChanged += vodNotPanelHandler;
+            vodReplaceRadioButton.CheckedChanged += new EventHandler( vodReplaceRadio_CheckedChanged );
+            vodReplaceComboBox.SelectedIndexChanged += new EventHandler( vodReplaceComboBox_SelectedIndexChanged );
 
             var mayorsNotGiftChoicesHandler = new EventHandler( mayorsNotGiftRadioButton_CheckedChanged );
             mayorsLeaveRadioButton.CheckedChanged += mayorsNotGiftChoicesHandler;
@@ -176,17 +179,33 @@ namespace TABSAT
             }
         }
 
-        private void vodStackNumericUpDown_ValueChanged( object sender, EventArgs e )
-        {
-            vodStackRadioButton.Checked = true;
-        }
-
-        private void vodNotStackRadioButton_CheckedChanged( object sender, EventArgs e )
+        private void vodNotPanelRadioButton_CheckedChanged( object sender, EventArgs e )
         {
             if( ( (RadioButton) sender ).Checked )
             {
+                vodReplaceRadioButton.Checked = false;
                 vodStackRadioButton.Checked = false;
             }
+        }
+
+        private void vodReplaceRadio_CheckedChanged( object sender, EventArgs e )
+        {
+            if( ( (RadioButton) sender ).Checked )
+            {
+                vodLeaveRadioButton.Checked = false;
+                vodRemoveRadioButton.Checked = false;
+                vodStackRadioButton.Checked = false;
+            }
+        }
+
+        private void vodReplaceComboBox_SelectedIndexChanged( object sender, EventArgs e )
+        {
+            vodReplaceRadioButton.Checked = true;
+        }
+
+        private void vodStackNumericUpDown_ValueChanged( object sender, EventArgs e )
+        {
+            vodStackRadioButton.Checked = true;
         }
 
         private void vodStackRadioButton_CheckedChanged( object sender, EventArgs e )
@@ -195,6 +214,7 @@ namespace TABSAT
             {
                 vodLeaveRadioButton.Checked = false;
                 vodRemoveRadioButton.Checked = false;
+                vodReplaceRadioButton.Checked = false;
             }
         }
 
@@ -320,7 +340,7 @@ namespace TABSAT
             // Don't let different options be chosen during file operations
             mutantGroupBox.Enabled = false;
             fogGroupBox.Enabled = false;
-            //vodGroupBox.Enabled = false;
+            vodGroupBox.Enabled = false;
             mayorsBonusesGroupBox.Enabled = false;
             themeGroupBox.Enabled = false;
             saveFileGroupBox.Enabled = false;
@@ -334,7 +354,7 @@ namespace TABSAT
         {
             mutantGroupBox.Enabled = true;
             fogGroupBox.Enabled = true;
-            //vodGroupBox.Enabled = true;
+            vodGroupBox.Enabled = true;
             mayorsBonusesGroupBox.Enabled = true;
             themeGroupBox.Enabled = true;
             saveFileGroupBox.Enabled = true;
@@ -425,7 +445,7 @@ namespace TABSAT
 
         private bool modifyExtractedSave()
         {
-            if( mutantsNothingRadio.Checked && mayorsLeaveRadioButton.Checked && fogLeaveRadioButton.Checked && vodLeaveRadioButton.Checked && !themeCheckBox.Checked )
+            if( mutantsNothingRadio.Checked && fogLeaveRadioButton.Checked && vodLeaveRadioButton.Checked && mayorsLeaveRadioButton.Checked && !themeCheckBox.Checked )
             {
                 statusWriter( "No modifications chosen." );
                 return true;
@@ -455,20 +475,6 @@ namespace TABSAT
                     dataEditor.relocateMutants( toGiantNotMutant, perDirection );
                 }
 
-                // Mayors
-                if( mayorsDisableRadioButton.Checked )
-                {
-                    statusWriter( "Disabling Mayors." );
-                    dataEditor.disableMayors();
-                }
-                else if( mayorsGiftRadioButton.Checked )
-                {
-                    KeyValuePair<SaveEditor.GiftableTypes, string> kv = (KeyValuePair<SaveEditor.GiftableTypes, string>) giftComboBox.SelectedItem;
-                    int typeID = Convert.ToInt32( giftNumericUpDown.Value );
-                    statusWriter( "Gifting " + typeID + "x " + kv.Value + "." );
-                    dataEditor.giftEntities( kv.Key, typeID );
-                }
-
                 // Fog
                 if( fogRemoveRadioButton.Checked )
                 {
@@ -490,11 +496,31 @@ namespace TABSAT
                 // VODs
                 if( vodRemoveRadioButton.Checked )
                 {
-                    statusWriter( "Would remove VODs." );
+                    statusWriter( "Removing VODs." );
+                    dataEditor.removeVODs();
+                }
+                else if( vodReplaceRadioButton.Checked )
+                {
+                    statusWriter( "Replacing VOD buildings." );
+                    dataEditor.resizeVODs( vodReplaceComboBox.SelectedIndex == 1 );
                 }
                 else if( vodStackRadioButton.Checked )
                 {
                     statusWriter( "Would stack VODs." );
+                }
+
+                // Mayors
+                if( mayorsDisableRadioButton.Checked )
+                {
+                    statusWriter( "Disabling Mayors." );
+                    dataEditor.disableMayors();
+                }
+                else if( mayorsGiftRadioButton.Checked )
+                {
+                    KeyValuePair<SaveEditor.GiftableTypes, string> kv = (KeyValuePair<SaveEditor.GiftableTypes, string>) giftComboBox.SelectedItem;
+                    int typeID = Convert.ToInt32( giftNumericUpDown.Value );
+                    statusWriter( "Gifting " + typeID + "x " + kv.Value + "." );
+                    dataEditor.giftEntities( kv.Key, typeID );
                 }
 
                 // Theme

@@ -22,14 +22,48 @@ namespace TABSAT
 
         internal enum GiftableTypes : UInt64
         {
-            RANGER = 11462509610414451330,
-            SOLDIER = 8122295062332983407,
-            SNIPER = 6536008488763521408,
-            LUCIFER = 16241120227094315491,
-            THANATOS = 13687916016325214957,
-            TITAN = 15625692077980454078/*,
-            // MUTANT, buildings
-            SHOCKING_TOWER*/
+            Ranger = 11462509610414451330,
+            SoldierRegular = 8122295062332983407,
+            Sniper = 6536008488763521408,
+            Lucifer = 16241120227094315491,
+            Thanatos = 13687916016325214957,
+            Titan = 15625692077980454078,
+            // Mutant
+            EnergyWoodTower = 3581872206503330117,      // Tesla tower
+            MillWood = 869623577388046954,
+            MillIron = 12238914991741132226,
+            Sawmill = 6484699889268923215,
+            Quarry = 4012164333689948063,
+            AdvancedQuarry = 6574833960938744452,
+            OilPlatform = 15110117066074335339,
+            HunterCottage = 706050193872584208,
+            FishermanCottage = 13910727858942983852,
+            Farm = 7709119203238641805,
+            // AdvancedFarm
+            WareHouse = 13640414733981798546,
+            Market = 5507471650351043258,
+            Bank = 5036892806562984913,
+            TentHouse = 17301104073651661026,
+            StoneHouse = 17389931916361639317,
+            // TrapStakes                               // WoodTraps
+            // TrapBlades                               // IronTraps
+            WallWood = 16980392503923994773,
+            WallStone = 7684920400170855714,
+            // GateWood
+            WatchTowerWood = 11206202837167900273,
+            WoodWorkshop = 2943963846200136989,
+            StoneWorkshop = 11153810025740407576,
+            // SoldiersCenter
+            AdvancedUnitCenter = 8857617519118038933,
+            LookoutTower = 9352245195514814739,
+            // RadarTower
+            Ballista = 1621013738552581284,
+            // ShockingTower
+            // TheCrystalPalace = 7936948209186953569,
+            // TheSpire = 6908380734610266301,
+            // TheTransmutator = 5872990212787919747,
+            // TheAcademy = 8274629648718325688,
+            // TheVictorious = 6953739609864588774
         }
         internal static readonly Dictionary<GiftableTypes, string> giftableTypeNames;
 
@@ -45,13 +79,35 @@ namespace TABSAT
             themeTypeNames = new Dictionary<ThemeType, string>( ttn );
 
             Dictionary<GiftableTypes, string> gtn = new Dictionary<GiftableTypes, string>();
-            gtn.Add( GiftableTypes.RANGER, "Ranger" );
-            gtn.Add( GiftableTypes.SOLDIER, "Soldier" );
-            gtn.Add( GiftableTypes.SNIPER, "Sniper" );
-            gtn.Add( GiftableTypes.LUCIFER, "Lucifer" );
-            gtn.Add( GiftableTypes.THANATOS, "Thanatos" );
-            gtn.Add( GiftableTypes.TITAN, "Titan" );
-            //gtn.Add( GiftableTypes.SHOCKING_TOWER, "Shocking Tower" );
+            gtn.Add( GiftableTypes.Ranger, "Ranger" );
+            gtn.Add( GiftableTypes.SoldierRegular, "Soldier" );
+            gtn.Add( GiftableTypes.Sniper, "Sniper" );
+            gtn.Add( GiftableTypes.Lucifer, "Lucifer" );
+            gtn.Add( GiftableTypes.Thanatos, "Thanatos" );
+            gtn.Add( GiftableTypes.Titan, "Titan" );
+            gtn.Add( GiftableTypes.EnergyWoodTower, "Tesla Tower" );
+            gtn.Add( GiftableTypes.MillWood, "Mill" );
+            gtn.Add( GiftableTypes.MillIron, "Advanced Mill" );
+            gtn.Add( GiftableTypes.Sawmill, "Sawmill" );
+            gtn.Add( GiftableTypes.Quarry, "Quarry" );
+            gtn.Add( GiftableTypes.AdvancedQuarry, "Advanced Quarry" );
+            gtn.Add( GiftableTypes.OilPlatform, "Oil Platform" );
+            gtn.Add( GiftableTypes.HunterCottage, "Hunter Cottage" );
+            gtn.Add( GiftableTypes.FishermanCottage, "Fisherman Cottage" );
+            gtn.Add( GiftableTypes.Farm, "Farm" );
+            gtn.Add( GiftableTypes.WareHouse, "WareHouse" );
+            gtn.Add( GiftableTypes.Market, "Market" );
+            gtn.Add( GiftableTypes.Bank, "Bank" );
+            gtn.Add( GiftableTypes.TentHouse, "Tent" );
+            gtn.Add( GiftableTypes.StoneHouse, "Stone House" );
+            gtn.Add( GiftableTypes.WallWood, "Wood Wall" );
+            gtn.Add( GiftableTypes.WallStone, "Stone Wall" );
+            gtn.Add( GiftableTypes.WatchTowerWood, "Wood Tower" );
+            gtn.Add( GiftableTypes.WoodWorkshop, "Wood Workshop" );
+            gtn.Add( GiftableTypes.StoneWorkshop, "Stone Workshop" );
+            gtn.Add( GiftableTypes.AdvancedUnitCenter, "Engineering Center" );
+            gtn.Add( GiftableTypes.LookoutTower, "Lookout Tower" );
+            gtn.Add( GiftableTypes.Ballista, "Ballista" );
             giftableTypeNames = new Dictionary<GiftableTypes, string>( gtn );
         }
 
@@ -68,14 +124,30 @@ namespace TABSAT
         private const string CINFLAMABLE = @"ZX.Components.CInflamable, TheyAreBillions";
         private const string CBEHAVIOUR_TYPE = @"ZX.Components.CBehaviour, TheyAreBillions";
         private const string CMOVABLE_TYPE = @"ZX.Components.CMovable, TheyAreBillions";
+
         private const string MUTANT_TYPE = @"ZX.Entities.ZombieMutant, TheyAreBillions";
         private const string GIANT_TYPE = @"ZX.Entities.ZombieGiant, TheyAreBillions";
         private const string MUTANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombie, TheyAreBillions";
         private const string GIANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombieGiant, TheyAreBillions";
+        private const string VOD_SMALL_TYPE = @"ZX.Entities.DoomBuildingSmall, TheyAreBillions";
+        private const string VOD_MEDIUM_TYPE = @"ZX.Entities.DoomBuildingMedium, TheyAreBillions";
+        private const string VOD_LARGE_TYPE = @"ZX.Entities.DoomBuildingLarge, TheyAreBillions";
+
+        private const string VOD_LARGE_ID_TEMPLATE = @"3441286325348372349";
+        private const string VOD_SMALL_ID_TEMPLATE = @"8702552346733362645";
+        private const string VOD_LARGE_LIFE = @"4000";
+        private const string VOD_SMALL_LIFE = @"400";
+        private const string VOD_LARGE_SIZE = @"4;4";
+        private const string VOD_SMALL_SIZE = @"2;2";
         private const string MUTANT_ID_TEMPLATE = @"4885015758634569309";
         private const string GIANT_ID_TEMPLATE = @"6179780658058987152";
         private const string MUTANT_PROJECT_IMAGE = @"3097669356589096184";
         private const string GIANT_PROJECT_IMAGE = @"5072922660204167778";
+        private const string GIANT_LIFE = @"10000";
+        private const string MUTANT_LIFE = @"4000";
+        private const string GIANT_SIZE = @"1.6;1.6";
+        private const string MUTANT_SIZE = @"0.8;0.8";
+
         private class HugeZombieIconComparer : IComparer<HugeZombieIcon>
         {
             public int Compare( HugeZombieIcon a, HugeZombieIcon b )
@@ -104,7 +176,7 @@ namespace TABSAT
                 complex = entityItem.Element( "Complex" );
                 isMutantNotGiant = (string) complex.Attribute( "type" ) == MUTANT_TYPE;
 
-                Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant:\t\t" + id );
+                //Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant:\t\t" + id );
             }
 
             internal bool IsMutantNotGiant()
@@ -116,9 +188,7 @@ namespace TABSAT
             {
                 if( components == null )
                 {
-                    components = ( from c in complex.Element( "Properties" ).Elements( "Collection" )
-                                   where (string) c.Attribute( "name" ) == "Components"
-                                   select c ).Single();
+                    components = SaveEditor.getComponents( complex );
                 }
                 return components;
             }
@@ -127,9 +197,7 @@ namespace TABSAT
             {
                 if( behaviour == null )
                 {
-                    XElement currentCBehaviour = ( from c in getComponents().Element( "Items" ).Elements( "Complex" )
-                                                   where (string) c.Attribute( "type" ) == CBEHAVIOUR_TYPE
-                                                   select c ).Single();
+                    XElement currentCBehaviour = getComplexItemOfType( getComponents(), CBEHAVIOUR_TYPE );
                     behaviour = getFirstComplexPropertyNamed( currentCBehaviour, "Behaviour" );
                 }
                 return behaviour;
@@ -139,9 +207,7 @@ namespace TABSAT
             {
                 if( cMovable == null )
                 {
-                    cMovable = ( from c in getComponents().Element( "Items" ).Elements( "Complex" )
-                                 where (string) c.Attribute( "type" ) == CMOVABLE_TYPE
-                                 select c ).Single();
+                    cMovable = getComplexItemOfType( getComponents(), CMOVABLE_TYPE );
                 }
                 return cMovable;
             }
@@ -217,13 +283,11 @@ namespace TABSAT
                  * 
                  */
 
-                XElement cLife = ( from c in getComponents().Element( "Items" ).Elements( "Complex" )
-                                   where (string) c.Attribute( "type" ) == CLIFE_TYPE
-                                   select c ).Single();
+                XElement cLife = getComplexItemOfType( getComponents(), CLIFE_TYPE );
 
                 XElement path = ( from c in getMovable().Element( "Properties" ).Elements( "Collection" )
                                   where (string) c.Attribute( "name" ) == "Path"
-                                  select c ).Single();
+                                  select c ).SingleOrDefault();
 
                 string type;
                 string flags;
@@ -237,14 +301,12 @@ namespace TABSAT
                     type = GIANT_TYPE;
                     flags = "None";
                     template = GIANT_ID_TEMPLATE;
-                    life = "10000";
+                    life = GIANT_LIFE;
                     behaviour = GIANT_BEHAVIOUR_TYPE;
                     pathCapacity = "4";
-                    size = @"1.6;1.6";
+                    size = GIANT_SIZE;
 
-                    XElement cInflamable = ( from c in getComponents().Element( "Items" ).Elements( "Complex" )
-                                       where (string) c.Attribute( "type" ) == CINFLAMABLE
-                                       select c ).SingleOrDefault();
+                    XElement cInflamable = getComplexItemOfType( getComponents(), CINFLAMABLE, false );
                     if( cInflamable != null )
                     {
                         cInflamable.Remove();
@@ -255,10 +317,10 @@ namespace TABSAT
                     type = MUTANT_TYPE;
                     flags = "IsOneCellSize";
                     template = MUTANT_ID_TEMPLATE;
-                    life = "4000";
+                    life = MUTANT_LIFE;
                     behaviour = MUTANT_BEHAVIOUR_TYPE;
                     pathCapacity = "0";
-                    size = @"0.8;0.8";
+                    size = MUTANT_SIZE;
 
                     // Doesn't yet add this element for Giants that lack it...
                     string cInflamable = @"<Complex type=""ZX.Components.CInflamable, TheyAreBillions"">
@@ -312,7 +374,7 @@ namespace TABSAT
 
                 dir = null;
 
-                Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant Icon:\t" + id );
+                //Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant Icon:\t" + id );
             }
 
             private XAttribute getCellValue()
@@ -369,7 +431,7 @@ namespace TABSAT
 
                 distanceSquared = ( x - editor.commandCenterX ) * ( x - editor.commandCenterX ) + ( y - editor.commandCenterY ) * ( y - editor.commandCenterY );
 
-                Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant:\t\t" + id + ",\tPosition: " + x + ", " + y + "\tis: " + dir + ",\tdistanceSquared: " + distanceSquared );
+                //Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant:\t\t" + id + ",\tPosition: " + x + ", " + y + "\tis: " + dir + ",\tdistanceSquared: " + distanceSquared );
             }
 
             internal void relocate( HugeZombieIcon otherIcon )
@@ -382,7 +444,7 @@ namespace TABSAT
                 getCellValue().SetValue( otherIcon.getCellValue().Value );
                 dir = null;     // no need to trigger assessPosition() yet
 
-                Console.WriteLine( "Mutant icon: " + id + " relocated to: " + getCellValue().Value );
+                //Console.WriteLine( "Mutant icon: " + id + " relocated to: " + getCellValue().Value );
             }
 
             internal void delete()
@@ -421,6 +483,7 @@ namespace TABSAT
         private readonly string dataFile;
         private readonly XElement data;
         private readonly XElement levelComplex;
+        private XElement levelEntitiesItems;
         private XElement generatedLevel;
         private XElement extension;
 
@@ -446,6 +509,21 @@ namespace TABSAT
         private static XElement getFirstComplexPropertyNamed( XElement c, string name )
         {
             return getFirstPropertyOfTypeNamed( c, "Complex", name );
+        }
+
+        private static XElement getComponents( XElement complex )
+        {
+            return ( from c in complex.Element( "Properties" ).Elements( "Collection" )
+                     where (string) c.Attribute( "name" ) == "Components"
+                     select c ).Single();
+        }
+
+        private static XElement getComplexItemOfType( XElement components, string type, bool assumeExists = true )
+        {
+            var i = ( from c in components.Element( "Items" ).Elements( "Complex" )
+                     where (string) c.Attribute( "type" ) == type
+                     select c );
+            return assumeExists ? i.Single() : i.SingleOrDefault();
         }
 
 
@@ -476,7 +554,7 @@ namespace TABSAT
             commandCenterX = int.Parse( xySplit[0] );
             commandCenterY = int.Parse( xySplit[1] );
 
-            Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
+            //Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
 
             mutantIcons = new LinkedList<HugeZombieIcon>();
             giantIcons = new LinkedList<HugeZombieIcon>();
@@ -485,6 +563,15 @@ namespace TABSAT
         internal void save()    // Doesn't take parameter to save modified file to a different location?
         {
             data.Save( dataFile );
+        }
+
+        private XElement getLevelEntitiesItems()
+        {
+            if( levelEntitiesItems == null )
+            {
+                levelEntitiesItems = getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelEntities" ).Element( "Items" );
+            }
+            return levelEntitiesItems;
         }
 
         private XElement getGeneratedLevel()
@@ -514,13 +601,8 @@ namespace TABSAT
 
         private void findMutantsAndGiants()
         {
-            // Finds the related Items in the LevelEntities Dictionary
-            XElement itemsDict = getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelEntities" );
-
-            //Console.WriteLine( "Items count: " + items.Descendants( "Item" ).Count() );
-
             IEnumerable<XElement> bigBoys =
-                from i in itemsDict.Element( "Items" ).Elements( "Item" )
+                from i in getLevelEntitiesItems().Elements( "Item" )
                 where
                     ( from big in i.Elements( "Complex" )
                       where (string) big.Attribute( "type" ) == MUTANT_TYPE
@@ -551,8 +633,8 @@ namespace TABSAT
                 }
             }
 
-            Console.WriteLine( "Mutants count: " + mutants.Count() + ", icons count: " + mutantIcons.Count() );
-            Console.WriteLine( "Giants count: " + giants.Count() + ", icons count: " + giantIcons.Count() );
+            //Console.WriteLine( "Mutants count: " + mutants.Count() + ", icons count: " + mutantIcons.Count() );
+            //Console.WriteLine( "Giants count: " + giants.Count() + ", icons count: " + giantIcons.Count() );
         }
 
         internal void removeMutants()
@@ -577,12 +659,12 @@ namespace TABSAT
 
             if( toGiantNotMutant && !mutants.Any() )
             {
-                Console.WriteLine( "No Mutants to replace." );
+                //Console.WriteLine( "No Mutants to replace." );
                 return;
             }
             if( !toGiantNotMutant && !giants.Any() )
             {
-                Console.WriteLine( "No Giants to replace." );
+                //Console.WriteLine( "No Giants to replace." );
                 return;
             }
 
@@ -619,7 +701,7 @@ namespace TABSAT
 
             if( !mutants.Any() )
             {
-                Console.WriteLine( "No Mutants to relocate." );
+                //Console.WriteLine( "No Mutants to relocate." );
                 return;
             }
 
@@ -699,11 +781,11 @@ namespace TABSAT
                             }
                             else
                             {
-                                Console.WriteLine( "No Giants to relocate Mutants onto in direction: " + d + ", using global farthest Giant." );
+                                //Console.WriteLine( "No Giants to relocate Mutants onto in direction: " + d + ", using global farthest Giant." );
                                 relocateTo = globalFarthestGiant;
                                 if( relocateTo == null )
                                 {
-                                    Console.WriteLine( "No Giants to relocate Mutants onto, using farthest Mutant." );
+                                    //Console.WriteLine( "No Giants to relocate Mutants onto, using farthest Mutant." );
                                     relocateTo = globalFarthestMutant;
                                 }
                             }
@@ -723,7 +805,7 @@ namespace TABSAT
                 HugeZombieIcon farthestIcon = toGiantNotMutant ? globalFarthestGiant : globalFarthestMutant;
                 if( farthestIcon == null )
                 {
-                    Console.WriteLine( "No Giants to relocate Mutants onto, using farthest Mutant." );
+                    //Console.WriteLine( "No Giants to relocate Mutants onto, using farthest Mutant." );
                     farthestIcon = globalFarthestMutant;
                 }
 
@@ -740,6 +822,66 @@ namespace TABSAT
                 icon.relocate( farthestIcon );
                 HugeZombie farthest = ( farthestIcon.IsMutantNotGiant() ? mutants : giants )[farthestIcon.id];
                 mutant.relocate( farthest );
+            }
+        }
+
+        internal void removeVODs()
+        {
+            IEnumerable<XElement> vodItems =
+                (from i in getLevelEntitiesItems().Elements( "Item" )
+                where
+                    ( from vod in i.Elements( "Complex" )
+                      where (string) vod.Attribute( "type" ) == VOD_SMALL_TYPE
+                      || (string) vod.Attribute( "type" ) == VOD_MEDIUM_TYPE
+                      || (string) vod.Attribute( "type" ) == VOD_LARGE_TYPE
+                      select vod ).Any()
+                select i);
+            
+            //Console.WriteLine( "vodItems: " + vodItems.Count() );
+            foreach( XElement v in vodItems.ToList() )  // no ToList() leads to only removing 1 <item> per save modify cycle?!
+            {
+                v.Remove();
+            }
+        }
+
+        internal void resizeVODs( bool largerNotSmaller )
+        {
+            /*
+             * To change VOD building sizes:
+             * Change the <Complex type=
+             * Change the   <Properties>
+                              <Simple name="IDTemplate" value=
+             * Change the     <Collection name="Components" elementType="DXVision.DXComponent, DXVision">
+                                <Items>
+                                  <Complex type="ZX.Components.CLife, TheyAreBillions">
+                                    <Properties>
+                                      <Simple name="Life" value=
+             * Change the
+                  <Simple name="Size" value=
+             *
+             * Ignore?        <Complex type="ZX.Components.CTransparentIfNearUnits, TheyAreBillions">
+                                <Properties>
+                                  <Simple name="HiddingUnits" value="False" />
+                                  <Simple name="CheckHiddingUnits" value="False" />
+             */
+
+            IEnumerable<XElement> vodItems =
+                ( from i in getLevelEntitiesItems().Elements( "Item" )
+                  where
+                      ( from vod in i.Elements( "Complex" )
+                        where ( largerNotSmaller && (string) vod.Attribute( "type" ) == VOD_SMALL_TYPE )
+                        || (string) vod.Attribute( "type" ) == VOD_MEDIUM_TYPE
+                        || (!largerNotSmaller && ( string) vod.Attribute( "type" ) == VOD_LARGE_TYPE )
+                        select vod ).Any()
+                  select i );
+            
+            foreach( XElement v in vodItems.ToList() )  // no ToList() leads to only removing 1 <item> per save modify cycle?!
+            {
+                XElement complex = v.Element( "Complex" );
+                complex.SetAttributeValue( "type", largerNotSmaller ? VOD_LARGE_TYPE : VOD_SMALL_TYPE );
+                getFirstSimplePropertyNamed( complex, "IDTemplate" ).SetAttributeValue( "value", largerNotSmaller ? VOD_LARGE_ID_TEMPLATE : VOD_SMALL_ID_TEMPLATE );
+                getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ).SetAttributeValue( "value", largerNotSmaller ? VOD_LARGE_LIFE : VOD_SMALL_LIFE );
+                getFirstSimplePropertyNamed( complex, "Size" ).SetAttributeValue( "value", largerNotSmaller ? VOD_LARGE_SIZE : VOD_SMALL_SIZE );
             }
         }
 
@@ -772,8 +914,14 @@ namespace TABSAT
                     {
                         XAttribute secondSimpleValue = simples.Skip( 1 ).First().Attribute( "value" );
                         int existing;
-                        Int32.TryParse( secondSimpleValue.Value, out existing );
-                        secondSimpleValue.SetValue( existing + count );
+                        if( !Int32.TryParse( secondSimpleValue.Value, out existing ) )
+                        {
+                            Console.Error.WriteLine( "Unable to find the number of gifted entities of type: " + giftable );
+                        }
+                        else
+                        {
+                            secondSimpleValue.SetValue( existing + count );
+                        }
 
                         return;
                     }

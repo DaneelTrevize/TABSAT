@@ -207,6 +207,8 @@ Ranger:		11462509610414451330
 
 
 Bonus resources from collecting pickables?
+    <Complex name="LevelState">
+      <Properties>
         <Simple name="CommandCenterExtraFood" value="0" />
         <Simple name="CommandCenterExtraEnergy" value="120" />
         <Simple name="CommandCenterExtraWorkers" value="0" />
@@ -271,3 +273,174 @@ Always visible Mutant/HugeZombies?
                       <Complex type="ZX.Components.CInvisibleWhenNotWatched, TheyAreBillions">
                         <Properties>
                           <Simple name="Enabled" value="True" />
+
+Most researched techs from a nearly-completed game:
+
+              <Complex type="ZX.Entities.Foundry, TheyAreBillions">
+                <Properties>
+                  <Collection name="OnlyOnceCommandsExecuted" elementType="System.Int32, mscorlib">
+                    <Properties>
+                      <Simple name="Capacity" value="16" />
+                    </Properties>
+                    <Items>
+                      <Simple value="-802632513" />
+                      <Simple value="-963244817" />
+                      <Simple value="1389806726" />
+                      <Simple value="919099046" />
+                      <Simple value="-1854839922" />
+                      <Simple value="79042958" />
+                      <Simple value="1598072831" />
+                      <Simple value="2041636539" />
+                      <Simple value="1222062319" />
+                      <Simple value="1933694570" />
+                    </Items>
+                  </Collection>
+
+              <Complex type="ZX.Entities.StoneWorkshop, TheyAreBillions">
+                <Properties>
+                  <Collection name="OnlyOnceCommandsExecuted" elementType="System.Int32, mscorlib">
+                    <Properties>
+                      <Simple name="Capacity" value="16" />
+                    </Properties>
+                    <Items>
+                      <Simple value="-563892677" />
+                      <Simple value="-1103807436" />
+                      <Simple value="430741295" />
+                      <Simple value="130825731" />
+                      <Simple value="1382064081" />
+                      <Simple value="-223605445" />
+                      <Simple value="1899866905" />
+                      <Simple value="1341377105" />
+                      <Simple value="1097779703" />
+                    </Items>
+                  </Collection>
+
+        <Dictionary name="OnlyOneExecutedCommandsFinished" keyType="System.Int32, mscorlib" valueType="System.Int32, mscorlib">
+          <Items>
+            <Item>
+              <Simple value="1909100535" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="-1996452004" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1760062802" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1636578658" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="-1206721089" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1379521870" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1903415652" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="-563892677" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="-1103807436" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="430741295" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="130825731" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1382064081" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="-1793189857" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="-223605445" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1904250561" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="-802632513" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="-963244817" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1389806726" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="919099046" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1899866905" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="-1854839922" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="132771788" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="79042958" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="-1400737772" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1598072831" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="2041636539" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1222062319" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1341377105" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1097779703" />
+              <Simple value="1" />
+            </Item>
+            <Item>
+              <Simple value="1933694570" />
+              <Simple value="1" />
+            </Item>
+          </Items>
+        </Dictionary>
+
+Dev typos & inconsistencies:
+"ZX.ZXMiniMapIndicatorInfectedSwarn" not Swarm
+"OnlyOneExecutedCommandsFinished" not Once
+"DeffensesLife" not Defences
