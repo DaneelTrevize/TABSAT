@@ -56,9 +56,10 @@ namespace TABSAT
             // SoldiersCenter
             AdvancedUnitCenter = 8857617519118038933,
             LookoutTower = 9352245195514814739,
-            // RadarTower
+            RadarTower = 10083572309367106690,
             Ballista = 1621013738552581284,
-            // ShockingTower
+            ShockingTower = 7671446590444700196,
+            Executor = 782017986530656774,
             // TheCrystalPalace = 7936948209186953569,
             // TheSpire = 6908380734610266301,
             // TheTransmutator = 5872990212787919747,
@@ -95,7 +96,7 @@ namespace TABSAT
             gtn.Add( GiftableTypes.HunterCottage, "Hunter Cottage" );
             gtn.Add( GiftableTypes.FishermanCottage, "Fisherman Cottage" );
             gtn.Add( GiftableTypes.Farm, "Farm" );
-            gtn.Add( GiftableTypes.WareHouse, "WareHouse" );
+            gtn.Add( GiftableTypes.WareHouse, "Warehouse" );
             gtn.Add( GiftableTypes.Market, "Market" );
             gtn.Add( GiftableTypes.Bank, "Bank" );
             gtn.Add( GiftableTypes.TentHouse, "Tent" );
@@ -880,7 +881,7 @@ namespace TABSAT
                 XElement complex = v.Element( "Complex" );
                 complex.SetAttributeValue( "type", largerNotSmaller ? VOD_LARGE_TYPE : VOD_SMALL_TYPE );
                 getFirstSimplePropertyNamed( complex, "IDTemplate" ).SetAttributeValue( "value", largerNotSmaller ? VOD_LARGE_ID_TEMPLATE : VOD_SMALL_ID_TEMPLATE );
-                getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ).SetAttributeValue( "value", largerNotSmaller ? VOD_LARGE_LIFE : VOD_SMALL_LIFE );
+                getFirstSimplePropertyNamed( getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ), "Life" ).SetAttributeValue( "value", largerNotSmaller ? VOD_LARGE_LIFE : VOD_SMALL_LIFE );
                 getFirstSimplePropertyNamed( complex, "Size" ).SetAttributeValue( "value", largerNotSmaller ? VOD_LARGE_SIZE : VOD_SMALL_SIZE );
             }
         }

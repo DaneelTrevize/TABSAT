@@ -84,6 +84,7 @@ Alter the starting troops?
 
 Add the scripted politics systems from some custom maps?
 
+Apply a multiplier all (non-huge) map zombies' life (e.g. 0.8, 1.5)? Or per zombie type. Would need to test whether exceeding the base full life value for a given type causes issues beyond displaying e.g. 150/100, as this probably isn't how modded mayors effectively alter this value.
 
 --
 Make games easier:

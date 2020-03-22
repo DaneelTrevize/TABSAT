@@ -444,3 +444,4 @@ Dev typos & inconsistencies:
 "ZX.ZXMiniMapIndicatorInfectedSwarn" not Swarm
 "OnlyOneExecutedCommandsFinished" not Once
 "DeffensesLife" not Defences
+"WareHouse" not Warehouse

@@ -507,7 +507,7 @@
             this.mutantMoveGlobalComboBox.Items.AddRange(new object[] {
             "anywhere on the map",
             "per compass quadrant"});
-            this.mutantMoveGlobalComboBox.Location = new System.Drawing.Point(200, 0);
+            this.mutantMoveGlobalComboBox.Location = new System.Drawing.Point(199, 0);
             this.mutantMoveGlobalComboBox.Name = "mutantMoveGlobalComboBox";
             this.mutantMoveGlobalComboBox.Size = new System.Drawing.Size(131, 21);
             this.mutantMoveGlobalComboBox.TabIndex = 6;
@@ -651,7 +651,7 @@
             this.themeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.themeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.themeComboBox.FormattingEnabled = true;
-            this.themeComboBox.Location = new System.Drawing.Point(78, 16);
+            this.themeComboBox.Location = new System.Drawing.Point(76, 16);
             this.themeComboBox.Name = "themeComboBox";
             this.themeComboBox.Size = new System.Drawing.Size(115, 21);
             this.themeComboBox.TabIndex = 0;
@@ -872,9 +872,9 @@
             this.giftComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.giftComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.giftComboBox.FormattingEnabled = true;
-            this.giftComboBox.Location = new System.Drawing.Point(41, 0);
+            this.giftComboBox.Location = new System.Drawing.Point(40, 0);
             this.giftComboBox.Name = "giftComboBox";
-            this.giftComboBox.Size = new System.Drawing.Size(112, 21);
+            this.giftComboBox.Size = new System.Drawing.Size(114, 21);
             this.giftComboBox.TabIndex = 3;
             // 
             // mayorsGiftRadioButton
