@@ -53,8 +53,10 @@ If saves can be successfully shared with other players, the passwords cannot inv
 --------
 Existing peers:
 https://github.com/ash47/TheyAreBillionsModKit
-TAB assembly Type name:	#=z9Y87TGUD3$LwpLQJig==
-Flag method name:		#=zPm4jjaldzI58qQjY8Q==
-Helper method name:		#=zROvIN_INIxlbR$Vh4g==
+
+Signing class name:		#=zo$R_m8aZaYOxjFPxZg==
+Signing method name:	#=zNEbiICzaSiFN
+Flag method name:		#=zDagADDewcPLcyO8cvA==
+Generator method name:	#=zP2V6WOMn3axP6NdapA==
 
 TAB assemblies appear to have been obfuscating using Eazfuscator. Tools such as EazFixer exist to attempt to reverse this.

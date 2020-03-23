@@ -97,6 +97,7 @@
             this.processPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.modifySaveBackgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.extractGroupBox.SuspendLayout();
             this.manualGroupBox.SuspendLayout();
             this.saveFileGroupBox.SuspendLayout();
@@ -1115,5 +1116,6 @@
         private System.Windows.Forms.RadioButton vodReplaceRadioButton;
         private System.Windows.Forms.Panel vodReplacePanel;
         private System.Windows.Forms.ComboBox vodReplaceComboBox;
+        private System.ComponentModel.BackgroundWorker modifySaveBackgroundWorker;
     }
 }

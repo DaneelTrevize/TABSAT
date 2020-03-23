@@ -75,7 +75,7 @@ namespace TABSAT
             if( tryCheckFile )
             {
                 // Try to backup the check file too, but don't fail the overall method if this can't be done
-                string checkFile = Path.ChangeExtension( saveFile, TAB.CHECK_EXTENSION );
+                string checkFile = TAB.getCheckFile( saveFile );
                 if( !File.Exists( checkFile ) )
                 {
                     Console.Error.WriteLine( "Check file does not exist: " + checkFile );
@@ -221,9 +221,7 @@ namespace TABSAT
                 Directory.CreateDirectory( currentDecryptDir );
             }
 
-            sign( currentSaveFile );
-
-            string password = generatePassword( currentSaveFile );
+            string password = signAndGeneratePassword( currentSaveFile );
 
             unpackSave( currentSaveFile, currentDecryptDir, password );
 
@@ -247,17 +245,15 @@ namespace TABSAT
 
             repackExtracted( unencryptedSaveFile, currentDecryptDir );
 
-            sign( unencryptedSaveFile );
-
-            string password = generatePassword( unencryptedSaveFile );
+            string password = signAndGeneratePassword( unencryptedSaveFile );
 
             // Purge the temporary unencrypted versions of this new save file
             File.Delete( unencryptedSaveFile );
-            File.Delete( Path.ChangeExtension( unencryptedSaveFile, TAB.CHECK_EXTENSION ) );
+            File.Delete( TAB.getCheckFile( unencryptedSaveFile ) );
 
             repackExtracted( currentSaveFile, currentDecryptDir, password );
 
-            sign( currentSaveFile );
+            signAndGeneratePassword( currentSaveFile, false );
 
             return currentSaveFile;
         }
@@ -283,26 +279,8 @@ namespace TABSAT
                 reflectorManager.removeReflector();
             }
         }
-
-
-        private string sign( string saveFile )
-        {
-            if( reflectorManager.getState() == ReflectorManager.ReflectorState.UNDEPLOYED )
-            {
-                reflectorManager.deployReflector();
-            }
-
-            if( reflectorManager.getState() == ReflectorManager.ReflectorState.DEPLOYED )
-            {
-                reflectorManager.startReflector();
-            }
-            
-            string signature = reflectorManager.checksum( saveFile );
-            //Console.WriteLine( "Signature from reflector: " + signature );
-            return signature;
-        }
         
-        private string generatePassword( string saveFile )
+        private string signAndGeneratePassword( string saveFile, bool andGeneratePassword = true )
         {
             if( reflectorManager.getState() == ReflectorManager.ReflectorState.UNDEPLOYED )
             {
@@ -314,9 +292,17 @@ namespace TABSAT
                 reflectorManager.startReflector();
             }
 
-            string password = reflectorManager.generatePassword( saveFile );
-            //Console.WriteLine( "Password from reflector: " + password );
-            return password;
+            string signature = reflectorManager.generateChecksum( saveFile );
+            //Console.WriteLine( "Signature from reflector: " + signature );
+
+            if( andGeneratePassword )
+            {
+                string password = reflectorManager.generatePassword( saveFile );
+                //Console.WriteLine( "Password from reflector: " + password );
+                return password;
+            }
+
+            return signature;
         }
     }
 }

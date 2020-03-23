@@ -5,14 +5,18 @@ using System.IO;
 using System.IO.Pipes;
 using System.Reflection;
 using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace TABSAT
 {
     public enum PipeFlowControl
     {
-        Checksum = 'C',
-        Generate = 'E',
-        Quit = 'Q'
+        GenerateChecksum = 'C',
+        GeneratePassword = 'P',
+        Quit = 'Q'/*,
+        UnrecognisedCommand = 'U',
+        Error = 'E',
+        Result = 'R'*/
     }
 
     public class TABReflector
@@ -21,7 +25,7 @@ namespace TABSAT
         private static Type ZXProgram;
         private static MethodInfo billionsMain;
 
-        private static Type gameClass;
+        private static Type signingClass;
         private static MethodInfo getGameAccountMethod;
         private static MethodInfo signingMethod;
 
@@ -34,6 +38,11 @@ namespace TABSAT
         private NamedPipeClientStream pipe;
         private StreamReader pipeReader;
         private StreamWriter pipeWriter;
+
+        [DllImport( "user32.dll" )]
+        [return: MarshalAs( UnmanagedType.Bool )]
+        static extern bool ShowWindow( IntPtr hWnd, int nCmdShow );
+        private const int SW_MINIMIZE = 6;
 
         public TABReflector( string handle )
         {
@@ -57,7 +66,7 @@ namespace TABSAT
                 command = readPipe();
                 switch( command[0] )
                 {
-                    case (char) PipeFlowControl.Checksum:
+                    case (char) PipeFlowControl.GenerateChecksum:
                         //writePipe( "Awaiting file path." );
                         value = readPipe();
                         string signature = generateZXCheck( value );
@@ -71,22 +80,13 @@ namespace TABSAT
                             writePipe( "Failed to generated zxcheck." );
                         }
                         break;
-                    case (char) PipeFlowControl.Generate:
+                    case (char) PipeFlowControl.GeneratePassword:
                         //writePipe( "Awaiting file path." );
                         value = readPipe();
-                        // Checksum file is required or passwork generator invocation will fail
-                        if( !File.Exists( Path.ChangeExtension( value, TAB.CHECK_EXTENSION ) ) )
-                        {
-                            //generateZXCheck( value );
-                            //Console.Error.WriteLine( "No zxcheck found." );
-                            writePipe( "No zxcheck found." );
-                        }
-                        else
-                        {
-                            string password = generatePassword( value );
-                            Console.WriteLine( "Password: " + password );
-                            writePipe( password );
-                        }
+                        // Checksum file is required or passwork generator invocation will fail. Assume the manager checked this.
+                        string password = generatePassword( value );
+                        Console.WriteLine( "Password: " + password );
+                        writePipe( password );
                         break;
                     case (char) PipeFlowControl.Quit:
                         //writePipe( "Quitting." );
@@ -158,11 +158,11 @@ namespace TABSAT
                 // Attempt to load the assembly
                 try
                 {
-                    tabAssembly = Assembly.LoadFile( AppDomain.CurrentDomain.BaseDirectory + TAB.EXE_NAME );
+                    tabAssembly = Assembly.Load( Path.GetFileNameWithoutExtension( TAB.EXE_NAME ) );
 
                     if( tabAssembly == null )
                     {
-                        throw new Exception( "Assembly didnt load" );
+                        throw new Exception( "TAB assembly didn't load." );
                     }
                     else
                     {
@@ -171,14 +171,14 @@ namespace TABSAT
                 }
                 catch( Exception e )
                 {
-                    Console.Error.WriteLine( "Failed to load TAB assembly" );
+                    Console.Error.WriteLine( "Failed to load TAB assembly." );
                     Console.Error.WriteLine( e.Message );
                     Environment.Exit( -1 );
                 }
             }
             return tabAssembly;
         }
-
+        
         private static Type getZXProgram()
         {
             if( ZXProgram == null )
@@ -193,7 +193,7 @@ namespace TABSAT
             }
             return ZXProgram;
         }
-
+        
         private static MethodInfo getBillionsMain()
         {
             if( billionsMain == null )
@@ -208,13 +208,30 @@ namespace TABSAT
             }
             return billionsMain;
         }
-
+        
         private static void initialiseBillionsAndStall( string[] args )
         {
             try
             {
                 getBillionsMain().Invoke( getZXProgram(), new object[] { args } );
-            }
+                /*foreach( var a in getTABAssembly().GetReferencedAssemblies() )
+                {
+                    Console.WriteLine( a );
+                }*/
+                //getTABAssembly().GetTypes();
+            }/*
+            catch( ReflectionTypeLoadException rtle )
+            {
+                Console.Error.WriteLine( rtle.Message );
+                Console.Error.WriteLine( rtle.Types.Length + ", " + rtle.LoaderExceptions.Length );
+                for( int t = 0, e = 0; t < rtle.Types.Length && e < rtle.LoaderExceptions.Length; t++ )
+                {
+                    if( rtle.Types[t] == null )
+                    {
+                        Console.Error.WriteLine( rtle.LoaderExceptions[e++] );
+                    }
+                }
+            }*/
             catch( Exception e )
             {
                 Console.Error.WriteLine( e.Message );
@@ -226,43 +243,20 @@ namespace TABSAT
             }
         }
 
-        private static Type getGameClass()
+        private static Type getSigningClass()
         {
-            if( gameClass == null )
+            if( signingClass == null )
             {
-
-                Type[] types;
-                try
-                {
-                    // Loop over all types in the assembly
-                    types = getTABAssembly().GetTypes();
-                }
-                catch( Exception e )
-                {
-                    Console.Error.WriteLine( e.Message );
-                    return null;
-                }
-
-                foreach( Type type in types )
+                foreach( Type type in getTABAssembly().GetTypes() )
                 {
                     try
                     {
-                        // Loop over all the public methods in the assembly
-                        foreach( MethodInfo info in type.GetMethods() )
+                        getGameAccountMethod = type.GetMethod( "get_GameAccount" );
+                        if( getGameAccountMethod != null )
                         {
-                            string methodName = info.Name;
-
-                            // We are looking for the following method
-                            if( methodName == "get_GameAccount" )
-                            {
-                                Console.WriteLine( "Located game class." );
-
-                                // Located the class we need to hit
-                                gameClass = type;
-                                getGameAccountMethod = info;
-
-                                return gameClass;
-                            }
+                            Console.WriteLine( "Found signing class:\t" + type );
+                            signingClass = type;
+                            break;
                         }
                     }
                     catch( Exception e )
@@ -271,20 +265,20 @@ namespace TABSAT
                     }
                 }
 
-                if( gameClass == null )
+                if( signingClass == null )
                 {
-                    Console.Error.WriteLine( "Failed to find the game class." );
+                    Console.Error.WriteLine( "Failed to find the signing class." );
                 }
             }
 
-            return gameClass;
+            return signingClass;
         }
 
         private static MethodInfo getSigningMethod()
         {
             if( signingMethod == null )
             {
-                Type type = getGameClass();
+                Type type = getSigningClass();
                 if( type == null )
                 {
                     return null;
@@ -292,8 +286,8 @@ namespace TABSAT
 
                 Console.WriteLine( "Sig-scanning for signing method..." );
 
-                // Loop over the  class again, we need to locate the checksum method
-                foreach( MethodInfo info in getGameClass().GetMethods( BindingFlags.Static | BindingFlags.NonPublic ) )
+                // Loop over the class again, we need to locate the checksum method
+                foreach( MethodInfo info in type.GetMethods( BindingFlags.Static | BindingFlags.NonPublic ) )
                 {
 
                     // Grab the params, our target takes 2
@@ -341,11 +335,6 @@ namespace TABSAT
                 object sigObj = signingMethod.Invoke( getGameAccountMethod, new object[] { saveFile, 2 } );
                 string signature = (string) sigObj;
 
-                string checkFile = Path.ChangeExtension( saveFile, TAB.CHECK_EXTENSION );
-                File.WriteAllText( checkFile, signature );
-
-                //Console.WriteLine( "Created " + checkExtension + " file. Signature = " + signature );
-
                 return signature;
             }
             catch( Exception e )
@@ -359,7 +348,8 @@ namespace TABSAT
         {
             if( ZipSerializer == null )
             {
-                Assembly ass = AppDomain.CurrentDomain.Load( "DXVision" );
+                Assembly ass = Assembly.Load( "DXVision" );
+                //Console.WriteLine( ass.GetName() + " located in: " + ass.CodeBase );
                 ZipSerializer = ass.GetType( "DXVision.Serialization.ZipSerializer" );
             }
             return ZipSerializer;
@@ -509,7 +499,7 @@ namespace TABSAT
                 Console.Error.WriteLine( "TAB executable not found." );
                 Environment.Exit( -1 );
             }
-
+            
             new Thread( () => {
                 initialiseBillionsAndStall( new string[] { "" } );
             } ).Start();
@@ -526,6 +516,17 @@ namespace TABSAT
                         if( popup != IntPtr.Zero )
                         {
                             Console.WriteLine( "Popup detected, cycles: " + i );
+
+                            try
+                            {
+                                ShowWindow( popup, SW_MINIMIZE );
+                                Console.WriteLine( "Popup minimised." );
+                            }
+                            catch( InvalidOperationException ioe )
+                            {
+                                Console.Error.WriteLine( "Unable to obtain the Reflector's main window handle. " + ioe.Message );
+                            }
+
                             break;
                         }
                     }
@@ -537,7 +538,7 @@ namespace TABSAT
                     }
                 }
             }
-
+            
             TABReflector reflector = new TABReflector( args[0] );
 
             reflector.run();

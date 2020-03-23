@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Diagnostics;
 using static TABSAT.MainWindow;
+using System.ComponentModel;
 
 namespace TABSAT
 {
@@ -18,7 +19,7 @@ namespace TABSAT
             modifyManager = m;
             statusWriter = sW;
 
-            saveOpenFileDialog.Filter = "TAB Save Files|*" + TAB.SAVE_EXTENSION;// + "|Data files|*.dat";
+            saveOpenFileDialog.Filter = "TAB Save Files|" + TAB.SAVES_FILTER;// + "|Data files|*.dat";
             saveOpenFileDialog.InitialDirectory = savesDirectory;
 
             giftComboBox.DataSource = new BindingSource( SaveEditor.giftableTypeNames, null );
@@ -64,17 +65,17 @@ namespace TABSAT
 
         internal void reflectorOutputHandler( object sendingProcess, DataReceivedEventArgs outLine )
         {
-            /*if( reflectorTextBox.InvokeRequired )     // Waiting for the right thread stalls the realtime displaying of Reflector process output
+            if( reflectorTextBox.InvokeRequired )
             {
                 reflectorTextBox.BeginInvoke( new DataReceivedEventHandler( reflectorOutputHandler ), new[] { sendingProcess, outLine } );
             }
             else
-            {*/
-            if( !String.IsNullOrEmpty( outLine.Data ) )
             {
-                reflectorTextBox.AppendText( outLine.Data + Environment.NewLine );
+                if( !String.IsNullOrEmpty( outLine.Data ) )
+                {
+                    reflectorTextBox.AppendText( outLine.Data + Environment.NewLine );
+                }
             }
-            //}
         }
 
         internal void refreshSaveFileChoice()
@@ -281,14 +282,48 @@ namespace TABSAT
             }
         }
 
+        private void disableChoices()
+        {
+            // Don't let different options be chosen during file operations
+            mutantGroupBox.Enabled = false;
+            fogGroupBox.Enabled = false;
+            vodGroupBox.Enabled = false;
+            mayorsBonusesGroupBox.Enabled = false;
+            themeGroupBox.Enabled = false;
+            saveFileGroupBox.Enabled = false;
+            modifyGroupBox.Enabled = false;
+            //manualGroupBox.Enabled = false;    // Don't disable this for when we're doing a multi-button-click-required manual cycle
+            extractGroupBox.Enabled = false;
+            reflectorGroupBox.Enabled = false;
+        }
+
+        private void enableChoices()
+        {
+            mutantGroupBox.Enabled = true;
+            fogGroupBox.Enabled = true;
+            vodGroupBox.Enabled = true;
+            mayorsBonusesGroupBox.Enabled = true;
+            themeGroupBox.Enabled = true;
+            saveFileGroupBox.Enabled = true;
+            modifyGroupBox.Enabled = true;
+            //manualGroupBox.Enabled = true;
+            extractGroupBox.Enabled = true;
+            reflectorGroupBox.Enabled = true;
+        }
+
         private void modifySaveButton_Click( object sender, EventArgs e )
         {
             disableChoices();
 
+            modifySaveBackgroundWorker = new BackgroundWorker();
+            modifySaveBackgroundWorker.DoWork += new DoWorkEventHandler( modifySave_DoWork );
+            modifySaveBackgroundWorker.RunWorkerAsync();
+        }
+
+        private void modifySave_DoWork( object sender, DoWorkEventArgs e )
+        {
             if( !extractManualRadioButton.Checked )
             {
-                //tabSAT.hasSaveFile(); // When could this _Click be called if we didn't already have a saveFile set?
-                //tabSAT.setSaveFile( openSaveFileDialog.FileName );
                 // Firstly extract the save
                 if( !extractSave() )
                 {
@@ -335,35 +370,6 @@ namespace TABSAT
             resetSaveFileChoice();
         }
 
-        private void disableChoices()
-        {
-            // Don't let different options be chosen during file operations
-            mutantGroupBox.Enabled = false;
-            fogGroupBox.Enabled = false;
-            vodGroupBox.Enabled = false;
-            mayorsBonusesGroupBox.Enabled = false;
-            themeGroupBox.Enabled = false;
-            saveFileGroupBox.Enabled = false;
-            modifyGroupBox.Enabled = false;
-            //manualGroupBox.Enabled = false;    // Don't disable this for when we're doing a multi-button-click-required manual cycle
-            extractGroupBox.Enabled = false;
-            reflectorGroupBox.Enabled = false;
-        }
-
-        private void enableChoices()
-        {
-            mutantGroupBox.Enabled = true;
-            fogGroupBox.Enabled = true;
-            vodGroupBox.Enabled = true;
-            mayorsBonusesGroupBox.Enabled = true;
-            themeGroupBox.Enabled = true;
-            saveFileGroupBox.Enabled = true;
-            modifyGroupBox.Enabled = true;
-            //manualGroupBox.Enabled = true;
-            extractGroupBox.Enabled = true;
-            reflectorGroupBox.Enabled = true;
-        }
-
         private void extractSaveButton_Click( object sender, EventArgs e )
         {
             if( !modifyManager.hasSaveFile() )
@@ -374,6 +380,13 @@ namespace TABSAT
 
             disableChoices();
 
+            modifySaveBackgroundWorker = new BackgroundWorker();
+            modifySaveBackgroundWorker.DoWork += new DoWorkEventHandler( extractSave_DoWork );
+            modifySaveBackgroundWorker.RunWorkerAsync();
+        }
+
+        private void extractSave_DoWork( object sender, DoWorkEventArgs e )
+        {
             if( !extractSave() )
             {
                 resetSaveFileChoice();

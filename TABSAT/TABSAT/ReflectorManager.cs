@@ -4,7 +4,6 @@ using System.IO;
 using System.IO.Compression;
 using System.IO.Pipes;
 using System.Reflection;
-using System.Runtime.InteropServices;
 
 namespace TABSAT
 {
@@ -32,11 +31,6 @@ namespace TABSAT
         private DataReceivedEventHandler outputHandler;
         private ReflectorState state;   // Should lock() access?
 
-
-        [DllImport( "user32.dll" )]
-        [return: MarshalAs( UnmanagedType.Bool )]
-        static extern bool ShowWindow( IntPtr hWnd, int nCmdShow );
-        private const int SW_MINIMIZE = 6;
 
         public ReflectorManager( string TABdirectory )
         {
@@ -189,6 +183,7 @@ namespace TABSAT
 
             reflector.StartInfo.Arguments = pipeName;
             reflector.StartInfo.UseShellExecute = false;
+            //reflector.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;   // Does nothing to stop the popup first appearing mid-screen
             // Redirect all console writes to the 1 handler
             reflector.StartInfo.CreateNoWindow = true;
             reflector.StartInfo.RedirectStandardOutput = true;
@@ -206,19 +201,6 @@ namespace TABSAT
             reflectorReader = new StreamReader( reflectorPipe );
 
             reflectorPipe.WaitForConnection();
-            try
-            {
-                //reflector.WaitForInputIdle( 1000 );
-                //Console.WriteLine( "Reflector window title: " + reflector.MainWindowTitle );
-                IntPtr popup = reflector.MainWindowHandle;
-                ShowWindow( popup, SW_MINIMIZE );
-                //Console.WriteLine( "Reflector window minimised." );
-                popup = IntPtr.Zero;    // Needless as it goes out of scope now anyway, and doesn't implement IDisposable/can't be wrapped in using()?
-            }
-            catch( InvalidOperationException ioe )
-            {
-                Console.Error.WriteLine( "Unable to obtain the Reflector's main window handle. " + ioe.Message );
-            }
             state = ReflectorState.STARTED;
         }
 
@@ -246,6 +228,28 @@ namespace TABSAT
             //Console.WriteLine( "Reflector stopped." );
         }
 
+        internal string generateChecksum( string saveFile )
+        {
+            if( state != ReflectorState.STARTED )
+            {
+                throw new InvalidOperationException( "Reflector is not awaiting processing." );
+            }
+
+            state = ReflectorState.PROCESSING;
+
+            writePipe( Char.ToString( (char) PipeFlowControl.GenerateChecksum ) );
+            writePipe( saveFile );
+            string signature = readPipe();
+
+            string checkFile = TAB.getCheckFile( saveFile );
+
+            // Could first check if the existing contents are the same, and if so not overwrite. Unless something is expecting/needing LastModified to change?
+            File.WriteAllText( checkFile, signature );
+
+            state = ReflectorState.STARTED;
+            return signature;
+        }
+
         internal string generatePassword( string saveFile )
         {
             if( state != ReflectorState.STARTED )
@@ -253,31 +257,21 @@ namespace TABSAT
                 throw new InvalidOperationException( "Reflector is not awaiting processing." );
             }
 
+            string checkFile = TAB.getCheckFile( saveFile );
+            if( !File.Exists( checkFile ) )
+            {
+                // Generate checksum file first?
+                throw new InvalidOperationException( "Check file not found: " + checkFile );
+            }
+
             state = ReflectorState.PROCESSING;
 
-            writePipe( Char.ToString( (char) PipeFlowControl.Generate ) );
+            writePipe( Char.ToString( (char) PipeFlowControl.GeneratePassword ) );
             writePipe( saveFile );
             string password = readPipe();
 
             state = ReflectorState.STARTED;
             return password;
-        }
-
-        internal string checksum( string saveFile )
-        {
-            if( state != ReflectorState.STARTED )
-            {
-                throw new InvalidOperationException( "Reflector is not awaiting processing." );
-            }
-
-            state = ReflectorState.PROCESSING;
-
-            writePipe( Char.ToString( (char) PipeFlowControl.Checksum ) );
-            writePipe( saveFile );
-            string signature = readPipe();
-
-            state = ReflectorState.STARTED;
-            return signature;
         }
     }
 }

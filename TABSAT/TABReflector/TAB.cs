@@ -106,6 +106,11 @@ namespace TABSAT
             return null;
         }
 
+        public static string getCheckFile( string saveFile )
+        {
+            return Path.ChangeExtension( saveFile, CHECK_EXTENSION );
+        }
+
         public static bool IsFileWithinDirectory( string file, string directory )
         {
             return Path.GetFullPath( file ).StartsWith( Path.GetFullPath( directory ) );
