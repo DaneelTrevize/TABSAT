@@ -53,7 +53,7 @@ namespace TABSAT
             WatchTowerWood = 11206202837167900273,
             WoodWorkshop = 2943963846200136989,
             StoneWorkshop = 11153810025740407576,
-            // SoldiersCenter
+            SoldiersCenter = 17945382406851792953,
             AdvancedUnitCenter = 8857617519118038933,
             LookoutTower = 9352245195514814739,
             RadarTower = 10083572309367106690,
@@ -106,9 +106,12 @@ namespace TABSAT
             gtn.Add( GiftableTypes.WatchTowerWood, "Wood Tower" );
             gtn.Add( GiftableTypes.WoodWorkshop, "Wood Workshop" );
             gtn.Add( GiftableTypes.StoneWorkshop, "Stone Workshop" );
+            gtn.Add( GiftableTypes.SoldiersCenter, "Soldiers' Center" );
             gtn.Add( GiftableTypes.AdvancedUnitCenter, "Engineering Center" );
             gtn.Add( GiftableTypes.LookoutTower, "Lookout Tower" );
+            gtn.Add( GiftableTypes.RadarTower, "Radar Tower" );
             gtn.Add( GiftableTypes.Ballista, "Ballista" );
+            gtn.Add( GiftableTypes.Executor, "Executor" );
             giftableTypeNames = new Dictionary<GiftableTypes, string>( gtn );
         }
 
