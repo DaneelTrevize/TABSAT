@@ -440,8 +440,29 @@ Most researched techs from a nearly-completed game:
           </Items>
         </Dictionary>
 
+
+IDs seem to be (needlessly?) random, not just unique.
+The naming of <Complex name="Random"><Properties> <Simple name="Mt" ... indicates Mersenne Twister PRNG.
+
+
+<Dictionary name="LevelFastSerializedEntities" keyType="System.UInt64, mscorlib"
+<Simple value="
+13102967879573781082	ZombieWeakA
+6498716987293858679		ZombieStrongA
+12658363830661735733	ZombieVenom
+8945324363763426993		ZombieDressedA
+1214272082232025268		ZombieHarpy
+4497312170973781002		ZombieWeakC
+11373321006229815036	ZombieWeakB
+12882220683103625178	ZombieMediumB
+17464596434855839240	ZombieWorkerA
+10676594063526581		ZombieWorkerB
+3569719832138441992		ZombieMediumA
+
+
 Dev typos & inconsistencies:
 "ZX.ZXMiniMapIndicatorInfectedSwarn" not Swarm
 "OnlyOneExecutedCommandsFinished" not Once
 "DeffensesLife" not Defences
 "WareHouse" not Warehouse
+"Repeteable" not Repeatable

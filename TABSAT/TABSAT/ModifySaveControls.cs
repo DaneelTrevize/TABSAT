@@ -22,6 +22,10 @@ namespace TABSAT
             saveOpenFileDialog.Filter = "TAB Save Files|" + TAB.SAVES_FILTER;// + "|Data files|*.dat";
             saveOpenFileDialog.InitialDirectory = savesDirectory;
 
+            vodReplaceComboBox.DataSource = new BindingSource( SaveEditor.vodSizesNames, null );
+            vodReplaceComboBox.DisplayMember = "Value";
+            vodReplaceComboBox.ValueMember = "Key";
+
             giftComboBox.DataSource = new BindingSource( SaveEditor.giftableTypeNames, null );
             giftComboBox.DisplayMember = "Value";
             giftComboBox.ValueMember = "Key";
@@ -289,7 +293,7 @@ namespace TABSAT
             fogGroupBox.Enabled = false;
             vodGroupBox.Enabled = false;
             mayorsBonusesGroupBox.Enabled = false;
-            themeGroupBox.Enabled = false;
+            generalGroupBox.Enabled = false;
             saveFileGroupBox.Enabled = false;
             modifyGroupBox.Enabled = false;
             //manualGroupBox.Enabled = false;    // Don't disable this for when we're doing a multi-button-click-required manual cycle
@@ -303,7 +307,7 @@ namespace TABSAT
             fogGroupBox.Enabled = true;
             vodGroupBox.Enabled = true;
             mayorsBonusesGroupBox.Enabled = true;
-            themeGroupBox.Enabled = true;
+            generalGroupBox.Enabled = true;
             saveFileGroupBox.Enabled = true;
             modifyGroupBox.Enabled = true;
             //manualGroupBox.Enabled = true;
@@ -458,7 +462,7 @@ namespace TABSAT
 
         private bool modifyExtractedSave()
         {
-            if( mutantsNothingRadio.Checked && fogLeaveRadioButton.Checked && vodLeaveRadioButton.Checked && mayorsLeaveRadioButton.Checked && !themeCheckBox.Checked )
+            if( mutantsNothingRadio.Checked && fogLeaveRadioButton.Checked && vodLeaveRadioButton.Checked && mayorsLeaveRadioButton.Checked && !themeCheckBox.Checked && !swarmsCheckBox.Checked )
             {
                 statusWriter( "No modifications chosen." );
                 return true;
@@ -514,8 +518,9 @@ namespace TABSAT
                 }
                 else if( vodReplaceRadioButton.Checked )
                 {
-                    statusWriter( "Replacing VOD buildings." );
-                    dataEditor.resizeVODs( vodReplaceComboBox.SelectedIndex == 1 );
+                    KeyValuePair<SaveEditor.VodSizes, string> kv = (KeyValuePair<SaveEditor.VodSizes, string>) vodReplaceComboBox.SelectedItem;
+                    statusWriter( "Replacing all VOD buildings with " + kv.Value + '.' );
+                    dataEditor.resizeVODs( kv.Key );
                 }
                 else if( vodStackRadioButton.Checked )
                 {
@@ -536,13 +541,19 @@ namespace TABSAT
                     dataEditor.giftEntities( kv.Key, typeID );
                 }
 
-                // Theme
+                // General rules
                 if( themeCheckBox.Checked )
                 {
                     KeyValuePair<SaveEditor.ThemeType, string> kv = (KeyValuePair<SaveEditor.ThemeType, string>) themeComboBox.SelectedItem;
                     statusWriter( "Changing Theme to " + kv.Value + '.' );
                     dataEditor.changeTheme( kv.Key );
                 }
+                if( swarmsCheckBox.Checked )
+                {
+                    statusWriter( "Enabling earlier waves to come from 2 directions, and later waves to come from 3." );
+                    dataEditor.splitSwarms();
+                }
+
                 dataEditor.save();
             }
             catch( Exception e )

@@ -8,6 +8,13 @@ namespace TABSAT
 {
     internal class SaveEditor
     {
+        internal enum VodSizes
+        {
+            SMALL,
+            MEDIUM,
+            LARGE
+        }
+        internal static readonly Dictionary<VodSizes, string> vodSizesNames;
 
         internal enum ThemeType
         {
@@ -70,6 +77,12 @@ namespace TABSAT
 
         static SaveEditor()
         {
+            Dictionary<VodSizes, string> vsn = new Dictionary<VodSizes, string>();
+            vsn.Add( VodSizes.SMALL, "Dwellings" );
+            vsn.Add( VodSizes.MEDIUM, "Taverns" );
+            vsn.Add( VodSizes.LARGE, "City Halls" );
+            vodSizesNames = new Dictionary<VodSizes, string>( vsn );
+
             Dictionary<ThemeType, string> ttn = new Dictionary<ThemeType, string>();
             ttn.Add( ThemeType.FA, "Deep Forest" );
             ttn.Add( ThemeType.BR, "Dark Moorland" );
@@ -138,10 +151,13 @@ namespace TABSAT
         private const string VOD_LARGE_TYPE = @"ZX.Entities.DoomBuildingLarge, TheyAreBillions";
 
         private const string VOD_LARGE_ID_TEMPLATE = @"3441286325348372349";
+        private const string VOD_MEDIUM_ID_TEMPLATE = @"293812117068830615";
         private const string VOD_SMALL_ID_TEMPLATE = @"8702552346733362645";
         private const string VOD_LARGE_LIFE = @"4000";
+        private const string VOD_MEDIUM_LIFE = @"1500";
         private const string VOD_SMALL_LIFE = @"400";
         private const string VOD_LARGE_SIZE = @"4;4";
+        private const string VOD_MEDIUM_SIZE = @"3;3";
         private const string VOD_SMALL_SIZE = @"2;2";
         private const string MUTANT_ID_TEMPLATE = @"4885015758634569309";
         private const string GIANT_ID_TEMPLATE = @"6179780658058987152";
@@ -151,6 +167,10 @@ namespace TABSAT
         private const string MUTANT_LIFE = @"4000";
         private const string GIANT_SIZE = @"1.6;1.6";
         private const string MUTANT_SIZE = @"0.8;0.8";
+
+        // "&" will be encoded to "&amp;" when setting XAttribute value
+        private const string GENERATORS_2_DIRECTIONS = @"N & E | E & S | S & W | W & N | N & S | E & W";
+        private const string GENERATORS_3_DIRECTIONS = @"E & S & W | S & W & N | W & N & E | N & E & S";
 
         private class HugeZombieIconComparer : IComparer<HugeZombieIcon>
         {
@@ -490,7 +510,6 @@ namespace TABSAT
         private XElement levelEntitiesItems;
         private XElement generatedLevel;
         private XElement extension;
-
         private readonly int commandCenterX;
         private readonly int commandCenterY;
         private readonly SortedDictionary<ulong, HugeZombie> mutants;
@@ -848,7 +867,7 @@ namespace TABSAT
             }
         }
 
-        internal void resizeVODs( bool largerNotSmaller )
+        internal void resizeVODs( VodSizes vodSize )
         {
             /*
              * To change VOD building sizes:
@@ -873,19 +892,46 @@ namespace TABSAT
                 ( from i in getLevelEntitiesItems().Elements( "Item" )
                   where
                       ( from vod in i.Elements( "Complex" )
-                        where ( largerNotSmaller && (string) vod.Attribute( "type" ) == VOD_SMALL_TYPE )
+                        where ( (string) vod.Attribute( "type" ) == VOD_SMALL_TYPE
                         || (string) vod.Attribute( "type" ) == VOD_MEDIUM_TYPE
-                        || (!largerNotSmaller && ( string) vod.Attribute( "type" ) == VOD_LARGE_TYPE )
+                        || (string) vod.Attribute( "type" ) == VOD_LARGE_TYPE )
                         select vod ).Any()
                   select i );
-            
+
+            string newType;
+            string newIDTemplate;
+            string newLife;
+            string newSize;
+            switch( vodSize )
+            {
+                default:
+                case VodSizes.SMALL:
+                    newType = VOD_SMALL_TYPE;
+                    newIDTemplate = VOD_SMALL_ID_TEMPLATE;
+                    newLife = VOD_SMALL_LIFE;
+                    newSize = VOD_SMALL_SIZE;
+                    break;
+                case VodSizes.MEDIUM:
+                    newType = VOD_MEDIUM_TYPE;
+                    newIDTemplate = VOD_MEDIUM_ID_TEMPLATE;
+                    newLife = VOD_MEDIUM_LIFE;
+                    newSize = VOD_MEDIUM_SIZE;
+                    break;
+                case VodSizes.LARGE:
+                    newType = VOD_LARGE_TYPE;
+                    newIDTemplate = VOD_LARGE_ID_TEMPLATE;
+                    newLife = VOD_LARGE_LIFE;
+                    newSize = VOD_LARGE_SIZE;
+                    break;
+            }
+
             foreach( XElement v in vodItems.ToList() )  // no ToList() leads to only removing 1 <item> per save modify cycle?!
             {
                 XElement complex = v.Element( "Complex" );
-                complex.SetAttributeValue( "type", largerNotSmaller ? VOD_LARGE_TYPE : VOD_SMALL_TYPE );
-                getFirstSimplePropertyNamed( complex, "IDTemplate" ).SetAttributeValue( "value", largerNotSmaller ? VOD_LARGE_ID_TEMPLATE : VOD_SMALL_ID_TEMPLATE );
-                getFirstSimplePropertyNamed( getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ), "Life" ).SetAttributeValue( "value", largerNotSmaller ? VOD_LARGE_LIFE : VOD_SMALL_LIFE );
-                getFirstSimplePropertyNamed( complex, "Size" ).SetAttributeValue( "value", largerNotSmaller ? VOD_LARGE_SIZE : VOD_SMALL_SIZE );
+                complex.SetAttributeValue( "type", newType );
+                getFirstSimplePropertyNamed( complex, "IDTemplate" ).SetAttributeValue( "value", newIDTemplate );
+                getFirstSimplePropertyNamed( getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ), "Life" ).SetAttributeValue( "value", newLife );
+                getFirstSimplePropertyNamed( complex, "Size" ).SetAttributeValue( "value", newSize );
             }
         }
 
@@ -1090,6 +1136,64 @@ namespace TABSAT
 
             levelThemeType.SetAttributeValue( "value", themeValue );
             paramsThemeType.SetAttributeValue( "value", themeValue );
+        }
+
+        internal void splitSwarms()
+        {
+            /*
+             * The LevelEvents Collection appears to be duplicated (w.r.t. Generators) at different depths in a single save file,
+             * a single method works from both given the correct starting element.
+             */
+            void splitEasyAndHardSwarms( XElement collectionContainer )
+            {
+                XElement eventsItems = getFirstPropertyOfTypeNamed( collectionContainer, "Collection", "LevelEvents" ).Element( "Items" );
+                var easyComplex = ( from c in eventsItems.Elements( "Complex" )
+                                    where (string) getFirstSimplePropertyNamed( c, "Name" ).Attribute( "value" ) == "Swarm Easy"
+                                    select c ).FirstOrDefault();
+                if( easyComplex != null )
+                {
+                    getFirstSimplePropertyNamed( easyComplex, "Generators" ).SetAttributeValue( "value", GENERATORS_2_DIRECTIONS );
+                }
+
+                var hardComplex = ( from c in eventsItems.Elements( "Complex" )
+                                    where (string) getFirstSimplePropertyNamed( c, "Name" ).Attribute( "value" ) == "Swarm Hard"
+                                    select c ).FirstOrDefault();
+                if( hardComplex != null )
+                {
+                    getFirstSimplePropertyNamed( hardComplex, "Generators" ).SetAttributeValue( "value", GENERATORS_3_DIRECTIONS );
+                }
+            }
+
+            /*
+             *    <Complex name="LevelState">
+             *      <Properties>
+             *        <Collection name="LevelEvents" elementType="ZX.GameSystems.ZXLevelEvent, TheyAreBillions">
+             *		    <Items>
+             *            <Complex>
+             *              <Properties>
+             *                <Simple name="Name" value=
+             *                <Simple name="Generators" value=
+             */
+            // getFirstPropertyOfTypeNamed( levelComplex, "Collection", "LevelEvents" ).Element( "Items" );
+            splitEasyAndHardSwarms( levelComplex );
+
+            /*
+             *         <Complex name="CurrentGeneratedLevel">
+             *          <Properties>
+             *            <Complex name="Data">
+             *              <Properties>
+             *                <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+             *                  <Properties>
+             *                    <Collection name="LevelEvents" elementType="ZX.GameSystems.ZXLevelEvent, TheyAreBillions">
+             *					  <Items>
+             *                        <Complex>
+             *                          <Properties>
+             *                            <Simple name="Name" value="Swarm Easy" />
+             *                            <Simple name="Generators" value=
+             */
+            // getFirstPropertyOfTypeNamed( getDataExtension(), "Collection", "LevelEvents" ).Element( "Items" );
+            splitEasyAndHardSwarms( getDataExtension() );
+
         }
     }
 }

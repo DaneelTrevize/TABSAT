@@ -43,25 +43,23 @@
             this.modifyGroupBox = new System.Windows.Forms.GroupBox();
             this.modifySaveButton = new System.Windows.Forms.Button();
             this.fogGroupBox = new System.Windows.Forms.GroupBox();
-            this.fogFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.fogLeaveRadioButton = new System.Windows.Forms.RadioButton();
-            this.fogRemoveRadioButton = new System.Windows.Forms.RadioButton();
-            this.fogShowFullRadioButton = new System.Windows.Forms.RadioButton();
             this.reduceFogPanel = new System.Windows.Forms.Panel();
             this.fogNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.fogClearRadioButton = new System.Windows.Forms.RadioButton();
+            this.fogShowFullRadioButton = new System.Windows.Forms.RadioButton();
+            this.fogRemoveRadioButton = new System.Windows.Forms.RadioButton();
+            this.fogLeaveRadioButton = new System.Windows.Forms.RadioButton();
             this.mutantGroupBox = new System.Windows.Forms.GroupBox();
-            this.mutantsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.mutantsNothingRadio = new System.Windows.Forms.RadioButton();
-            this.mutantsRemoveRadio = new System.Windows.Forms.RadioButton();
-            this.replaceAllPanel = new System.Windows.Forms.Panel();
-            this.mutantReplaceAllComboBox = new System.Windows.Forms.ComboBox();
-            this.mutantReplaceAllRadio = new System.Windows.Forms.RadioButton();
             this.mutantsMovePanel = new System.Windows.Forms.Panel();
             this.mutantMoveGlobalComboBox = new System.Windows.Forms.ComboBox();
             this.mutantMoveCCLabel = new System.Windows.Forms.Label();
             this.mutantMoveWhatComboBox = new System.Windows.Forms.ComboBox();
             this.mutantsMoveRadio = new System.Windows.Forms.RadioButton();
+            this.replaceAllPanel = new System.Windows.Forms.Panel();
+            this.mutantReplaceAllComboBox = new System.Windows.Forms.ComboBox();
+            this.mutantReplaceAllRadio = new System.Windows.Forms.RadioButton();
+            this.mutantsRemoveRadio = new System.Windows.Forms.RadioButton();
+            this.mutantsNothingRadio = new System.Windows.Forms.RadioButton();
             this.reflectorGroupBox = new System.Windows.Forms.GroupBox();
             this.reflectorExtractRadioButton = new System.Windows.Forms.RadioButton();
             this.reflectorRepackRadioButton = new System.Windows.Forms.RadioButton();
@@ -69,30 +67,29 @@
             this.processGroupBox = new System.Windows.Forms.GroupBox();
             this.reflectorTextBox = new System.Windows.Forms.TextBox();
             this.modifyHintLabel = new System.Windows.Forms.Label();
-            this.themeGroupBox = new System.Windows.Forms.GroupBox();
+            this.generalGroupBox = new System.Windows.Forms.GroupBox();
+            this.swarmsCheckBox = new System.Windows.Forms.CheckBox();
             this.themeComboBox = new System.Windows.Forms.ComboBox();
             this.themeCheckBox = new System.Windows.Forms.CheckBox();
             this.saveOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.dataFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.vodGroupBox = new System.Windows.Forms.GroupBox();
-            this.vodFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.vodLeaveRadioButton = new System.Windows.Forms.RadioButton();
-            this.vodRemoveRadioButton = new System.Windows.Forms.RadioButton();
-            this.vodReplacePanel = new System.Windows.Forms.Panel();
-            this.vodReplaceComboBox = new System.Windows.Forms.ComboBox();
-            this.vodReplaceRadioButton = new System.Windows.Forms.RadioButton();
             this.vodPanel = new System.Windows.Forms.Panel();
             this.vodStackNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.vodStackRadioButton = new System.Windows.Forms.RadioButton();
+            this.vodReplacePanel = new System.Windows.Forms.Panel();
+            this.vodReplaceComboBox = new System.Windows.Forms.ComboBox();
+            this.vodReplaceRadioButton = new System.Windows.Forms.RadioButton();
+            this.vodRemoveRadioButton = new System.Windows.Forms.RadioButton();
+            this.vodLeaveRadioButton = new System.Windows.Forms.RadioButton();
             this.mayorsBonusesGroupBox = new System.Windows.Forms.GroupBox();
-            this.mayorsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.mayorsLeaveRadioButton = new System.Windows.Forms.RadioButton();
-            this.mayorsDisableRadioButton = new System.Windows.Forms.RadioButton();
             this.bonusPanel = new System.Windows.Forms.Panel();
             this.giftComboBox = new System.Windows.Forms.ComboBox();
             this.mayorsGiftRadioButton = new System.Windows.Forms.RadioButton();
             this.giftNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.bonusLabel = new System.Windows.Forms.Label();
+            this.mayorsDisableRadioButton = new System.Windows.Forms.RadioButton();
+            this.mayorsLeaveRadioButton = new System.Windows.Forms.RadioButton();
             this.processFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.processPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -103,24 +100,20 @@
             this.saveFileGroupBox.SuspendLayout();
             this.modifyGroupBox.SuspendLayout();
             this.fogGroupBox.SuspendLayout();
-            this.fogFlowLayoutPanel.SuspendLayout();
             this.reduceFogPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fogNumericUpDown)).BeginInit();
             this.mutantGroupBox.SuspendLayout();
-            this.mutantsFlowLayoutPanel.SuspendLayout();
-            this.replaceAllPanel.SuspendLayout();
             this.mutantsMovePanel.SuspendLayout();
+            this.replaceAllPanel.SuspendLayout();
             this.reflectorGroupBox.SuspendLayout();
             this.processGroupBox.SuspendLayout();
-            this.themeGroupBox.SuspendLayout();
+            this.generalGroupBox.SuspendLayout();
             this.dataFlowLayoutPanel.SuspendLayout();
             this.vodGroupBox.SuspendLayout();
-            this.vodFlowLayoutPanel.SuspendLayout();
-            this.vodReplacePanel.SuspendLayout();
             this.vodPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vodStackNumericUpDown)).BeginInit();
+            this.vodReplacePanel.SuspendLayout();
             this.mayorsBonusesGroupBox.SuspendLayout();
-            this.mayorsFlowLayoutPanel.SuspendLayout();
             this.bonusPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.giftNumericUpDown)).BeginInit();
             this.processFlowLayoutPanel.SuspendLayout();
@@ -299,65 +292,22 @@
             // 
             // fogGroupBox
             // 
-            this.fogGroupBox.Controls.Add(this.fogFlowLayoutPanel);
-            this.fogGroupBox.Location = new System.Drawing.Point(354, 3);
+            this.fogGroupBox.Controls.Add(this.reduceFogPanel);
+            this.fogGroupBox.Controls.Add(this.fogShowFullRadioButton);
+            this.fogGroupBox.Controls.Add(this.fogRemoveRadioButton);
+            this.fogGroupBox.Controls.Add(this.fogLeaveRadioButton);
+            this.fogGroupBox.Location = new System.Drawing.Point(3, 129);
             this.fogGroupBox.Name = "fogGroupBox";
             this.fogGroupBox.Size = new System.Drawing.Size(240, 120);
             this.fogGroupBox.TabIndex = 1;
             this.fogGroupBox.TabStop = false;
             this.fogGroupBox.Text = "Fog of War";
             // 
-            // fogFlowLayoutPanel
-            // 
-            this.fogFlowLayoutPanel.Controls.Add(this.fogLeaveRadioButton);
-            this.fogFlowLayoutPanel.Controls.Add(this.fogRemoveRadioButton);
-            this.fogFlowLayoutPanel.Controls.Add(this.fogShowFullRadioButton);
-            this.fogFlowLayoutPanel.Controls.Add(this.reduceFogPanel);
-            this.fogFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fogFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.fogFlowLayoutPanel.Location = new System.Drawing.Point(3, 16);
-            this.fogFlowLayoutPanel.Name = "fogFlowLayoutPanel";
-            this.fogFlowLayoutPanel.Size = new System.Drawing.Size(234, 101);
-            this.fogFlowLayoutPanel.TabIndex = 0;
-            // 
-            // fogLeaveRadioButton
-            // 
-            this.fogLeaveRadioButton.AutoSize = true;
-            this.fogLeaveRadioButton.Checked = true;
-            this.fogLeaveRadioButton.Location = new System.Drawing.Point(3, 3);
-            this.fogLeaveRadioButton.Name = "fogLeaveRadioButton";
-            this.fogLeaveRadioButton.Size = new System.Drawing.Size(90, 17);
-            this.fogLeaveRadioButton.TabIndex = 0;
-            this.fogLeaveRadioButton.TabStop = true;
-            this.fogLeaveRadioButton.Text = "Do not modify";
-            this.fogLeaveRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // fogRemoveRadioButton
-            // 
-            this.fogRemoveRadioButton.AutoSize = true;
-            this.fogRemoveRadioButton.Location = new System.Drawing.Point(3, 26);
-            this.fogRemoveRadioButton.Name = "fogRemoveRadioButton";
-            this.fogRemoveRadioButton.Size = new System.Drawing.Size(79, 17);
-            this.fogRemoveRadioButton.TabIndex = 1;
-            this.fogRemoveRadioButton.Text = "Remove All";
-            this.fogRemoveRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // fogShowFullRadioButton
-            // 
-            this.fogShowFullRadioButton.AutoSize = true;
-            this.fogShowFullRadioButton.Location = new System.Drawing.Point(3, 49);
-            this.fogShowFullRadioButton.Name = "fogShowFullRadioButton";
-            this.fogShowFullRadioButton.Size = new System.Drawing.Size(125, 17);
-            this.fogShowFullRadioButton.TabIndex = 2;
-            this.fogShowFullRadioButton.Text = "Grant Full Map Vision";
-            this.fogShowFullRadioButton.UseVisualStyleBackColor = true;
-            // 
             // reduceFogPanel
             // 
             this.reduceFogPanel.Controls.Add(this.fogNumericUpDown);
             this.reduceFogPanel.Controls.Add(this.fogClearRadioButton);
-            this.reduceFogPanel.Location = new System.Drawing.Point(3, 72);
-            this.reduceFogPanel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 1);
+            this.reduceFogPanel.Location = new System.Drawing.Point(6, 65);
             this.reduceFogPanel.Name = "reduceFogPanel";
             this.reduceFogPanel.Size = new System.Drawing.Size(225, 22);
             this.reduceFogPanel.TabIndex = 0;
@@ -403,9 +353,44 @@
             this.fogClearRadioButton.Text = "Clear a circle around the CC, radius";
             this.fogClearRadioButton.UseVisualStyleBackColor = true;
             // 
+            // fogShowFullRadioButton
+            // 
+            this.fogShowFullRadioButton.AutoSize = true;
+            this.fogShowFullRadioButton.Location = new System.Drawing.Point(6, 90);
+            this.fogShowFullRadioButton.Name = "fogShowFullRadioButton";
+            this.fogShowFullRadioButton.Size = new System.Drawing.Size(125, 17);
+            this.fogShowFullRadioButton.TabIndex = 2;
+            this.fogShowFullRadioButton.Text = "Grant Full Map Vision";
+            this.fogShowFullRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // fogRemoveRadioButton
+            // 
+            this.fogRemoveRadioButton.AutoSize = true;
+            this.fogRemoveRadioButton.Location = new System.Drawing.Point(6, 42);
+            this.fogRemoveRadioButton.Name = "fogRemoveRadioButton";
+            this.fogRemoveRadioButton.Size = new System.Drawing.Size(79, 17);
+            this.fogRemoveRadioButton.TabIndex = 1;
+            this.fogRemoveRadioButton.Text = "Remove All";
+            this.fogRemoveRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // fogLeaveRadioButton
+            // 
+            this.fogLeaveRadioButton.AutoSize = true;
+            this.fogLeaveRadioButton.Checked = true;
+            this.fogLeaveRadioButton.Location = new System.Drawing.Point(6, 19);
+            this.fogLeaveRadioButton.Name = "fogLeaveRadioButton";
+            this.fogLeaveRadioButton.Size = new System.Drawing.Size(90, 17);
+            this.fogLeaveRadioButton.TabIndex = 0;
+            this.fogLeaveRadioButton.TabStop = true;
+            this.fogLeaveRadioButton.Text = "Do not modify";
+            this.fogLeaveRadioButton.UseVisualStyleBackColor = true;
+            // 
             // mutantGroupBox
             // 
-            this.mutantGroupBox.Controls.Add(this.mutantsFlowLayoutPanel);
+            this.mutantGroupBox.Controls.Add(this.mutantsMovePanel);
+            this.mutantGroupBox.Controls.Add(this.replaceAllPanel);
+            this.mutantGroupBox.Controls.Add(this.mutantsRemoveRadio);
+            this.mutantGroupBox.Controls.Add(this.mutantsNothingRadio);
             this.mutantGroupBox.Location = new System.Drawing.Point(3, 3);
             this.mutantGroupBox.Name = "mutantGroupBox";
             this.mutantGroupBox.Size = new System.Drawing.Size(345, 120);
@@ -413,88 +398,13 @@
             this.mutantGroupBox.TabStop = false;
             this.mutantGroupBox.Text = "Mutants";
             // 
-            // mutantsFlowLayoutPanel
-            // 
-            this.mutantsFlowLayoutPanel.Controls.Add(this.mutantsNothingRadio);
-            this.mutantsFlowLayoutPanel.Controls.Add(this.mutantsRemoveRadio);
-            this.mutantsFlowLayoutPanel.Controls.Add(this.replaceAllPanel);
-            this.mutantsFlowLayoutPanel.Controls.Add(this.mutantsMovePanel);
-            this.mutantsFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mutantsFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.mutantsFlowLayoutPanel.Location = new System.Drawing.Point(3, 16);
-            this.mutantsFlowLayoutPanel.Name = "mutantsFlowLayoutPanel";
-            this.mutantsFlowLayoutPanel.Size = new System.Drawing.Size(339, 101);
-            this.mutantsFlowLayoutPanel.TabIndex = 0;
-            // 
-            // mutantsNothingRadio
-            // 
-            this.mutantsNothingRadio.AutoSize = true;
-            this.mutantsNothingRadio.Checked = true;
-            this.mutantsNothingRadio.Location = new System.Drawing.Point(3, 3);
-            this.mutantsNothingRadio.Name = "mutantsNothingRadio";
-            this.mutantsNothingRadio.Size = new System.Drawing.Size(90, 17);
-            this.mutantsNothingRadio.TabIndex = 0;
-            this.mutantsNothingRadio.TabStop = true;
-            this.mutantsNothingRadio.Text = "Do not modify";
-            this.mutantsNothingRadio.UseVisualStyleBackColor = true;
-            this.mutantsNothingRadio.CheckedChanged += new System.EventHandler(this.mutantsSimpleRadio_CheckedChanged);
-            // 
-            // mutantsRemoveRadio
-            // 
-            this.mutantsRemoveRadio.AutoSize = true;
-            this.mutantsRemoveRadio.Location = new System.Drawing.Point(3, 26);
-            this.mutantsRemoveRadio.Name = "mutantsRemoveRadio";
-            this.mutantsRemoveRadio.Size = new System.Drawing.Size(79, 17);
-            this.mutantsRemoveRadio.TabIndex = 1;
-            this.mutantsRemoveRadio.Text = "Remove All";
-            this.mutantsRemoveRadio.UseVisualStyleBackColor = true;
-            this.mutantsRemoveRadio.CheckedChanged += new System.EventHandler(this.mutantsSimpleRadio_CheckedChanged);
-            // 
-            // replaceAllPanel
-            // 
-            this.replaceAllPanel.Controls.Add(this.mutantReplaceAllComboBox);
-            this.replaceAllPanel.Controls.Add(this.mutantReplaceAllRadio);
-            this.replaceAllPanel.Location = new System.Drawing.Point(3, 47);
-            this.replaceAllPanel.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.replaceAllPanel.Name = "replaceAllPanel";
-            this.replaceAllPanel.Size = new System.Drawing.Size(195, 22);
-            this.replaceAllPanel.TabIndex = 0;
-            // 
-            // mutantReplaceAllComboBox
-            // 
-            this.mutantReplaceAllComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.mutantReplaceAllComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.mutantReplaceAllComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mutantReplaceAllComboBox.FormattingEnabled = true;
-            this.mutantReplaceAllComboBox.Items.AddRange(new object[] {
-            "Mutants with Giants",
-            "Giants with Mutants"});
-            this.mutantReplaceAllComboBox.Location = new System.Drawing.Point(75, 0);
-            this.mutantReplaceAllComboBox.Name = "mutantReplaceAllComboBox";
-            this.mutantReplaceAllComboBox.Size = new System.Drawing.Size(117, 21);
-            this.mutantReplaceAllComboBox.TabIndex = 3;
-            // 
-            // mutantReplaceAllRadio
-            // 
-            this.mutantReplaceAllRadio.AutoSize = true;
-            this.mutantReplaceAllRadio.Location = new System.Drawing.Point(0, 2);
-            this.mutantReplaceAllRadio.Name = "mutantReplaceAllRadio";
-            this.mutantReplaceAllRadio.Size = new System.Drawing.Size(79, 17);
-            this.mutantReplaceAllRadio.TabIndex = 2;
-            this.mutantReplaceAllRadio.TabStop = true;
-            this.mutantReplaceAllRadio.Text = "Replace All";
-            this.mutantReplaceAllRadio.UseVisualStyleBackColor = true;
-            this.mutantReplaceAllRadio.CheckedChanged += new System.EventHandler(this.mutantReplaceAllRadio_CheckedChanged);
-            // 
             // mutantsMovePanel
             // 
             this.mutantsMovePanel.Controls.Add(this.mutantMoveGlobalComboBox);
             this.mutantsMovePanel.Controls.Add(this.mutantMoveCCLabel);
             this.mutantsMovePanel.Controls.Add(this.mutantMoveWhatComboBox);
             this.mutantsMovePanel.Controls.Add(this.mutantsMoveRadio);
-            this.mutantsMovePanel.Location = new System.Drawing.Point(3, 72);
-            this.mutantsMovePanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 1);
+            this.mutantsMovePanel.Location = new System.Drawing.Point(6, 89);
             this.mutantsMovePanel.Name = "mutantsMovePanel";
             this.mutantsMovePanel.Size = new System.Drawing.Size(335, 22);
             this.mutantsMovePanel.TabIndex = 0;
@@ -549,6 +459,66 @@
             this.mutantsMoveRadio.Text = "Move to farthest";
             this.mutantsMoveRadio.UseVisualStyleBackColor = true;
             this.mutantsMoveRadio.CheckedChanged += new System.EventHandler(this.mutantsMoveRadio_CheckedChanged);
+            // 
+            // replaceAllPanel
+            // 
+            this.replaceAllPanel.Controls.Add(this.mutantReplaceAllComboBox);
+            this.replaceAllPanel.Controls.Add(this.mutantReplaceAllRadio);
+            this.replaceAllPanel.Location = new System.Drawing.Point(6, 63);
+            this.replaceAllPanel.Name = "replaceAllPanel";
+            this.replaceAllPanel.Size = new System.Drawing.Size(195, 22);
+            this.replaceAllPanel.TabIndex = 0;
+            // 
+            // mutantReplaceAllComboBox
+            // 
+            this.mutantReplaceAllComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.mutantReplaceAllComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mutantReplaceAllComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mutantReplaceAllComboBox.FormattingEnabled = true;
+            this.mutantReplaceAllComboBox.Items.AddRange(new object[] {
+            "Mutants with Giants",
+            "Giants with Mutants"});
+            this.mutantReplaceAllComboBox.Location = new System.Drawing.Point(75, 0);
+            this.mutantReplaceAllComboBox.Name = "mutantReplaceAllComboBox";
+            this.mutantReplaceAllComboBox.Size = new System.Drawing.Size(117, 21);
+            this.mutantReplaceAllComboBox.TabIndex = 3;
+            // 
+            // mutantReplaceAllRadio
+            // 
+            this.mutantReplaceAllRadio.AutoSize = true;
+            this.mutantReplaceAllRadio.Location = new System.Drawing.Point(0, 2);
+            this.mutantReplaceAllRadio.Name = "mutantReplaceAllRadio";
+            this.mutantReplaceAllRadio.Size = new System.Drawing.Size(79, 17);
+            this.mutantReplaceAllRadio.TabIndex = 2;
+            this.mutantReplaceAllRadio.TabStop = true;
+            this.mutantReplaceAllRadio.Text = "Replace All";
+            this.mutantReplaceAllRadio.UseVisualStyleBackColor = true;
+            this.mutantReplaceAllRadio.CheckedChanged += new System.EventHandler(this.mutantReplaceAllRadio_CheckedChanged);
+            // 
+            // mutantsRemoveRadio
+            // 
+            this.mutantsRemoveRadio.AutoSize = true;
+            this.mutantsRemoveRadio.Location = new System.Drawing.Point(6, 42);
+            this.mutantsRemoveRadio.Name = "mutantsRemoveRadio";
+            this.mutantsRemoveRadio.Size = new System.Drawing.Size(79, 17);
+            this.mutantsRemoveRadio.TabIndex = 1;
+            this.mutantsRemoveRadio.Text = "Remove All";
+            this.mutantsRemoveRadio.UseVisualStyleBackColor = true;
+            this.mutantsRemoveRadio.CheckedChanged += new System.EventHandler(this.mutantsSimpleRadio_CheckedChanged);
+            // 
+            // mutantsNothingRadio
+            // 
+            this.mutantsNothingRadio.AutoSize = true;
+            this.mutantsNothingRadio.Checked = true;
+            this.mutantsNothingRadio.Location = new System.Drawing.Point(6, 19);
+            this.mutantsNothingRadio.Name = "mutantsNothingRadio";
+            this.mutantsNothingRadio.Size = new System.Drawing.Size(90, 17);
+            this.mutantsNothingRadio.TabIndex = 0;
+            this.mutantsNothingRadio.TabStop = true;
+            this.mutantsNothingRadio.Text = "Do not modify";
+            this.mutantsNothingRadio.UseVisualStyleBackColor = true;
+            this.mutantsNothingRadio.CheckedChanged += new System.EventHandler(this.mutantsSimpleRadio_CheckedChanged);
             // 
             // reflectorGroupBox
             // 
@@ -634,16 +604,27 @@
     ") Start the Process.";
             this.modifyHintLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // themeGroupBox
+            // generalGroupBox
             // 
-            this.themeGroupBox.Controls.Add(this.themeComboBox);
-            this.themeGroupBox.Controls.Add(this.themeCheckBox);
-            this.themeGroupBox.Location = new System.Drawing.Point(3, 255);
-            this.themeGroupBox.Name = "themeGroupBox";
-            this.themeGroupBox.Size = new System.Drawing.Size(200, 45);
-            this.themeGroupBox.TabIndex = 4;
-            this.themeGroupBox.TabStop = false;
-            this.themeGroupBox.Text = "Theme";
+            this.generalGroupBox.Controls.Add(this.swarmsCheckBox);
+            this.generalGroupBox.Controls.Add(this.themeComboBox);
+            this.generalGroupBox.Controls.Add(this.themeCheckBox);
+            this.generalGroupBox.Location = new System.Drawing.Point(3, 255);
+            this.generalGroupBox.Name = "generalGroupBox";
+            this.generalGroupBox.Size = new System.Drawing.Size(240, 65);
+            this.generalGroupBox.TabIndex = 4;
+            this.generalGroupBox.TabStop = false;
+            this.generalGroupBox.Text = "General rules";
+            // 
+            // swarmsCheckBox
+            // 
+            this.swarmsCheckBox.AutoSize = true;
+            this.swarmsCheckBox.Location = new System.Drawing.Point(6, 42);
+            this.swarmsCheckBox.Name = "swarmsCheckBox";
+            this.swarmsCheckBox.Size = new System.Drawing.Size(201, 17);
+            this.swarmsCheckBox.TabIndex = 2;
+            this.swarmsCheckBox.Text = "Swarms come from multiple directions";
+            this.swarmsCheckBox.UseVisualStyleBackColor = true;
             // 
             // themeComboBox
             // 
@@ -652,9 +633,9 @@
             this.themeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.themeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.themeComboBox.FormattingEnabled = true;
-            this.themeComboBox.Location = new System.Drawing.Point(76, 16);
+            this.themeComboBox.Location = new System.Drawing.Point(111, 16);
             this.themeComboBox.Name = "themeComboBox";
-            this.themeComboBox.Size = new System.Drawing.Size(115, 21);
+            this.themeComboBox.Size = new System.Drawing.Size(123, 21);
             this.themeComboBox.TabIndex = 0;
             // 
             // themeCheckBox
@@ -662,19 +643,19 @@
             this.themeCheckBox.AutoSize = true;
             this.themeCheckBox.Location = new System.Drawing.Point(6, 19);
             this.themeCheckBox.Name = "themeCheckBox";
-            this.themeCheckBox.Size = new System.Drawing.Size(75, 17);
+            this.themeCheckBox.Size = new System.Drawing.Size(107, 17);
             this.themeCheckBox.TabIndex = 1;
-            this.themeCheckBox.Text = "Change to";
+            this.themeCheckBox.Text = "Change theme to";
             this.themeCheckBox.UseVisualStyleBackColor = true;
             // 
             // dataFlowLayoutPanel
             // 
             this.dataFlowLayoutPanel.AutoScroll = true;
             this.dataFlowLayoutPanel.Controls.Add(this.mutantGroupBox);
-            this.dataFlowLayoutPanel.Controls.Add(this.fogGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.vodGroupBox);
+            this.dataFlowLayoutPanel.Controls.Add(this.fogGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.mayorsBonusesGroupBox);
-            this.dataFlowLayoutPanel.Controls.Add(this.themeGroupBox);
+            this.dataFlowLayoutPanel.Controls.Add(this.generalGroupBox);
             this.dataFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataFlowLayoutPanel.Location = new System.Drawing.Point(3, 41);
             this.dataFlowLayoutPanel.Name = "dataFlowLayoutPanel";
@@ -683,92 +664,23 @@
             // 
             // vodGroupBox
             // 
-            this.vodGroupBox.Controls.Add(this.vodFlowLayoutPanel);
-            this.vodGroupBox.Location = new System.Drawing.Point(3, 129);
+            this.vodGroupBox.Controls.Add(this.vodPanel);
+            this.vodGroupBox.Controls.Add(this.vodReplacePanel);
+            this.vodGroupBox.Controls.Add(this.vodRemoveRadioButton);
+            this.vodGroupBox.Controls.Add(this.vodLeaveRadioButton);
+            this.vodGroupBox.Location = new System.Drawing.Point(354, 3);
             this.vodGroupBox.Name = "vodGroupBox";
             this.vodGroupBox.Size = new System.Drawing.Size(220, 120);
             this.vodGroupBox.TabIndex = 2;
             this.vodGroupBox.TabStop = false;
             this.vodGroupBox.Text = "Villages of Doom";
             // 
-            // vodFlowLayoutPanel
-            // 
-            this.vodFlowLayoutPanel.Controls.Add(this.vodLeaveRadioButton);
-            this.vodFlowLayoutPanel.Controls.Add(this.vodRemoveRadioButton);
-            this.vodFlowLayoutPanel.Controls.Add(this.vodReplacePanel);
-            this.vodFlowLayoutPanel.Controls.Add(this.vodPanel);
-            this.vodFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.vodFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.vodFlowLayoutPanel.Location = new System.Drawing.Point(3, 16);
-            this.vodFlowLayoutPanel.Name = "vodFlowLayoutPanel";
-            this.vodFlowLayoutPanel.Size = new System.Drawing.Size(214, 101);
-            this.vodFlowLayoutPanel.TabIndex = 0;
-            // 
-            // vodLeaveRadioButton
-            // 
-            this.vodLeaveRadioButton.AutoSize = true;
-            this.vodLeaveRadioButton.Checked = true;
-            this.vodLeaveRadioButton.Location = new System.Drawing.Point(3, 3);
-            this.vodLeaveRadioButton.Name = "vodLeaveRadioButton";
-            this.vodLeaveRadioButton.Size = new System.Drawing.Size(90, 17);
-            this.vodLeaveRadioButton.TabIndex = 0;
-            this.vodLeaveRadioButton.TabStop = true;
-            this.vodLeaveRadioButton.Text = "Do not modify";
-            this.vodLeaveRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // vodRemoveRadioButton
-            // 
-            this.vodRemoveRadioButton.AutoSize = true;
-            this.vodRemoveRadioButton.Location = new System.Drawing.Point(3, 26);
-            this.vodRemoveRadioButton.Name = "vodRemoveRadioButton";
-            this.vodRemoveRadioButton.Size = new System.Drawing.Size(79, 17);
-            this.vodRemoveRadioButton.TabIndex = 1;
-            this.vodRemoveRadioButton.Text = "Remove All";
-            this.vodRemoveRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // vodReplacePanel
-            // 
-            this.vodReplacePanel.Controls.Add(this.vodReplaceComboBox);
-            this.vodReplacePanel.Controls.Add(this.vodReplaceRadioButton);
-            this.vodReplacePanel.Location = new System.Drawing.Point(3, 47);
-            this.vodReplacePanel.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
-            this.vodReplacePanel.Name = "vodReplacePanel";
-            this.vodReplacePanel.Size = new System.Drawing.Size(208, 22);
-            this.vodReplacePanel.TabIndex = 4;
-            // 
-            // vodReplaceComboBox
-            // 
-            this.vodReplaceComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.vodReplaceComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.vodReplaceComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.vodReplaceComboBox.FormattingEnabled = true;
-            this.vodReplaceComboBox.Items.AddRange(new object[] {
-            "Dwellings",
-            "City Halls"});
-            this.vodReplaceComboBox.Location = new System.Drawing.Point(138, 0);
-            this.vodReplaceComboBox.Name = "vodReplaceComboBox";
-            this.vodReplaceComboBox.Size = new System.Drawing.Size(70, 21);
-            this.vodReplaceComboBox.TabIndex = 4;
-            // 
-            // vodReplaceRadioButton
-            // 
-            this.vodReplaceRadioButton.AutoSize = true;
-            this.vodReplaceRadioButton.Location = new System.Drawing.Point(0, 2);
-            this.vodReplaceRadioButton.Name = "vodReplaceRadioButton";
-            this.vodReplaceRadioButton.Size = new System.Drawing.Size(144, 17);
-            this.vodReplaceRadioButton.TabIndex = 3;
-            this.vodReplaceRadioButton.TabStop = true;
-            this.vodReplaceRadioButton.Text = "Replace all buildings with";
-            this.vodReplaceRadioButton.UseVisualStyleBackColor = true;
-            // 
             // vodPanel
             // 
             this.vodPanel.Controls.Add(this.vodStackNumericUpDown);
             this.vodPanel.Controls.Add(this.vodStackRadioButton);
             this.vodPanel.Enabled = false;
-            this.vodPanel.Location = new System.Drawing.Point(3, 72);
-            this.vodPanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 3);
+            this.vodPanel.Location = new System.Drawing.Point(6, 89);
             this.vodPanel.Name = "vodPanel";
             this.vodPanel.Size = new System.Drawing.Size(132, 22);
             this.vodPanel.TabIndex = 0;
@@ -810,49 +722,71 @@
             this.vodStackRadioButton.UseVisualStyleBackColor = true;
             this.vodStackRadioButton.CheckedChanged += new System.EventHandler(this.vodStackRadioButton_CheckedChanged);
             // 
+            // vodReplacePanel
+            // 
+            this.vodReplacePanel.Controls.Add(this.vodReplaceComboBox);
+            this.vodReplacePanel.Controls.Add(this.vodReplaceRadioButton);
+            this.vodReplacePanel.Location = new System.Drawing.Point(6, 63);
+            this.vodReplacePanel.Name = "vodReplacePanel";
+            this.vodReplacePanel.Size = new System.Drawing.Size(208, 22);
+            this.vodReplacePanel.TabIndex = 4;
+            // 
+            // vodReplaceComboBox
+            // 
+            this.vodReplaceComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.vodReplaceComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.vodReplaceComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.vodReplaceComboBox.FormattingEnabled = true;
+            this.vodReplaceComboBox.Location = new System.Drawing.Point(138, 0);
+            this.vodReplaceComboBox.Name = "vodReplaceComboBox";
+            this.vodReplaceComboBox.Size = new System.Drawing.Size(70, 21);
+            this.vodReplaceComboBox.TabIndex = 4;
+            // 
+            // vodReplaceRadioButton
+            // 
+            this.vodReplaceRadioButton.AutoSize = true;
+            this.vodReplaceRadioButton.Location = new System.Drawing.Point(0, 2);
+            this.vodReplaceRadioButton.Name = "vodReplaceRadioButton";
+            this.vodReplaceRadioButton.Size = new System.Drawing.Size(144, 17);
+            this.vodReplaceRadioButton.TabIndex = 3;
+            this.vodReplaceRadioButton.TabStop = true;
+            this.vodReplaceRadioButton.Text = "Replace all buildings with";
+            this.vodReplaceRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // vodRemoveRadioButton
+            // 
+            this.vodRemoveRadioButton.AutoSize = true;
+            this.vodRemoveRadioButton.Location = new System.Drawing.Point(6, 42);
+            this.vodRemoveRadioButton.Name = "vodRemoveRadioButton";
+            this.vodRemoveRadioButton.Size = new System.Drawing.Size(79, 17);
+            this.vodRemoveRadioButton.TabIndex = 1;
+            this.vodRemoveRadioButton.Text = "Remove All";
+            this.vodRemoveRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // vodLeaveRadioButton
+            // 
+            this.vodLeaveRadioButton.AutoSize = true;
+            this.vodLeaveRadioButton.Checked = true;
+            this.vodLeaveRadioButton.Location = new System.Drawing.Point(6, 19);
+            this.vodLeaveRadioButton.Name = "vodLeaveRadioButton";
+            this.vodLeaveRadioButton.Size = new System.Drawing.Size(90, 17);
+            this.vodLeaveRadioButton.TabIndex = 0;
+            this.vodLeaveRadioButton.TabStop = true;
+            this.vodLeaveRadioButton.Text = "Do not modify";
+            this.vodLeaveRadioButton.UseVisualStyleBackColor = true;
+            // 
             // mayorsBonusesGroupBox
             // 
-            this.mayorsBonusesGroupBox.Controls.Add(this.mayorsFlowLayoutPanel);
-            this.mayorsBonusesGroupBox.Location = new System.Drawing.Point(229, 129);
+            this.mayorsBonusesGroupBox.Controls.Add(this.bonusPanel);
+            this.mayorsBonusesGroupBox.Controls.Add(this.mayorsDisableRadioButton);
+            this.mayorsBonusesGroupBox.Controls.Add(this.mayorsLeaveRadioButton);
+            this.mayorsBonusesGroupBox.Location = new System.Drawing.Point(249, 129);
             this.mayorsBonusesGroupBox.Name = "mayorsBonusesGroupBox";
-            this.mayorsBonusesGroupBox.Size = new System.Drawing.Size(200, 95);
+            this.mayorsBonusesGroupBox.Size = new System.Drawing.Size(220, 95);
             this.mayorsBonusesGroupBox.TabIndex = 3;
             this.mayorsBonusesGroupBox.TabStop = false;
             this.mayorsBonusesGroupBox.Text = "Mayors and Bonuses";
-            // 
-            // mayorsFlowLayoutPanel
-            // 
-            this.mayorsFlowLayoutPanel.Controls.Add(this.mayorsLeaveRadioButton);
-            this.mayorsFlowLayoutPanel.Controls.Add(this.mayorsDisableRadioButton);
-            this.mayorsFlowLayoutPanel.Controls.Add(this.bonusPanel);
-            this.mayorsFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mayorsFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.mayorsFlowLayoutPanel.Location = new System.Drawing.Point(3, 16);
-            this.mayorsFlowLayoutPanel.Name = "mayorsFlowLayoutPanel";
-            this.mayorsFlowLayoutPanel.Size = new System.Drawing.Size(194, 76);
-            this.mayorsFlowLayoutPanel.TabIndex = 0;
-            // 
-            // mayorsLeaveRadioButton
-            // 
-            this.mayorsLeaveRadioButton.AutoSize = true;
-            this.mayorsLeaveRadioButton.Checked = true;
-            this.mayorsLeaveRadioButton.Location = new System.Drawing.Point(3, 3);
-            this.mayorsLeaveRadioButton.Name = "mayorsLeaveRadioButton";
-            this.mayorsLeaveRadioButton.Size = new System.Drawing.Size(90, 17);
-            this.mayorsLeaveRadioButton.TabIndex = 0;
-            this.mayorsLeaveRadioButton.TabStop = true;
-            this.mayorsLeaveRadioButton.Text = "Do not modify";
-            this.mayorsLeaveRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // mayorsDisableRadioButton
-            // 
-            this.mayorsDisableRadioButton.AutoSize = true;
-            this.mayorsDisableRadioButton.Location = new System.Drawing.Point(3, 26);
-            this.mayorsDisableRadioButton.Name = "mayorsDisableRadioButton";
-            this.mayorsDisableRadioButton.Size = new System.Drawing.Size(97, 17);
-            this.mayorsDisableRadioButton.TabIndex = 1;
-            this.mayorsDisableRadioButton.Text = "Disable Mayors";
-            this.mayorsDisableRadioButton.UseVisualStyleBackColor = true;
             // 
             // bonusPanel
             // 
@@ -860,10 +794,9 @@
             this.bonusPanel.Controls.Add(this.mayorsGiftRadioButton);
             this.bonusPanel.Controls.Add(this.giftNumericUpDown);
             this.bonusPanel.Controls.Add(this.bonusLabel);
-            this.bonusPanel.Location = new System.Drawing.Point(3, 47);
-            this.bonusPanel.Margin = new System.Windows.Forms.Padding(3, 1, 3, 1);
+            this.bonusPanel.Location = new System.Drawing.Point(6, 63);
             this.bonusPanel.Name = "bonusPanel";
-            this.bonusPanel.Size = new System.Drawing.Size(191, 22);
+            this.bonusPanel.Size = new System.Drawing.Size(211, 22);
             this.bonusPanel.TabIndex = 0;
             // 
             // giftComboBox
@@ -873,9 +806,9 @@
             this.giftComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.giftComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.giftComboBox.FormattingEnabled = true;
-            this.giftComboBox.Location = new System.Drawing.Point(40, 0);
+            this.giftComboBox.Location = new System.Drawing.Point(45, 0);
             this.giftComboBox.Name = "giftComboBox";
-            this.giftComboBox.Size = new System.Drawing.Size(114, 21);
+            this.giftComboBox.Size = new System.Drawing.Size(115, 21);
             this.giftComboBox.TabIndex = 3;
             // 
             // mayorsGiftRadioButton
@@ -893,9 +826,9 @@
             // giftNumericUpDown
             // 
             this.giftNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.giftNumericUpDown.Location = new System.Drawing.Point(162, 2);
+            this.giftNumericUpDown.Location = new System.Drawing.Point(173, 2);
             this.giftNumericUpDown.Maximum = new decimal(new int[] {
-            9,
+            99,
             0,
             0,
             0});
@@ -905,7 +838,7 @@
             0,
             0});
             this.giftNumericUpDown.Name = "giftNumericUpDown";
-            this.giftNumericUpDown.Size = new System.Drawing.Size(26, 20);
+            this.giftNumericUpDown.Size = new System.Drawing.Size(35, 20);
             this.giftNumericUpDown.TabIndex = 4;
             this.giftNumericUpDown.Value = new decimal(new int[] {
             1,
@@ -918,11 +851,33 @@
             // 
             this.bonusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.bonusLabel.AutoSize = true;
-            this.bonusLabel.Location = new System.Drawing.Point(152, 4);
+            this.bonusLabel.Location = new System.Drawing.Point(161, 4);
             this.bonusLabel.Name = "bonusLabel";
             this.bonusLabel.Size = new System.Drawing.Size(12, 13);
             this.bonusLabel.TabIndex = 5;
             this.bonusLabel.Text = "x";
+            // 
+            // mayorsDisableRadioButton
+            // 
+            this.mayorsDisableRadioButton.AutoSize = true;
+            this.mayorsDisableRadioButton.Location = new System.Drawing.Point(6, 42);
+            this.mayorsDisableRadioButton.Name = "mayorsDisableRadioButton";
+            this.mayorsDisableRadioButton.Size = new System.Drawing.Size(97, 17);
+            this.mayorsDisableRadioButton.TabIndex = 1;
+            this.mayorsDisableRadioButton.Text = "Disable Mayors";
+            this.mayorsDisableRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // mayorsLeaveRadioButton
+            // 
+            this.mayorsLeaveRadioButton.AutoSize = true;
+            this.mayorsLeaveRadioButton.Checked = true;
+            this.mayorsLeaveRadioButton.Location = new System.Drawing.Point(6, 19);
+            this.mayorsLeaveRadioButton.Name = "mayorsLeaveRadioButton";
+            this.mayorsLeaveRadioButton.Size = new System.Drawing.Size(90, 17);
+            this.mayorsLeaveRadioButton.TabIndex = 0;
+            this.mayorsLeaveRadioButton.TabStop = true;
+            this.mayorsLeaveRadioButton.Text = "Do not modify";
+            this.mayorsLeaveRadioButton.UseVisualStyleBackColor = true;
             // 
             // processFlowLayoutPanel
             // 
@@ -1002,36 +957,32 @@
             this.saveFileGroupBox.PerformLayout();
             this.modifyGroupBox.ResumeLayout(false);
             this.fogGroupBox.ResumeLayout(false);
-            this.fogFlowLayoutPanel.ResumeLayout(false);
-            this.fogFlowLayoutPanel.PerformLayout();
+            this.fogGroupBox.PerformLayout();
             this.reduceFogPanel.ResumeLayout(false);
             this.reduceFogPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fogNumericUpDown)).EndInit();
             this.mutantGroupBox.ResumeLayout(false);
-            this.mutantsFlowLayoutPanel.ResumeLayout(false);
-            this.mutantsFlowLayoutPanel.PerformLayout();
-            this.replaceAllPanel.ResumeLayout(false);
-            this.replaceAllPanel.PerformLayout();
+            this.mutantGroupBox.PerformLayout();
             this.mutantsMovePanel.ResumeLayout(false);
             this.mutantsMovePanel.PerformLayout();
+            this.replaceAllPanel.ResumeLayout(false);
+            this.replaceAllPanel.PerformLayout();
             this.reflectorGroupBox.ResumeLayout(false);
             this.reflectorGroupBox.PerformLayout();
             this.processGroupBox.ResumeLayout(false);
             this.processGroupBox.PerformLayout();
-            this.themeGroupBox.ResumeLayout(false);
-            this.themeGroupBox.PerformLayout();
+            this.generalGroupBox.ResumeLayout(false);
+            this.generalGroupBox.PerformLayout();
             this.dataFlowLayoutPanel.ResumeLayout(false);
             this.vodGroupBox.ResumeLayout(false);
-            this.vodFlowLayoutPanel.ResumeLayout(false);
-            this.vodFlowLayoutPanel.PerformLayout();
-            this.vodReplacePanel.ResumeLayout(false);
-            this.vodReplacePanel.PerformLayout();
+            this.vodGroupBox.PerformLayout();
             this.vodPanel.ResumeLayout(false);
             this.vodPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vodStackNumericUpDown)).EndInit();
+            this.vodReplacePanel.ResumeLayout(false);
+            this.vodReplacePanel.PerformLayout();
             this.mayorsBonusesGroupBox.ResumeLayout(false);
-            this.mayorsFlowLayoutPanel.ResumeLayout(false);
-            this.mayorsFlowLayoutPanel.PerformLayout();
+            this.mayorsBonusesGroupBox.PerformLayout();
             this.bonusPanel.ResumeLayout(false);
             this.bonusPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.giftNumericUpDown)).EndInit();
@@ -1067,7 +1018,6 @@
         private System.Windows.Forms.GroupBox modifyGroupBox;
         private System.Windows.Forms.Button modifySaveButton;
         private System.Windows.Forms.GroupBox fogGroupBox;
-        private System.Windows.Forms.FlowLayoutPanel fogFlowLayoutPanel;
         private System.Windows.Forms.RadioButton fogLeaveRadioButton;
         private System.Windows.Forms.RadioButton fogRemoveRadioButton;
         private System.Windows.Forms.Panel reduceFogPanel;
@@ -1075,7 +1025,6 @@
         private System.Windows.Forms.RadioButton fogClearRadioButton;
         private System.Windows.Forms.RadioButton fogShowFullRadioButton;
         private System.Windows.Forms.GroupBox mutantGroupBox;
-        private System.Windows.Forms.FlowLayoutPanel mutantsFlowLayoutPanel;
         private System.Windows.Forms.RadioButton mutantsNothingRadio;
         private System.Windows.Forms.RadioButton mutantsRemoveRadio;
         private System.Windows.Forms.Panel mutantsMovePanel;
@@ -1084,7 +1033,7 @@
         private System.Windows.Forms.ComboBox mutantMoveWhatComboBox;
         private System.Windows.Forms.RadioButton mutantsMoveRadio;
         private System.Windows.Forms.Label modifyHintLabel;
-        private System.Windows.Forms.GroupBox themeGroupBox;
+        private System.Windows.Forms.GroupBox generalGroupBox;
         private System.Windows.Forms.CheckBox themeCheckBox;
         private System.Windows.Forms.ComboBox themeComboBox;
         private System.Windows.Forms.OpenFileDialog saveOpenFileDialog;
@@ -1103,9 +1052,7 @@
         private System.Windows.Forms.GroupBox mayorsBonusesGroupBox;
         private System.Windows.Forms.RadioButton mayorsLeaveRadioButton;
         private System.Windows.Forms.RadioButton mayorsDisableRadioButton;
-        private System.Windows.Forms.FlowLayoutPanel vodFlowLayoutPanel;
         private System.Windows.Forms.RadioButton vodRemoveRadioButton;
-        private System.Windows.Forms.FlowLayoutPanel mayorsFlowLayoutPanel;
         private System.Windows.Forms.Panel bonusPanel;
         private System.Windows.Forms.ComboBox giftComboBox;
         private System.Windows.Forms.RadioButton mayorsGiftRadioButton;
@@ -1117,5 +1064,6 @@
         private System.Windows.Forms.Panel vodReplacePanel;
         private System.Windows.Forms.ComboBox vodReplaceComboBox;
         private System.ComponentModel.BackgroundWorker modifySaveBackgroundWorker;
+        private System.Windows.Forms.CheckBox swarmsCheckBox;
     }
 }

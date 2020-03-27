@@ -37,11 +37,6 @@ nearest giant per mutant;
 
 Relocate if within l distance of CC? To those Giants/Mutants at least l distance from CC?
 
-Relocate mutants onto smaller zombies at the map edge/at least l distance from the CC? Less likely to avoid terrain clipping than relocating onto giants.
-
-Replace all mutants with smaller zombies. Harpies?
-
-
 ----
 
 Wide-ranging editor options:
@@ -51,11 +46,9 @@ Make games harder:
 
 Remove Mutants and/or Giant minimap icons?
 
-Adjust zombie type ratios for even harder procedurally-generated maps. Would probably need to generate new zombie IDs.
-Potentially also increase the % score scale factor for such maps?
+Alter existing (outer) zombies to be more special types, depending on adjustable (min?) distance from CC and desired %/final ratio of specials?
 
-Upgrade all smaller VOD buildings (Dwelling, Tavern) to City Halls of Doom? To try recreate UberVOD(s) on other ThemeTypes?
-Or multi-stack the same sized buildings in the same position?
+Multi-stack the same sized VOD buildings in the same position?
 Give individual duplication options (including 0x, excluding 1x) for each VOD building type?
 
 Remove all Pickable resources & reclaimable buildings? To remove potential early Radar vision or resources chiefly accessed via kiting?
