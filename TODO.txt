@@ -32,10 +32,9 @@ Consider using something like Octokit.net or Squirrel.Windows for auto-updating 
 
 Options for Mutant modification/max % restoration:
 
-Relocate mutants onto giants:
-nearest giant per mutant;
+Relocate mutants onto nearest giant per mutant;
 
-Relocate if within l distance of CC? To those Giants/Mutants at least l distance from CC?
+Remove/Relocate if within l distance of CC? To those Giants/Mutants at least l distance from CC?
 
 ----
 
@@ -90,8 +89,7 @@ Reposition Ravens to indicate direction to Mutants/Giants/VODs?
 Or use sign post assets from custom/campaign maps?
 For VODs, convert each building relative position from CC into an angle, consolidate similar-enough angles into a single marker.
 
-Add extra Food/Energy(/Workers) to CC, as though from pickables?
-Or spawn new pickables by the CC.
+Spawn new pickables by the CC?
 Or relocate existing pickables to be by the CC.
 
 Make all existing troops veterans.

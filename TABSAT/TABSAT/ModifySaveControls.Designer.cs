@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.extractGroupBox = new System.Windows.Forms.GroupBox();
-            this.extractManualRadioButton = new System.Windows.Forms.RadioButton();
             this.extractLeaveRadioButton = new System.Windows.Forms.RadioButton();
             this.extractTidyRadioButton = new System.Windows.Forms.RadioButton();
+            this.extractManualRadioButton = new System.Windows.Forms.RadioButton();
             this.manualGroupBox = new System.Windows.Forms.GroupBox();
             this.skipRepackButton = new System.Windows.Forms.Button();
             this.repackSaveButton = new System.Windows.Forms.Button();
@@ -43,20 +43,17 @@
             this.modifyGroupBox = new System.Windows.Forms.GroupBox();
             this.modifySaveButton = new System.Windows.Forms.Button();
             this.fogGroupBox = new System.Windows.Forms.GroupBox();
-            this.reduceFogPanel = new System.Windows.Forms.Panel();
-            this.fogNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.fogClearRadioButton = new System.Windows.Forms.RadioButton();
+            this.fogNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.fogShowFullRadioButton = new System.Windows.Forms.RadioButton();
             this.fogRemoveRadioButton = new System.Windows.Forms.RadioButton();
             this.fogLeaveRadioButton = new System.Windows.Forms.RadioButton();
             this.mutantGroupBox = new System.Windows.Forms.GroupBox();
-            this.mutantsMovePanel = new System.Windows.Forms.Panel();
+            this.mutantReplaceAllComboBox = new System.Windows.Forms.ComboBox();
             this.mutantMoveGlobalComboBox = new System.Windows.Forms.ComboBox();
-            this.mutantMoveCCLabel = new System.Windows.Forms.Label();
             this.mutantMoveWhatComboBox = new System.Windows.Forms.ComboBox();
             this.mutantsMoveRadio = new System.Windows.Forms.RadioButton();
-            this.replaceAllPanel = new System.Windows.Forms.Panel();
-            this.mutantReplaceAllComboBox = new System.Windows.Forms.ComboBox();
+            this.mutantMoveCCLabel = new System.Windows.Forms.Label();
             this.mutantReplaceAllRadio = new System.Windows.Forms.RadioButton();
             this.mutantsRemoveRadio = new System.Windows.Forms.RadioButton();
             this.mutantsNothingRadio = new System.Windows.Forms.RadioButton();
@@ -68,28 +65,39 @@
             this.reflectorTextBox = new System.Windows.Forms.TextBox();
             this.modifyHintLabel = new System.Windows.Forms.Label();
             this.generalGroupBox = new System.Windows.Forms.GroupBox();
+            this.disableMayorsCheckBox = new System.Windows.Forms.CheckBox();
             this.swarmsCheckBox = new System.Windows.Forms.CheckBox();
             this.themeComboBox = new System.Windows.Forms.ComboBox();
             this.themeCheckBox = new System.Windows.Forms.CheckBox();
             this.saveOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.dataFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.vodGroupBox = new System.Windows.Forms.GroupBox();
-            this.vodPanel = new System.Windows.Forms.Panel();
             this.vodStackNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.vodStackRadioButton = new System.Windows.Forms.RadioButton();
-            this.vodReplacePanel = new System.Windows.Forms.Panel();
             this.vodReplaceComboBox = new System.Windows.Forms.ComboBox();
+            this.vodStackRadioButton = new System.Windows.Forms.RadioButton();
             this.vodReplaceRadioButton = new System.Windows.Forms.RadioButton();
             this.vodRemoveRadioButton = new System.Windows.Forms.RadioButton();
             this.vodLeaveRadioButton = new System.Windows.Forms.RadioButton();
-            this.mayorsBonusesGroupBox = new System.Windows.Forms.GroupBox();
-            this.bonusPanel = new System.Windows.Forms.Panel();
+            this.ccExtraGroupBox = new System.Windows.Forms.GroupBox();
             this.giftComboBox = new System.Windows.Forms.ComboBox();
-            this.mayorsGiftRadioButton = new System.Windows.Forms.RadioButton();
+            this.ccFoodNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.ccEnergyNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.ccWorkersNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.giftNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.ccGiftCheckBox = new System.Windows.Forms.CheckBox();
             this.bonusLabel = new System.Windows.Forms.Label();
-            this.mayorsDisableRadioButton = new System.Windows.Forms.RadioButton();
-            this.mayorsLeaveRadioButton = new System.Windows.Forms.RadioButton();
+            this.ccExtraWorkersLabel = new System.Windows.Forms.Label();
+            this.ccExtraEnergyLabel = new System.Windows.Forms.Label();
+            this.ccExtraFoodLabel = new System.Windows.Forms.Label();
+            this.ccExtraWorkersCheckBox = new System.Windows.Forms.CheckBox();
+            this.ccExtraEnergyCheckBox = new System.Windows.Forms.CheckBox();
+            this.ccExtraFoodCheckBox = new System.Windows.Forms.CheckBox();
+            this.warehousesGroupBox = new System.Windows.Forms.GroupBox();
+            this.warehousesFillOilCheckBox = new System.Windows.Forms.CheckBox();
+            this.warehousesFillIronCheckBox = new System.Windows.Forms.CheckBox();
+            this.warehousesFillWoodCheckBox = new System.Windows.Forms.CheckBox();
+            this.warehousesFillGoldCheckBox = new System.Windows.Forms.CheckBox();
+            this.warehousesFillStoneCheckBox = new System.Windows.Forms.CheckBox();
             this.processFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.processPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -100,22 +108,20 @@
             this.saveFileGroupBox.SuspendLayout();
             this.modifyGroupBox.SuspendLayout();
             this.fogGroupBox.SuspendLayout();
-            this.reduceFogPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fogNumericUpDown)).BeginInit();
             this.mutantGroupBox.SuspendLayout();
-            this.mutantsMovePanel.SuspendLayout();
-            this.replaceAllPanel.SuspendLayout();
             this.reflectorGroupBox.SuspendLayout();
             this.processGroupBox.SuspendLayout();
             this.generalGroupBox.SuspendLayout();
             this.dataFlowLayoutPanel.SuspendLayout();
             this.vodGroupBox.SuspendLayout();
-            this.vodPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vodStackNumericUpDown)).BeginInit();
-            this.vodReplacePanel.SuspendLayout();
-            this.mayorsBonusesGroupBox.SuspendLayout();
-            this.bonusPanel.SuspendLayout();
+            this.ccExtraGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ccFoodNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ccEnergyNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ccWorkersNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.giftNumericUpDown)).BeginInit();
+            this.warehousesGroupBox.SuspendLayout();
             this.processFlowLayoutPanel.SuspendLayout();
             this.processPanel.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
@@ -127,9 +133,9 @@
             // 
             // extractGroupBox
             // 
-            this.extractGroupBox.Controls.Add(this.extractManualRadioButton);
             this.extractGroupBox.Controls.Add(this.extractLeaveRadioButton);
             this.extractGroupBox.Controls.Add(this.extractTidyRadioButton);
+            this.extractGroupBox.Controls.Add(this.extractManualRadioButton);
             this.extractGroupBox.Location = new System.Drawing.Point(162, 0);
             this.extractGroupBox.Name = "extractGroupBox";
             this.extractGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -137,17 +143,6 @@
             this.extractGroupBox.TabIndex = 1;
             this.extractGroupBox.TabStop = false;
             this.extractGroupBox.Text = "Extracted Files";
-            // 
-            // extractManualRadioButton
-            // 
-            this.extractManualRadioButton.AutoSize = true;
-            this.extractManualRadioButton.Location = new System.Drawing.Point(6, 65);
-            this.extractManualRadioButton.Name = "extractManualRadioButton";
-            this.extractManualRadioButton.Size = new System.Drawing.Size(125, 17);
-            this.extractManualRadioButton.TabIndex = 2;
-            this.extractManualRadioButton.Text = "Manual Editing Mode";
-            this.extractManualRadioButton.UseVisualStyleBackColor = true;
-            this.extractManualRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
             // 
             // extractLeaveRadioButton
             // 
@@ -173,13 +168,24 @@
             this.extractTidyRadioButton.UseVisualStyleBackColor = true;
             this.extractTidyRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
             // 
+            // extractManualRadioButton
+            // 
+            this.extractManualRadioButton.AutoSize = true;
+            this.extractManualRadioButton.Location = new System.Drawing.Point(6, 65);
+            this.extractManualRadioButton.Name = "extractManualRadioButton";
+            this.extractManualRadioButton.Size = new System.Drawing.Size(125, 17);
+            this.extractManualRadioButton.TabIndex = 2;
+            this.extractManualRadioButton.Text = "Manual Editing Mode";
+            this.extractManualRadioButton.UseVisualStyleBackColor = true;
+            this.extractManualRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
+            // 
             // manualGroupBox
             // 
             this.manualGroupBox.Controls.Add(this.skipRepackButton);
             this.manualGroupBox.Controls.Add(this.repackSaveButton);
             this.manualGroupBox.Controls.Add(this.extractSaveButton);
             this.manualGroupBox.Enabled = false;
-            this.manualGroupBox.Location = new System.Drawing.Point(62, 3);
+            this.manualGroupBox.Location = new System.Drawing.Point(54, 3);
             this.manualGroupBox.Name = "manualGroupBox";
             this.manualGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.manualGroupBox.Size = new System.Drawing.Size(384, 60);
@@ -226,10 +232,10 @@
             this.saveFileGroupBox.Controls.Add(this.saveFileChooseButton);
             this.saveFileGroupBox.Controls.Add(this.backupCheckBox);
             this.saveFileGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.saveFileGroupBox.Location = new System.Drawing.Point(6, 311);
+            this.saveFileGroupBox.Location = new System.Drawing.Point(6, 408);
             this.saveFileGroupBox.Margin = new System.Windows.Forms.Padding(6);
             this.saveFileGroupBox.Name = "saveFileGroupBox";
-            this.saveFileGroupBox.Size = new System.Drawing.Size(598, 50);
+            this.saveFileGroupBox.Size = new System.Drawing.Size(573, 50);
             this.saveFileGroupBox.TabIndex = 0;
             this.saveFileGroupBox.TabStop = false;
             this.saveFileGroupBox.Text = "Save File";
@@ -240,15 +246,17 @@
             this.saveFileTextBox.Location = new System.Drawing.Point(111, 18);
             this.saveFileTextBox.Name = "saveFileTextBox";
             this.saveFileTextBox.ReadOnly = true;
-            this.saveFileTextBox.Size = new System.Drawing.Size(355, 20);
+            this.saveFileTextBox.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.saveFileTextBox.Size = new System.Drawing.Size(318, 20);
             this.saveFileTextBox.TabIndex = 0;
             this.saveFileTextBox.TabStop = false;
+            this.saveFileTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.saveFileTextBox.WordWrap = false;
             // 
             // saveFileChooseButton
             // 
             this.saveFileChooseButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.saveFileChooseButton.Location = new System.Drawing.Point(472, 12);
+            this.saveFileChooseButton.Location = new System.Drawing.Point(447, 12);
             this.saveFileChooseButton.Name = "saveFileChooseButton";
             this.saveFileChooseButton.Size = new System.Drawing.Size(120, 30);
             this.saveFileChooseButton.TabIndex = 0;
@@ -272,7 +280,7 @@
             // modifyGroupBox
             // 
             this.modifyGroupBox.Controls.Add(this.modifySaveButton);
-            this.modifyGroupBox.Location = new System.Drawing.Point(452, 3);
+            this.modifyGroupBox.Location = new System.Drawing.Point(444, 3);
             this.modifyGroupBox.Name = "modifyGroupBox";
             this.modifyGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.modifyGroupBox.Size = new System.Drawing.Size(132, 60);
@@ -292,25 +300,27 @@
             // 
             // fogGroupBox
             // 
-            this.fogGroupBox.Controls.Add(this.reduceFogPanel);
+            this.fogGroupBox.Controls.Add(this.fogClearRadioButton);
+            this.fogGroupBox.Controls.Add(this.fogNumericUpDown);
             this.fogGroupBox.Controls.Add(this.fogShowFullRadioButton);
             this.fogGroupBox.Controls.Add(this.fogRemoveRadioButton);
             this.fogGroupBox.Controls.Add(this.fogLeaveRadioButton);
-            this.fogGroupBox.Location = new System.Drawing.Point(3, 129);
+            this.fogGroupBox.Location = new System.Drawing.Point(3, 124);
             this.fogGroupBox.Name = "fogGroupBox";
-            this.fogGroupBox.Size = new System.Drawing.Size(240, 120);
-            this.fogGroupBox.TabIndex = 1;
+            this.fogGroupBox.Size = new System.Drawing.Size(220, 115);
+            this.fogGroupBox.TabIndex = 2;
             this.fogGroupBox.TabStop = false;
             this.fogGroupBox.Text = "Fog of War";
             // 
-            // reduceFogPanel
+            // fogClearRadioButton
             // 
-            this.reduceFogPanel.Controls.Add(this.fogNumericUpDown);
-            this.reduceFogPanel.Controls.Add(this.fogClearRadioButton);
-            this.reduceFogPanel.Location = new System.Drawing.Point(6, 65);
-            this.reduceFogPanel.Name = "reduceFogPanel";
-            this.reduceFogPanel.Size = new System.Drawing.Size(225, 22);
-            this.reduceFogPanel.TabIndex = 0;
+            this.fogClearRadioButton.AutoSize = true;
+            this.fogClearRadioButton.Location = new System.Drawing.Point(6, 65);
+            this.fogClearRadioButton.Name = "fogClearRadioButton";
+            this.fogClearRadioButton.Size = new System.Drawing.Size(164, 17);
+            this.fogClearRadioButton.TabIndex = 2;
+            this.fogClearRadioButton.Text = "Clear circle around CC, radius";
+            this.fogClearRadioButton.UseVisualStyleBackColor = true;
             // 
             // fogNumericUpDown
             // 
@@ -321,7 +331,7 @@
             0,
             0,
             0});
-            this.fogNumericUpDown.Location = new System.Drawing.Point(190, 2);
+            this.fogNumericUpDown.Location = new System.Drawing.Point(179, 65);
             this.fogNumericUpDown.Maximum = new decimal(new int[] {
             90,
             0,
@@ -334,32 +344,20 @@
             0});
             this.fogNumericUpDown.Name = "fogNumericUpDown";
             this.fogNumericUpDown.Size = new System.Drawing.Size(35, 20);
-            this.fogNumericUpDown.TabIndex = 4;
+            this.fogNumericUpDown.TabIndex = 3;
             this.fogNumericUpDown.Value = new decimal(new int[] {
             20,
             0,
             0,
             0});
-            this.fogNumericUpDown.ValueChanged += new System.EventHandler(this.fogNumericUpDown_ValueChanged);
-            // 
-            // fogClearRadioButton
-            // 
-            this.fogClearRadioButton.AutoSize = true;
-            this.fogClearRadioButton.Location = new System.Drawing.Point(0, 2);
-            this.fogClearRadioButton.Name = "fogClearRadioButton";
-            this.fogClearRadioButton.Size = new System.Drawing.Size(191, 17);
-            this.fogClearRadioButton.TabIndex = 3;
-            this.fogClearRadioButton.TabStop = true;
-            this.fogClearRadioButton.Text = "Clear a circle around the CC, radius";
-            this.fogClearRadioButton.UseVisualStyleBackColor = true;
             // 
             // fogShowFullRadioButton
             // 
             this.fogShowFullRadioButton.AutoSize = true;
-            this.fogShowFullRadioButton.Location = new System.Drawing.Point(6, 90);
+            this.fogShowFullRadioButton.Location = new System.Drawing.Point(6, 88);
             this.fogShowFullRadioButton.Name = "fogShowFullRadioButton";
             this.fogShowFullRadioButton.Size = new System.Drawing.Size(125, 17);
-            this.fogShowFullRadioButton.TabIndex = 2;
+            this.fogShowFullRadioButton.TabIndex = 4;
             this.fogShowFullRadioButton.Text = "Grant Full Map Vision";
             this.fogShowFullRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -387,87 +385,20 @@
             // 
             // mutantGroupBox
             // 
-            this.mutantGroupBox.Controls.Add(this.mutantsMovePanel);
-            this.mutantGroupBox.Controls.Add(this.replaceAllPanel);
+            this.mutantGroupBox.Controls.Add(this.mutantReplaceAllComboBox);
+            this.mutantGroupBox.Controls.Add(this.mutantMoveGlobalComboBox);
+            this.mutantGroupBox.Controls.Add(this.mutantMoveWhatComboBox);
+            this.mutantGroupBox.Controls.Add(this.mutantsMoveRadio);
+            this.mutantGroupBox.Controls.Add(this.mutantMoveCCLabel);
+            this.mutantGroupBox.Controls.Add(this.mutantReplaceAllRadio);
             this.mutantGroupBox.Controls.Add(this.mutantsRemoveRadio);
             this.mutantGroupBox.Controls.Add(this.mutantsNothingRadio);
             this.mutantGroupBox.Location = new System.Drawing.Point(3, 3);
             this.mutantGroupBox.Name = "mutantGroupBox";
-            this.mutantGroupBox.Size = new System.Drawing.Size(345, 120);
+            this.mutantGroupBox.Size = new System.Drawing.Size(345, 115);
             this.mutantGroupBox.TabIndex = 0;
             this.mutantGroupBox.TabStop = false;
             this.mutantGroupBox.Text = "Mutants";
-            // 
-            // mutantsMovePanel
-            // 
-            this.mutantsMovePanel.Controls.Add(this.mutantMoveGlobalComboBox);
-            this.mutantsMovePanel.Controls.Add(this.mutantMoveCCLabel);
-            this.mutantsMovePanel.Controls.Add(this.mutantMoveWhatComboBox);
-            this.mutantsMovePanel.Controls.Add(this.mutantsMoveRadio);
-            this.mutantsMovePanel.Location = new System.Drawing.Point(6, 89);
-            this.mutantsMovePanel.Name = "mutantsMovePanel";
-            this.mutantsMovePanel.Size = new System.Drawing.Size(335, 22);
-            this.mutantsMovePanel.TabIndex = 0;
-            // 
-            // mutantMoveGlobalComboBox
-            // 
-            this.mutantMoveGlobalComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.mutantMoveGlobalComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.mutantMoveGlobalComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mutantMoveGlobalComboBox.FormattingEnabled = true;
-            this.mutantMoveGlobalComboBox.Items.AddRange(new object[] {
-            "anywhere on the map",
-            "per compass quadrant"});
-            this.mutantMoveGlobalComboBox.Location = new System.Drawing.Point(199, 0);
-            this.mutantMoveGlobalComboBox.Name = "mutantMoveGlobalComboBox";
-            this.mutantMoveGlobalComboBox.Size = new System.Drawing.Size(131, 21);
-            this.mutantMoveGlobalComboBox.TabIndex = 6;
-            // 
-            // mutantMoveCCLabel
-            // 
-            this.mutantMoveCCLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.mutantMoveCCLabel.AutoSize = true;
-            this.mutantMoveCCLabel.Location = new System.Drawing.Point(155, 4);
-            this.mutantMoveCCLabel.Name = "mutantMoveCCLabel";
-            this.mutantMoveCCLabel.Size = new System.Drawing.Size(44, 13);
-            this.mutantMoveCCLabel.TabIndex = 0;
-            this.mutantMoveCCLabel.Text = "from CC";
-            // 
-            // mutantMoveWhatComboBox
-            // 
-            this.mutantMoveWhatComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.mutantMoveWhatComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.mutantMoveWhatComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mutantMoveWhatComboBox.FormattingEnabled = true;
-            this.mutantMoveWhatComboBox.Items.AddRange(new object[] {
-            "Giant",
-            "Mutant"});
-            this.mutantMoveWhatComboBox.Location = new System.Drawing.Point(97, 0);
-            this.mutantMoveWhatComboBox.Name = "mutantMoveWhatComboBox";
-            this.mutantMoveWhatComboBox.Size = new System.Drawing.Size(57, 21);
-            this.mutantMoveWhatComboBox.TabIndex = 5;
-            // 
-            // mutantsMoveRadio
-            // 
-            this.mutantsMoveRadio.AutoSize = true;
-            this.mutantsMoveRadio.Location = new System.Drawing.Point(0, 2);
-            this.mutantsMoveRadio.Name = "mutantsMoveRadio";
-            this.mutantsMoveRadio.Size = new System.Drawing.Size(102, 17);
-            this.mutantsMoveRadio.TabIndex = 4;
-            this.mutantsMoveRadio.TabStop = true;
-            this.mutantsMoveRadio.Text = "Move to farthest";
-            this.mutantsMoveRadio.UseVisualStyleBackColor = true;
-            this.mutantsMoveRadio.CheckedChanged += new System.EventHandler(this.mutantsMoveRadio_CheckedChanged);
-            // 
-            // replaceAllPanel
-            // 
-            this.replaceAllPanel.Controls.Add(this.mutantReplaceAllComboBox);
-            this.replaceAllPanel.Controls.Add(this.mutantReplaceAllRadio);
-            this.replaceAllPanel.Location = new System.Drawing.Point(6, 63);
-            this.replaceAllPanel.Name = "replaceAllPanel";
-            this.replaceAllPanel.Size = new System.Drawing.Size(195, 22);
-            this.replaceAllPanel.TabIndex = 0;
             // 
             // mutantReplaceAllComboBox
             // 
@@ -479,22 +410,69 @@
             this.mutantReplaceAllComboBox.Items.AddRange(new object[] {
             "Mutants with Giants",
             "Giants with Mutants"});
-            this.mutantReplaceAllComboBox.Location = new System.Drawing.Point(75, 0);
+            this.mutantReplaceAllComboBox.Location = new System.Drawing.Point(81, 63);
             this.mutantReplaceAllComboBox.Name = "mutantReplaceAllComboBox";
             this.mutantReplaceAllComboBox.Size = new System.Drawing.Size(117, 21);
             this.mutantReplaceAllComboBox.TabIndex = 3;
             // 
+            // mutantMoveGlobalComboBox
+            // 
+            this.mutantMoveGlobalComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.mutantMoveGlobalComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mutantMoveGlobalComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mutantMoveGlobalComboBox.FormattingEnabled = true;
+            this.mutantMoveGlobalComboBox.Items.AddRange(new object[] {
+            "anywhere on the map",
+            "per compass quadrant"});
+            this.mutantMoveGlobalComboBox.Location = new System.Drawing.Point(208, 86);
+            this.mutantMoveGlobalComboBox.Name = "mutantMoveGlobalComboBox";
+            this.mutantMoveGlobalComboBox.Size = new System.Drawing.Size(131, 21);
+            this.mutantMoveGlobalComboBox.TabIndex = 6;
+            // 
+            // mutantMoveWhatComboBox
+            // 
+            this.mutantMoveWhatComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.mutantMoveWhatComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mutantMoveWhatComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mutantMoveWhatComboBox.FormattingEnabled = true;
+            this.mutantMoveWhatComboBox.Items.AddRange(new object[] {
+            "Giant",
+            "Mutant"});
+            this.mutantMoveWhatComboBox.Location = new System.Drawing.Point(105, 86);
+            this.mutantMoveWhatComboBox.Name = "mutantMoveWhatComboBox";
+            this.mutantMoveWhatComboBox.Size = new System.Drawing.Size(57, 21);
+            this.mutantMoveWhatComboBox.TabIndex = 5;
+            // 
+            // mutantsMoveRadio
+            // 
+            this.mutantsMoveRadio.AutoSize = true;
+            this.mutantsMoveRadio.Location = new System.Drawing.Point(6, 88);
+            this.mutantsMoveRadio.Name = "mutantsMoveRadio";
+            this.mutantsMoveRadio.Size = new System.Drawing.Size(102, 17);
+            this.mutantsMoveRadio.TabIndex = 4;
+            this.mutantsMoveRadio.Text = "Move to farthest";
+            this.mutantsMoveRadio.UseVisualStyleBackColor = true;
+            // 
+            // mutantMoveCCLabel
+            // 
+            this.mutantMoveCCLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.mutantMoveCCLabel.AutoSize = true;
+            this.mutantMoveCCLabel.Location = new System.Drawing.Point(164, 90);
+            this.mutantMoveCCLabel.Name = "mutantMoveCCLabel";
+            this.mutantMoveCCLabel.Size = new System.Drawing.Size(44, 13);
+            this.mutantMoveCCLabel.TabIndex = 0;
+            this.mutantMoveCCLabel.Text = "from CC";
+            // 
             // mutantReplaceAllRadio
             // 
             this.mutantReplaceAllRadio.AutoSize = true;
-            this.mutantReplaceAllRadio.Location = new System.Drawing.Point(0, 2);
+            this.mutantReplaceAllRadio.Location = new System.Drawing.Point(6, 65);
             this.mutantReplaceAllRadio.Name = "mutantReplaceAllRadio";
             this.mutantReplaceAllRadio.Size = new System.Drawing.Size(79, 17);
             this.mutantReplaceAllRadio.TabIndex = 2;
-            this.mutantReplaceAllRadio.TabStop = true;
             this.mutantReplaceAllRadio.Text = "Replace All";
             this.mutantReplaceAllRadio.UseVisualStyleBackColor = true;
-            this.mutantReplaceAllRadio.CheckedChanged += new System.EventHandler(this.mutantReplaceAllRadio_CheckedChanged);
             // 
             // mutantsRemoveRadio
             // 
@@ -505,7 +483,6 @@
             this.mutantsRemoveRadio.TabIndex = 1;
             this.mutantsRemoveRadio.Text = "Remove All";
             this.mutantsRemoveRadio.UseVisualStyleBackColor = true;
-            this.mutantsRemoveRadio.CheckedChanged += new System.EventHandler(this.mutantsSimpleRadio_CheckedChanged);
             // 
             // mutantsNothingRadio
             // 
@@ -518,7 +495,6 @@
             this.mutantsNothingRadio.TabStop = true;
             this.mutantsNothingRadio.Text = "Do not modify";
             this.mutantsNothingRadio.UseVisualStyleBackColor = true;
-            this.mutantsNothingRadio.CheckedChanged += new System.EventHandler(this.mutantsSimpleRadio_CheckedChanged);
             // 
             // reflectorGroupBox
             // 
@@ -573,7 +549,7 @@
             this.processGroupBox.Location = new System.Drawing.Point(0, 0);
             this.processGroupBox.Margin = new System.Windows.Forms.Padding(6);
             this.processGroupBox.Name = "processGroupBox";
-            this.processGroupBox.Size = new System.Drawing.Size(610, 60);
+            this.processGroupBox.Size = new System.Drawing.Size(585, 76);
             this.processGroupBox.TabIndex = 0;
             this.processGroupBox.TabStop = false;
             this.processGroupBox.Text = "Reflector Process";
@@ -587,7 +563,7 @@
             this.reflectorTextBox.Name = "reflectorTextBox";
             this.reflectorTextBox.ReadOnly = true;
             this.reflectorTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.reflectorTextBox.Size = new System.Drawing.Size(604, 41);
+            this.reflectorTextBox.Size = new System.Drawing.Size(579, 57);
             this.reflectorTextBox.TabIndex = 0;
             this.reflectorTextBox.WordWrap = false;
             // 
@@ -595,7 +571,7 @@
             // 
             this.modifyHintLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.modifyHintLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.modifyHintLabel.Location = new System.Drawing.Point(56, 4);
+            this.modifyHintLabel.Location = new System.Drawing.Point(44, 4);
             this.modifyHintLabel.MinimumSize = new System.Drawing.Size(2, 30);
             this.modifyHintLabel.Name = "modifyHintLabel";
             this.modifyHintLabel.Size = new System.Drawing.Size(497, 30);
@@ -606,24 +582,35 @@
             // 
             // generalGroupBox
             // 
+            this.generalGroupBox.Controls.Add(this.disableMayorsCheckBox);
             this.generalGroupBox.Controls.Add(this.swarmsCheckBox);
             this.generalGroupBox.Controls.Add(this.themeComboBox);
             this.generalGroupBox.Controls.Add(this.themeCheckBox);
-            this.generalGroupBox.Location = new System.Drawing.Point(3, 255);
+            this.generalGroupBox.Location = new System.Drawing.Point(3, 245);
             this.generalGroupBox.Name = "generalGroupBox";
-            this.generalGroupBox.Size = new System.Drawing.Size(240, 65);
-            this.generalGroupBox.TabIndex = 4;
+            this.generalGroupBox.Size = new System.Drawing.Size(220, 90);
+            this.generalGroupBox.TabIndex = 5;
             this.generalGroupBox.TabStop = false;
-            this.generalGroupBox.Text = "General rules";
+            this.generalGroupBox.Text = "General Rules";
+            // 
+            // disableMayorsCheckBox
+            // 
+            this.disableMayorsCheckBox.AutoSize = true;
+            this.disableMayorsCheckBox.Location = new System.Drawing.Point(6, 65);
+            this.disableMayorsCheckBox.Name = "disableMayorsCheckBox";
+            this.disableMayorsCheckBox.Size = new System.Drawing.Size(98, 17);
+            this.disableMayorsCheckBox.TabIndex = 3;
+            this.disableMayorsCheckBox.Text = "Disable Mayors";
+            this.disableMayorsCheckBox.UseVisualStyleBackColor = true;
             // 
             // swarmsCheckBox
             // 
             this.swarmsCheckBox.AutoSize = true;
             this.swarmsCheckBox.Location = new System.Drawing.Point(6, 42);
             this.swarmsCheckBox.Name = "swarmsCheckBox";
-            this.swarmsCheckBox.Size = new System.Drawing.Size(201, 17);
+            this.swarmsCheckBox.Size = new System.Drawing.Size(206, 17);
             this.swarmsCheckBox.TabIndex = 2;
-            this.swarmsCheckBox.Text = "Swarms come from multiple directions";
+            this.swarmsCheckBox.Text = "Swarms spawn from multiple directions";
             this.swarmsCheckBox.UseVisualStyleBackColor = true;
             // 
             // themeComboBox
@@ -633,10 +620,10 @@
             this.themeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.themeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.themeComboBox.FormattingEnabled = true;
-            this.themeComboBox.Location = new System.Drawing.Point(111, 16);
+            this.themeComboBox.Location = new System.Drawing.Point(106, 16);
             this.themeComboBox.Name = "themeComboBox";
-            this.themeComboBox.Size = new System.Drawing.Size(123, 21);
-            this.themeComboBox.TabIndex = 0;
+            this.themeComboBox.Size = new System.Drawing.Size(108, 21);
+            this.themeComboBox.TabIndex = 1;
             // 
             // themeCheckBox
             // 
@@ -644,7 +631,7 @@
             this.themeCheckBox.Location = new System.Drawing.Point(6, 19);
             this.themeCheckBox.Name = "themeCheckBox";
             this.themeCheckBox.Size = new System.Drawing.Size(107, 17);
-            this.themeCheckBox.TabIndex = 1;
+            this.themeCheckBox.TabIndex = 0;
             this.themeCheckBox.Text = "Change theme to";
             this.themeCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -654,42 +641,36 @@
             this.dataFlowLayoutPanel.Controls.Add(this.mutantGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.vodGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.fogGroupBox);
-            this.dataFlowLayoutPanel.Controls.Add(this.mayorsBonusesGroupBox);
+            this.dataFlowLayoutPanel.Controls.Add(this.ccExtraGroupBox);
+            this.dataFlowLayoutPanel.Controls.Add(this.warehousesGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.generalGroupBox);
             this.dataFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataFlowLayoutPanel.Location = new System.Drawing.Point(3, 41);
             this.dataFlowLayoutPanel.Name = "dataFlowLayoutPanel";
-            this.dataFlowLayoutPanel.Size = new System.Drawing.Size(604, 261);
+            this.dataFlowLayoutPanel.Size = new System.Drawing.Size(579, 358);
             this.dataFlowLayoutPanel.TabIndex = 0;
             // 
             // vodGroupBox
             // 
-            this.vodGroupBox.Controls.Add(this.vodPanel);
-            this.vodGroupBox.Controls.Add(this.vodReplacePanel);
+            this.vodGroupBox.Controls.Add(this.vodStackNumericUpDown);
+            this.vodGroupBox.Controls.Add(this.vodReplaceComboBox);
+            this.vodGroupBox.Controls.Add(this.vodStackRadioButton);
+            this.vodGroupBox.Controls.Add(this.vodReplaceRadioButton);
             this.vodGroupBox.Controls.Add(this.vodRemoveRadioButton);
             this.vodGroupBox.Controls.Add(this.vodLeaveRadioButton);
             this.vodGroupBox.Location = new System.Drawing.Point(354, 3);
             this.vodGroupBox.Name = "vodGroupBox";
-            this.vodGroupBox.Size = new System.Drawing.Size(220, 120);
-            this.vodGroupBox.TabIndex = 2;
+            this.vodGroupBox.Size = new System.Drawing.Size(220, 115);
+            this.vodGroupBox.TabIndex = 1;
             this.vodGroupBox.TabStop = false;
             this.vodGroupBox.Text = "Villages of Doom";
-            // 
-            // vodPanel
-            // 
-            this.vodPanel.Controls.Add(this.vodStackNumericUpDown);
-            this.vodPanel.Controls.Add(this.vodStackRadioButton);
-            this.vodPanel.Enabled = false;
-            this.vodPanel.Location = new System.Drawing.Point(6, 89);
-            this.vodPanel.Name = "vodPanel";
-            this.vodPanel.Size = new System.Drawing.Size(132, 22);
-            this.vodPanel.TabIndex = 0;
             // 
             // vodStackNumericUpDown
             // 
             this.vodStackNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.vodStackNumericUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.vodStackNumericUpDown.Location = new System.Drawing.Point(103, 2);
+            this.vodStackNumericUpDown.Enabled = false;
+            this.vodStackNumericUpDown.Location = new System.Drawing.Point(107, 88);
             this.vodStackNumericUpDown.Maximum = new decimal(new int[] {
             5,
             0,
@@ -702,34 +683,12 @@
             0});
             this.vodStackNumericUpDown.Name = "vodStackNumericUpDown";
             this.vodStackNumericUpDown.Size = new System.Drawing.Size(26, 20);
-            this.vodStackNumericUpDown.TabIndex = 3;
+            this.vodStackNumericUpDown.TabIndex = 5;
             this.vodStackNumericUpDown.Value = new decimal(new int[] {
             2,
             0,
             0,
             0});
-            this.vodStackNumericUpDown.ValueChanged += new System.EventHandler(this.vodStackNumericUpDown_ValueChanged);
-            // 
-            // vodStackRadioButton
-            // 
-            this.vodStackRadioButton.AutoSize = true;
-            this.vodStackRadioButton.Location = new System.Drawing.Point(0, 2);
-            this.vodStackRadioButton.Name = "vodStackRadioButton";
-            this.vodStackRadioButton.Size = new System.Drawing.Size(105, 17);
-            this.vodStackRadioButton.TabIndex = 2;
-            this.vodStackRadioButton.TabStop = true;
-            this.vodStackRadioButton.Text = "Stack buildings x";
-            this.vodStackRadioButton.UseVisualStyleBackColor = true;
-            this.vodStackRadioButton.CheckedChanged += new System.EventHandler(this.vodStackRadioButton_CheckedChanged);
-            // 
-            // vodReplacePanel
-            // 
-            this.vodReplacePanel.Controls.Add(this.vodReplaceComboBox);
-            this.vodReplacePanel.Controls.Add(this.vodReplaceRadioButton);
-            this.vodReplacePanel.Location = new System.Drawing.Point(6, 63);
-            this.vodReplacePanel.Name = "vodReplacePanel";
-            this.vodReplacePanel.Size = new System.Drawing.Size(208, 22);
-            this.vodReplacePanel.TabIndex = 4;
             // 
             // vodReplaceComboBox
             // 
@@ -738,19 +697,29 @@
             this.vodReplaceComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.vodReplaceComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.vodReplaceComboBox.FormattingEnabled = true;
-            this.vodReplaceComboBox.Location = new System.Drawing.Point(138, 0);
+            this.vodReplaceComboBox.Location = new System.Drawing.Point(145, 63);
             this.vodReplaceComboBox.Name = "vodReplaceComboBox";
-            this.vodReplaceComboBox.Size = new System.Drawing.Size(70, 21);
-            this.vodReplaceComboBox.TabIndex = 4;
+            this.vodReplaceComboBox.Size = new System.Drawing.Size(69, 21);
+            this.vodReplaceComboBox.TabIndex = 3;
+            // 
+            // vodStackRadioButton
+            // 
+            this.vodStackRadioButton.AutoSize = true;
+            this.vodStackRadioButton.Enabled = false;
+            this.vodStackRadioButton.Location = new System.Drawing.Point(6, 88);
+            this.vodStackRadioButton.Name = "vodStackRadioButton";
+            this.vodStackRadioButton.Size = new System.Drawing.Size(105, 17);
+            this.vodStackRadioButton.TabIndex = 4;
+            this.vodStackRadioButton.Text = "Stack buildings x";
+            this.vodStackRadioButton.UseVisualStyleBackColor = true;
             // 
             // vodReplaceRadioButton
             // 
             this.vodReplaceRadioButton.AutoSize = true;
-            this.vodReplaceRadioButton.Location = new System.Drawing.Point(0, 2);
+            this.vodReplaceRadioButton.Location = new System.Drawing.Point(6, 65);
             this.vodReplaceRadioButton.Name = "vodReplaceRadioButton";
             this.vodReplaceRadioButton.Size = new System.Drawing.Size(144, 17);
-            this.vodReplaceRadioButton.TabIndex = 3;
-            this.vodReplaceRadioButton.TabStop = true;
+            this.vodReplaceRadioButton.TabIndex = 2;
             this.vodReplaceRadioButton.Text = "Replace all buildings with";
             this.vodReplaceRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -776,28 +745,27 @@
             this.vodLeaveRadioButton.Text = "Do not modify";
             this.vodLeaveRadioButton.UseVisualStyleBackColor = true;
             // 
-            // mayorsBonusesGroupBox
+            // ccExtraGroupBox
             // 
-            this.mayorsBonusesGroupBox.Controls.Add(this.bonusPanel);
-            this.mayorsBonusesGroupBox.Controls.Add(this.mayorsDisableRadioButton);
-            this.mayorsBonusesGroupBox.Controls.Add(this.mayorsLeaveRadioButton);
-            this.mayorsBonusesGroupBox.Location = new System.Drawing.Point(249, 129);
-            this.mayorsBonusesGroupBox.Name = "mayorsBonusesGroupBox";
-            this.mayorsBonusesGroupBox.Size = new System.Drawing.Size(220, 95);
-            this.mayorsBonusesGroupBox.TabIndex = 3;
-            this.mayorsBonusesGroupBox.TabStop = false;
-            this.mayorsBonusesGroupBox.Text = "Mayors and Bonuses";
-            // 
-            // bonusPanel
-            // 
-            this.bonusPanel.Controls.Add(this.giftComboBox);
-            this.bonusPanel.Controls.Add(this.mayorsGiftRadioButton);
-            this.bonusPanel.Controls.Add(this.giftNumericUpDown);
-            this.bonusPanel.Controls.Add(this.bonusLabel);
-            this.bonusPanel.Location = new System.Drawing.Point(6, 63);
-            this.bonusPanel.Name = "bonusPanel";
-            this.bonusPanel.Size = new System.Drawing.Size(211, 22);
-            this.bonusPanel.TabIndex = 0;
+            this.ccExtraGroupBox.Controls.Add(this.giftComboBox);
+            this.ccExtraGroupBox.Controls.Add(this.ccFoodNumericUpDown);
+            this.ccExtraGroupBox.Controls.Add(this.ccEnergyNumericUpDown);
+            this.ccExtraGroupBox.Controls.Add(this.ccWorkersNumericUpDown);
+            this.ccExtraGroupBox.Controls.Add(this.giftNumericUpDown);
+            this.ccExtraGroupBox.Controls.Add(this.ccGiftCheckBox);
+            this.ccExtraGroupBox.Controls.Add(this.bonusLabel);
+            this.ccExtraGroupBox.Controls.Add(this.ccExtraWorkersLabel);
+            this.ccExtraGroupBox.Controls.Add(this.ccExtraEnergyLabel);
+            this.ccExtraGroupBox.Controls.Add(this.ccExtraFoodLabel);
+            this.ccExtraGroupBox.Controls.Add(this.ccExtraWorkersCheckBox);
+            this.ccExtraGroupBox.Controls.Add(this.ccExtraEnergyCheckBox);
+            this.ccExtraGroupBox.Controls.Add(this.ccExtraFoodCheckBox);
+            this.ccExtraGroupBox.Location = new System.Drawing.Point(229, 124);
+            this.ccExtraGroupBox.Name = "ccExtraGroupBox";
+            this.ccExtraGroupBox.Size = new System.Drawing.Size(220, 115);
+            this.ccExtraGroupBox.TabIndex = 3;
+            this.ccExtraGroupBox.TabStop = false;
+            this.ccExtraGroupBox.Text = "Command Center Extra Supplies";
             // 
             // giftComboBox
             // 
@@ -806,27 +774,99 @@
             this.giftComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.giftComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.giftComboBox.FormattingEnabled = true;
-            this.giftComboBox.Location = new System.Drawing.Point(45, 0);
+            this.giftComboBox.Location = new System.Drawing.Point(42, 85);
             this.giftComboBox.Name = "giftComboBox";
-            this.giftComboBox.Size = new System.Drawing.Size(115, 21);
-            this.giftComboBox.TabIndex = 3;
+            this.giftComboBox.Size = new System.Drawing.Size(125, 21);
+            this.giftComboBox.TabIndex = 7;
             // 
-            // mayorsGiftRadioButton
+            // ccFoodNumericUpDown
             // 
-            this.mayorsGiftRadioButton.AutoSize = true;
-            this.mayorsGiftRadioButton.Location = new System.Drawing.Point(0, 2);
-            this.mayorsGiftRadioButton.Name = "mayorsGiftRadioButton";
-            this.mayorsGiftRadioButton.Size = new System.Drawing.Size(46, 17);
-            this.mayorsGiftRadioButton.TabIndex = 2;
-            this.mayorsGiftRadioButton.TabStop = true;
-            this.mayorsGiftRadioButton.Text = "Free";
-            this.mayorsGiftRadioButton.UseVisualStyleBackColor = true;
-            this.mayorsGiftRadioButton.CheckedChanged += new System.EventHandler(this.mayorsGiftRadioButton_CheckedChanged);
+            this.ccFoodNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ccFoodNumericUpDown.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ccFoodNumericUpDown.Location = new System.Drawing.Point(174, 18);
+            this.ccFoodNumericUpDown.Maximum = new decimal(new int[] {
+            990,
+            0,
+            0,
+            0});
+            this.ccFoodNumericUpDown.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ccFoodNumericUpDown.Name = "ccFoodNumericUpDown";
+            this.ccFoodNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.ccFoodNumericUpDown.TabIndex = 1;
+            this.ccFoodNumericUpDown.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // ccEnergyNumericUpDown
+            // 
+            this.ccEnergyNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ccEnergyNumericUpDown.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ccEnergyNumericUpDown.Location = new System.Drawing.Point(174, 41);
+            this.ccEnergyNumericUpDown.Maximum = new decimal(new int[] {
+            990,
+            0,
+            0,
+            0});
+            this.ccEnergyNumericUpDown.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ccEnergyNumericUpDown.Name = "ccEnergyNumericUpDown";
+            this.ccEnergyNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.ccEnergyNumericUpDown.TabIndex = 3;
+            this.ccEnergyNumericUpDown.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // ccWorkersNumericUpDown
+            // 
+            this.ccWorkersNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ccWorkersNumericUpDown.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ccWorkersNumericUpDown.Location = new System.Drawing.Point(174, 64);
+            this.ccWorkersNumericUpDown.Maximum = new decimal(new int[] {
+            990,
+            0,
+            0,
+            0});
+            this.ccWorkersNumericUpDown.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ccWorkersNumericUpDown.Name = "ccWorkersNumericUpDown";
+            this.ccWorkersNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.ccWorkersNumericUpDown.TabIndex = 5;
+            this.ccWorkersNumericUpDown.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
             // 
             // giftNumericUpDown
             // 
             this.giftNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.giftNumericUpDown.Location = new System.Drawing.Point(173, 2);
+            this.giftNumericUpDown.Location = new System.Drawing.Point(179, 87);
             this.giftNumericUpDown.Maximum = new decimal(new int[] {
             99,
             0,
@@ -839,45 +879,156 @@
             0});
             this.giftNumericUpDown.Name = "giftNumericUpDown";
             this.giftNumericUpDown.Size = new System.Drawing.Size(35, 20);
-            this.giftNumericUpDown.TabIndex = 4;
+            this.giftNumericUpDown.TabIndex = 8;
             this.giftNumericUpDown.Value = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.giftNumericUpDown.ValueChanged += new System.EventHandler(this.giftNumericUpDown_ValueChanged);
+            // 
+            // ccGiftCheckBox
+            // 
+            this.ccGiftCheckBox.AutoSize = true;
+            this.ccGiftCheckBox.Location = new System.Drawing.Point(6, 88);
+            this.ccGiftCheckBox.Name = "ccGiftCheckBox";
+            this.ccGiftCheckBox.Size = new System.Drawing.Size(42, 17);
+            this.ccGiftCheckBox.TabIndex = 6;
+            this.ccGiftCheckBox.Text = "Gift";
+            this.ccGiftCheckBox.UseVisualStyleBackColor = true;
             // 
             // bonusLabel
             // 
             this.bonusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.bonusLabel.AutoSize = true;
-            this.bonusLabel.Location = new System.Drawing.Point(161, 4);
+            this.bonusLabel.Location = new System.Drawing.Point(168, 89);
             this.bonusLabel.Name = "bonusLabel";
             this.bonusLabel.Size = new System.Drawing.Size(12, 13);
             this.bonusLabel.TabIndex = 5;
             this.bonusLabel.Text = "x";
             // 
-            // mayorsDisableRadioButton
+            // ccExtraWorkersLabel
             // 
-            this.mayorsDisableRadioButton.AutoSize = true;
-            this.mayorsDisableRadioButton.Location = new System.Drawing.Point(6, 42);
-            this.mayorsDisableRadioButton.Name = "mayorsDisableRadioButton";
-            this.mayorsDisableRadioButton.Size = new System.Drawing.Size(97, 17);
-            this.mayorsDisableRadioButton.TabIndex = 1;
-            this.mayorsDisableRadioButton.Text = "Disable Mayors";
-            this.mayorsDisableRadioButton.UseVisualStyleBackColor = true;
+            this.ccExtraWorkersLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ccExtraWorkersLabel.AutoSize = true;
+            this.ccExtraWorkersLabel.Location = new System.Drawing.Point(163, 66);
+            this.ccExtraWorkersLabel.Name = "ccExtraWorkersLabel";
+            this.ccExtraWorkersLabel.Size = new System.Drawing.Size(12, 13);
+            this.ccExtraWorkersLabel.TabIndex = 8;
+            this.ccExtraWorkersLabel.Text = "x";
             // 
-            // mayorsLeaveRadioButton
+            // ccExtraEnergyLabel
             // 
-            this.mayorsLeaveRadioButton.AutoSize = true;
-            this.mayorsLeaveRadioButton.Checked = true;
-            this.mayorsLeaveRadioButton.Location = new System.Drawing.Point(6, 19);
-            this.mayorsLeaveRadioButton.Name = "mayorsLeaveRadioButton";
-            this.mayorsLeaveRadioButton.Size = new System.Drawing.Size(90, 17);
-            this.mayorsLeaveRadioButton.TabIndex = 0;
-            this.mayorsLeaveRadioButton.TabStop = true;
-            this.mayorsLeaveRadioButton.Text = "Do not modify";
-            this.mayorsLeaveRadioButton.UseVisualStyleBackColor = true;
+            this.ccExtraEnergyLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ccExtraEnergyLabel.AutoSize = true;
+            this.ccExtraEnergyLabel.Location = new System.Drawing.Point(163, 43);
+            this.ccExtraEnergyLabel.Name = "ccExtraEnergyLabel";
+            this.ccExtraEnergyLabel.Size = new System.Drawing.Size(12, 13);
+            this.ccExtraEnergyLabel.TabIndex = 7;
+            this.ccExtraEnergyLabel.Text = "x";
+            // 
+            // ccExtraFoodLabel
+            // 
+            this.ccExtraFoodLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ccExtraFoodLabel.AutoSize = true;
+            this.ccExtraFoodLabel.Location = new System.Drawing.Point(163, 20);
+            this.ccExtraFoodLabel.Name = "ccExtraFoodLabel";
+            this.ccExtraFoodLabel.Size = new System.Drawing.Size(12, 13);
+            this.ccExtraFoodLabel.TabIndex = 6;
+            this.ccExtraFoodLabel.Text = "x";
+            // 
+            // ccExtraWorkersCheckBox
+            // 
+            this.ccExtraWorkersCheckBox.AutoSize = true;
+            this.ccExtraWorkersCheckBox.Location = new System.Drawing.Point(6, 65);
+            this.ccExtraWorkersCheckBox.Name = "ccExtraWorkersCheckBox";
+            this.ccExtraWorkersCheckBox.Size = new System.Drawing.Size(66, 17);
+            this.ccExtraWorkersCheckBox.TabIndex = 4;
+            this.ccExtraWorkersCheckBox.Text = "Workers";
+            this.ccExtraWorkersCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // ccExtraEnergyCheckBox
+            // 
+            this.ccExtraEnergyCheckBox.AutoSize = true;
+            this.ccExtraEnergyCheckBox.Location = new System.Drawing.Point(6, 42);
+            this.ccExtraEnergyCheckBox.Name = "ccExtraEnergyCheckBox";
+            this.ccExtraEnergyCheckBox.Size = new System.Drawing.Size(59, 17);
+            this.ccExtraEnergyCheckBox.TabIndex = 2;
+            this.ccExtraEnergyCheckBox.Text = "Energy";
+            this.ccExtraEnergyCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // ccExtraFoodCheckBox
+            // 
+            this.ccExtraFoodCheckBox.AutoSize = true;
+            this.ccExtraFoodCheckBox.Location = new System.Drawing.Point(6, 19);
+            this.ccExtraFoodCheckBox.Name = "ccExtraFoodCheckBox";
+            this.ccExtraFoodCheckBox.Size = new System.Drawing.Size(50, 17);
+            this.ccExtraFoodCheckBox.TabIndex = 0;
+            this.ccExtraFoodCheckBox.Text = "Food";
+            this.ccExtraFoodCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // warehousesGroupBox
+            // 
+            this.warehousesGroupBox.Controls.Add(this.warehousesFillOilCheckBox);
+            this.warehousesGroupBox.Controls.Add(this.warehousesFillIronCheckBox);
+            this.warehousesGroupBox.Controls.Add(this.warehousesFillWoodCheckBox);
+            this.warehousesGroupBox.Controls.Add(this.warehousesFillGoldCheckBox);
+            this.warehousesGroupBox.Controls.Add(this.warehousesFillStoneCheckBox);
+            this.warehousesGroupBox.Location = new System.Drawing.Point(455, 124);
+            this.warehousesGroupBox.Name = "warehousesGroupBox";
+            this.warehousesGroupBox.Size = new System.Drawing.Size(119, 90);
+            this.warehousesGroupBox.TabIndex = 4;
+            this.warehousesGroupBox.TabStop = false;
+            this.warehousesGroupBox.Text = "Fill Storage";
+            // 
+            // warehousesFillOilCheckBox
+            // 
+            this.warehousesFillOilCheckBox.AutoSize = true;
+            this.warehousesFillOilCheckBox.Location = new System.Drawing.Point(61, 65);
+            this.warehousesFillOilCheckBox.Name = "warehousesFillOilCheckBox";
+            this.warehousesFillOilCheckBox.Size = new System.Drawing.Size(38, 17);
+            this.warehousesFillOilCheckBox.TabIndex = 4;
+            this.warehousesFillOilCheckBox.Text = "Oil";
+            this.warehousesFillOilCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // warehousesFillIronCheckBox
+            // 
+            this.warehousesFillIronCheckBox.AutoSize = true;
+            this.warehousesFillIronCheckBox.Location = new System.Drawing.Point(6, 65);
+            this.warehousesFillIronCheckBox.Name = "warehousesFillIronCheckBox";
+            this.warehousesFillIronCheckBox.Size = new System.Drawing.Size(44, 17);
+            this.warehousesFillIronCheckBox.TabIndex = 3;
+            this.warehousesFillIronCheckBox.Text = "Iron";
+            this.warehousesFillIronCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // warehousesFillWoodCheckBox
+            // 
+            this.warehousesFillWoodCheckBox.AutoSize = true;
+            this.warehousesFillWoodCheckBox.Location = new System.Drawing.Point(6, 42);
+            this.warehousesFillWoodCheckBox.Name = "warehousesFillWoodCheckBox";
+            this.warehousesFillWoodCheckBox.Size = new System.Drawing.Size(55, 17);
+            this.warehousesFillWoodCheckBox.TabIndex = 1;
+            this.warehousesFillWoodCheckBox.Text = "Wood";
+            this.warehousesFillWoodCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // warehousesFillGoldCheckBox
+            // 
+            this.warehousesFillGoldCheckBox.AutoSize = true;
+            this.warehousesFillGoldCheckBox.Location = new System.Drawing.Point(6, 19);
+            this.warehousesFillGoldCheckBox.Name = "warehousesFillGoldCheckBox";
+            this.warehousesFillGoldCheckBox.Size = new System.Drawing.Size(48, 17);
+            this.warehousesFillGoldCheckBox.TabIndex = 0;
+            this.warehousesFillGoldCheckBox.Text = "Gold";
+            this.warehousesFillGoldCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // warehousesFillStoneCheckBox
+            // 
+            this.warehousesFillStoneCheckBox.AutoSize = true;
+            this.warehousesFillStoneCheckBox.Location = new System.Drawing.Point(61, 42);
+            this.warehousesFillStoneCheckBox.Name = "warehousesFillStoneCheckBox";
+            this.warehousesFillStoneCheckBox.Size = new System.Drawing.Size(54, 17);
+            this.warehousesFillStoneCheckBox.TabIndex = 2;
+            this.warehousesFillStoneCheckBox.Text = "Stone";
+            this.warehousesFillStoneCheckBox.UseVisualStyleBackColor = true;
             // 
             // processFlowLayoutPanel
             // 
@@ -887,16 +1038,16 @@
             this.processFlowLayoutPanel.Controls.Add(this.processPanel);
             this.processFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.processFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.processFlowLayoutPanel.Location = new System.Drawing.Point(3, 370);
+            this.processFlowLayoutPanel.Location = new System.Drawing.Point(3, 467);
             this.processFlowLayoutPanel.Name = "processFlowLayoutPanel";
-            this.processFlowLayoutPanel.Size = new System.Drawing.Size(604, 138);
+            this.processFlowLayoutPanel.Size = new System.Drawing.Size(579, 166);
             this.processFlowLayoutPanel.TabIndex = 0;
             // 
             // processPanel
             // 
             this.processPanel.Controls.Add(this.reflectorGroupBox);
             this.processPanel.Controls.Add(this.extractGroupBox);
-            this.processPanel.Location = new System.Drawing.Point(291, 69);
+            this.processPanel.Location = new System.Drawing.Point(283, 69);
             this.processPanel.Name = "processPanel";
             this.processPanel.Size = new System.Drawing.Size(293, 90);
             this.processPanel.TabIndex = 0;
@@ -915,10 +1066,10 @@
             this.tableLayoutPanel.Name = "tableLayoutPanel";
             this.tableLayoutPanel.RowCount = 4;
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 65F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 68F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 62F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 35F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(610, 511);
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 32F));
+            this.tableLayoutPanel.Size = new System.Drawing.Size(585, 636);
             this.tableLayoutPanel.TabIndex = 0;
             // 
             // splitContainer1
@@ -937,8 +1088,8 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.processGroupBox);
             this.splitContainer1.Panel2MinSize = 60;
-            this.splitContainer1.Size = new System.Drawing.Size(610, 575);
-            this.splitContainer1.SplitterDistance = 511;
+            this.splitContainer1.Size = new System.Drawing.Size(585, 716);
+            this.splitContainer1.SplitterDistance = 636;
             this.splitContainer1.TabIndex = 0;
             // 
             // ModifySaveControls
@@ -949,7 +1100,7 @@
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(395, 400);
             this.Name = "ModifySaveControls";
-            this.Size = new System.Drawing.Size(610, 575);
+            this.Size = new System.Drawing.Size(585, 716);
             this.extractGroupBox.ResumeLayout(false);
             this.extractGroupBox.PerformLayout();
             this.manualGroupBox.ResumeLayout(false);
@@ -958,15 +1109,9 @@
             this.modifyGroupBox.ResumeLayout(false);
             this.fogGroupBox.ResumeLayout(false);
             this.fogGroupBox.PerformLayout();
-            this.reduceFogPanel.ResumeLayout(false);
-            this.reduceFogPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fogNumericUpDown)).EndInit();
             this.mutantGroupBox.ResumeLayout(false);
             this.mutantGroupBox.PerformLayout();
-            this.mutantsMovePanel.ResumeLayout(false);
-            this.mutantsMovePanel.PerformLayout();
-            this.replaceAllPanel.ResumeLayout(false);
-            this.replaceAllPanel.PerformLayout();
             this.reflectorGroupBox.ResumeLayout(false);
             this.reflectorGroupBox.PerformLayout();
             this.processGroupBox.ResumeLayout(false);
@@ -976,16 +1121,15 @@
             this.dataFlowLayoutPanel.ResumeLayout(false);
             this.vodGroupBox.ResumeLayout(false);
             this.vodGroupBox.PerformLayout();
-            this.vodPanel.ResumeLayout(false);
-            this.vodPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vodStackNumericUpDown)).EndInit();
-            this.vodReplacePanel.ResumeLayout(false);
-            this.vodReplacePanel.PerformLayout();
-            this.mayorsBonusesGroupBox.ResumeLayout(false);
-            this.mayorsBonusesGroupBox.PerformLayout();
-            this.bonusPanel.ResumeLayout(false);
-            this.bonusPanel.PerformLayout();
+            this.ccExtraGroupBox.ResumeLayout(false);
+            this.ccExtraGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ccFoodNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ccEnergyNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ccWorkersNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.giftNumericUpDown)).EndInit();
+            this.warehousesGroupBox.ResumeLayout(false);
+            this.warehousesGroupBox.PerformLayout();
             this.processFlowLayoutPanel.ResumeLayout(false);
             this.processPanel.ResumeLayout(false);
             this.tableLayoutPanel.ResumeLayout(false);
@@ -1020,14 +1164,12 @@
         private System.Windows.Forms.GroupBox fogGroupBox;
         private System.Windows.Forms.RadioButton fogLeaveRadioButton;
         private System.Windows.Forms.RadioButton fogRemoveRadioButton;
-        private System.Windows.Forms.Panel reduceFogPanel;
         private System.Windows.Forms.NumericUpDown fogNumericUpDown;
         private System.Windows.Forms.RadioButton fogClearRadioButton;
         private System.Windows.Forms.RadioButton fogShowFullRadioButton;
         private System.Windows.Forms.GroupBox mutantGroupBox;
         private System.Windows.Forms.RadioButton mutantsNothingRadio;
         private System.Windows.Forms.RadioButton mutantsRemoveRadio;
-        private System.Windows.Forms.Panel mutantsMovePanel;
         private System.Windows.Forms.Label mutantMoveCCLabel;
         private System.Windows.Forms.ComboBox mutantMoveGlobalComboBox;
         private System.Windows.Forms.ComboBox mutantMoveWhatComboBox;
@@ -1038,32 +1180,42 @@
         private System.Windows.Forms.ComboBox themeComboBox;
         private System.Windows.Forms.OpenFileDialog saveOpenFileDialog;
         private System.Windows.Forms.RadioButton mutantReplaceAllRadio;
-        private System.Windows.Forms.Panel replaceAllPanel;
         private System.Windows.Forms.ComboBox mutantReplaceAllComboBox;
         private System.Windows.Forms.FlowLayoutPanel dataFlowLayoutPanel;
         private System.Windows.Forms.FlowLayoutPanel processFlowLayoutPanel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.GroupBox vodGroupBox;
-        private System.Windows.Forms.Panel vodPanel;
         private System.Windows.Forms.NumericUpDown vodStackNumericUpDown;
         private System.Windows.Forms.RadioButton vodStackRadioButton;
         private System.Windows.Forms.RadioButton vodLeaveRadioButton;
-        private System.Windows.Forms.GroupBox mayorsBonusesGroupBox;
-        private System.Windows.Forms.RadioButton mayorsLeaveRadioButton;
-        private System.Windows.Forms.RadioButton mayorsDisableRadioButton;
         private System.Windows.Forms.RadioButton vodRemoveRadioButton;
-        private System.Windows.Forms.Panel bonusPanel;
         private System.Windows.Forms.ComboBox giftComboBox;
-        private System.Windows.Forms.RadioButton mayorsGiftRadioButton;
         private System.Windows.Forms.Panel processPanel;
         private System.Windows.Forms.NumericUpDown giftNumericUpDown;
         private System.Windows.Forms.Label bonusLabel;
         private System.Windows.Forms.GroupBox extractGroupBox;
         private System.Windows.Forms.RadioButton vodReplaceRadioButton;
-        private System.Windows.Forms.Panel vodReplacePanel;
         private System.Windows.Forms.ComboBox vodReplaceComboBox;
         private System.ComponentModel.BackgroundWorker modifySaveBackgroundWorker;
         private System.Windows.Forms.CheckBox swarmsCheckBox;
+        private System.Windows.Forms.GroupBox warehousesGroupBox;
+        private System.Windows.Forms.CheckBox warehousesFillOilCheckBox;
+        private System.Windows.Forms.CheckBox warehousesFillIronCheckBox;
+        private System.Windows.Forms.CheckBox warehousesFillStoneCheckBox;
+        private System.Windows.Forms.CheckBox warehousesFillWoodCheckBox;
+        private System.Windows.Forms.CheckBox warehousesFillGoldCheckBox;
+        private System.Windows.Forms.GroupBox ccExtraGroupBox;
+        private System.Windows.Forms.NumericUpDown ccWorkersNumericUpDown;
+        private System.Windows.Forms.NumericUpDown ccEnergyNumericUpDown;
+        private System.Windows.Forms.NumericUpDown ccFoodNumericUpDown;
+        private System.Windows.Forms.CheckBox ccExtraWorkersCheckBox;
+        private System.Windows.Forms.CheckBox ccExtraEnergyCheckBox;
+        private System.Windows.Forms.CheckBox ccExtraFoodCheckBox;
+        private System.Windows.Forms.Label ccExtraWorkersLabel;
+        private System.Windows.Forms.Label ccExtraEnergyLabel;
+        private System.Windows.Forms.Label ccExtraFoodLabel;
+        private System.Windows.Forms.CheckBox disableMayorsCheckBox;
+        private System.Windows.Forms.CheckBox ccGiftCheckBox;
     }
 }

@@ -39,7 +39,7 @@ namespace TABSAT
         */
         private const string LAST_WRITE_UTC_FORMAT = "yyyyMMdd HHmmss fff";
 
-        internal static readonly string DEFAULT_BACKUP_DIRECTORY = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\TABSAT\saves\" );
+        internal static readonly string DEFAULT_BACKUP_DIRECTORY = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\TABSAT\saves" );
 
         public class ActiveSavesChangedEventArgs : EventArgs
         {

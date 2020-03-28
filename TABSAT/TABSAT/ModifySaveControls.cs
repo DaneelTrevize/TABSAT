@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
-using System.Diagnostics;
-using static TABSAT.MainWindow;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Windows.Forms;
+using static TABSAT.MainWindow;
 
 namespace TABSAT
 {
@@ -11,6 +11,21 @@ namespace TABSAT
     {
         private readonly ModifyManager modifyManager;
         private readonly StatusWriterDelegate statusWriter;
+        private readonly List<CheckBox> ccExtrasCheckBoxes;
+        private readonly List<CheckBox> warehousesFillCheckBoxes;
+        private readonly List<CheckBox> generalCheckBoxes;
+
+        private static bool anyChecked( IList<CheckBox> boxes )
+        {
+            foreach( var c in boxes )
+            {
+                if( c.Checked )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         public ModifySaveControls( ModifyManager m, StatusWriterDelegate sW, string savesDirectory )
         {
@@ -18,6 +33,20 @@ namespace TABSAT
 
             modifyManager = m;
             statusWriter = sW;
+            ccExtrasCheckBoxes = new List<CheckBox>( 3 );
+            ccExtrasCheckBoxes.Add( ccExtraFoodCheckBox );
+            ccExtrasCheckBoxes.Add( ccExtraEnergyCheckBox );
+            ccExtrasCheckBoxes.Add( ccExtraWorkersCheckBox );
+            warehousesFillCheckBoxes = new List<CheckBox>( 5 );
+            warehousesFillCheckBoxes.Add( warehousesFillWoodCheckBox );
+            warehousesFillCheckBoxes.Add( warehousesFillStoneCheckBox );
+            warehousesFillCheckBoxes.Add( warehousesFillIronCheckBox );
+            warehousesFillCheckBoxes.Add( warehousesFillOilCheckBox );
+            warehousesFillCheckBoxes.Add( warehousesFillGoldCheckBox );
+            generalCheckBoxes = new List<CheckBox>( 3 );
+            generalCheckBoxes.Add( themeCheckBox );
+            generalCheckBoxes.Add( swarmsCheckBox );
+            generalCheckBoxes.Add( disableMayorsCheckBox );
 
             saveOpenFileDialog.Filter = "TAB Save Files|" + TAB.SAVES_FILTER;// + "|Data files|*.dat";
             saveOpenFileDialog.InitialDirectory = savesDirectory;
@@ -38,33 +67,31 @@ namespace TABSAT
             mutantMoveWhatComboBox.SelectedIndex = 0;
             mutantMoveGlobalComboBox.SelectedIndex = 0;
             vodReplaceComboBox.SelectedIndex = 0;
-            giftComboBox.SelectedIndex = 3;
+            giftComboBox.SelectedIndex = 1;
             themeComboBox.SelectedIndex = 3;
+
             // Register these following event handlers after the above 'default' index choices, to avoid handling non-user events.
 
-            mutantReplaceAllComboBox.SelectedIndexChanged += new EventHandler( mutantReplaceAllComboBox_SelectedIndexChanged );
-            var mutantChoicesHandler = new EventHandler( mutantMoveEitherComboBox_SelectedIndexChanged );
-            mutantMoveGlobalComboBox.SelectedIndexChanged += mutantChoicesHandler;
-            mutantMoveWhatComboBox.SelectedIndexChanged += mutantChoicesHandler;
+            var comboHandler = new EventHandler( comboBox_SelectedIndexChanged );
+            var numericHandler = new EventHandler( numericUpDown_ValueChanged );
 
-            fogClearRadioButton.CheckedChanged += new EventHandler( fogReduceRadio_CheckedChanged );
-            var fogNotReduceHandler = new EventHandler( fogNotReduceRadio_CheckedChanged );
-            fogLeaveRadioButton.CheckedChanged += fogNotReduceHandler;
-            fogRemoveRadioButton.CheckedChanged += fogNotReduceHandler;
-            fogShowFullRadioButton.CheckedChanged += fogNotReduceHandler;
+            mutantReplaceAllComboBox.SelectedIndexChanged += comboHandler;
+            mutantMoveGlobalComboBox.SelectedIndexChanged += comboHandler;
+            mutantMoveWhatComboBox.SelectedIndexChanged += comboHandler;
 
-            var vodNotPanelHandler = new EventHandler( vodNotPanelRadioButton_CheckedChanged );
-            vodLeaveRadioButton.CheckedChanged += vodNotPanelHandler;
-            vodRemoveRadioButton.CheckedChanged += vodNotPanelHandler;
-            vodReplaceRadioButton.CheckedChanged += new EventHandler( vodReplaceRadio_CheckedChanged );
-            vodReplaceComboBox.SelectedIndexChanged += new EventHandler( vodReplaceComboBox_SelectedIndexChanged );
+            fogNumericUpDown.ValueChanged += numericHandler;
 
-            var mayorsNotGiftChoicesHandler = new EventHandler( mayorsNotGiftRadioButton_CheckedChanged );
-            mayorsLeaveRadioButton.CheckedChanged += mayorsNotGiftChoicesHandler;
-            mayorsDisableRadioButton.CheckedChanged += mayorsNotGiftChoicesHandler;
-            giftComboBox.SelectedIndexChanged += new EventHandler( giftComboBox_SelectedIndexChanged );
+            vodReplaceComboBox.SelectedIndexChanged += comboHandler;
+            vodStackNumericUpDown.ValueChanged += numericHandler;
 
-            themeComboBox.SelectedIndexChanged += new EventHandler( themeComboBox_SelectedIndexChanged );
+            ccFoodNumericUpDown.ValueChanged += numericHandler;
+            ccEnergyNumericUpDown.ValueChanged += numericHandler;
+            ccWorkersNumericUpDown.ValueChanged += numericHandler;
+
+            giftComboBox.SelectedIndexChanged += comboHandler;
+            giftNumericUpDown.ValueChanged += numericHandler;
+
+            themeComboBox.SelectedIndexChanged += comboHandler;
         }
 
         internal void reflectorOutputHandler( object sendingProcess, DataReceivedEventArgs outLine )
@@ -115,144 +142,66 @@ namespace TABSAT
         private void setSaveFile( string saveFile )
         {
             saveFileTextBox.Text = saveFile;
-            MainWindow.shiftTextViewRight( saveFileTextBox );
 
             modifyManager.setSaveFile( saveFile );
 
             reassessExtractionOption();
         }
 
-        private void mutantsSimpleRadio_CheckedChanged( object sender, EventArgs e )
+        private void comboBox_SelectedIndexChanged( object sender, EventArgs e )
         {
-            if( ( (RadioButton) sender ).Checked )
+            var box = (ComboBox) sender;
+
+            if( box == mutantReplaceAllComboBox )
             {
-                mutantReplaceAllRadio.Checked = false;
-                mutantsMoveRadio.Checked = false;
+                mutantReplaceAllRadio.Checked = true;
+            }
+            else if( box == mutantMoveWhatComboBox || box == mutantMoveGlobalComboBox )
+            {
+                mutantsMoveRadio.Checked = true;
+            }
+            else if( box == vodReplaceComboBox )
+            {
+                vodReplaceRadioButton.Checked = true;
+            }
+            else if( box == giftComboBox )
+            {
+                ccGiftCheckBox.Checked = true;
+            }
+            else if( box == themeComboBox )
+            {
+                themeCheckBox.Checked = true;
             }
         }
 
-        private void mutantReplaceAllComboBox_SelectedIndexChanged( object sender, EventArgs e )
+        private void numericUpDown_ValueChanged( object sender, EventArgs e )
         {
-            mutantReplaceAllRadio.Checked = true;
-        }
+            var num = (NumericUpDown) sender;
 
-        private void mutantReplaceAllRadio_CheckedChanged( object sender, EventArgs e )
-        {
-            if( ( (RadioButton) sender ).Checked )
+            if( num == fogNumericUpDown )
             {
-                mutantsNothingRadio.Checked = false;
-                mutantsRemoveRadio.Checked = false;
-                mutantsMoveRadio.Checked = false;
+                fogClearRadioButton.Checked = true;
             }
-        }
-
-        private void mutantsMoveRadio_CheckedChanged( object sender, EventArgs e )
-        {
-            if( ( (RadioButton) sender ).Checked )
+            else if( num == vodStackNumericUpDown )
             {
-                mutantReplaceAllRadio.Checked = false;
-                mutantsNothingRadio.Checked = false;
-                mutantsRemoveRadio.Checked = false;
+                vodStackRadioButton.Checked = true;
             }
-        }
-
-        private void mutantMoveEitherComboBox_SelectedIndexChanged( object sender, EventArgs e )
-        {
-            mutantsMoveRadio.Checked = true;
-        }
-
-        private void fogNumericUpDown_ValueChanged( object sender, EventArgs e )
-        {
-            fogClearRadioButton.Checked = true;
-        }
-
-        private void fogNotReduceRadio_CheckedChanged( object sender, EventArgs e )
-        {
-            if( ( (RadioButton) sender ).Checked )
+            else if( num == ccFoodNumericUpDown )
             {
-                fogClearRadioButton.Checked = false;
+                ccExtraFoodCheckBox.Checked = true;
             }
-        }
-
-        private void fogReduceRadio_CheckedChanged( object sender, EventArgs e )
-        {
-            if( ( (RadioButton) sender ).Checked )
+            else if( num == ccEnergyNumericUpDown )
             {
-                fogLeaveRadioButton.Checked = false;
-                fogRemoveRadioButton.Checked = false;
-                fogShowFullRadioButton.Checked = false;
+                ccExtraEnergyCheckBox.Checked = true;
             }
-        }
-
-        private void vodNotPanelRadioButton_CheckedChanged( object sender, EventArgs e )
-        {
-            if( ( (RadioButton) sender ).Checked )
+            else if( num == ccWorkersNumericUpDown )
             {
-                vodReplaceRadioButton.Checked = false;
-                vodStackRadioButton.Checked = false;
+                ccExtraWorkersCheckBox.Checked = true;
             }
-        }
-
-        private void vodReplaceRadio_CheckedChanged( object sender, EventArgs e )
-        {
-            if( ( (RadioButton) sender ).Checked )
+            else if( num == giftNumericUpDown )
             {
-                vodLeaveRadioButton.Checked = false;
-                vodRemoveRadioButton.Checked = false;
-                vodStackRadioButton.Checked = false;
+                ccGiftCheckBox.Checked = true;
             }
-        }
-
-        private void vodReplaceComboBox_SelectedIndexChanged( object sender, EventArgs e )
-        {
-            vodReplaceRadioButton.Checked = true;
-        }
-
-        private void vodStackNumericUpDown_ValueChanged( object sender, EventArgs e )
-        {
-            vodStackRadioButton.Checked = true;
-        }
-
-        private void vodStackRadioButton_CheckedChanged( object sender, EventArgs e )
-        {
-            if( ( (RadioButton) sender ).Checked )
-            {
-                vodLeaveRadioButton.Checked = false;
-                vodRemoveRadioButton.Checked = false;
-                vodReplaceRadioButton.Checked = false;
-            }
-        }
-
-        private void mayorsGiftRadioButton_CheckedChanged( object sender, EventArgs e )
-        {
-            if( ( (RadioButton) sender ).Checked )
-            {
-                mayorsLeaveRadioButton.Checked = false;
-                mayorsDisableRadioButton.Checked = false;
-            }
-        }
-
-        private void mayorsNotGiftRadioButton_CheckedChanged( object sender, EventArgs e )
-        {
-            if( ( (RadioButton) sender ).Checked )
-            {
-                mayorsGiftRadioButton.Checked = false;
-            }
-        }
-
-        private void giftComboBox_SelectedIndexChanged( object sender, EventArgs e )
-        {
-            mayorsGiftRadioButton.Checked = true;
-        }
-
-        private void giftNumericUpDown_ValueChanged( object sender, EventArgs e )
-        {
-            mayorsGiftRadioButton.Checked = true;
-        }
-
-        private void themeComboBox_SelectedIndexChanged( object sender, EventArgs e )
-        {
-            themeCheckBox.Checked = true;
         }
 
         private void extractRadioButtons_CheckedChanged( object sender, EventArgs e )
@@ -290,9 +239,10 @@ namespace TABSAT
         {
             // Don't let different options be chosen during file operations
             mutantGroupBox.Enabled = false;
-            fogGroupBox.Enabled = false;
             vodGroupBox.Enabled = false;
-            mayorsBonusesGroupBox.Enabled = false;
+            fogGroupBox.Enabled = false;
+            ccExtraGroupBox.Enabled = false;
+            warehousesGroupBox.Enabled = false;
             generalGroupBox.Enabled = false;
             saveFileGroupBox.Enabled = false;
             modifyGroupBox.Enabled = false;
@@ -304,9 +254,10 @@ namespace TABSAT
         private void enableChoices()
         {
             mutantGroupBox.Enabled = true;
-            fogGroupBox.Enabled = true;
             vodGroupBox.Enabled = true;
-            mayorsBonusesGroupBox.Enabled = true;
+            fogGroupBox.Enabled = true;
+            ccExtraGroupBox.Enabled = true;
+            warehousesGroupBox.Enabled = true;
             generalGroupBox.Enabled = true;
             saveFileGroupBox.Enabled = true;
             modifyGroupBox.Enabled = true;
@@ -462,7 +413,7 @@ namespace TABSAT
 
         private bool modifyExtractedSave()
         {
-            if( mutantsNothingRadio.Checked && fogLeaveRadioButton.Checked && vodLeaveRadioButton.Checked && mayorsLeaveRadioButton.Checked && !themeCheckBox.Checked && !swarmsCheckBox.Checked )
+            if( mutantsNothingRadio.Checked && vodLeaveRadioButton.Checked && fogLeaveRadioButton.Checked && !anyChecked( ccExtrasCheckBoxes ) && !ccGiftCheckBox.Checked && !anyChecked( warehousesFillCheckBoxes ) && !anyChecked( generalCheckBoxes ) )
             {
                 statusWriter( "No modifications chosen." );
                 return true;
@@ -492,24 +443,6 @@ namespace TABSAT
                     dataEditor.relocateMutants( toGiantNotMutant, perDirection );
                 }
 
-                // Fog
-                if( fogRemoveRadioButton.Checked )
-                {
-                    statusWriter( "Removing all the fog." );
-                    dataEditor.removeFog();
-                }
-                else if( fogClearRadioButton.Checked )
-                {
-                    int radius = Convert.ToInt32( fogNumericUpDown.Value );
-                    statusWriter( "Removing the fog with cell range: " + radius );
-                    dataEditor.removeFog( radius );
-                }
-                else if( fogShowFullRadioButton.Checked )
-                {
-                    statusWriter( "Revealing the map." );
-                    dataEditor.showFullMap();
-                }
-
                 // VODs
                 if( vodRemoveRadioButton.Checked )
                 {
@@ -527,13 +460,32 @@ namespace TABSAT
                     statusWriter( "Would stack VODs." );
                 }
 
-                // Mayors
-                if( mayorsDisableRadioButton.Checked )
+                // Fog of War
+                if( fogRemoveRadioButton.Checked )
                 {
-                    statusWriter( "Disabling Mayors." );
-                    dataEditor.disableMayors();
+                    statusWriter( "Removing all the fog." );
+                    dataEditor.removeFog();
                 }
-                else if( mayorsGiftRadioButton.Checked )
+                else if( fogClearRadioButton.Checked )
+                {
+                    int radius = Convert.ToInt32( fogNumericUpDown.Value );
+                    statusWriter( "Removing the fog with cell range: " + radius );
+                    dataEditor.removeFog( radius );
+                }
+                else if( fogShowFullRadioButton.Checked )
+                {
+                    statusWriter( "Revealing the map." );
+                    dataEditor.showFullMap();
+                }
+
+                // Command Center Extras
+                if( anyChecked( ccExtrasCheckBoxes ) )
+                {
+                    statusWriter( "Altering Command Center extra supplies." );
+                    dataEditor.setExtraSupply( ccExtraFoodCheckBox.Checked ? (int) ccFoodNumericUpDown.Value : 0, ccExtraEnergyCheckBox.Checked ? (int) ccEnergyNumericUpDown.Value : 0, ccExtraWorkersCheckBox.Checked ? (int) ccWorkersNumericUpDown.Value : 0 );
+                }
+
+                if( ccGiftCheckBox.Checked )
                 {
                     KeyValuePair<SaveEditor.GiftableTypes, string> kv = (KeyValuePair<SaveEditor.GiftableTypes, string>) giftComboBox.SelectedItem;
                     int typeID = Convert.ToInt32( giftNumericUpDown.Value );
@@ -541,7 +493,14 @@ namespace TABSAT
                     dataEditor.giftEntities( kv.Key, typeID );
                 }
 
-                // General rules
+                // Fill Resource Storage
+                if( anyChecked( warehousesFillCheckBoxes ) )
+                {
+                    statusWriter( "Filling storage for specified resources." );
+                    dataEditor.fillStorage( warehousesFillGoldCheckBox.Checked, warehousesFillWoodCheckBox.Checked, warehousesFillStoneCheckBox.Checked, warehousesFillIronCheckBox.Checked, warehousesFillOilCheckBox.Checked );
+                }
+
+                // General Rules
                 if( themeCheckBox.Checked )
                 {
                     KeyValuePair<SaveEditor.ThemeType, string> kv = (KeyValuePair<SaveEditor.ThemeType, string>) themeComboBox.SelectedItem;
@@ -552,6 +511,11 @@ namespace TABSAT
                 {
                     statusWriter( "Enabling earlier waves to come from 2 directions, and later waves to come from 3." );
                     dataEditor.splitSwarms();
+                }
+                if( disableMayorsCheckBox.Checked )
+                {
+                    statusWriter( "Disabling Mayors." );
+                    dataEditor.disableMayors();
                 }
 
                 dataEditor.save();
@@ -587,12 +551,19 @@ namespace TABSAT
 
         private void resetSaveFileChoice()
         {
-            saveFileTextBox.Text = "";
-            modifyManager.setSaveFile( null );
+            if( saveFileTextBox.InvokeRequired )
+            {
+                saveFileTextBox.BeginInvoke( new Action( () => resetSaveFileChoice() ) );
+            }
+            else
+            {
+                saveFileTextBox.Text = "";
+                modifyManager.setSaveFile( null );
 
-            reassessExtractionOption();
+                reassessExtractionOption();
 
-            enableChoices();
+                enableChoices();
+            }
         }
 
         internal void removeReflector()

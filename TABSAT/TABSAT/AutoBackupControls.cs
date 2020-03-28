@@ -286,7 +286,6 @@ namespace TABSAT
 
             backupsFolderBrowserDialog.SelectedPath = backupsManager.getBackupsDirectory();
             backupsDirectoryTextBox.Text = backupsFolderBrowserDialog.SelectedPath;
-            MainWindow.shiftTextViewRight( backupsDirectoryTextBox );
 
             autoBackupsBackgroundWorker = new BackgroundWorker();
             autoBackupsBackgroundWorker.WorkerReportsProgress = true;

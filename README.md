@@ -8,9 +8,10 @@ Common use-cases would be:
 * Restarting a game save to day 0, to replay a rare layout, or to try a different strategy.  
 * Reverting to a game save prior to some irksome mistake, or extreme RNG.  
 
-[A guide to the Save Modification Features that make the game easier/different/harder](https://github.com/DaneelTrevize/TABSAT/blob/master/Features.md).
+[Guide to the Save Modification Features that make the game easier/different/harder, as well as the Auto-Backup functionality](https://github.com/DaneelTrevize/TABSAT/blob/master/Features.md).
 
-TABSAT 0.8 [usage demonstration animation](https://imgur.com/T5EU6IJ).
+TABSAT Usage Demonstration animations:  
+[TABSAT 0.9.1](https://imgur.com/a/0W8I7Ry). [TABSAT 0.8](https://imgur.com/T5EU6IJ).  
 
 Simply download a Release and launch TABSAT.exe to be presented with the Graphical User Interface.
 

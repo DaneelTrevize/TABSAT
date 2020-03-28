@@ -213,6 +213,18 @@ Bonus resources from collecting pickables?
         <Simple name="CommandCenterExtraEnergy" value="120" />
         <Simple name="CommandCenterExtraWorkers" value="0" />
 
+Current stored resources:
+        <Simple name="Wood" value="133" />
+        <Simple name="Stone" value="98" />
+        <Simple name="Iron" value="147" />
+        <Simple name="Oil" value="22" />
+        <Simple name="Gold" value="1429" />
+		
+Storage. Assume from ZXRules tables:
+Entities: WareHouse	ResourcesStorage	50
+Global: GoldStorageFactor	int	40				Max gold stored = GoldStorageFactor * (Sum(Maxtorage per Entity))
+(1+ WareHouse count) * 50 for non-gold resources doesn't account for mayors that increase CC storage, but should only be an underestimate and safe to set to at least this much.
+
 Oil Pools:
         <Complex name="CurrentGeneratedLevel">
           <Properties>
@@ -466,3 +478,5 @@ Dev typos & inconsistencies:
 "DeffensesLife" not Defences
 "WareHouse" not Warehouse
 "Repeteable" not Repeatable
+"Maxtorage" not MaxStorage
+"desinfection" not disinfection

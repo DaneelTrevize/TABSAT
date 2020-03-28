@@ -99,7 +99,7 @@ namespace TABSAT
             FileInfo[] savesInfo = savesDirInfo.GetFiles( SAVES_FILTER );
             if( savesInfo.Length > 0 )
             {
-                IOrderedEnumerable<FileInfo> sortedSavesInfo = savesInfo.OrderByDescending( s => s.CreationTimeUtc );
+                IOrderedEnumerable<FileInfo> sortedSavesInfo = savesInfo.OrderByDescending( s => s.LastWriteTimeUtc );
                 FileInfo newestSave = sortedSavesInfo.First();
                 return newestSave.FullName;
             }

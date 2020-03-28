@@ -187,9 +187,11 @@
             this.backupsDirectoryTextBox.Location = new System.Drawing.Point(6, 19);
             this.backupsDirectoryTextBox.Name = "backupsDirectoryTextBox";
             this.backupsDirectoryTextBox.ReadOnly = true;
+            this.backupsDirectoryTextBox.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.backupsDirectoryTextBox.Size = new System.Drawing.Size(492, 20);
             this.backupsDirectoryTextBox.TabIndex = 1;
             this.backupsDirectoryTextBox.TabStop = false;
+            this.backupsDirectoryTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // autoBackupsBackgroundWorker
             // 

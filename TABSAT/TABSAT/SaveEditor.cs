@@ -39,6 +39,7 @@ namespace TABSAT
             EnergyWoodTower = 3581872206503330117,      // Tesla tower
             MillWood = 869623577388046954,
             MillIron = 12238914991741132226,
+            PowerPlant = 12703689153551509267,
             Sawmill = 6484699889268923215,
             Quarry = 4012164333689948063,
             AdvancedQuarry = 6574833960938744452,
@@ -46,32 +47,40 @@ namespace TABSAT
             HunterCottage = 706050193872584208,
             FishermanCottage = 13910727858942983852,
             Farm = 7709119203238641805,
-            // AdvancedFarm
+            AdvancedFarm = 877281890077159856,
             WareHouse = 13640414733981798546,
             Market = 5507471650351043258,
             Bank = 5036892806562984913,
             TentHouse = 17301104073651661026,
+            CottageHouse = 1886362466923065378,
             StoneHouse = 17389931916361639317,
-            // TrapStakes                               // WoodTraps
-            // TrapBlades                               // IronTraps
             WallWood = 16980392503923994773,
             WallStone = 7684920400170855714,
-            // GateWood
+            GateWood = 8865737575894196495,
+            GateStone = 18390252716895796075,
             WatchTowerWood = 11206202837167900273,
+            WatchTowerStone = 16597317129181541225,
+            TrapStakes = 14605210100319949981,          // Stakes Traps
+            TrapBlades = 2562764233779101744,           // Wire Fence Traps
+            TrapMine = 3791255408779778776,             // Land Mine
             WoodWorkshop = 2943963846200136989,
             StoneWorkshop = 11153810025740407576,
+            Foundry = 14944401376001533849,
             SoldiersCenter = 17945382406851792953,
             AdvancedUnitCenter = 8857617519118038933,
             LookoutTower = 9352245195514814739,
             RadarTower = 10083572309367106690,
             Ballista = 1621013738552581284,
+            MachineGun = 1918604527945708480,           // Wasp
             ShockingTower = 7671446590444700196,
             Executor = 782017986530656774,
-            // TheCrystalPalace = 7936948209186953569,
-            // TheSpire = 6908380734610266301,
-            // TheTransmutator = 5872990212787919747,
-            // TheAcademy = 8274629648718325688,
-            // TheVictorious = 6953739609864588774
+            // TheInn = ,
+            TheCrystalPalace = 7936948209186953569,
+            // TheGreatTelescope = ,                    // The Silent Beholder
+            TheSpire = 6908380734610266301,
+            TheTransmutator = 5872990212787919747,
+            TheAcademy = 8274629648718325688,
+            TheVictorious = 6953739609864588774
         }
         internal static readonly Dictionary<GiftableTypes, string> giftableTypeNames;
 
@@ -102,6 +111,7 @@ namespace TABSAT
             gtn.Add( GiftableTypes.EnergyWoodTower, "Tesla Tower" );
             gtn.Add( GiftableTypes.MillWood, "Mill" );
             gtn.Add( GiftableTypes.MillIron, "Advanced Mill" );
+            gtn.Add( GiftableTypes.PowerPlant, "PowerPlant" );
             gtn.Add( GiftableTypes.Sawmill, "Sawmill" );
             gtn.Add( GiftableTypes.Quarry, "Quarry" );
             gtn.Add( GiftableTypes.AdvancedQuarry, "Advanced Quarry" );
@@ -109,22 +119,38 @@ namespace TABSAT
             gtn.Add( GiftableTypes.HunterCottage, "Hunter Cottage" );
             gtn.Add( GiftableTypes.FishermanCottage, "Fisherman Cottage" );
             gtn.Add( GiftableTypes.Farm, "Farm" );
+            gtn.Add( GiftableTypes.AdvancedFarm, "Advanced Farm" );
             gtn.Add( GiftableTypes.WareHouse, "Warehouse" );
             gtn.Add( GiftableTypes.Market, "Market" );
             gtn.Add( GiftableTypes.Bank, "Bank" );
             gtn.Add( GiftableTypes.TentHouse, "Tent" );
+            gtn.Add( GiftableTypes.CottageHouse, "Cottage" );
             gtn.Add( GiftableTypes.StoneHouse, "Stone House" );
             gtn.Add( GiftableTypes.WallWood, "Wood Wall" );
             gtn.Add( GiftableTypes.WallStone, "Stone Wall" );
+            gtn.Add( GiftableTypes.GateWood, "Wood Gate" );
+            gtn.Add( GiftableTypes.GateStone, "Stone Gate" );
             gtn.Add( GiftableTypes.WatchTowerWood, "Wood Tower" );
+            gtn.Add( GiftableTypes.WatchTowerStone, "Stone Tower" );
+            gtn.Add( GiftableTypes.TrapStakes, "Stakes Trap" );
+            gtn.Add( GiftableTypes.TrapBlades, "Wire Fence Trap" );
+            gtn.Add( GiftableTypes.TrapMine, "Land Mine" );
             gtn.Add( GiftableTypes.WoodWorkshop, "Wood Workshop" );
             gtn.Add( GiftableTypes.StoneWorkshop, "Stone Workshop" );
+            gtn.Add( GiftableTypes.Foundry, "Foundry" );
             gtn.Add( GiftableTypes.SoldiersCenter, "Soldiers' Center" );
             gtn.Add( GiftableTypes.AdvancedUnitCenter, "Engineering Center" );
             gtn.Add( GiftableTypes.LookoutTower, "Lookout Tower" );
             gtn.Add( GiftableTypes.RadarTower, "Radar Tower" );
             gtn.Add( GiftableTypes.Ballista, "Ballista" );
+            gtn.Add( GiftableTypes.MachineGun, "Wasp" );
+            gtn.Add( GiftableTypes.ShockingTower, "Shocking Tower" );
             gtn.Add( GiftableTypes.Executor, "Executor" );
+            gtn.Add( GiftableTypes.TheCrystalPalace, "The Crystal Palace" );
+            gtn.Add( GiftableTypes.TheSpire, "The Lightning Spire" );
+            gtn.Add( GiftableTypes.TheAcademy, "The Academy of Immortals" );
+            gtn.Add( GiftableTypes.TheVictorious, "The Victorious" );
+            gtn.Add( GiftableTypes.TheTransmutator, "The Atlas Transmutator" );
             giftableTypeNames = new Dictionary<GiftableTypes, string>( gtn );
         }
 
@@ -149,6 +175,7 @@ namespace TABSAT
         private const string VOD_SMALL_TYPE = @"ZX.Entities.DoomBuildingSmall, TheyAreBillions";
         private const string VOD_MEDIUM_TYPE = @"ZX.Entities.DoomBuildingMedium, TheyAreBillions";
         private const string VOD_LARGE_TYPE = @"ZX.Entities.DoomBuildingLarge, TheyAreBillions";
+        private const string WAREHOUSE_TYPE = @"ZX.Entities.WareHouse, TheyAreBillions";
 
         private const string VOD_LARGE_ID_TEMPLATE = @"3441286325348372349";
         private const string VOD_MEDIUM_ID_TEMPLATE = @"293812117068830615";
@@ -171,6 +198,9 @@ namespace TABSAT
         // "&" will be encoded to "&amp;" when setting XAttribute value
         private const string GENERATORS_2_DIRECTIONS = @"N & E | E & S | S & W | W & N | N & S | E & W";
         private const string GENERATORS_3_DIRECTIONS = @"E & S & W | S & W & N | W & N & E | N & E & S";
+
+        private const int RESOURCE_STORE_CAPACITY = 50;
+        private const int GOLD_STORAGE_FACTOR = 40;
 
         private class HugeZombieIconComparer : IComparer<HugeZombieIcon>
         {
@@ -1194,6 +1224,61 @@ namespace TABSAT
             // getFirstPropertyOfTypeNamed( getDataExtension(), "Collection", "LevelEvents" ).Element( "Items" );
             splitEasyAndHardSwarms( getDataExtension() );
 
+        }
+
+        internal void setExtraSupply( int food, int energy, int workers )
+        {
+            if( food > 0 )
+            {
+                XElement ccFood = getFirstSimplePropertyNamed( levelComplex, "CommandCenterExtraFood" );
+                ccFood.SetAttributeValue( "value", food );
+            }
+            if( energy > 0 )
+            {
+                XElement ccEnergy = getFirstSimplePropertyNamed( levelComplex, "CommandCenterExtraEnergy" );
+                ccEnergy.SetAttributeValue( "value", energy );
+            }
+            if( workers > 0 )
+            {
+                XElement ccWorkers = getFirstSimplePropertyNamed( levelComplex, "CommandCenterExtraWorkers" );
+                ccWorkers.SetAttributeValue( "value", workers );
+            }
+        }
+
+        internal void fillStorage( bool gold, bool wood, bool stone, bool iron, bool oil )
+        {
+            // Get warehouses count
+            int warehousesCount =
+                 ( from i in getLevelEntitiesItems().Elements( "Item" )
+                   where
+                   ( from w in i.Elements( "Complex" )
+                     where (string) w.Attribute( "type" ) == WAREHOUSE_TYPE
+                     select w ).Any()
+                   select i ).Count();
+
+            int storesCapacity = (1 + warehousesCount) * RESOURCE_STORE_CAPACITY;   // "1+" assumes base CC storage, no mayor +25/+50 upgrades
+
+            // Update CC stored values, per resource
+            if( gold )
+            {
+                getFirstSimplePropertyNamed( levelComplex, "Gold" ).SetAttributeValue( "value", storesCapacity * GOLD_STORAGE_FACTOR );
+            }
+            if( wood )
+            {
+                getFirstSimplePropertyNamed( levelComplex, "Wood" ).SetAttributeValue( "value", storesCapacity );
+            }
+            if( stone )
+            {
+                getFirstSimplePropertyNamed( levelComplex, "Stone" ).SetAttributeValue( "value", storesCapacity );
+            }
+            if( iron )
+            {
+                getFirstSimplePropertyNamed( levelComplex, "Iron" ).SetAttributeValue( "value", storesCapacity );
+            }
+            if( oil )
+            {
+                getFirstSimplePropertyNamed( levelComplex, "Oil" ).SetAttributeValue( "value", storesCapacity );
+            }
         }
     }
 }
