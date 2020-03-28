@@ -22,10 +22,14 @@ The following Save Modification options have been implemented, and are categoris
 
 * Replacing all Mutants with Giants, and vice versa.
 
-* Resizing all VOD buildings to either the smallest (Dwellings) or largest (City Halls), which should also affect resource drops.
+* Resizing all VOD buildings to Dwellings (the smallest), Taverns, or City Halls (the largest), which should also affect resource drops.  
+N.b. City Halls can spawn thousands more zombies and cause pathing issues, which leads to lag.
 
 * Changing the map Theme. This not only changes the visuals and background sound, but also inherits the rules modifiers of the standard themes, such as Frozen Highlands slowing zombies & increasing power consumption, or Desert Wasteland increasing zombie speed and range of noise.
 
 ## Make the game harder
+
+* Enable Swarms (Waves) to come from several directions. Earlier swarms can come from any 2 cardinal directions at once, later swarms from any 3.  
+N.b. The on-screen text and icons will represent all chosen directions, but the audio announcement will only name the first direction per swarm.
 
 * Disabling Mayors. No new mayors will be granted for reaching colony population thresholds.
