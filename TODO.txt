@@ -47,7 +47,6 @@ Remove Mutants and/or Giant minimap icons?
 
 Alter existing (outer) zombies to be more special types, depending on adjustable (min?) distance from CC and desired %/final ratio of specials?
 
-Multi-stack the same sized VOD buildings in the same position?
 Give individual duplication options (including 0x, excluding 1x) for each VOD building type?
 
 Remove all Pickable resources & reclaimable buildings? To remove potential early Radar vision or resources chiefly accessed via kiting?
@@ -59,7 +58,7 @@ Might have to have a pseudo daily/8-hourly/faster wave, that spawns unit types &
 --
 Could affect difficulty either way:
 
-Swap the locations of different types to affect distribution difficulty. Depends upon generating LevelFastSerializedEntities?
+Swap the locations of different types to affect distribution difficulty?
 Specifically, could:
 place most/all special infected in concentric rings, e.g. Fatties closest, then Spitters, then Harpies?
 place most/all Spitters in 1 cardinal direction, all Harpies in another, all Fatties, etc?
@@ -74,7 +73,7 @@ Set certain mayors as already chosen? To benefit or miss out on their benefits, 
 
 Alter the starting troops?
 
-Add the scripted politics systems from some custom maps?
+Add the scripted politics systems/card games from some custom maps?
 
 Apply a multiplier all (non-huge) map zombies' life (e.g. 0.8, 1.5)? Or per zombie type. Would need to test whether exceeding the base full life value for a given type causes issues beyond displaying e.g. 150/100, as this probably isn't how modded mayors effectively alter this value.
 
@@ -89,7 +88,7 @@ Reposition Ravens to indicate direction to Mutants/Giants/VODs?
 Or use sign post assets from custom/campaign maps?
 For VODs, convert each building relative position from CC into an angle, consolidate similar-enough angles into a single marker.
 
-Spawn new pickables by the CC?
+Spawn new pickables by the CC? Almost redundant w.r.t. granting Extra Supplies and filling storage.
 Or relocate existing pickables to be by the CC.
 
 Make all existing troops veterans.
@@ -104,5 +103,6 @@ Use a series of auto-backed-up saves during a game to chart the player's economy
 Charts could be compared across games to see averages and long term trends.
 
 Offer to apply or revert Modded Mayors game-wide rules change?
+Or other complete rebalancing mods, should someone make one.
 
 Also Sound/Texture/Font packs such as https://www.reddit.com/r/TheyAreBillions/comments/ekc8gx/starcraft_warcraft_diablo2_dow2_soundpacks_like_a/

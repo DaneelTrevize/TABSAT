@@ -16,7 +16,7 @@ The following Save Modification options have been implemented, and are categoris
 
 * Granting constant full map vision, as though you have 'The Beholder', or the final wave has begun.
 
-* Setting the Extra Resource Supplies levels of the Command Center.
+* Adding to the Extra Resource Supplies levels of the Command Center.
 
 * Granting free/bonus units and buildings, of variable number (e.g. 3 Rangers, or 1 Titan).
 
@@ -30,7 +30,8 @@ N.b. This does not yet current account for Mayors that increase storage.
 * Resizing all VOD buildings to Dwellings (the smallest), Taverns, or City Halls (the largest), which should also affect resource drops.  
 N.b. City Halls can spawn thousands more zombies and cause pathing issues, which leads to lag.
 
-* Changing the map Theme. This not only changes the visuals and background sound, but also inherits the rules modifiers of the standard themes, such as Frozen Highlands slowing zombies & increasing power consumption, or Desert Wasteland increasing zombie speed and range of noise.
+* Changing the map Theme. This not only changes the visuals and background sound, but also inherits the rules modifiers of the standard themes, such as Frozen Highlands slowing zombies & increasing power consumption, or Desert Wasteland increasing zombie speed and range of noise.  
+See [the spreadsheets generated in the Modded Mayors repo](https://github.com/DaneelTrevize/Modded-Mayors/tree/master/Source) for the specific data from the MapThemes table.
 
 ## Make the game harder
 
@@ -38,6 +39,8 @@ N.b. City Halls can spawn thousands more zombies and cause pathing issues, which
 N.b. The on-screen text and icons will represent all chosen directions, but the audio announcement will only name the first direction per swarm.
 
 * Disabling Mayors. No new mayors will be granted for reaching colony population thresholds.
+
+* Stack multiple copies of VOD buildings at their existing positions.
 
 ----
 

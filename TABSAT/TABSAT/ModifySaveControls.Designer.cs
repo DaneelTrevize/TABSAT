@@ -669,7 +669,6 @@
             // 
             this.vodStackNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.vodStackNumericUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.vodStackNumericUpDown.Enabled = false;
             this.vodStackNumericUpDown.Location = new System.Drawing.Point(107, 88);
             this.vodStackNumericUpDown.Maximum = new decimal(new int[] {
             5,
@@ -705,7 +704,6 @@
             // vodStackRadioButton
             // 
             this.vodStackRadioButton.AutoSize = true;
-            this.vodStackRadioButton.Enabled = false;
             this.vodStackRadioButton.Location = new System.Drawing.Point(6, 88);
             this.vodStackRadioButton.Name = "vodStackRadioButton";
             this.vodStackRadioButton.Size = new System.Drawing.Size(105, 17);

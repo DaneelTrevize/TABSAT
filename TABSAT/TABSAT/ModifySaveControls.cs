@@ -457,7 +457,9 @@ namespace TABSAT
                 }
                 else if( vodStackRadioButton.Checked )
                 {
-                    statusWriter( "Would stack VODs." );
+                    UInt32 multiplier = Convert.ToUInt32( vodStackNumericUpDown.Value );
+                    statusWriter( "Stacking VOD buildings x" + multiplier + '.' );
+                    dataEditor.stackVODs( multiplier );
                 }
 
                 // Fog of War
@@ -468,7 +470,7 @@ namespace TABSAT
                 }
                 else if( fogClearRadioButton.Checked )
                 {
-                    int radius = Convert.ToInt32( fogNumericUpDown.Value );
+                    uint radius = Convert.ToUInt32( fogNumericUpDown.Value );
                     statusWriter( "Removing the fog with cell range: " + radius );
                     dataEditor.removeFog( radius );
                 }
@@ -481,14 +483,21 @@ namespace TABSAT
                 // Command Center Extras
                 if( anyChecked( ccExtrasCheckBoxes ) )
                 {
-                    statusWriter( "Altering Command Center extra supplies." );
-                    dataEditor.setExtraSupply( ccExtraFoodCheckBox.Checked ? (int) ccFoodNumericUpDown.Value : 0, ccExtraEnergyCheckBox.Checked ? (int) ccEnergyNumericUpDown.Value : 0, ccExtraWorkersCheckBox.Checked ? (int) ccWorkersNumericUpDown.Value : 0 );
+                    uint food = ccExtraFoodCheckBox.Checked ? Convert.ToUInt32( ccFoodNumericUpDown.Value ) : 0;
+                    uint energy = ccExtraEnergyCheckBox.Checked ? Convert.ToUInt32( ccEnergyNumericUpDown.Value ) : 0;
+                    uint workers = ccExtraWorkersCheckBox.Checked ? Convert.ToUInt32( ccWorkersNumericUpDown.Value ) : 0;
+                    statusWriter( "Adding Command Center extra supplies,"
+                        + ( food > 0 ? " Food: +" + food : "" )
+                        + ( energy > 0 ? " Energy: +" + energy : "" )
+                        + ( workers > 0 ? " Workers: +" + workers : "" )
+                        + '.' );
+                    dataEditor.addExtraSupplies( food, energy, workers );
                 }
 
                 if( ccGiftCheckBox.Checked )
                 {
                     KeyValuePair<SaveEditor.GiftableTypes, string> kv = (KeyValuePair<SaveEditor.GiftableTypes, string>) giftComboBox.SelectedItem;
-                    int typeID = Convert.ToInt32( giftNumericUpDown.Value );
+                    uint typeID = Convert.ToUInt32( giftNumericUpDown.Value );
                     statusWriter( "Gifting " + typeID + "x " + kv.Value + "." );
                     dataEditor.giftEntities( kv.Key, typeID );
                 }
@@ -496,7 +505,12 @@ namespace TABSAT
                 // Fill Resource Storage
                 if( anyChecked( warehousesFillCheckBoxes ) )
                 {
-                    statusWriter( "Filling storage for specified resources." );
+                    statusWriter( "Filling storage for specified resources:"
+                        + ( warehousesFillGoldCheckBox.Checked ? " Gold;" : "" )
+                        + ( warehousesFillWoodCheckBox.Checked ? " Wood;" : "" )
+                        + ( warehousesFillStoneCheckBox.Checked ? " Stone;" : "" )
+                        + ( warehousesFillIronCheckBox.Checked ? " Iron;" : "" )
+                        + ( warehousesFillOilCheckBox.Checked ? " Oil;" : "" ) );
                     dataEditor.fillStorage( warehousesFillGoldCheckBox.Checked, warehousesFillWoodCheckBox.Checked, warehousesFillStoneCheckBox.Checked, warehousesFillIronCheckBox.Checked, warehousesFillOilCheckBox.Checked );
                 }
 

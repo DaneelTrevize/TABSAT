@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 
 namespace TABSAT
@@ -74,7 +75,7 @@ namespace TABSAT
             MachineGun = 1918604527945708480,           // Wasp
             ShockingTower = 7671446590444700196,
             Executor = 782017986530656774,
-            // TheInn = ,
+            TheInn = 5797915750707445077,
             TheCrystalPalace = 7936948209186953569,
             // TheGreatTelescope = ,                    // The Silent Beholder
             TheSpire = 6908380734610266301,
@@ -146,6 +147,7 @@ namespace TABSAT
             gtn.Add( GiftableTypes.MachineGun, "Wasp" );
             gtn.Add( GiftableTypes.ShockingTower, "Shocking Tower" );
             gtn.Add( GiftableTypes.Executor, "Executor" );
+            gtn.Add( GiftableTypes.TheInn, "The Inn" );
             gtn.Add( GiftableTypes.TheCrystalPalace, "The Crystal Palace" );
             gtn.Add( GiftableTypes.TheSpire, "The Lightning Spire" );
             gtn.Add( GiftableTypes.TheAcademy, "The Academy of Immortals" );
@@ -168,32 +170,44 @@ namespace TABSAT
         private const string CBEHAVIOUR_TYPE = @"ZX.Components.CBehaviour, TheyAreBillions";
         private const string CMOVABLE_TYPE = @"ZX.Components.CMovable, TheyAreBillions";
 
-        private const string MUTANT_TYPE = @"ZX.Entities.ZombieMutant, TheyAreBillions";
         private const string GIANT_TYPE = @"ZX.Entities.ZombieGiant, TheyAreBillions";
-        private const string MUTANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombie, TheyAreBillions";
-        private const string GIANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombieGiant, TheyAreBillions";
+        private const string MUTANT_TYPE = @"ZX.Entities.ZombieMutant, TheyAreBillions";
         private const string VOD_SMALL_TYPE = @"ZX.Entities.DoomBuildingSmall, TheyAreBillions";
         private const string VOD_MEDIUM_TYPE = @"ZX.Entities.DoomBuildingMedium, TheyAreBillions";
         private const string VOD_LARGE_TYPE = @"ZX.Entities.DoomBuildingLarge, TheyAreBillions";
         private const string WAREHOUSE_TYPE = @"ZX.Entities.WareHouse, TheyAreBillions";
+        private const string OILPOOL_TYPE = @"ZX.Entities.OilSource, TheyAreBillions";
 
+        private const string GIANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombieGiant, TheyAreBillions";
+        private const string MUTANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombie, TheyAreBillions";
+
+        private const string GIANT_ID_TEMPLATE = @"6179780658058987152";
+        private const string MUTANT_ID_TEMPLATE = @"4885015758634569309";
         private const string VOD_LARGE_ID_TEMPLATE = @"3441286325348372349";
         private const string VOD_MEDIUM_ID_TEMPLATE = @"293812117068830615";
         private const string VOD_SMALL_ID_TEMPLATE = @"8702552346733362645";
+        private const string OILPOOL_ID_TEMPLATE = @"14597207313853823957";
+        //private const string foodTruck_ID_TEMPLATE = @"x";
+        //private const string turretDefence_ID_TEMPLATE = @"x";    // Multiple types, per compass direction?
+        //private const string pickableRubble_ID_TEMPLATE = @"x";
+        //private const string energyMast_ID_TEMPLATE = @"x";
+        //private const string bigForestMast_ID_TEMPLATE = @"x";
+        //private const string volcano_ID_TEMPLATE = @"x";          // Multiple sizes?
+
+        private const string GIANT_LIFE = @"10000";
+        private const string MUTANT_LIFE = @"4000";
         private const string VOD_LARGE_LIFE = @"4000";
         private const string VOD_MEDIUM_LIFE = @"1500";
         private const string VOD_SMALL_LIFE = @"400";
+
+        private const string GIANT_SIZE = @"1.6;1.6";
+        private const string MUTANT_SIZE = @"0.8;0.8";
         private const string VOD_LARGE_SIZE = @"4;4";
         private const string VOD_MEDIUM_SIZE = @"3;3";
         private const string VOD_SMALL_SIZE = @"2;2";
-        private const string MUTANT_ID_TEMPLATE = @"4885015758634569309";
-        private const string GIANT_ID_TEMPLATE = @"6179780658058987152";
-        private const string MUTANT_PROJECT_IMAGE = @"3097669356589096184";
+
         private const string GIANT_PROJECT_IMAGE = @"5072922660204167778";
-        private const string GIANT_LIFE = @"10000";
-        private const string MUTANT_LIFE = @"4000";
-        private const string GIANT_SIZE = @"1.6;1.6";
-        private const string MUTANT_SIZE = @"0.8;0.8";
+        private const string MUTANT_PROJECT_IMAGE = @"3097669356589096184";
 
         // "&" will be encoded to "&amp;" when setting XAttribute value
         private const string GENERATORS_2_DIRECTIONS = @"N & E | E & S | S & W | W & N | N & S | E & W";
@@ -201,6 +215,8 @@ namespace TABSAT
 
         private const int RESOURCE_STORE_CAPACITY = 50;
         private const int GOLD_STORAGE_FACTOR = 40;
+
+        private const UInt64 FIRST_NEW_ID = 0x8000000000000000;
 
         private class HugeZombieIconComparer : IComparer<HugeZombieIcon>
         {
@@ -540,12 +556,14 @@ namespace TABSAT
         private XElement levelEntitiesItems;
         private XElement generatedLevel;
         private XElement extension;
+        private XElement mapDrawer;
         private readonly int commandCenterX;
         private readonly int commandCenterY;
         private readonly SortedDictionary<ulong, HugeZombie> mutants;
         private readonly SortedDictionary<ulong, HugeZombie> giants;
         private readonly LinkedList<HugeZombieIcon> mutantIcons;
         private readonly LinkedList<HugeZombieIcon> giantIcons;
+        private UInt64 nextNewID;
 
         private static XElement getFirstPropertyOfTypeNamed( XElement c, string type, string name )
         {
@@ -611,11 +629,52 @@ namespace TABSAT
 
             mutantIcons = new LinkedList<HugeZombieIcon>();
             giantIcons = new LinkedList<HugeZombieIcon>();
+
+            nextNewID = 0;
         }
 
         internal void save()    // Doesn't take parameter to save modified file to a different location?
         {
             data.Save( dataFile );
+        }
+
+        private UInt64 getNewID()
+        {
+            if( nextNewID == 0 )    // Need to actually assess whether this file has already had greater-than-FIRST_NEW_ID values used.
+            {
+                UInt64 currentHighestID = getHighestID();
+                nextNewID = FIRST_NEW_ID > currentHighestID ? FIRST_NEW_ID : currentHighestID + 1;
+                Console.WriteLine( "nextNewID: " + nextNewID );
+            }
+
+            return nextNewID++;
+            /*
+             * IDs seem to be (needlessly?) random, not just unique.
+             * But not beyond max positive signed 64bit int (0x7FFF...), yet using an unsigned 64bit int. Room for 0x8000...+
+             * The naming of <Complex name="Random"><Properties> <Simple name="Mt" ... indicates Mersenne Twister PRNG.
+             * 
+             * The value of this Random changes upon starting to build a new Tent:
+             *         <Complex name="CurrentGeneratedLevel">
+             *           <Properties>
+             *             <Complex name="Random">
+             *               <Properties>
+             *                 <Simple name="Mt" value=
+             * Also found at:
+             *             <Complex name="Data">
+             *               <Properties>
+             *                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+             *                   <Properties>
+             *                     <Complex name="MapDrawer">
+             *                       <Properties>
+             *                         <Collection name="ExtraEntities"
+             *                         </Collection>
+             *                         <Complex name="Random">
+             *                           <Properties>
+             *                             <Simple name="Mt" value=
+             * 
+             * The other Random values, for the level as a whole, and the swarm generators (which are stored in duplicate), don't change after the single Tent building action.
+             * Resetting the save and repeating the action does not result in the same ID being generated, or same Random value being saved.
+             */
         }
 
         private XElement getLevelEntitiesItems()
@@ -651,17 +710,52 @@ namespace TABSAT
             return extension;
         }
 
+        private void duplicateLevelEntities( IEnumerable<XElement> items, uint multiplier )
+        {
+            // Assume a collection of LevelEntity Items. For each, generate multiplier-many duplicates in the same position, with new unique IDs. Add them to LevelEntities once all prepared.
+            LinkedList<XElement> copiedItems = new LinkedList<XElement>();
+
+            foreach( XElement i in items )
+            {
+                for( int m = 1; m < multiplier; m++ )   // Start at 1 because we already have the first copy of each VOD in the map
+                {
+                    XElement iCopy = new XElement( i );
+
+                    var newID = getNewID();
+                    XElement simple = iCopy.Element( "Simple" );
+                    simple.SetAttributeValue( "value", newID );
+                    XElement complex = iCopy.Element( "Complex" );
+                    getFirstSimplePropertyNamed( complex, "ID" ).SetAttributeValue( "value", newID );
+
+                    copiedItems.AddLast( iCopy );
+                }
+            }
+
+            //Console.WriteLine( "copiedItems: " + copiedItems.Count );
+
+            var e = getLevelEntitiesItems();
+            foreach( var i in copiedItems )
+            {
+                e.Add( i );
+            }
+        }
+
+        private IEnumerable<XElement> getLevelEntitiesOfTypes( params string[] types )
+        {
+            return
+                from i in getLevelEntitiesItems().Elements( "Item" )
+                where
+                    ( from c in i.Elements( "Complex" )
+                      let type = (string) c.Attribute( "type" )
+                      where types.Contains( type )
+                      select c ).Any()
+                select i;
+        }
+
 
         private void findMutantsAndGiants()
         {
-            IEnumerable<XElement> bigBoys =
-                from i in getLevelEntitiesItems().Elements( "Item" )
-                where
-                    ( from big in i.Elements( "Complex" )
-                      where (string) big.Attribute( "type" ) == MUTANT_TYPE
-                      || (string) big.Attribute( "type" ) == GIANT_TYPE
-                      select big ).Any()
-                select i;
+            IEnumerable<XElement> bigBoys = getLevelEntitiesOfTypes( MUTANT_TYPE, GIANT_TYPE );
 
             //Console.WriteLine( "bigBoys count: " + bigBoys.Count() );
             foreach( XElement big in bigBoys )
@@ -878,20 +972,15 @@ namespace TABSAT
             }
         }
 
+        private IEnumerable<XElement> getVODs()
+        {
+            return getLevelEntitiesOfTypes( VOD_SMALL_TYPE, VOD_MEDIUM_TYPE, VOD_LARGE_TYPE );
+            //Console.WriteLine( "vodItems: " + vodItems.Count() );
+        }
+
         internal void removeVODs()
         {
-            IEnumerable<XElement> vodItems =
-                (from i in getLevelEntitiesItems().Elements( "Item" )
-                where
-                    ( from vod in i.Elements( "Complex" )
-                      where (string) vod.Attribute( "type" ) == VOD_SMALL_TYPE
-                      || (string) vod.Attribute( "type" ) == VOD_MEDIUM_TYPE
-                      || (string) vod.Attribute( "type" ) == VOD_LARGE_TYPE
-                      select vod ).Any()
-                select i);
-            
-            //Console.WriteLine( "vodItems: " + vodItems.Count() );
-            foreach( XElement v in vodItems.ToList() )  // no ToList() leads to only removing 1 <item> per save modify cycle?!
+            foreach( XElement v in getVODs().ToList() )  // no ToList() leads to only removing 1 <item> per save modify cycle?!
             {
                 v.Remove();
             }
@@ -918,15 +1007,7 @@ namespace TABSAT
                                   <Simple name="CheckHiddingUnits" value="False" />
              */
 
-            IEnumerable<XElement> vodItems =
-                ( from i in getLevelEntitiesItems().Elements( "Item" )
-                  where
-                      ( from vod in i.Elements( "Complex" )
-                        where ( (string) vod.Attribute( "type" ) == VOD_SMALL_TYPE
-                        || (string) vod.Attribute( "type" ) == VOD_MEDIUM_TYPE
-                        || (string) vod.Attribute( "type" ) == VOD_LARGE_TYPE )
-                        select vod ).Any()
-                  select i );
+            IEnumerable<XElement> vodItems = getVODs();
 
             string newType;
             string newIDTemplate;
@@ -965,6 +1046,90 @@ namespace TABSAT
             }
         }
 
+        internal UInt64 getHighestID()
+        {
+            // Get all the UInt64 entity IDs, from LevelEntities, LevelFastSerializedEntities, ExtraEntities
+
+            SortedSet<UInt64> uniqueIDs = new SortedSet<UInt64>();
+            void addIDs( IEnumerable<string> ids )
+            {
+                foreach( string i in ids )
+                {
+                    UInt64 id = Convert.ToUInt64( i );
+                    if( !uniqueIDs.Add( id ) )
+                    {
+                        Console.Error.WriteLine( "Duplicate ID found: " + i );
+                    }
+                }
+            }
+
+            IEnumerable<string> entityIDs =
+                from i in getLevelEntitiesItems().Elements( "Item" )
+                select i.Element( "Simple" ).Attribute( "value" ).Value;
+            //Console.WriteLine( "entityIDs: " + entityIDs.Count() );
+            addIDs( entityIDs );
+            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
+
+            /*
+             *        <Dictionary name="LevelFastSerializedEntities" >
+             *          <Items>
+             *            <Item>
+             *              <Simple />
+             *              <Collection >
+             *                <Items>
+             *                  <Complex>
+             *                    <Properties>
+             *                      <Simple name="A" value=
+             */
+            var fastItems = from zombieType in getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelFastSerializedEntities" ).Element( "Items" ).Elements( "Item" )
+                            select zombieType.Element( "Collection" ).Element( "Items" );
+            //Console.WriteLine( "zombieTypes: " + fastItems.Count() );
+            var fastIDs = from c in fastItems.Elements( "Complex" )
+                          let s = c.Element( "Properties" ).Elements( "Simple" )
+                          from a in s
+                          where (string) a.Attribute( "name" ) == "A"
+                          select (string) a.Attribute( "value" );
+            //Console.WriteLine( "fastIDs: " + fastIDs.Count() );
+            addIDs( fastIDs );
+            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
+
+            /*
+             *          <Collection name="ExtraEntities" >
+                          <Items>
+                            <Complex>
+                              <Properties>
+                                <Simple name="ID" value="
+             */
+            XElement extrasItems = getFirstPropertyOfTypeNamed( getMapDrawer(), "Collection", "ExtraEntities" ).Element( "Items" );
+            var extrasIDs = from c in extrasItems.Elements( "Complex" )
+                            select getFirstSimplePropertyNamed( c, "ID" ).Attribute( "value" ).Value;
+            //Console.WriteLine( "extrasIDs: " + extrasIDs.Count() );
+            addIDs( extrasIDs );
+            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
+
+            void dumpIDs()
+            {
+                StringBuilder ids = new StringBuilder( uniqueIDs.Count * 16 );  // 16 hex chars per 64 bit uint64
+                foreach( UInt64 id in uniqueIDs )
+                {
+                    ids.AppendFormat( "{0:X16}\n", id );
+                }
+                DirectoryInfo saveDir = Directory.GetParent( dataFile );
+                string idFile = Path.Combine( saveDir.Parent.FullName, saveDir.Name + "_IDs.txt" );     // In the edits directory, file named after the save
+                Console.WriteLine( "Dumping IDs to " + idFile );
+                File.WriteAllText( idFile, ids.ToString() );
+            }
+            //dumpIDs();
+
+            return uniqueIDs.Last();
+        }
+
+        internal void stackVODs( uint multiplier )
+        {
+            duplicateLevelEntities( getVODs(), multiplier );
+            //duplicateLevelEntities( getLevelEntitiesOfTypes( @"ZX.Entities.Ranger, TheyAreBillions" ), multiplier );
+        }
+
         internal void disableMayors()
         {
             //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
@@ -974,7 +1139,7 @@ namespace TABSAT
             allowMayors.SetAttributeValue( "value", "False" );
         }
 
-        internal void giftEntities( GiftableTypes giftable, int count )
+        internal void giftEntities( GiftableTypes giftable, uint count )
         {
             string giftableID = giftable.ToString( "D" );
             XElement templates = getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "BonusEntityTemplates" );
@@ -1021,7 +1186,7 @@ namespace TABSAT
             items.Add( giftItem );
         }
 
-        internal void removeFog( int radius = 0 )
+        internal void removeFog( uint radius = 0 )
         {
             //      <Properties>
             //        <Complex name = "CurrentGeneratedLevel" >
@@ -1054,8 +1219,10 @@ namespace TABSAT
             layerFogSimple.SetAttributeValue( "value", layerFog );
         }
 
-        private void circularFog( int size, byte[] clearFog, int radius )
+        private void circularFog( int size, byte[] clearFog, uint r )
         {
+            int radius = (int) r;   // Just assume it'll fit
+
             void setFog( int s, byte[] f, int x, int y )
             {
                 // Assuming linear assignment, rather than anything fancy like a Hilbert curve...
@@ -1151,10 +1318,9 @@ namespace TABSAT
             //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
             //                  <Properties>
             //                    <Complex name="MapDrawer">
-            XElement mapDrawer = getFirstComplexPropertyNamed( getDataExtension(), "MapDrawer" );
             //                      <Properties>
             //                        <Simple name="ThemeType" value=
-            XElement levelThemeType = getFirstSimplePropertyNamed( mapDrawer, "ThemeType" );
+            XElement levelThemeType = getFirstSimplePropertyNamed( getMapDrawer(), "ThemeType" );
 
             //<Complex name="Root" type="ZX.ZXGameState, TheyAreBillions">
             //  < Properties >
@@ -1166,6 +1332,18 @@ namespace TABSAT
 
             levelThemeType.SetAttributeValue( "value", themeValue );
             paramsThemeType.SetAttributeValue( "value", themeValue );
+        }
+
+        private XElement getMapDrawer()
+        {
+            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+            //                  <Properties>
+            //                    <Complex name="MapDrawer">
+            if( mapDrawer == null )
+            {
+                mapDrawer = getFirstComplexPropertyNamed( getDataExtension(), "MapDrawer" );
+            }
+            return mapDrawer;
         }
 
         internal void splitSwarms()
@@ -1226,35 +1404,55 @@ namespace TABSAT
 
         }
 
-        internal void setExtraSupply( int food, int energy, int workers )
+        internal void addExtraSupplies( uint food, uint energy, uint workers )
         {
+            bool addValue( XElement extra, uint add )
+            {
+                int value = 0;
+                if( !Int32.TryParse( extra.Attribute( "value" ).Value, out value ) )
+                {
+                    return false;
+                }
+
+                value += (int) add;
+                extra.SetAttributeValue( "value", value );
+                return true;
+            }
+
             if( food > 0 )
             {
-                XElement ccFood = getFirstSimplePropertyNamed( levelComplex, "CommandCenterExtraFood" );
-                ccFood.SetAttributeValue( "value", food );
+                if( !addValue( getFirstSimplePropertyNamed( levelComplex, "CommandCenterExtraFood" ), food ) )
+                {
+                    Console.Error.WriteLine( "Unable to get the current CC Food supply value." );
+                }
             }
             if( energy > 0 )
             {
-                XElement ccEnergy = getFirstSimplePropertyNamed( levelComplex, "CommandCenterExtraEnergy" );
-                ccEnergy.SetAttributeValue( "value", energy );
+                if( !addValue( getFirstSimplePropertyNamed( levelComplex, "CommandCenterExtraEnergy" ), energy ) )
+                {
+                    Console.Error.WriteLine( "Unable to get the current CC Energy supply value." );
+                }
             }
             if( workers > 0 )
             {
-                XElement ccWorkers = getFirstSimplePropertyNamed( levelComplex, "CommandCenterExtraWorkers" );
-                ccWorkers.SetAttributeValue( "value", workers );
+                if( !addValue( getFirstSimplePropertyNamed( levelComplex, "CommandCenterExtraWorkers" ), workers ) )
+                {
+                    Console.Error.WriteLine( "Unable to get the current CC Workers supply value." );
+                }
             }
         }
 
         internal void fillStorage( bool gold, bool wood, bool stone, bool iron, bool oil )
         {
+            /*
+             * Storage. Assume from ZXRules tables:
+             * Entities: WareHouse	ResourcesStorage	50
+             * Global: GoldStorageFactor	int	40				Max gold stored = GoldStorageFactor * (Sum(Maxtorage per Entity))
+             * (1+ WareHouse count) * 50 for non-gold resources doesn't account for mayors that increase CC storage, but should only be an underestimate and safe to set to at least this much.
+             */
+
             // Get warehouses count
-            int warehousesCount =
-                 ( from i in getLevelEntitiesItems().Elements( "Item" )
-                   where
-                   ( from w in i.Elements( "Complex" )
-                     where (string) w.Attribute( "type" ) == WAREHOUSE_TYPE
-                     select w ).Any()
-                   select i ).Count();
+            int warehousesCount = getLevelEntitiesOfTypes( WAREHOUSE_TYPE ).Count();
 
             int storesCapacity = (1 + warehousesCount) * RESOURCE_STORE_CAPACITY;   // "1+" assumes base CC storage, no mayor +25/+50 upgrades
 
