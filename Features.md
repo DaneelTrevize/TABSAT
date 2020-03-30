@@ -43,13 +43,14 @@ N.b. The on-screen text and icons will represent all chosen directions, but the 
 
 # Automatical Backup Features
 
-'Active' game save file sets, those in the usual game saves location (`DRIVE:\SteamLibraryName\steamapps\common\They Are Billions\`), can be monitored for changes by TABSAT, once you navigate to the 'Automatically Backup Save Files' tab. Changes will be reported in the Log text area at the bottom of the window.
+'Active' game save file sets, those in the usual game saves location (`DRIVE:\Users\USERNAME\Documents\My Games\They Are Billions\Saves\`), can be monitored for changes by TABSAT, once you navigate to the 'Automatically Backup Save Files' User Interface tab.  
+Save changes will be reported in the Log text area at the bottom of the UI.
 
 Active saves for which there is not a matching Backup set found in the Backups folder (default `DRIVE:\Users\USERNAME\Documents\TABSAT\saves\`) can be selected and manually backed up in the UI, copying both the `.zxsav` and `.zxcheck` files of a given save set.  
 The matching criteria is based upon a full file checksum, not just name and creation/modification timestamps. Checksumming may take in the order of 1 second per 100 save files, be those active or backup files, and the results are cached per TABSAT usage.
 
 Active saves can also automatically be backed up, upon change detection, by toggling the top right 'Enable AutoBackup' button. The Log area will also notify when Automatic Backup is enabled or disabled.
 
-Backups are versioned under their save name (for which there can be many corresponding saves per game and per name reuse), and then under the timestamp of when that save was last modified.
+Backups are versioned under their save name (for which there can be many corresponding saves per game, as well as name reuse between games), and then under the timestamp of when that save was last modified.
 
 Backups can be selected and manually restored in the UI, again copying both paired files of a given save set.

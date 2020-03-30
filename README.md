@@ -13,7 +13,7 @@ Common use-cases would be:
 TABSAT Usage Demonstration animations:  
 [TABSAT 0.9.1](https://imgur.com/a/0W8I7Ry). [TABSAT 0.8](https://imgur.com/T5EU6IJ).  
 
-Simply download a Release and launch TABSAT.exe to be presented with the Graphical User Interface.
+Simply [download a Release](https://github.com/DaneelTrevize/TABSAT/releases) and launch TABSAT.exe to be presented with the Graphical User Interface.
 
 ![UI 2 1](https://github.com/DaneelTrevize/TABSAT/blob/master/screenshots/UI%202%201.png)
 
