@@ -45,10 +45,6 @@ Make games harder:
 
 Remove Mutants and/or Giant minimap icons?
 
-Alter existing (outer) zombies to be more special types, depending on adjustable (min?) distance from CC and desired %/final ratio of specials?
-
-Give individual duplication options (including 0x, excluding 1x) for each VOD building type?
-
 Remove all Pickable resources & reclaimable buildings? To remove potential early Radar vision or resources chiefly accessed via kiting?
 
 Possibly add a script element (that constantly loops?) to spawns a new zombie per troop loss, with specific loss type to zombie spawned pairing. E.g. Harpy for each ranger, Spitter for each Sniper, Mutant for each Thanatos?
@@ -57,6 +53,9 @@ Might have to have a pseudo daily/8-hourly/faster wave, that spawns unit types &
 
 --
 Could affect difficulty either way:
+
+Offer to adjust scaling of (all?) zombies population & VOD buildings per type?
+Also offer to make (population) scaling non-uniform, but based on distance from CC?
 
 Swap the locations of different types to affect distribution difficulty?
 Specifically, could:
@@ -81,8 +80,13 @@ Investigate scripting a custom CC button that effectively toggles the game pace 
 
 Clear straight/spiral paths from the CC to the edges in cardinal directions?
 
+Mostly for Caustic generator: Try to detect if entire ~halves (N/S/E/W) are unpopulated (& unpathable). If so, mirror the terrain w.r.t the CC, and 50/50 relocate, or 100% duplicate, zombies and VODs/oil, etc.
+
 --
 Make games easier:
+
+Remove Fog in a random pattern, would result in a spray effect? Or a non-uniform version based on CC distance?
+Remove Fog in a geometric pattern, such as radiating narrow arcs like lighthouse beams, or a spiral?
 
 Reposition Ravens to indicate direction to Mutants/Giants/VODs?
 Or use sign post assets from custom/campaign maps?
@@ -91,9 +95,15 @@ For VODs, convert each building relative position from CC into an angle, consoli
 Spawn new pickables by the CC? Almost redundant w.r.t. granting Extra Supplies and filling storage.
 Or relocate existing pickables to be by the CC.
 
+Duplicate all existing resource-producing buildings (not housing).
+Duplicate all Oil Pools.
+
 Make all existing troops veterans.
 
 Add the scripted pseudo-train system from some custom maps, for regular delivery of chosen resources?
+
+Garrison all troops to towers. Allocate to nearest per troop? Or just tower-most-distant-from-CC first?
+Instantly move up to 4 per tower (and set state to garissoned), or set state as though clicked and have them start walking?
 
 ----
 

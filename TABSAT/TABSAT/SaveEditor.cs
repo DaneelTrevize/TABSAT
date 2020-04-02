@@ -644,7 +644,7 @@ namespace TABSAT
             {
                 UInt64 currentHighestID = getHighestID();
                 nextNewID = FIRST_NEW_ID > currentHighestID ? FIRST_NEW_ID : currentHighestID + 1;
-                Console.WriteLine( "nextNewID: " + nextNewID );
+                //Console.WriteLine( "nextNewID: " + nextNewID );
             }
 
             return nextNewID++;
@@ -675,6 +675,10 @@ namespace TABSAT
              * The other Random values, for the level as a whole, and the swarm generators (which are stored in duplicate), don't change after the single Tent building action.
              * Resetting the save and repeating the action does not result in the same ID being generated, or same Random value being saved.
              */
+             /*
+              * An alternative solution would be to assume some zombies/ExtraEntities still remain, and remove 1 & all references to it (attack target, etc), to reuse their ID.
+              * This only really works for relatively few, higher impact use-cases of 'new' IDs.
+              */
         }
 
         private XElement getLevelEntitiesItems()
@@ -972,10 +976,99 @@ namespace TABSAT
             }
         }
 
+        private IEnumerable<XElement> getLevelZombieTypesItems()
+        {
+            /*
+             *        <Dictionary name="LevelFastSerializedEntities" >
+             *          <Items>
+             *            <Item>
+             *              <Simple />
+             *              <Collection >
+             */
+            return getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelFastSerializedEntities" ).Element( "Items" ).Elements( "Item" );
+        }
+
         private IEnumerable<XElement> getVODs()
         {
             return getLevelEntitiesOfTypes( VOD_SMALL_TYPE, VOD_MEDIUM_TYPE, VOD_LARGE_TYPE );
             //Console.WriteLine( "vodItems: " + vodItems.Count() );
+        }
+        private UInt64 getHighestID()
+        {
+            // Get all the UInt64 entity IDs, from LevelEntities, LevelFastSerializedEntities, ExtraEntities
+
+            SortedSet<UInt64> uniqueIDs = new SortedSet<UInt64>();
+            void addIDs( IEnumerable<string> ids )
+            {
+                foreach( string i in ids )
+                {
+                    UInt64 id = Convert.ToUInt64( i );
+                    if( !uniqueIDs.Add( id ) )
+                    {
+                        Console.Error.WriteLine( "Duplicate ID found: " + i );
+                    }
+                }
+            }
+
+            IEnumerable<string> entityIDs =
+                from i in getLevelEntitiesItems().Elements( "Item" )
+                select i.Element( "Simple" ).Attribute( "value" ).Value;
+            //Console.WriteLine( "entityIDs: " + entityIDs.Count() );
+            addIDs( entityIDs );
+            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
+
+            /*
+             *        <Dictionary name="LevelFastSerializedEntities" >
+             *          <Items>
+             *            <Item>
+             *              <Simple />
+             *              <Collection >
+             *                <Items>
+             *                  <Complex>
+             *                    <Properties>
+             *                      <Simple name="A" value=
+             */
+            var fastItems = from zombieType in getLevelZombieTypesItems()
+                            select zombieType.Element( "Collection" ).Element( "Items" );
+            //Console.WriteLine( "zombieTypes: " + fastItems.Count() );
+            var fastIDs = from c in fastItems.Elements( "Complex" )
+                          let s = c.Element( "Properties" ).Elements( "Simple" )
+                          from a in s
+                          where (string) a.Attribute( "name" ) == "A"
+                          select (string) a.Attribute( "value" );
+            //Console.WriteLine( "fastIDs: " + fastIDs.Count() );
+            addIDs( fastIDs );
+            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
+
+            /*
+             *          <Collection name="ExtraEntities" >
+                          <Items>
+                            <Complex>
+                              <Properties>
+                                <Simple name="ID" value="
+             */
+            XElement extrasItems = getFirstPropertyOfTypeNamed( getMapDrawer(), "Collection", "ExtraEntities" ).Element( "Items" );
+            var extrasIDs = from c in extrasItems.Elements( "Complex" )
+                            select getFirstSimplePropertyNamed( c, "ID" ).Attribute( "value" ).Value;
+            //Console.WriteLine( "extrasIDs: " + extrasIDs.Count() );
+            addIDs( extrasIDs );
+            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
+
+            void dumpIDs()
+            {
+                StringBuilder ids = new StringBuilder( uniqueIDs.Count * 16 );  // 16 hex chars per 64 bit uint64
+                foreach( UInt64 id in uniqueIDs )
+                {
+                    ids.AppendFormat( "{0:X16}\n", id );
+                }
+                DirectoryInfo saveDir = Directory.GetParent( dataFile );
+                string idFile = Path.Combine( saveDir.Parent.FullName, saveDir.Name + "_IDs.txt" );     // In the edits directory, file named after the save
+                Console.WriteLine( "Dumping IDs to " + idFile );
+                File.WriteAllText( idFile, ids.ToString() );
+            }
+            //dumpIDs();
+
+            return uniqueIDs.Last();
         }
 
         internal void removeVODs()
@@ -1046,97 +1139,11 @@ namespace TABSAT
             }
         }
 
-        internal UInt64 getHighestID()
-        {
-            // Get all the UInt64 entity IDs, from LevelEntities, LevelFastSerializedEntities, ExtraEntities
-
-            SortedSet<UInt64> uniqueIDs = new SortedSet<UInt64>();
-            void addIDs( IEnumerable<string> ids )
-            {
-                foreach( string i in ids )
-                {
-                    UInt64 id = Convert.ToUInt64( i );
-                    if( !uniqueIDs.Add( id ) )
-                    {
-                        Console.Error.WriteLine( "Duplicate ID found: " + i );
-                    }
-                }
-            }
-
-            IEnumerable<string> entityIDs =
-                from i in getLevelEntitiesItems().Elements( "Item" )
-                select i.Element( "Simple" ).Attribute( "value" ).Value;
-            //Console.WriteLine( "entityIDs: " + entityIDs.Count() );
-            addIDs( entityIDs );
-            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
-
-            /*
-             *        <Dictionary name="LevelFastSerializedEntities" >
-             *          <Items>
-             *            <Item>
-             *              <Simple />
-             *              <Collection >
-             *                <Items>
-             *                  <Complex>
-             *                    <Properties>
-             *                      <Simple name="A" value=
-             */
-            var fastItems = from zombieType in getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelFastSerializedEntities" ).Element( "Items" ).Elements( "Item" )
-                            select zombieType.Element( "Collection" ).Element( "Items" );
-            //Console.WriteLine( "zombieTypes: " + fastItems.Count() );
-            var fastIDs = from c in fastItems.Elements( "Complex" )
-                          let s = c.Element( "Properties" ).Elements( "Simple" )
-                          from a in s
-                          where (string) a.Attribute( "name" ) == "A"
-                          select (string) a.Attribute( "value" );
-            //Console.WriteLine( "fastIDs: " + fastIDs.Count() );
-            addIDs( fastIDs );
-            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
-
-            /*
-             *          <Collection name="ExtraEntities" >
-                          <Items>
-                            <Complex>
-                              <Properties>
-                                <Simple name="ID" value="
-             */
-            XElement extrasItems = getFirstPropertyOfTypeNamed( getMapDrawer(), "Collection", "ExtraEntities" ).Element( "Items" );
-            var extrasIDs = from c in extrasItems.Elements( "Complex" )
-                            select getFirstSimplePropertyNamed( c, "ID" ).Attribute( "value" ).Value;
-            //Console.WriteLine( "extrasIDs: " + extrasIDs.Count() );
-            addIDs( extrasIDs );
-            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
-
-            void dumpIDs()
-            {
-                StringBuilder ids = new StringBuilder( uniqueIDs.Count * 16 );  // 16 hex chars per 64 bit uint64
-                foreach( UInt64 id in uniqueIDs )
-                {
-                    ids.AppendFormat( "{0:X16}\n", id );
-                }
-                DirectoryInfo saveDir = Directory.GetParent( dataFile );
-                string idFile = Path.Combine( saveDir.Parent.FullName, saveDir.Name + "_IDs.txt" );     // In the edits directory, file named after the save
-                Console.WriteLine( "Dumping IDs to " + idFile );
-                File.WriteAllText( idFile, ids.ToString() );
-            }
-            //dumpIDs();
-
-            return uniqueIDs.Last();
-        }
 
         internal void stackVODs( uint multiplier )
         {
             duplicateLevelEntities( getVODs(), multiplier );
             //duplicateLevelEntities( getLevelEntitiesOfTypes( @"ZX.Entities.Ranger, TheyAreBillions" ), multiplier );
-        }
-
-        internal void disableMayors()
-        {
-            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
-            //                  <Properties>
-            //                    <Simple name="AllowMayors" value="True" />
-            XElement allowMayors = getFirstSimplePropertyNamed( getDataExtension(), "AllowMayors" );
-            allowMayors.SetAttributeValue( "value", "False" );
         }
 
         internal void giftEntities( GiftableTypes giftable, uint count )
@@ -1310,30 +1317,6 @@ namespace TABSAT
             ShowFullMap.SetAttributeValue( "value", "True" );
         }
 
-        internal void changeTheme( ThemeType theme )
-        {
-            string themeValue = theme.ToString();
-            //Console.WriteLine( "Changing ThemeType to:" + themeValue );
-
-            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
-            //                  <Properties>
-            //                    <Complex name="MapDrawer">
-            //                      <Properties>
-            //                        <Simple name="ThemeType" value=
-            XElement levelThemeType = getFirstSimplePropertyNamed( getMapDrawer(), "ThemeType" );
-
-            //<Complex name="Root" type="ZX.ZXGameState, TheyAreBillions">
-            //  < Properties >
-            //    <Complex name="SurvivalModeParams">
-            XElement paramsComplex = getFirstComplexPropertyNamed( data, "SurvivalModeParams" );
-            //      <Properties>
-            //        <Simple name="ThemeType"
-            XElement paramsThemeType = getFirstSimplePropertyNamed( paramsComplex, "ThemeType" );
-
-            levelThemeType.SetAttributeValue( "value", themeValue );
-            paramsThemeType.SetAttributeValue( "value", themeValue );
-        }
-
         private XElement getMapDrawer()
         {
             //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
@@ -1344,64 +1327,6 @@ namespace TABSAT
                 mapDrawer = getFirstComplexPropertyNamed( getDataExtension(), "MapDrawer" );
             }
             return mapDrawer;
-        }
-
-        internal void splitSwarms()
-        {
-            /*
-             * The LevelEvents Collection appears to be duplicated (w.r.t. Generators) at different depths in a single save file,
-             * a single method works from both given the correct starting element.
-             */
-            void splitEasyAndHardSwarms( XElement collectionContainer )
-            {
-                XElement eventsItems = getFirstPropertyOfTypeNamed( collectionContainer, "Collection", "LevelEvents" ).Element( "Items" );
-                var easyComplex = ( from c in eventsItems.Elements( "Complex" )
-                                    where (string) getFirstSimplePropertyNamed( c, "Name" ).Attribute( "value" ) == "Swarm Easy"
-                                    select c ).FirstOrDefault();
-                if( easyComplex != null )
-                {
-                    getFirstSimplePropertyNamed( easyComplex, "Generators" ).SetAttributeValue( "value", GENERATORS_2_DIRECTIONS );
-                }
-
-                var hardComplex = ( from c in eventsItems.Elements( "Complex" )
-                                    where (string) getFirstSimplePropertyNamed( c, "Name" ).Attribute( "value" ) == "Swarm Hard"
-                                    select c ).FirstOrDefault();
-                if( hardComplex != null )
-                {
-                    getFirstSimplePropertyNamed( hardComplex, "Generators" ).SetAttributeValue( "value", GENERATORS_3_DIRECTIONS );
-                }
-            }
-
-            /*
-             *    <Complex name="LevelState">
-             *      <Properties>
-             *        <Collection name="LevelEvents" elementType="ZX.GameSystems.ZXLevelEvent, TheyAreBillions">
-             *		    <Items>
-             *            <Complex>
-             *              <Properties>
-             *                <Simple name="Name" value=
-             *                <Simple name="Generators" value=
-             */
-            // getFirstPropertyOfTypeNamed( levelComplex, "Collection", "LevelEvents" ).Element( "Items" );
-            splitEasyAndHardSwarms( levelComplex );
-
-            /*
-             *         <Complex name="CurrentGeneratedLevel">
-             *          <Properties>
-             *            <Complex name="Data">
-             *              <Properties>
-             *                <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
-             *                  <Properties>
-             *                    <Collection name="LevelEvents" elementType="ZX.GameSystems.ZXLevelEvent, TheyAreBillions">
-             *					  <Items>
-             *                        <Complex>
-             *                          <Properties>
-             *                            <Simple name="Name" value="Swarm Easy" />
-             *                            <Simple name="Generators" value=
-             */
-            // getFirstPropertyOfTypeNamed( getDataExtension(), "Collection", "LevelEvents" ).Element( "Items" );
-            splitEasyAndHardSwarms( getDataExtension() );
-
         }
 
         internal void addExtraSupplies( uint food, uint energy, uint workers )
@@ -1477,6 +1402,239 @@ namespace TABSAT
             {
                 getFirstSimplePropertyNamed( levelComplex, "Oil" ).SetAttributeValue( "value", storesCapacity );
             }
+        }
+
+        internal void changeTheme( ThemeType theme )
+        {
+            string themeValue = theme.ToString();
+            //Console.WriteLine( "Changing ThemeType to:" + themeValue );
+
+            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+            //                  <Properties>
+            //                    <Complex name="MapDrawer">
+            //                      <Properties>
+            //                        <Simple name="ThemeType" value=
+            XElement levelThemeType = getFirstSimplePropertyNamed( getMapDrawer(), "ThemeType" );
+
+            //<Complex name="Root" type="ZX.ZXGameState, TheyAreBillions">
+            //  < Properties >
+            //    <Complex name="SurvivalModeParams">
+            XElement paramsComplex = getFirstComplexPropertyNamed( data, "SurvivalModeParams" );
+            //      <Properties>
+            //        <Simple name="ThemeType"
+            XElement paramsThemeType = getFirstSimplePropertyNamed( paramsComplex, "ThemeType" );
+
+            levelThemeType.SetAttributeValue( "value", themeValue );
+            paramsThemeType.SetAttributeValue( "value", themeValue );
+        }
+
+        internal void splitSwarms()
+        {
+            /*
+             * The LevelEvents Collection appears to be duplicated (w.r.t. Generators) at different depths in a single save file,
+             * a single method works from both given the correct starting element.
+             */
+            void splitEasyAndHardSwarms( XElement collectionContainer )
+            {
+                XElement eventsItems = getFirstPropertyOfTypeNamed( collectionContainer, "Collection", "LevelEvents" ).Element( "Items" );
+                var easyComplex = ( from c in eventsItems.Elements( "Complex" )
+                                    where (string) getFirstSimplePropertyNamed( c, "Name" ).Attribute( "value" ) == "Swarm Easy"
+                                    select c ).FirstOrDefault();
+                if( easyComplex != null )
+                {
+                    getFirstSimplePropertyNamed( easyComplex, "Generators" ).SetAttributeValue( "value", GENERATORS_2_DIRECTIONS );
+                }
+
+                var hardComplex = ( from c in eventsItems.Elements( "Complex" )
+                                    where (string) getFirstSimplePropertyNamed( c, "Name" ).Attribute( "value" ) == "Swarm Hard"
+                                    select c ).FirstOrDefault();
+                if( hardComplex != null )
+                {
+                    getFirstSimplePropertyNamed( hardComplex, "Generators" ).SetAttributeValue( "value", GENERATORS_3_DIRECTIONS );
+                }
+            }
+
+            /*
+             *    <Complex name="LevelState">
+             *      <Properties>
+             *        <Collection name="LevelEvents" elementType="ZX.GameSystems.ZXLevelEvent, TheyAreBillions">
+             *		    <Items>
+             *            <Complex>
+             *              <Properties>
+             *                <Simple name="Name" value=
+             *                <Simple name="Generators" value=
+             */
+            // getFirstPropertyOfTypeNamed( levelComplex, "Collection", "LevelEvents" ).Element( "Items" );
+            splitEasyAndHardSwarms( levelComplex );
+
+            /*
+             *         <Complex name="CurrentGeneratedLevel">
+             *          <Properties>
+             *            <Complex name="Data">
+             *              <Properties>
+             *                <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+             *                  <Properties>
+             *                    <Collection name="LevelEvents" elementType="ZX.GameSystems.ZXLevelEvent, TheyAreBillions">
+             *					  <Items>
+             *                        <Complex>
+             *                          <Properties>
+             *                            <Simple name="Name" value="Swarm Easy" />
+             *                            <Simple name="Generators" value=
+             */
+            // getFirstPropertyOfTypeNamed( getDataExtension(), "Collection", "LevelEvents" ).Element( "Items" );
+            splitEasyAndHardSwarms( getDataExtension() );
+
+        }
+
+        internal void disableMayors()
+        {
+            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+            //                  <Properties>
+            //                    <Simple name="AllowMayors" value="True" />
+            XElement allowMayors = getFirstSimplePropertyNamed( getDataExtension(), "AllowMayors" );
+            allowMayors.SetAttributeValue( "value", "False" );
+        }
+
+        internal void scalePopulation( decimal scale )
+        {
+            if( scale < 0.0M )
+            {
+                throw new ArgumentOutOfRangeException( "Scale must not be negative." );
+            }
+
+            if( scale == 1.0M )
+            {
+                return;     // Nothing needs be done
+            }
+            else
+            {
+                int multiples = (int) scale;                // How many duplicates to certainly make of each zombie
+                double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per zombie
+                Random rand = new Random();
+                //Console.WriteLine( "multiples: " + multiples + ", chance: " + chance );
+
+                var zombieTypes = getLevelZombieTypesItems();
+
+                var selectedZombies = new LinkedList<XElement>();
+
+                XAttribute getCapacity( XElement col )
+                {
+                    // Get the capacity for each ZombieType
+                    /*
+                     *             <Item>
+                     *               <Simple />
+                     *               <Collection >
+                     *                 <Properties>
+                     *                   <Simple name="Capacity" value=
+                     * 
+                     */
+                    return ( from s in col.Element( "Properties" ).Elements( "Simple" )
+                             where (string) s.Attribute( "name" ) == "Capacity"
+                             select s ).First().Attribute( "value" );
+                }
+
+                if( scale < 1.0M )
+                {
+                    // chance is now chance to not remove existing zombies
+                    // selectedZombies will be those removed
+
+                    foreach( var t in zombieTypes )
+                    {
+                        var col = t.Element( "Collection" );
+
+                        if( scale == 0.0M )
+                        {
+                            // No need to iterate and count
+                            col.Element( "Items" ).RemoveNodes();
+
+                            getCapacity( col ).SetValue( 0 );
+                        }
+                        else
+                        {
+                            // 0 > scale < 1
+                            foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
+                            {
+                                if( chance < rand.NextDouble() )
+                                {
+                                    // Removing within foreach doen't work, without .ToList(). Might as well collect candidates so we also have an O(1) count for later too
+                                    selectedZombies.AddLast( com );
+                                }
+                            }
+
+                            //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
+
+                            foreach( var i in selectedZombies )
+                            {
+                                i.Remove();
+                            }
+
+                            var cap = getCapacity( col );
+                            UInt64 newCap = (UInt64) ( Convert.ToInt32( cap.Value ) - selectedZombies.Count );  // Assume actual UInt64 Capacity value is positive Int32 size and no less than Count removed
+                            cap.SetValue( newCap );
+
+                            selectedZombies.Clear();
+                        }
+                    }
+                }
+                else
+                {
+
+                    /*
+                     *        <Dictionary name="LevelFastSerializedEntities" >
+                     *          <Items>
+                     *            <Item>
+                     *              <Simple />
+                     *              <Collection >
+                     *                <Items>
+                     *                  <Complex>
+                     *                    <Properties>
+                     *                      <Simple name="A" value=
+                     */
+
+                    void duplicateZombie( XElement com, LinkedList<XElement> copiedZombies )
+                    {
+                        XElement zCopy = new XElement( com );       // Duplicate at the same position
+                        ( from s in zCopy.Element( "Properties" ).Elements( "Simple" )
+                          where (string) s.Attribute( "name" ) == "A"
+                          select s ).First().SetAttributeValue( "value", getNewID() );
+                        copiedZombies.AddLast( zCopy );
+                    }
+
+                    foreach( var t in zombieTypes )
+                    {
+                        //Console.WriteLine( "zombieType: " + t.Element( "Simple" ) );
+                        var col = t.Element( "Collection" );
+
+                        foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
+                        {
+                            // First the certain duplications
+                            for( int m = multiples; m <= multiples; m++ )
+                            {
+                                duplicateZombie( com, selectedZombies );
+                            }
+                            // And now the chance-based duplication
+                            if( chance >= rand.NextDouble() )   // If the chance is not less than the roll
+                            {
+                                duplicateZombie( com, selectedZombies );
+                            }
+                        }
+
+                        //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
+
+                        foreach( var i in selectedZombies )
+                        {
+                            col.Element( "Items" ).Add( i );
+                        }
+
+                        var cap = getCapacity( col );
+                        UInt64 newCap = Convert.ToUInt64( cap.Value ) + (UInt64) selectedZombies.Count;
+                        cap.SetValue( newCap );
+
+                        selectedZombies.Clear();
+                    }
+                }
+            }
+
         }
     }
 }

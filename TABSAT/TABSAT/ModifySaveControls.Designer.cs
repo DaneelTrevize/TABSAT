@@ -65,6 +65,8 @@
             this.reflectorTextBox = new System.Windows.Forms.TextBox();
             this.modifyHintLabel = new System.Windows.Forms.Label();
             this.generalGroupBox = new System.Windows.Forms.GroupBox();
+            this.zombieScaleNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.zombieScaleCheckBox = new System.Windows.Forms.CheckBox();
             this.disableMayorsCheckBox = new System.Windows.Forms.CheckBox();
             this.swarmsCheckBox = new System.Windows.Forms.CheckBox();
             this.themeComboBox = new System.Windows.Forms.ComboBox();
@@ -113,6 +115,7 @@
             this.reflectorGroupBox.SuspendLayout();
             this.processGroupBox.SuspendLayout();
             this.generalGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleNumericUpDown)).BeginInit();
             this.dataFlowLayoutPanel.SuspendLayout();
             this.vodGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vodStackNumericUpDown)).BeginInit();
@@ -582,16 +585,51 @@
             // 
             // generalGroupBox
             // 
+            this.generalGroupBox.Controls.Add(this.zombieScaleNumericUpDown);
+            this.generalGroupBox.Controls.Add(this.zombieScaleCheckBox);
             this.generalGroupBox.Controls.Add(this.disableMayorsCheckBox);
             this.generalGroupBox.Controls.Add(this.swarmsCheckBox);
             this.generalGroupBox.Controls.Add(this.themeComboBox);
             this.generalGroupBox.Controls.Add(this.themeCheckBox);
             this.generalGroupBox.Location = new System.Drawing.Point(3, 245);
             this.generalGroupBox.Name = "generalGroupBox";
-            this.generalGroupBox.Size = new System.Drawing.Size(220, 90);
+            this.generalGroupBox.Size = new System.Drawing.Size(220, 115);
             this.generalGroupBox.TabIndex = 5;
             this.generalGroupBox.TabStop = false;
             this.generalGroupBox.Text = "General Rules";
+            // 
+            // zombieScaleNumericUpDown
+            // 
+            this.zombieScaleNumericUpDown.DecimalPlaces = 1;
+            this.zombieScaleNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.zombieScaleNumericUpDown.Location = new System.Drawing.Point(174, 87);
+            this.zombieScaleNumericUpDown.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            65536});
+            this.zombieScaleNumericUpDown.Name = "zombieScaleNumericUpDown";
+            this.zombieScaleNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.zombieScaleNumericUpDown.TabIndex = 5;
+            this.zombieScaleNumericUpDown.Value = new decimal(new int[] {
+            11,
+            0,
+            0,
+            65536});
+            // 
+            // zombieScaleCheckBox
+            // 
+            this.zombieScaleCheckBox.AutoSize = true;
+            this.zombieScaleCheckBox.Location = new System.Drawing.Point(6, 88);
+            this.zombieScaleCheckBox.Name = "zombieScaleCheckBox";
+            this.zombieScaleCheckBox.Size = new System.Drawing.Size(172, 17);
+            this.zombieScaleCheckBox.TabIndex = 4;
+            this.zombieScaleCheckBox.Text = "Scale Zombie population        x";
+            this.zombieScaleCheckBox.UseVisualStyleBackColor = true;
             // 
             // disableMayorsCheckBox
             // 
@@ -669,7 +707,7 @@
             // 
             this.vodStackNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.vodStackNumericUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.vodStackNumericUpDown.Location = new System.Drawing.Point(107, 88);
+            this.vodStackNumericUpDown.Location = new System.Drawing.Point(188, 88);
             this.vodStackNumericUpDown.Maximum = new decimal(new int[] {
             5,
             0,
@@ -706,9 +744,9 @@
             this.vodStackRadioButton.AutoSize = true;
             this.vodStackRadioButton.Location = new System.Drawing.Point(6, 88);
             this.vodStackRadioButton.Name = "vodStackRadioButton";
-            this.vodStackRadioButton.Size = new System.Drawing.Size(105, 17);
+            this.vodStackRadioButton.Size = new System.Drawing.Size(186, 17);
             this.vodStackRadioButton.TabIndex = 4;
-            this.vodStackRadioButton.Text = "Stack buildings x";
+            this.vodStackRadioButton.Text = "Stack buildings                            x";
             this.vodStackRadioButton.UseVisualStyleBackColor = true;
             // 
             // vodReplaceRadioButton
@@ -910,9 +948,9 @@
             this.ccExtraWorkersLabel.AutoSize = true;
             this.ccExtraWorkersLabel.Location = new System.Drawing.Point(163, 66);
             this.ccExtraWorkersLabel.Name = "ccExtraWorkersLabel";
-            this.ccExtraWorkersLabel.Size = new System.Drawing.Size(12, 13);
+            this.ccExtraWorkersLabel.Size = new System.Drawing.Size(13, 13);
             this.ccExtraWorkersLabel.TabIndex = 8;
-            this.ccExtraWorkersLabel.Text = "x";
+            this.ccExtraWorkersLabel.Text = "+";
             // 
             // ccExtraEnergyLabel
             // 
@@ -920,9 +958,9 @@
             this.ccExtraEnergyLabel.AutoSize = true;
             this.ccExtraEnergyLabel.Location = new System.Drawing.Point(163, 43);
             this.ccExtraEnergyLabel.Name = "ccExtraEnergyLabel";
-            this.ccExtraEnergyLabel.Size = new System.Drawing.Size(12, 13);
+            this.ccExtraEnergyLabel.Size = new System.Drawing.Size(13, 13);
             this.ccExtraEnergyLabel.TabIndex = 7;
-            this.ccExtraEnergyLabel.Text = "x";
+            this.ccExtraEnergyLabel.Text = "+";
             // 
             // ccExtraFoodLabel
             // 
@@ -930,9 +968,9 @@
             this.ccExtraFoodLabel.AutoSize = true;
             this.ccExtraFoodLabel.Location = new System.Drawing.Point(163, 20);
             this.ccExtraFoodLabel.Name = "ccExtraFoodLabel";
-            this.ccExtraFoodLabel.Size = new System.Drawing.Size(12, 13);
+            this.ccExtraFoodLabel.Size = new System.Drawing.Size(13, 13);
             this.ccExtraFoodLabel.TabIndex = 6;
-            this.ccExtraFoodLabel.Text = "x";
+            this.ccExtraFoodLabel.Text = "+";
             // 
             // ccExtraWorkersCheckBox
             // 
@@ -1116,6 +1154,7 @@
             this.processGroupBox.PerformLayout();
             this.generalGroupBox.ResumeLayout(false);
             this.generalGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleNumericUpDown)).EndInit();
             this.dataFlowLayoutPanel.ResumeLayout(false);
             this.vodGroupBox.ResumeLayout(false);
             this.vodGroupBox.PerformLayout();
@@ -1215,5 +1254,7 @@
         private System.Windows.Forms.Label ccExtraFoodLabel;
         private System.Windows.Forms.CheckBox disableMayorsCheckBox;
         private System.Windows.Forms.CheckBox ccGiftCheckBox;
+        private System.Windows.Forms.NumericUpDown zombieScaleNumericUpDown;
+        private System.Windows.Forms.CheckBox zombieScaleCheckBox;
     }
 }

@@ -33,6 +33,8 @@ N.b. City Halls can spawn thousands more zombies and cause pathing issues, which
 * Changing the map Theme. This not only changes the visuals and background sound, but also inherits the rules modifiers of the standard themes, such as Frozen Highlands slowing zombies & increasing power consumption, or Desert Wasteland increasing zombie speed and range of noise.  
 See [the spreadsheets generated in the Modded Mayors repo](https://github.com/DaneelTrevize/Modded-Mayors/tree/master/Source) for the specific data from the MapThemes table.
 
+* Scaling the zombie population by a decimal factor, per zombie. E.g. 0.5 is a 50% chance to keep/remove each zombie. 2.1 would duplicate each zombie plus a 10% chance to triplicate them.
+
 ## Make the game harder
 
 * Enable Swarms (Waves) to come from several directions. Earlier swarms can come from any 2 cardinal directions at once, later swarms from any 3.  

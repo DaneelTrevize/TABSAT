@@ -47,6 +47,7 @@ namespace TABSAT
             generalCheckBoxes.Add( themeCheckBox );
             generalCheckBoxes.Add( swarmsCheckBox );
             generalCheckBoxes.Add( disableMayorsCheckBox );
+            generalCheckBoxes.Add( zombieScaleCheckBox );
 
             saveOpenFileDialog.Filter = "TAB Save Files|" + TAB.SAVES_FILTER;// + "|Data files|*.dat";
             saveOpenFileDialog.InitialDirectory = savesDirectory;
@@ -92,6 +93,7 @@ namespace TABSAT
             giftNumericUpDown.ValueChanged += numericHandler;
 
             themeComboBox.SelectedIndexChanged += comboHandler;
+            zombieScaleNumericUpDown.ValueChanged += numericHandler;
         }
 
         internal void reflectorOutputHandler( object sendingProcess, DataReceivedEventArgs outLine )
@@ -201,6 +203,10 @@ namespace TABSAT
             else if( num == giftNumericUpDown )
             {
                 ccGiftCheckBox.Checked = true;
+            }
+            else if( num == zombieScaleNumericUpDown )
+            {
+                zombieScaleCheckBox.Checked = true;
             }
         }
 
@@ -530,6 +536,12 @@ namespace TABSAT
                 {
                     statusWriter( "Disabling Mayors." );
                     dataEditor.disableMayors();
+                }
+                if( zombieScaleCheckBox.Checked )
+                {
+                    decimal scale = zombieScaleNumericUpDown.Value;
+                    statusWriter( "Scaling Zombie population x" + scale  + '.' );
+                    dataEditor.scalePopulation( scale );
                 }
 
                 dataEditor.save();
