@@ -79,7 +79,7 @@ namespace TABSAT
             // 
             this.updatesPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.updatesPictureBox.Image = global::TABSAT.Properties.Resources.TAB_updates_menu;
-            this.updatesPictureBox.Location = new System.Drawing.Point(283, 42);
+            this.updatesPictureBox.Location = new System.Drawing.Point(277, 42);
             this.updatesPictureBox.Name = "updatesPictureBox";
             this.updatesPictureBox.Size = new System.Drawing.Size(457, 520);
             this.updatesPictureBox.TabIndex = 1;
@@ -88,7 +88,7 @@ namespace TABSAT
             // propertiesPictureBox
             // 
             this.propertiesPictureBox.Image = global::TABSAT.Properties.Resources.TAB_properties_menu;
-            this.propertiesPictureBox.Location = new System.Drawing.Point(6, 42);
+            this.propertiesPictureBox.Location = new System.Drawing.Point(13, 42);
             this.propertiesPictureBox.Name = "propertiesPictureBox";
             this.propertiesPictureBox.Size = new System.Drawing.Size(255, 257);
             this.propertiesPictureBox.TabIndex = 0;
@@ -109,7 +109,7 @@ namespace TABSAT
             // 
             this.updatesLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.updatesLabel.AutoSize = true;
-            this.updatesLabel.Location = new System.Drawing.Point(280, 26);
+            this.updatesLabel.Location = new System.Drawing.Point(274, 26);
             this.updatesLabel.Name = "updatesLabel";
             this.updatesLabel.Size = new System.Drawing.Size(124, 13);
             this.updatesLabel.TabIndex = 1;
@@ -118,7 +118,7 @@ namespace TABSAT
             // propertiesLabel
             // 
             this.propertiesLabel.AutoSize = true;
-            this.propertiesLabel.Location = new System.Drawing.Point(6, 26);
+            this.propertiesLabel.Location = new System.Drawing.Point(13, 26);
             this.propertiesLabel.Name = "propertiesLabel";
             this.propertiesLabel.Size = new System.Drawing.Size(197, 13);
             this.propertiesLabel.TabIndex = 0;

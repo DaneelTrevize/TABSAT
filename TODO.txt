@@ -1,4 +1,6 @@
 
+Add a cap to population scaling, to keep it below the ~65k soft TAB limit?
+
 Offer to toggle Enable/Disable state of Mayors, Showing full map, etc? So users needn't manually edit to revert such options.
 
 Potentially decrypt any save file upon selection, in order to assess and present the current state? Requires triggering the reflector popup though.
@@ -26,7 +28,7 @@ Refactor TABSAT's own Console...WriteLine() to use a UI textfield/list, at the b
 Would TABReflector need to technically be a graphical application, with a hidden window, in order for Process.WaitForInputIdle() to best solve the Sleep() race condition?
 
 
-Consider using something like Octokit.net or Squirrel.Windows for auto-updating TABSAT from Github?
+Expand use of Octokit.net, or something like Squirrel.Windows, for auto-updating TABSAT from Github?
 
 ----
 

@@ -38,7 +38,7 @@ namespace TABSAT
             var latest = releases[0];
             if( latest.TagName.Equals( lastKnownMasterTag ) )
             {
-                statusWriter( "You appear to be running an unversioned develoment build of TABSAT > v" + lastKnownMasterTag );
+                statusWriter( "You appear to be running an unversioned development build of TABSAT > v" + lastKnownMasterTag );
                 return;
             }
 
