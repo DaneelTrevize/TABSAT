@@ -45,7 +45,7 @@ namespace TABSAT
             var previous = releases[1];
             if( previous.TagName.Equals( lastKnownMasterTag ) )
             {
-                statusWriter( "You are running the latest released version, TABSAT v" + lastKnownMasterTag );
+                statusWriter( "You are running the latest released version, TABSAT v" + latest.TagName );
             }
             else
             {
