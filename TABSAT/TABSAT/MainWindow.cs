@@ -9,6 +9,7 @@ namespace TABSAT
 
         private ModifySaveControls modifySaveC;
         private AutoBackupControls autoBackupC;
+        private UpdatesManager updatesM;
 
         public delegate void StatusWriterDelegate( string status );
 
@@ -53,6 +54,8 @@ namespace TABSAT
             initAutoBackupControl( savesDirectory );
 
             tabControl1.SelectedIndexChanged += tabControl_SelectedIndexChanged;
+
+            updatesM = new UpdatesManager( statusWriter );
         }
 
         // We don't care for using the Opacity or TransparencyKey properties, so we can reduce flicker from drawing many controls

@@ -1,0 +1,1 @@
+(git describe --tags --abbrev=0 master) | Out-File .\Resources\masterTag.txt -NoNewline
