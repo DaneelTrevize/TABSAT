@@ -1071,14 +1071,6 @@ namespace TABSAT
             return uniqueIDs.Last();
         }
 
-        internal void removeVODs()
-        {
-            foreach( XElement v in getVODs().ToList() )  // no ToList() leads to only removing 1 <item> per save modify cycle?!
-            {
-                v.Remove();
-            }
-        }
-
         internal void resizeVODs( VodSizes vodSize )
         {
             /*
@@ -1139,11 +1131,25 @@ namespace TABSAT
             }
         }
 
-
-        internal void stackVODs( uint multiplier )
+        internal void stackVODbuildings( VodSizes size, decimal scale )
         {
-            duplicateLevelEntities( getVODs(), multiplier );
-            //duplicateLevelEntities( getLevelEntitiesOfTypes( @"ZX.Entities.Ranger, TheyAreBillions" ), multiplier );
+            if( scale < 0.0M )
+            {
+                throw new ArgumentOutOfRangeException( "Scale must not be negative." );
+            }
+
+            if( scale == 1.0M )
+            {
+                return;     // Nothing needs be done
+            }
+            else
+            {
+                int multiples = (int) scale;                // How many duplicates to certainly make of each entity
+                double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per entity
+
+                // Need some add/remove entity delegates, to refactor this and zombie type scaling?
+
+            }
         }
 
         internal void giftEntities( GiftableTypes giftable, uint count )

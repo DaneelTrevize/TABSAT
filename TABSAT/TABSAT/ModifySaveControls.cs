@@ -11,6 +11,8 @@ namespace TABSAT
     {
         private readonly ModifyManager modifyManager;
         private readonly StatusWriterDelegate statusWriter;
+        private readonly List<CheckBox> zombieScalingCheckBoxes;
+        private readonly List<CheckBox> vodCheckBoxes;
         private readonly List<CheckBox> ccExtrasCheckBoxes;
         private readonly List<CheckBox> warehousesFillCheckBoxes;
         private readonly List<CheckBox> generalCheckBoxes;
@@ -33,6 +35,19 @@ namespace TABSAT
 
             modifyManager = m;
             statusWriter = sW;
+            zombieScalingCheckBoxes = new List<CheckBox>( 7 );
+            zombieScalingCheckBoxes.Add( zombieScaleCheckBox );
+            zombieScalingCheckBoxes.Add( zombieScaleWeakCheckBox );
+            zombieScalingCheckBoxes.Add( zombieScaleMediumCheckBox );
+            zombieScalingCheckBoxes.Add( zombieScaleDressedCheckBox );
+            zombieScalingCheckBoxes.Add( zombieScaleStrongCheckBox );
+            zombieScalingCheckBoxes.Add( zombieScaleVenomCheckBox );
+            zombieScalingCheckBoxes.Add( zombieScaleHarpyCheckBox );
+            vodCheckBoxes = new List<CheckBox>( 4 );
+            vodCheckBoxes.Add( vodReplaceCheckBox );
+            vodCheckBoxes.Add( vodStackDwellingCheckBox );
+            vodCheckBoxes.Add( vodStackTavernsCheckBox);
+            vodCheckBoxes.Add( vodStackCityHallsCheckBox );
             ccExtrasCheckBoxes = new List<CheckBox>( 3 );
             ccExtrasCheckBoxes.Add( ccExtraFoodCheckBox );
             ccExtrasCheckBoxes.Add( ccExtraEnergyCheckBox );
@@ -47,7 +62,6 @@ namespace TABSAT
             generalCheckBoxes.Add( themeCheckBox );
             generalCheckBoxes.Add( swarmsCheckBox );
             generalCheckBoxes.Add( disableMayorsCheckBox );
-            generalCheckBoxes.Add( zombieScaleCheckBox );
 
             saveOpenFileDialog.Filter = "TAB Save Files|" + TAB.SAVES_FILTER;// + "|Data files|*.dat";
             saveOpenFileDialog.InitialDirectory = savesDirectory;
@@ -83,7 +97,9 @@ namespace TABSAT
             fogNumericUpDown.ValueChanged += numericHandler;
 
             vodReplaceComboBox.SelectedIndexChanged += comboHandler;
-            vodStackNumericUpDown.ValueChanged += numericHandler;
+            vodStackDwellingsNumericUpDown.ValueChanged += numericHandler;
+            vodStackTavernsNumericUpDown.ValueChanged += numericHandler;
+            vodStackCityHallsNumericUpDown.ValueChanged += numericHandler;
 
             ccFoodNumericUpDown.ValueChanged += numericHandler;
             ccEnergyNumericUpDown.ValueChanged += numericHandler;
@@ -94,6 +110,8 @@ namespace TABSAT
 
             themeComboBox.SelectedIndexChanged += comboHandler;
             zombieScaleNumericUpDown.ValueChanged += numericHandler;
+
+            reflectorShowOutputCheckBox.Checked = false;
         }
 
         internal void reflectorOutputHandler( object sendingProcess, DataReceivedEventArgs outLine )
@@ -106,7 +124,7 @@ namespace TABSAT
             {
                 if( !String.IsNullOrEmpty( outLine.Data ) )
                 {
-                    reflectorTextBox.AppendText( outLine.Data + Environment.NewLine );
+                    reflectorTextBox.AppendText( Environment.NewLine + outLine.Data );
                 }
             }
         }
@@ -154,17 +172,17 @@ namespace TABSAT
         {
             var box = (ComboBox) sender;
 
-            if( box == mutantReplaceAllComboBox )
+            if( box == vodReplaceComboBox )
+            {
+                vodReplaceCheckBox.Checked = true;
+            }
+            else if( box == mutantReplaceAllComboBox )
             {
                 mutantReplaceAllRadio.Checked = true;
             }
             else if( box == mutantMoveWhatComboBox || box == mutantMoveGlobalComboBox )
             {
                 mutantsMoveRadio.Checked = true;
-            }
-            else if( box == vodReplaceComboBox )
-            {
-                vodReplaceRadioButton.Checked = true;
             }
             else if( box == giftComboBox )
             {
@@ -180,13 +198,50 @@ namespace TABSAT
         {
             var num = (NumericUpDown) sender;
 
-            if( num == fogNumericUpDown )
+            if( num == zombieScaleNumericUpDown )
+            {
+                zombieScaleCheckBox.Checked = true;
+                // And alter the specific type NumericUpDowns to match, without checking their checkboxes instead?
+            }
+            else if( num == zombieScaleWeakNumericUpDown )
+            {
+                zombieScaleWeakCheckBox.Checked = true;
+            }
+            else if( num == zombieScaleMediumNumericUpDown )
+            {
+                zombieScaleMediumCheckBox.Checked = true;
+            }
+            else if( num == zombieScaleDressedNumericUpDown )
+            {
+                zombieScaleDressedCheckBox.Checked = true;
+            }
+            else if( num == zombieScaleStrongNumericUpDown )
+            {
+                zombieScaleStrongCheckBox.Checked = true;
+            }
+            else if( num == zombieScaleVenomNumericUpDown )
+            {
+                zombieScaleVenomCheckBox.Checked = true;
+            }
+            else if( num == zombieScaleHarpyNumericUpDown )
+            {
+                zombieScaleHarpyCheckBox.Checked = true;
+            }
+            else if( num == vodStackDwellingsNumericUpDown )
+            {
+                vodStackDwellingCheckBox.Checked = true;
+            }
+            else if( num == vodStackTavernsNumericUpDown )
+            {
+                vodStackTavernsCheckBox.Checked = true;
+            }
+            else if( num == vodStackCityHallsNumericUpDown )
+            {
+                vodStackCityHallsCheckBox.Checked = true;
+            }
+            else if( num == fogNumericUpDown )
             {
                 fogClearRadioButton.Checked = true;
-            }
-            else if( num == vodStackNumericUpDown )
-            {
-                vodStackRadioButton.Checked = true;
             }
             else if( num == ccFoodNumericUpDown )
             {
@@ -204,9 +259,23 @@ namespace TABSAT
             {
                 ccGiftCheckBox.Checked = true;
             }
-            else if( num == zombieScaleNumericUpDown )
+        }
+
+        private void vodReplaceCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            if( ( (CheckBox) sender ).Checked )
             {
-                zombieScaleCheckBox.Checked = true;
+                vodStackDwellingCheckBox.Checked = false;
+                vodStackTavernsCheckBox.Checked = false;
+                vodStackCityHallsCheckBox.Checked = false;
+            }
+        }
+
+        private void notVodReplaceCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            if( ( (CheckBox) sender ).Checked )
+            {
+                vodReplaceCheckBox.Checked = false;
             }
         }
 
@@ -216,6 +285,20 @@ namespace TABSAT
             if( ( (RadioButton) sender ).Checked )
             {
                 reassessExtractionOption();
+            }
+        }
+
+        private void reflectorShowOutputCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            if( reflectorShowOutputCheckBox.Checked )
+            {
+                splitContainer1.Panel2Collapsed = false;
+                reflectorShowOutputCheckBox.Text = "Hide Output";
+            }
+            else
+            {
+                splitContainer1.Panel2Collapsed = true;
+                reflectorShowOutputCheckBox.Text = "Show Output";
             }
         }
 
@@ -244,8 +327,9 @@ namespace TABSAT
         private void disableChoices()
         {
             // Don't let different options be chosen during file operations
-            mutantGroupBox.Enabled = false;
+            zombieScalingGroupBox.Enabled = false;
             vodGroupBox.Enabled = false;
+            mutantGroupBox.Enabled = false;
             fogGroupBox.Enabled = false;
             ccExtraGroupBox.Enabled = false;
             warehousesGroupBox.Enabled = false;
@@ -254,13 +338,14 @@ namespace TABSAT
             modifyGroupBox.Enabled = false;
             //manualGroupBox.Enabled = false;    // Don't disable this for when we're doing a multi-button-click-required manual cycle
             extractGroupBox.Enabled = false;
-            reflectorGroupBox.Enabled = false;
+            reflectorStopGroupBox.Enabled = false;
         }
 
         private void enableChoices()
         {
-            mutantGroupBox.Enabled = true;
             vodGroupBox.Enabled = true;
+            zombieScalingGroupBox.Enabled = true;
+            mutantGroupBox.Enabled = true;
             fogGroupBox.Enabled = true;
             ccExtraGroupBox.Enabled = true;
             warehousesGroupBox.Enabled = true;
@@ -269,7 +354,7 @@ namespace TABSAT
             modifyGroupBox.Enabled = true;
             //manualGroupBox.Enabled = true;
             extractGroupBox.Enabled = true;
-            reflectorGroupBox.Enabled = true;
+            reflectorStopGroupBox.Enabled = true;
         }
 
         private void modifySaveButton_Click( object sender, EventArgs e )
@@ -419,7 +504,7 @@ namespace TABSAT
 
         private bool modifyExtractedSave()
         {
-            if( mutantsNothingRadio.Checked && vodLeaveRadioButton.Checked && fogLeaveRadioButton.Checked && !anyChecked( ccExtrasCheckBoxes ) && !ccGiftCheckBox.Checked && !anyChecked( warehousesFillCheckBoxes ) && !anyChecked( generalCheckBoxes ) )
+            if( !anyChecked( zombieScalingCheckBoxes ) && !anyChecked( vodCheckBoxes ) && mutantsNothingRadio.Checked && fogLeaveRadioButton.Checked && !anyChecked( ccExtrasCheckBoxes ) && !ccGiftCheckBox.Checked && !anyChecked( warehousesFillCheckBoxes ) && !anyChecked( generalCheckBoxes ) )
             {
                 statusWriter( "No modifications chosen." );
                 return true;
@@ -450,22 +535,32 @@ namespace TABSAT
                 }
 
                 // VODs
-                if( vodRemoveRadioButton.Checked )
-                {
-                    statusWriter( "Removing VODs." );
-                    dataEditor.removeVODs();
-                }
-                else if( vodReplaceRadioButton.Checked )
+                if( vodReplaceCheckBox.Checked )
                 {
                     KeyValuePair<SaveEditor.VodSizes, string> kv = (KeyValuePair<SaveEditor.VodSizes, string>) vodReplaceComboBox.SelectedItem;
                     statusWriter( "Replacing all VOD buildings with " + kv.Value + '.' );
                     dataEditor.resizeVODs( kv.Key );
                 }
-                else if( vodStackRadioButton.Checked )
+                else
                 {
-                    UInt32 multiplier = Convert.ToUInt32( vodStackNumericUpDown.Value );
-                    statusWriter( "Stacking VOD buildings x" + multiplier + '.' );
-                    dataEditor.stackVODs( multiplier );
+                    if( vodStackDwellingCheckBox.Checked )
+                    {
+                        decimal scale = vodStackDwellingsNumericUpDown.Value;
+                        statusWriter( "Scaling Dwellings count x" + scale + '.' );
+                        dataEditor.stackVODbuildings( SaveEditor.VodSizes.SMALL, scale );
+                    }
+                    if( vodStackTavernsCheckBox.Checked )
+                    {
+                        decimal scale = vodStackTavernsNumericUpDown.Value;
+                        statusWriter( "Scaling Taverns count x" + scale + '.' );
+                        dataEditor.stackVODbuildings( SaveEditor.VodSizes.MEDIUM, scale );
+                    }
+                    if( vodStackCityHallsCheckBox.Checked )
+                    {
+                        decimal scale = vodStackCityHallsNumericUpDown.Value;
+                        statusWriter( "Scaling City Halls count x" + scale + '.' );
+                        dataEditor.stackVODbuildings( SaveEditor.VodSizes.LARGE, scale );
+                    }
                 }
 
                 // Fog of War

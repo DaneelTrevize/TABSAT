@@ -13,13 +13,6 @@ namespace TABSAT
 
         public delegate void StatusWriterDelegate( string status );
 
-        internal static void shiftTextViewRight( TextBox textBox )
-        {
-            // Set the cursor to the end of the file path, to better see the file name
-            textBox.SelectionStart = textBox.Text.Length;
-            textBox.SelectionLength = 0;
-        }
-
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -77,7 +70,7 @@ namespace TABSAT
             }
             else
             {
-                statusTextBox.AppendText( DateTime.UtcNow.ToString( NOW_UTC_FORMAT ) + " - " + status + Environment.NewLine );
+                statusTextBox.AppendText( Environment.NewLine + DateTime.UtcNow.ToString( NOW_UTC_FORMAT ) + " - " + status );
             }
         }
 

@@ -57,7 +57,7 @@
             this.mutantReplaceAllRadio = new System.Windows.Forms.RadioButton();
             this.mutantsRemoveRadio = new System.Windows.Forms.RadioButton();
             this.mutantsNothingRadio = new System.Windows.Forms.RadioButton();
-            this.reflectorGroupBox = new System.Windows.Forms.GroupBox();
+            this.reflectorStopGroupBox = new System.Windows.Forms.GroupBox();
             this.reflectorExtractRadioButton = new System.Windows.Forms.RadioButton();
             this.reflectorRepackRadioButton = new System.Windows.Forms.RadioButton();
             this.reflectorExitRadioButton = new System.Windows.Forms.RadioButton();
@@ -65,21 +65,38 @@
             this.reflectorTextBox = new System.Windows.Forms.TextBox();
             this.modifyHintLabel = new System.Windows.Forms.Label();
             this.generalGroupBox = new System.Windows.Forms.GroupBox();
-            this.zombieScaleNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.zombieScaleCheckBox = new System.Windows.Forms.CheckBox();
             this.disableMayorsCheckBox = new System.Windows.Forms.CheckBox();
             this.swarmsCheckBox = new System.Windows.Forms.CheckBox();
             this.themeComboBox = new System.Windows.Forms.ComboBox();
             this.themeCheckBox = new System.Windows.Forms.CheckBox();
+            this.zombieScaleNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.zombieScaleCheckBox = new System.Windows.Forms.CheckBox();
             this.saveOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.dataFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.zombieScalingGroupBox = new System.Windows.Forms.GroupBox();
+            this.zombieScaleHarpyNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.zombieScaleVenomNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.zombieScaleStrongNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.zombieScaleDressedNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.zombieScaleMediumNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.zombieScaleWeakNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.zombieScaleHarpyCheckBox = new System.Windows.Forms.CheckBox();
+            this.zombieScaleVenomCheckBox = new System.Windows.Forms.CheckBox();
+            this.zombieScaleStrongCheckBox = new System.Windows.Forms.CheckBox();
+            this.zombieScaleDividerLabel = new System.Windows.Forms.Label();
+            this.zombieScaleDressedCheckBox = new System.Windows.Forms.CheckBox();
+            this.zombieScaleMediumCheckBox = new System.Windows.Forms.CheckBox();
+            this.zombieScaleWeakCheckBox = new System.Windows.Forms.CheckBox();
             this.vodGroupBox = new System.Windows.Forms.GroupBox();
-            this.vodStackNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.vodDividerLabel = new System.Windows.Forms.Label();
+            this.vodStackCityHallsNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.vodStackCityHallsCheckBox = new System.Windows.Forms.CheckBox();
+            this.vodStackTavernsNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.vodStackTavernsCheckBox = new System.Windows.Forms.CheckBox();
             this.vodReplaceComboBox = new System.Windows.Forms.ComboBox();
-            this.vodStackRadioButton = new System.Windows.Forms.RadioButton();
-            this.vodReplaceRadioButton = new System.Windows.Forms.RadioButton();
-            this.vodRemoveRadioButton = new System.Windows.Forms.RadioButton();
-            this.vodLeaveRadioButton = new System.Windows.Forms.RadioButton();
+            this.vodReplaceCheckBox = new System.Windows.Forms.CheckBox();
+            this.vodStackDwellingsNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.vodStackDwellingCheckBox = new System.Windows.Forms.CheckBox();
             this.ccExtraGroupBox = new System.Windows.Forms.GroupBox();
             this.giftComboBox = new System.Windows.Forms.ComboBox();
             this.ccFoodNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -101,7 +118,10 @@
             this.warehousesFillGoldCheckBox = new System.Windows.Forms.CheckBox();
             this.warehousesFillStoneCheckBox = new System.Windows.Forms.CheckBox();
             this.processFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.processPanel = new System.Windows.Forms.Panel();
+            this.reflectorPanel = new System.Windows.Forms.Panel();
+            this.reflectorgroupBox = new System.Windows.Forms.GroupBox();
+            this.reflectorStopButton = new System.Windows.Forms.Button();
+            this.reflectorShowOutputCheckBox = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.modifySaveBackgroundWorker = new System.ComponentModel.BackgroundWorker();
@@ -112,13 +132,22 @@
             this.fogGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fogNumericUpDown)).BeginInit();
             this.mutantGroupBox.SuspendLayout();
-            this.reflectorGroupBox.SuspendLayout();
+            this.reflectorStopGroupBox.SuspendLayout();
             this.processGroupBox.SuspendLayout();
             this.generalGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleNumericUpDown)).BeginInit();
             this.dataFlowLayoutPanel.SuspendLayout();
+            this.zombieScalingGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleHarpyNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleVenomNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleStrongNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleDressedNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleMediumNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleWeakNumericUpDown)).BeginInit();
             this.vodGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vodStackNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vodStackCityHallsNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vodStackTavernsNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vodStackDwellingsNumericUpDown)).BeginInit();
             this.ccExtraGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ccFoodNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ccEnergyNumericUpDown)).BeginInit();
@@ -126,7 +155,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.giftNumericUpDown)).BeginInit();
             this.warehousesGroupBox.SuspendLayout();
             this.processFlowLayoutPanel.SuspendLayout();
-            this.processPanel.SuspendLayout();
+            this.reflectorPanel.SuspendLayout();
+            this.reflectorgroupBox.SuspendLayout();
             this.tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -139,7 +169,7 @@
             this.extractGroupBox.Controls.Add(this.extractLeaveRadioButton);
             this.extractGroupBox.Controls.Add(this.extractTidyRadioButton);
             this.extractGroupBox.Controls.Add(this.extractManualRadioButton);
-            this.extractGroupBox.Location = new System.Drawing.Point(162, 0);
+            this.extractGroupBox.Location = new System.Drawing.Point(510, 69);
             this.extractGroupBox.Name = "extractGroupBox";
             this.extractGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.extractGroupBox.Size = new System.Drawing.Size(131, 90);
@@ -188,7 +218,7 @@
             this.manualGroupBox.Controls.Add(this.repackSaveButton);
             this.manualGroupBox.Controls.Add(this.extractSaveButton);
             this.manualGroupBox.Enabled = false;
-            this.manualGroupBox.Location = new System.Drawing.Point(54, 3);
+            this.manualGroupBox.Location = new System.Drawing.Point(119, 3);
             this.manualGroupBox.Name = "manualGroupBox";
             this.manualGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.manualGroupBox.Size = new System.Drawing.Size(384, 60);
@@ -235,10 +265,10 @@
             this.saveFileGroupBox.Controls.Add(this.saveFileChooseButton);
             this.saveFileGroupBox.Controls.Add(this.backupCheckBox);
             this.saveFileGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.saveFileGroupBox.Location = new System.Drawing.Point(6, 408);
+            this.saveFileGroupBox.Location = new System.Drawing.Point(6, 486);
             this.saveFileGroupBox.Margin = new System.Windows.Forms.Padding(6);
             this.saveFileGroupBox.Name = "saveFileGroupBox";
-            this.saveFileGroupBox.Size = new System.Drawing.Size(573, 50);
+            this.saveFileGroupBox.Size = new System.Drawing.Size(638, 50);
             this.saveFileGroupBox.TabIndex = 0;
             this.saveFileGroupBox.TabStop = false;
             this.saveFileGroupBox.Text = "Save File";
@@ -250,7 +280,7 @@
             this.saveFileTextBox.Name = "saveFileTextBox";
             this.saveFileTextBox.ReadOnly = true;
             this.saveFileTextBox.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.saveFileTextBox.Size = new System.Drawing.Size(318, 20);
+            this.saveFileTextBox.Size = new System.Drawing.Size(383, 20);
             this.saveFileTextBox.TabIndex = 0;
             this.saveFileTextBox.TabStop = false;
             this.saveFileTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -259,7 +289,7 @@
             // saveFileChooseButton
             // 
             this.saveFileChooseButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.saveFileChooseButton.Location = new System.Drawing.Point(447, 12);
+            this.saveFileChooseButton.Location = new System.Drawing.Point(512, 12);
             this.saveFileChooseButton.Name = "saveFileChooseButton";
             this.saveFileChooseButton.Size = new System.Drawing.Size(120, 30);
             this.saveFileChooseButton.TabIndex = 0;
@@ -283,7 +313,7 @@
             // modifyGroupBox
             // 
             this.modifyGroupBox.Controls.Add(this.modifySaveButton);
-            this.modifyGroupBox.Location = new System.Drawing.Point(444, 3);
+            this.modifyGroupBox.Location = new System.Drawing.Point(509, 3);
             this.modifyGroupBox.Name = "modifyGroupBox";
             this.modifyGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.modifyGroupBox.Size = new System.Drawing.Size(132, 60);
@@ -308,10 +338,10 @@
             this.fogGroupBox.Controls.Add(this.fogShowFullRadioButton);
             this.fogGroupBox.Controls.Add(this.fogRemoveRadioButton);
             this.fogGroupBox.Controls.Add(this.fogLeaveRadioButton);
-            this.fogGroupBox.Location = new System.Drawing.Point(3, 124);
+            this.fogGroupBox.Location = new System.Drawing.Point(354, 194);
             this.fogGroupBox.Name = "fogGroupBox";
             this.fogGroupBox.Size = new System.Drawing.Size(220, 115);
-            this.fogGroupBox.TabIndex = 2;
+            this.fogGroupBox.TabIndex = 3;
             this.fogGroupBox.TabStop = false;
             this.fogGroupBox.Text = "Fog of War";
             // 
@@ -396,10 +426,10 @@
             this.mutantGroupBox.Controls.Add(this.mutantReplaceAllRadio);
             this.mutantGroupBox.Controls.Add(this.mutantsRemoveRadio);
             this.mutantGroupBox.Controls.Add(this.mutantsNothingRadio);
-            this.mutantGroupBox.Location = new System.Drawing.Point(3, 3);
+            this.mutantGroupBox.Location = new System.Drawing.Point(3, 194);
             this.mutantGroupBox.Name = "mutantGroupBox";
             this.mutantGroupBox.Size = new System.Drawing.Size(345, 115);
-            this.mutantGroupBox.TabIndex = 0;
+            this.mutantGroupBox.TabIndex = 2;
             this.mutantGroupBox.TabStop = false;
             this.mutantGroupBox.Text = "Mutants";
             // 
@@ -499,18 +529,18 @@
             this.mutantsNothingRadio.Text = "Do not modify";
             this.mutantsNothingRadio.UseVisualStyleBackColor = true;
             // 
-            // reflectorGroupBox
+            // reflectorStopGroupBox
             // 
-            this.reflectorGroupBox.Controls.Add(this.reflectorExtractRadioButton);
-            this.reflectorGroupBox.Controls.Add(this.reflectorRepackRadioButton);
-            this.reflectorGroupBox.Controls.Add(this.reflectorExitRadioButton);
-            this.reflectorGroupBox.Location = new System.Drawing.Point(3, 0);
-            this.reflectorGroupBox.Name = "reflectorGroupBox";
-            this.reflectorGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.reflectorGroupBox.Size = new System.Drawing.Size(152, 90);
-            this.reflectorGroupBox.TabIndex = 2;
-            this.reflectorGroupBox.TabStop = false;
-            this.reflectorGroupBox.Text = "Reflector Stops:";
+            this.reflectorStopGroupBox.Controls.Add(this.reflectorExtractRadioButton);
+            this.reflectorStopGroupBox.Controls.Add(this.reflectorRepackRadioButton);
+            this.reflectorStopGroupBox.Controls.Add(this.reflectorExitRadioButton);
+            this.reflectorStopGroupBox.Location = new System.Drawing.Point(137, 0);
+            this.reflectorStopGroupBox.Name = "reflectorStopGroupBox";
+            this.reflectorStopGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.reflectorStopGroupBox.Size = new System.Drawing.Size(152, 90);
+            this.reflectorStopGroupBox.TabIndex = 2;
+            this.reflectorStopGroupBox.TabStop = false;
+            this.reflectorStopGroupBox.Text = "Reflector Stops:";
             // 
             // reflectorExtractRadioButton
             // 
@@ -552,10 +582,10 @@
             this.processGroupBox.Location = new System.Drawing.Point(0, 0);
             this.processGroupBox.Margin = new System.Windows.Forms.Padding(6);
             this.processGroupBox.Name = "processGroupBox";
-            this.processGroupBox.Size = new System.Drawing.Size(585, 76);
+            this.processGroupBox.Size = new System.Drawing.Size(650, 56);
             this.processGroupBox.TabIndex = 0;
             this.processGroupBox.TabStop = false;
-            this.processGroupBox.Text = "Reflector Process";
+            this.processGroupBox.Text = "Reflector Process Output";
             // 
             // reflectorTextBox
             // 
@@ -565,16 +595,17 @@
             this.reflectorTextBox.Multiline = true;
             this.reflectorTextBox.Name = "reflectorTextBox";
             this.reflectorTextBox.ReadOnly = true;
-            this.reflectorTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.reflectorTextBox.Size = new System.Drawing.Size(579, 57);
+            this.reflectorTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.reflectorTextBox.Size = new System.Drawing.Size(644, 37);
             this.reflectorTextBox.TabIndex = 0;
+            this.reflectorTextBox.Text = "Reflector not yet deployed.";
             this.reflectorTextBox.WordWrap = false;
             // 
             // modifyHintLabel
             // 
             this.modifyHintLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.modifyHintLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.modifyHintLabel.Location = new System.Drawing.Point(44, 4);
+            this.modifyHintLabel.Location = new System.Drawing.Point(76, 4);
             this.modifyHintLabel.MinimumSize = new System.Drawing.Size(2, 30);
             this.modifyHintLabel.Name = "modifyHintLabel";
             this.modifyHintLabel.Size = new System.Drawing.Size(497, 30);
@@ -585,51 +616,16 @@
             // 
             // generalGroupBox
             // 
-            this.generalGroupBox.Controls.Add(this.zombieScaleNumericUpDown);
-            this.generalGroupBox.Controls.Add(this.zombieScaleCheckBox);
             this.generalGroupBox.Controls.Add(this.disableMayorsCheckBox);
             this.generalGroupBox.Controls.Add(this.swarmsCheckBox);
             this.generalGroupBox.Controls.Add(this.themeComboBox);
             this.generalGroupBox.Controls.Add(this.themeCheckBox);
-            this.generalGroupBox.Location = new System.Drawing.Point(3, 245);
+            this.generalGroupBox.Location = new System.Drawing.Point(354, 315);
             this.generalGroupBox.Name = "generalGroupBox";
-            this.generalGroupBox.Size = new System.Drawing.Size(220, 115);
-            this.generalGroupBox.TabIndex = 5;
+            this.generalGroupBox.Size = new System.Drawing.Size(220, 90);
+            this.generalGroupBox.TabIndex = 6;
             this.generalGroupBox.TabStop = false;
             this.generalGroupBox.Text = "General Rules";
-            // 
-            // zombieScaleNumericUpDown
-            // 
-            this.zombieScaleNumericUpDown.DecimalPlaces = 1;
-            this.zombieScaleNumericUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.zombieScaleNumericUpDown.Location = new System.Drawing.Point(174, 87);
-            this.zombieScaleNumericUpDown.Maximum = new decimal(new int[] {
-            20,
-            0,
-            0,
-            65536});
-            this.zombieScaleNumericUpDown.Name = "zombieScaleNumericUpDown";
-            this.zombieScaleNumericUpDown.Size = new System.Drawing.Size(40, 20);
-            this.zombieScaleNumericUpDown.TabIndex = 5;
-            this.zombieScaleNumericUpDown.Value = new decimal(new int[] {
-            11,
-            0,
-            0,
-            65536});
-            // 
-            // zombieScaleCheckBox
-            // 
-            this.zombieScaleCheckBox.AutoSize = true;
-            this.zombieScaleCheckBox.Location = new System.Drawing.Point(6, 88);
-            this.zombieScaleCheckBox.Name = "zombieScaleCheckBox";
-            this.zombieScaleCheckBox.Size = new System.Drawing.Size(172, 17);
-            this.zombieScaleCheckBox.TabIndex = 4;
-            this.zombieScaleCheckBox.Text = "Scale Zombie population        x";
-            this.zombieScaleCheckBox.UseVisualStyleBackColor = true;
             // 
             // disableMayorsCheckBox
             // 
@@ -661,7 +657,7 @@
             this.themeComboBox.Location = new System.Drawing.Point(106, 16);
             this.themeComboBox.Name = "themeComboBox";
             this.themeComboBox.Size = new System.Drawing.Size(108, 21);
-            this.themeComboBox.TabIndex = 1;
+            this.themeComboBox.TabIndex = 0;
             // 
             // themeCheckBox
             // 
@@ -669,15 +665,50 @@
             this.themeCheckBox.Location = new System.Drawing.Point(6, 19);
             this.themeCheckBox.Name = "themeCheckBox";
             this.themeCheckBox.Size = new System.Drawing.Size(107, 17);
-            this.themeCheckBox.TabIndex = 0;
+            this.themeCheckBox.TabIndex = 1;
             this.themeCheckBox.Text = "Change theme to";
             this.themeCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // zombieScaleNumericUpDown
+            // 
+            this.zombieScaleNumericUpDown.DecimalPlaces = 1;
+            this.zombieScaleNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.zombieScaleNumericUpDown.Location = new System.Drawing.Point(174, 18);
+            this.zombieScaleNumericUpDown.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            65536});
+            this.zombieScaleNumericUpDown.Name = "zombieScaleNumericUpDown";
+            this.zombieScaleNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.zombieScaleNumericUpDown.TabIndex = 0;
+            this.zombieScaleNumericUpDown.Value = new decimal(new int[] {
+            11,
+            0,
+            0,
+            65536});
+            this.zombieScaleNumericUpDown.ValueChanged += new System.EventHandler(this.numericUpDown_ValueChanged);
+            // 
+            // zombieScaleCheckBox
+            // 
+            this.zombieScaleCheckBox.AutoSize = true;
+            this.zombieScaleCheckBox.Location = new System.Drawing.Point(6, 19);
+            this.zombieScaleCheckBox.Name = "zombieScaleCheckBox";
+            this.zombieScaleCheckBox.Size = new System.Drawing.Size(152, 17);
+            this.zombieScaleCheckBox.TabIndex = 1;
+            this.zombieScaleCheckBox.Text = "All non-Giant/Mutant types";
+            this.zombieScaleCheckBox.UseVisualStyleBackColor = true;
             // 
             // dataFlowLayoutPanel
             // 
             this.dataFlowLayoutPanel.AutoScroll = true;
-            this.dataFlowLayoutPanel.Controls.Add(this.mutantGroupBox);
+            this.dataFlowLayoutPanel.Controls.Add(this.zombieScalingGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.vodGroupBox);
+            this.dataFlowLayoutPanel.Controls.Add(this.mutantGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.fogGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.ccExtraGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.warehousesGroupBox);
@@ -685,47 +716,335 @@
             this.dataFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataFlowLayoutPanel.Location = new System.Drawing.Point(3, 41);
             this.dataFlowLayoutPanel.Name = "dataFlowLayoutPanel";
-            this.dataFlowLayoutPanel.Size = new System.Drawing.Size(579, 358);
+            this.dataFlowLayoutPanel.Size = new System.Drawing.Size(644, 436);
             this.dataFlowLayoutPanel.TabIndex = 0;
+            // 
+            // zombieScalingGroupBox
+            // 
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleHarpyNumericUpDown);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleVenomNumericUpDown);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleStrongNumericUpDown);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleDressedNumericUpDown);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleMediumNumericUpDown);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleWeakNumericUpDown);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleHarpyCheckBox);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleVenomCheckBox);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleStrongCheckBox);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleDividerLabel);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleDressedCheckBox);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleMediumCheckBox);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleWeakCheckBox);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleNumericUpDown);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleCheckBox);
+            this.zombieScalingGroupBox.Location = new System.Drawing.Point(3, 3);
+            this.zombieScalingGroupBox.Name = "zombieScalingGroupBox";
+            this.zombieScalingGroupBox.Size = new System.Drawing.Size(220, 185);
+            this.zombieScalingGroupBox.TabIndex = 0;
+            this.zombieScalingGroupBox.TabStop = false;
+            this.zombieScalingGroupBox.Text = "Zombie Population Scaling";
+            // 
+            // zombieScaleHarpyNumericUpDown
+            // 
+            this.zombieScaleHarpyNumericUpDown.DecimalPlaces = 1;
+            this.zombieScaleHarpyNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.zombieScaleHarpyNumericUpDown.Location = new System.Drawing.Point(174, 160);
+            this.zombieScaleHarpyNumericUpDown.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            65536});
+            this.zombieScaleHarpyNumericUpDown.Name = "zombieScaleHarpyNumericUpDown";
+            this.zombieScaleHarpyNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.zombieScaleHarpyNumericUpDown.TabIndex = 12;
+            this.zombieScaleHarpyNumericUpDown.Value = new decimal(new int[] {
+            11,
+            0,
+            0,
+            65536});
+            // 
+            // zombieScaleVenomNumericUpDown
+            // 
+            this.zombieScaleVenomNumericUpDown.DecimalPlaces = 1;
+            this.zombieScaleVenomNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.zombieScaleVenomNumericUpDown.Location = new System.Drawing.Point(174, 137);
+            this.zombieScaleVenomNumericUpDown.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            65536});
+            this.zombieScaleVenomNumericUpDown.Name = "zombieScaleVenomNumericUpDown";
+            this.zombieScaleVenomNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.zombieScaleVenomNumericUpDown.TabIndex = 10;
+            this.zombieScaleVenomNumericUpDown.Value = new decimal(new int[] {
+            11,
+            0,
+            0,
+            65536});
+            // 
+            // zombieScaleStrongNumericUpDown
+            // 
+            this.zombieScaleStrongNumericUpDown.DecimalPlaces = 1;
+            this.zombieScaleStrongNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.zombieScaleStrongNumericUpDown.Location = new System.Drawing.Point(174, 114);
+            this.zombieScaleStrongNumericUpDown.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            65536});
+            this.zombieScaleStrongNumericUpDown.Name = "zombieScaleStrongNumericUpDown";
+            this.zombieScaleStrongNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.zombieScaleStrongNumericUpDown.TabIndex = 8;
+            this.zombieScaleStrongNumericUpDown.Value = new decimal(new int[] {
+            11,
+            0,
+            0,
+            65536});
+            // 
+            // zombieScaleDressedNumericUpDown
+            // 
+            this.zombieScaleDressedNumericUpDown.DecimalPlaces = 1;
+            this.zombieScaleDressedNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.zombieScaleDressedNumericUpDown.Location = new System.Drawing.Point(174, 91);
+            this.zombieScaleDressedNumericUpDown.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            65536});
+            this.zombieScaleDressedNumericUpDown.Name = "zombieScaleDressedNumericUpDown";
+            this.zombieScaleDressedNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.zombieScaleDressedNumericUpDown.TabIndex = 6;
+            this.zombieScaleDressedNumericUpDown.Value = new decimal(new int[] {
+            11,
+            0,
+            0,
+            65536});
+            // 
+            // zombieScaleMediumNumericUpDown
+            // 
+            this.zombieScaleMediumNumericUpDown.DecimalPlaces = 1;
+            this.zombieScaleMediumNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.zombieScaleMediumNumericUpDown.Location = new System.Drawing.Point(174, 68);
+            this.zombieScaleMediumNumericUpDown.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            65536});
+            this.zombieScaleMediumNumericUpDown.Name = "zombieScaleMediumNumericUpDown";
+            this.zombieScaleMediumNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.zombieScaleMediumNumericUpDown.TabIndex = 4;
+            this.zombieScaleMediumNumericUpDown.Value = new decimal(new int[] {
+            11,
+            0,
+            0,
+            65536});
+            // 
+            // zombieScaleWeakNumericUpDown
+            // 
+            this.zombieScaleWeakNumericUpDown.DecimalPlaces = 1;
+            this.zombieScaleWeakNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.zombieScaleWeakNumericUpDown.Location = new System.Drawing.Point(174, 45);
+            this.zombieScaleWeakNumericUpDown.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            65536});
+            this.zombieScaleWeakNumericUpDown.Name = "zombieScaleWeakNumericUpDown";
+            this.zombieScaleWeakNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.zombieScaleWeakNumericUpDown.TabIndex = 2;
+            this.zombieScaleWeakNumericUpDown.Value = new decimal(new int[] {
+            11,
+            0,
+            0,
+            65536});
+            this.zombieScaleWeakNumericUpDown.ValueChanged += new System.EventHandler(this.numericUpDown_ValueChanged);
+            // 
+            // zombieScaleHarpyCheckBox
+            // 
+            this.zombieScaleHarpyCheckBox.AutoSize = true;
+            this.zombieScaleHarpyCheckBox.Location = new System.Drawing.Point(6, 161);
+            this.zombieScaleHarpyCheckBox.Name = "zombieScaleHarpyCheckBox";
+            this.zombieScaleHarpyCheckBox.Size = new System.Drawing.Size(54, 17);
+            this.zombieScaleHarpyCheckBox.TabIndex = 13;
+            this.zombieScaleHarpyCheckBox.Text = "Harpy";
+            this.zombieScaleHarpyCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // zombieScaleVenomCheckBox
+            // 
+            this.zombieScaleVenomCheckBox.AutoSize = true;
+            this.zombieScaleVenomCheckBox.Location = new System.Drawing.Point(6, 138);
+            this.zombieScaleVenomCheckBox.Name = "zombieScaleVenomCheckBox";
+            this.zombieScaleVenomCheckBox.Size = new System.Drawing.Size(98, 17);
+            this.zombieScaleVenomCheckBox.TabIndex = 11;
+            this.zombieScaleVenomCheckBox.Text = "Venom (Spitter)";
+            this.zombieScaleVenomCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // zombieScaleStrongCheckBox
+            // 
+            this.zombieScaleStrongCheckBox.AutoSize = true;
+            this.zombieScaleStrongCheckBox.Location = new System.Drawing.Point(6, 115);
+            this.zombieScaleStrongCheckBox.Name = "zombieScaleStrongCheckBox";
+            this.zombieScaleStrongCheckBox.Size = new System.Drawing.Size(89, 17);
+            this.zombieScaleStrongCheckBox.TabIndex = 9;
+            this.zombieScaleStrongCheckBox.Text = "Strong (Fatty)";
+            this.zombieScaleStrongCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // zombieScaleDividerLabel
+            // 
+            this.zombieScaleDividerLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.zombieScaleDividerLabel.Location = new System.Drawing.Point(2, 41);
+            this.zombieScaleDividerLabel.Name = "zombieScaleDividerLabel";
+            this.zombieScaleDividerLabel.Size = new System.Drawing.Size(217, 2);
+            this.zombieScaleDividerLabel.TabIndex = 13;
+            // 
+            // zombieScaleDressedCheckBox
+            // 
+            this.zombieScaleDressedCheckBox.AutoSize = true;
+            this.zombieScaleDressedCheckBox.Location = new System.Drawing.Point(6, 92);
+            this.zombieScaleDressedCheckBox.Name = "zombieScaleDressedCheckBox";
+            this.zombieScaleDressedCheckBox.Size = new System.Drawing.Size(121, 17);
+            this.zombieScaleDressedCheckBox.TabIndex = 7;
+            this.zombieScaleDressedCheckBox.Text = "Dressed (Executive)";
+            this.zombieScaleDressedCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // zombieScaleMediumCheckBox
+            // 
+            this.zombieScaleMediumCheckBox.AutoSize = true;
+            this.zombieScaleMediumCheckBox.Location = new System.Drawing.Point(6, 69);
+            this.zombieScaleMediumCheckBox.Name = "zombieScaleMediumCheckBox";
+            this.zombieScaleMediumCheckBox.Size = new System.Drawing.Size(107, 17);
+            this.zombieScaleMediumCheckBox.TabIndex = 5;
+            this.zombieScaleMediumCheckBox.Text = "Medium (Runner)";
+            this.zombieScaleMediumCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // zombieScaleWeakCheckBox
+            // 
+            this.zombieScaleWeakCheckBox.AutoSize = true;
+            this.zombieScaleWeakCheckBox.Location = new System.Drawing.Point(6, 46);
+            this.zombieScaleWeakCheckBox.Name = "zombieScaleWeakCheckBox";
+            this.zombieScaleWeakCheckBox.Size = new System.Drawing.Size(98, 17);
+            this.zombieScaleWeakCheckBox.TabIndex = 3;
+            this.zombieScaleWeakCheckBox.Text = "Weak (Walker)";
+            this.zombieScaleWeakCheckBox.UseVisualStyleBackColor = true;
             // 
             // vodGroupBox
             // 
-            this.vodGroupBox.Controls.Add(this.vodStackNumericUpDown);
+            this.vodGroupBox.Controls.Add(this.vodDividerLabel);
+            this.vodGroupBox.Controls.Add(this.vodStackCityHallsNumericUpDown);
+            this.vodGroupBox.Controls.Add(this.vodStackCityHallsCheckBox);
+            this.vodGroupBox.Controls.Add(this.vodStackTavernsNumericUpDown);
+            this.vodGroupBox.Controls.Add(this.vodStackTavernsCheckBox);
             this.vodGroupBox.Controls.Add(this.vodReplaceComboBox);
-            this.vodGroupBox.Controls.Add(this.vodStackRadioButton);
-            this.vodGroupBox.Controls.Add(this.vodReplaceRadioButton);
-            this.vodGroupBox.Controls.Add(this.vodRemoveRadioButton);
-            this.vodGroupBox.Controls.Add(this.vodLeaveRadioButton);
-            this.vodGroupBox.Location = new System.Drawing.Point(354, 3);
+            this.vodGroupBox.Controls.Add(this.vodReplaceCheckBox);
+            this.vodGroupBox.Controls.Add(this.vodStackDwellingsNumericUpDown);
+            this.vodGroupBox.Controls.Add(this.vodStackDwellingCheckBox);
+            this.vodGroupBox.Location = new System.Drawing.Point(229, 3);
             this.vodGroupBox.Name = "vodGroupBox";
             this.vodGroupBox.Size = new System.Drawing.Size(220, 115);
             this.vodGroupBox.TabIndex = 1;
             this.vodGroupBox.TabStop = false;
             this.vodGroupBox.Text = "Villages of Doom";
             // 
-            // vodStackNumericUpDown
+            // vodDividerLabel
             // 
-            this.vodStackNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.vodStackNumericUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.vodStackNumericUpDown.Location = new System.Drawing.Point(188, 88);
-            this.vodStackNumericUpDown.Maximum = new decimal(new int[] {
-            5,
+            this.vodDividerLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.vodDividerLabel.Location = new System.Drawing.Point(2, 41);
+            this.vodDividerLabel.Name = "vodDividerLabel";
+            this.vodDividerLabel.Size = new System.Drawing.Size(217, 2);
+            this.vodDividerLabel.TabIndex = 12;
+            // 
+            // vodStackCityHallsNumericUpDown
+            // 
+            this.vodStackCityHallsNumericUpDown.DecimalPlaces = 1;
+            this.vodStackCityHallsNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.vodStackCityHallsNumericUpDown.Location = new System.Drawing.Point(174, 92);
+            this.vodStackCityHallsNumericUpDown.Maximum = new decimal(new int[] {
+            3,
             0,
             0,
             0});
-            this.vodStackNumericUpDown.Minimum = new decimal(new int[] {
+            this.vodStackCityHallsNumericUpDown.Name = "vodStackCityHallsNumericUpDown";
+            this.vodStackCityHallsNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.vodStackCityHallsNumericUpDown.TabIndex = 6;
+            this.vodStackCityHallsNumericUpDown.Value = new decimal(new int[] {
             2,
             0,
             0,
             0});
-            this.vodStackNumericUpDown.Name = "vodStackNumericUpDown";
-            this.vodStackNumericUpDown.Size = new System.Drawing.Size(26, 20);
-            this.vodStackNumericUpDown.TabIndex = 5;
-            this.vodStackNumericUpDown.Value = new decimal(new int[] {
+            // 
+            // vodStackCityHallsCheckBox
+            // 
+            this.vodStackCityHallsCheckBox.AutoSize = true;
+            this.vodStackCityHallsCheckBox.Location = new System.Drawing.Point(6, 92);
+            this.vodStackCityHallsCheckBox.Name = "vodStackCityHallsCheckBox";
+            this.vodStackCityHallsCheckBox.Size = new System.Drawing.Size(100, 17);
+            this.vodStackCityHallsCheckBox.TabIndex = 7;
+            this.vodStackCityHallsCheckBox.Text = "Stack City Halls";
+            this.vodStackCityHallsCheckBox.UseVisualStyleBackColor = true;
+            this.vodStackCityHallsCheckBox.CheckedChanged += new System.EventHandler(this.notVodReplaceCheckBox_CheckedChanged);
+            // 
+            // vodStackTavernsNumericUpDown
+            // 
+            this.vodStackTavernsNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.vodStackTavernsNumericUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.vodStackTavernsNumericUpDown.DecimalPlaces = 1;
+            this.vodStackTavernsNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.vodStackTavernsNumericUpDown.Location = new System.Drawing.Point(174, 68);
+            this.vodStackTavernsNumericUpDown.Maximum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.vodStackTavernsNumericUpDown.Name = "vodStackTavernsNumericUpDown";
+            this.vodStackTavernsNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.vodStackTavernsNumericUpDown.TabIndex = 4;
+            this.vodStackTavernsNumericUpDown.Value = new decimal(new int[] {
             2,
             0,
             0,
             0});
+            // 
+            // vodStackTavernsCheckBox
+            // 
+            this.vodStackTavernsCheckBox.AutoSize = true;
+            this.vodStackTavernsCheckBox.Location = new System.Drawing.Point(6, 69);
+            this.vodStackTavernsCheckBox.Name = "vodStackTavernsCheckBox";
+            this.vodStackTavernsCheckBox.Size = new System.Drawing.Size(96, 17);
+            this.vodStackTavernsCheckBox.TabIndex = 5;
+            this.vodStackTavernsCheckBox.Text = "Stack Taverns";
+            this.vodStackTavernsCheckBox.UseVisualStyleBackColor = true;
+            this.vodStackTavernsCheckBox.CheckedChanged += new System.EventHandler(this.notVodReplaceCheckBox_CheckedChanged);
             // 
             // vodReplaceComboBox
             // 
@@ -734,52 +1053,57 @@
             this.vodReplaceComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.vodReplaceComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.vodReplaceComboBox.FormattingEnabled = true;
-            this.vodReplaceComboBox.Location = new System.Drawing.Point(145, 63);
+            this.vodReplaceComboBox.Location = new System.Drawing.Point(145, 16);
             this.vodReplaceComboBox.Name = "vodReplaceComboBox";
             this.vodReplaceComboBox.Size = new System.Drawing.Size(69, 21);
-            this.vodReplaceComboBox.TabIndex = 3;
+            this.vodReplaceComboBox.TabIndex = 0;
             // 
-            // vodStackRadioButton
+            // vodReplaceCheckBox
             // 
-            this.vodStackRadioButton.AutoSize = true;
-            this.vodStackRadioButton.Location = new System.Drawing.Point(6, 88);
-            this.vodStackRadioButton.Name = "vodStackRadioButton";
-            this.vodStackRadioButton.Size = new System.Drawing.Size(186, 17);
-            this.vodStackRadioButton.TabIndex = 4;
-            this.vodStackRadioButton.Text = "Stack buildings                            x";
-            this.vodStackRadioButton.UseVisualStyleBackColor = true;
+            this.vodReplaceCheckBox.AutoSize = true;
+            this.vodReplaceCheckBox.Location = new System.Drawing.Point(6, 19);
+            this.vodReplaceCheckBox.Name = "vodReplaceCheckBox";
+            this.vodReplaceCheckBox.Size = new System.Drawing.Size(145, 17);
+            this.vodReplaceCheckBox.TabIndex = 1;
+            this.vodReplaceCheckBox.Text = "Replace all buildings with";
+            this.vodReplaceCheckBox.UseVisualStyleBackColor = true;
+            this.vodReplaceCheckBox.CheckedChanged += new System.EventHandler(this.vodReplaceCheckBox_CheckedChanged);
             // 
-            // vodReplaceRadioButton
+            // vodStackDwellingsNumericUpDown
             // 
-            this.vodReplaceRadioButton.AutoSize = true;
-            this.vodReplaceRadioButton.Location = new System.Drawing.Point(6, 65);
-            this.vodReplaceRadioButton.Name = "vodReplaceRadioButton";
-            this.vodReplaceRadioButton.Size = new System.Drawing.Size(144, 17);
-            this.vodReplaceRadioButton.TabIndex = 2;
-            this.vodReplaceRadioButton.Text = "Replace all buildings with";
-            this.vodReplaceRadioButton.UseVisualStyleBackColor = true;
+            this.vodStackDwellingsNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.vodStackDwellingsNumericUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.vodStackDwellingsNumericUpDown.DecimalPlaces = 1;
+            this.vodStackDwellingsNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.vodStackDwellingsNumericUpDown.Location = new System.Drawing.Point(174, 46);
+            this.vodStackDwellingsNumericUpDown.Maximum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.vodStackDwellingsNumericUpDown.Name = "vodStackDwellingsNumericUpDown";
+            this.vodStackDwellingsNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.vodStackDwellingsNumericUpDown.TabIndex = 2;
+            this.vodStackDwellingsNumericUpDown.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
             // 
-            // vodRemoveRadioButton
+            // vodStackDwellingCheckBox
             // 
-            this.vodRemoveRadioButton.AutoSize = true;
-            this.vodRemoveRadioButton.Location = new System.Drawing.Point(6, 42);
-            this.vodRemoveRadioButton.Name = "vodRemoveRadioButton";
-            this.vodRemoveRadioButton.Size = new System.Drawing.Size(79, 17);
-            this.vodRemoveRadioButton.TabIndex = 1;
-            this.vodRemoveRadioButton.Text = "Remove All";
-            this.vodRemoveRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // vodLeaveRadioButton
-            // 
-            this.vodLeaveRadioButton.AutoSize = true;
-            this.vodLeaveRadioButton.Checked = true;
-            this.vodLeaveRadioButton.Location = new System.Drawing.Point(6, 19);
-            this.vodLeaveRadioButton.Name = "vodLeaveRadioButton";
-            this.vodLeaveRadioButton.Size = new System.Drawing.Size(90, 17);
-            this.vodLeaveRadioButton.TabIndex = 0;
-            this.vodLeaveRadioButton.TabStop = true;
-            this.vodLeaveRadioButton.Text = "Do not modify";
-            this.vodLeaveRadioButton.UseVisualStyleBackColor = true;
+            this.vodStackDwellingCheckBox.AutoSize = true;
+            this.vodStackDwellingCheckBox.Location = new System.Drawing.Point(6, 46);
+            this.vodStackDwellingCheckBox.Name = "vodStackDwellingCheckBox";
+            this.vodStackDwellingCheckBox.Size = new System.Drawing.Size(102, 17);
+            this.vodStackDwellingCheckBox.TabIndex = 3;
+            this.vodStackDwellingCheckBox.Text = "Stack Dwellings";
+            this.vodStackDwellingCheckBox.UseVisualStyleBackColor = true;
+            this.vodStackDwellingCheckBox.CheckedChanged += new System.EventHandler(this.notVodReplaceCheckBox_CheckedChanged);
             // 
             // ccExtraGroupBox
             // 
@@ -796,10 +1120,10 @@
             this.ccExtraGroupBox.Controls.Add(this.ccExtraWorkersCheckBox);
             this.ccExtraGroupBox.Controls.Add(this.ccExtraEnergyCheckBox);
             this.ccExtraGroupBox.Controls.Add(this.ccExtraFoodCheckBox);
-            this.ccExtraGroupBox.Location = new System.Drawing.Point(229, 124);
+            this.ccExtraGroupBox.Location = new System.Drawing.Point(3, 315);
             this.ccExtraGroupBox.Name = "ccExtraGroupBox";
             this.ccExtraGroupBox.Size = new System.Drawing.Size(220, 115);
-            this.ccExtraGroupBox.TabIndex = 3;
+            this.ccExtraGroupBox.TabIndex = 4;
             this.ccExtraGroupBox.TabStop = false;
             this.ccExtraGroupBox.Text = "Command Center Extra Supplies";
             // 
@@ -836,7 +1160,7 @@
             0});
             this.ccFoodNumericUpDown.Name = "ccFoodNumericUpDown";
             this.ccFoodNumericUpDown.Size = new System.Drawing.Size(40, 20);
-            this.ccFoodNumericUpDown.TabIndex = 1;
+            this.ccFoodNumericUpDown.TabIndex = 0;
             this.ccFoodNumericUpDown.Value = new decimal(new int[] {
             10,
             0,
@@ -864,7 +1188,7 @@
             0});
             this.ccEnergyNumericUpDown.Name = "ccEnergyNumericUpDown";
             this.ccEnergyNumericUpDown.Size = new System.Drawing.Size(40, 20);
-            this.ccEnergyNumericUpDown.TabIndex = 3;
+            this.ccEnergyNumericUpDown.TabIndex = 2;
             this.ccEnergyNumericUpDown.Value = new decimal(new int[] {
             10,
             0,
@@ -892,7 +1216,7 @@
             0});
             this.ccWorkersNumericUpDown.Name = "ccWorkersNumericUpDown";
             this.ccWorkersNumericUpDown.Size = new System.Drawing.Size(40, 20);
-            this.ccWorkersNumericUpDown.TabIndex = 5;
+            this.ccWorkersNumericUpDown.TabIndex = 4;
             this.ccWorkersNumericUpDown.Value = new decimal(new int[] {
             10,
             0,
@@ -915,7 +1239,7 @@
             0});
             this.giftNumericUpDown.Name = "giftNumericUpDown";
             this.giftNumericUpDown.Size = new System.Drawing.Size(35, 20);
-            this.giftNumericUpDown.TabIndex = 8;
+            this.giftNumericUpDown.TabIndex = 6;
             this.giftNumericUpDown.Value = new decimal(new int[] {
             1,
             0,
@@ -928,7 +1252,7 @@
             this.ccGiftCheckBox.Location = new System.Drawing.Point(6, 88);
             this.ccGiftCheckBox.Name = "ccGiftCheckBox";
             this.ccGiftCheckBox.Size = new System.Drawing.Size(42, 17);
-            this.ccGiftCheckBox.TabIndex = 6;
+            this.ccGiftCheckBox.TabIndex = 8;
             this.ccGiftCheckBox.Text = "Gift";
             this.ccGiftCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -978,7 +1302,7 @@
             this.ccExtraWorkersCheckBox.Location = new System.Drawing.Point(6, 65);
             this.ccExtraWorkersCheckBox.Name = "ccExtraWorkersCheckBox";
             this.ccExtraWorkersCheckBox.Size = new System.Drawing.Size(66, 17);
-            this.ccExtraWorkersCheckBox.TabIndex = 4;
+            this.ccExtraWorkersCheckBox.TabIndex = 5;
             this.ccExtraWorkersCheckBox.Text = "Workers";
             this.ccExtraWorkersCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -988,7 +1312,7 @@
             this.ccExtraEnergyCheckBox.Location = new System.Drawing.Point(6, 42);
             this.ccExtraEnergyCheckBox.Name = "ccExtraEnergyCheckBox";
             this.ccExtraEnergyCheckBox.Size = new System.Drawing.Size(59, 17);
-            this.ccExtraEnergyCheckBox.TabIndex = 2;
+            this.ccExtraEnergyCheckBox.TabIndex = 3;
             this.ccExtraEnergyCheckBox.Text = "Energy";
             this.ccExtraEnergyCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -998,7 +1322,7 @@
             this.ccExtraFoodCheckBox.Location = new System.Drawing.Point(6, 19);
             this.ccExtraFoodCheckBox.Name = "ccExtraFoodCheckBox";
             this.ccExtraFoodCheckBox.Size = new System.Drawing.Size(50, 17);
-            this.ccExtraFoodCheckBox.TabIndex = 0;
+            this.ccExtraFoodCheckBox.TabIndex = 1;
             this.ccExtraFoodCheckBox.Text = "Food";
             this.ccExtraFoodCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -1009,10 +1333,10 @@
             this.warehousesGroupBox.Controls.Add(this.warehousesFillWoodCheckBox);
             this.warehousesGroupBox.Controls.Add(this.warehousesFillGoldCheckBox);
             this.warehousesGroupBox.Controls.Add(this.warehousesFillStoneCheckBox);
-            this.warehousesGroupBox.Location = new System.Drawing.Point(455, 124);
+            this.warehousesGroupBox.Location = new System.Drawing.Point(229, 315);
             this.warehousesGroupBox.Name = "warehousesGroupBox";
             this.warehousesGroupBox.Size = new System.Drawing.Size(119, 90);
-            this.warehousesGroupBox.TabIndex = 4;
+            this.warehousesGroupBox.TabIndex = 5;
             this.warehousesGroupBox.TabStop = false;
             this.warehousesGroupBox.Text = "Fill Storage";
             // 
@@ -1071,22 +1395,58 @@
             this.processFlowLayoutPanel.AutoScroll = true;
             this.processFlowLayoutPanel.Controls.Add(this.modifyGroupBox);
             this.processFlowLayoutPanel.Controls.Add(this.manualGroupBox);
-            this.processFlowLayoutPanel.Controls.Add(this.processPanel);
+            this.processFlowLayoutPanel.Controls.Add(this.extractGroupBox);
+            this.processFlowLayoutPanel.Controls.Add(this.reflectorPanel);
             this.processFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.processFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.processFlowLayoutPanel.Location = new System.Drawing.Point(3, 467);
+            this.processFlowLayoutPanel.Location = new System.Drawing.Point(3, 545);
             this.processFlowLayoutPanel.Name = "processFlowLayoutPanel";
-            this.processFlowLayoutPanel.Size = new System.Drawing.Size(579, 166);
+            this.processFlowLayoutPanel.Size = new System.Drawing.Size(644, 167);
             this.processFlowLayoutPanel.TabIndex = 0;
             // 
-            // processPanel
+            // reflectorPanel
             // 
-            this.processPanel.Controls.Add(this.reflectorGroupBox);
-            this.processPanel.Controls.Add(this.extractGroupBox);
-            this.processPanel.Location = new System.Drawing.Point(283, 69);
-            this.processPanel.Name = "processPanel";
-            this.processPanel.Size = new System.Drawing.Size(293, 90);
-            this.processPanel.TabIndex = 0;
+            this.reflectorPanel.Controls.Add(this.reflectorStopGroupBox);
+            this.reflectorPanel.Controls.Add(this.reflectorgroupBox);
+            this.reflectorPanel.Location = new System.Drawing.Point(214, 69);
+            this.reflectorPanel.Name = "reflectorPanel";
+            this.reflectorPanel.Size = new System.Drawing.Size(290, 90);
+            this.reflectorPanel.TabIndex = 0;
+            // 
+            // reflectorgroupBox
+            // 
+            this.reflectorgroupBox.Controls.Add(this.reflectorStopButton);
+            this.reflectorgroupBox.Controls.Add(this.reflectorShowOutputCheckBox);
+            this.reflectorgroupBox.Location = new System.Drawing.Point(0, 0);
+            this.reflectorgroupBox.Name = "reflectorgroupBox";
+            this.reflectorgroupBox.Size = new System.Drawing.Size(131, 90);
+            this.reflectorgroupBox.TabIndex = 4;
+            this.reflectorgroupBox.TabStop = false;
+            this.reflectorgroupBox.Text = "Reflector Process";
+            // 
+            // reflectorStopButton
+            // 
+            this.reflectorStopButton.Enabled = false;
+            this.reflectorStopButton.Location = new System.Drawing.Point(6, 18);
+            this.reflectorStopButton.Name = "reflectorStopButton";
+            this.reflectorStopButton.Size = new System.Drawing.Size(120, 30);
+            this.reflectorStopButton.TabIndex = 1;
+            this.reflectorStopButton.Text = "Stop Reflector";
+            this.reflectorStopButton.UseVisualStyleBackColor = true;
+            // 
+            // reflectorShowOutputCheckBox
+            // 
+            this.reflectorShowOutputCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
+            this.reflectorShowOutputCheckBox.Checked = true;
+            this.reflectorShowOutputCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.reflectorShowOutputCheckBox.Location = new System.Drawing.Point(6, 54);
+            this.reflectorShowOutputCheckBox.Name = "reflectorShowOutputCheckBox";
+            this.reflectorShowOutputCheckBox.Size = new System.Drawing.Size(120, 30);
+            this.reflectorShowOutputCheckBox.TabIndex = 0;
+            this.reflectorShowOutputCheckBox.Text = "Hide Output";
+            this.reflectorShowOutputCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.reflectorShowOutputCheckBox.UseVisualStyleBackColor = true;
+            this.reflectorShowOutputCheckBox.CheckedChanged += new System.EventHandler(this.reflectorShowOutputCheckBox_CheckedChanged);
             // 
             // tableLayoutPanel
             // 
@@ -1102,10 +1462,10 @@
             this.tableLayoutPanel.Name = "tableLayoutPanel";
             this.tableLayoutPanel.RowCount = 4;
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 68F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 72F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 62F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 32F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(585, 636);
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 28F));
+            this.tableLayoutPanel.Size = new System.Drawing.Size(650, 715);
             this.tableLayoutPanel.TabIndex = 0;
             // 
             // splitContainer1
@@ -1118,14 +1478,14 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.tableLayoutPanel);
-            this.splitContainer1.Panel1MinSize = 360;
+            this.splitContainer1.Panel1MinSize = 200;
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.processGroupBox);
-            this.splitContainer1.Panel2MinSize = 60;
-            this.splitContainer1.Size = new System.Drawing.Size(585, 716);
-            this.splitContainer1.SplitterDistance = 636;
+            this.splitContainer1.Panel2MinSize = 52;
+            this.splitContainer1.Size = new System.Drawing.Size(650, 775);
+            this.splitContainer1.SplitterDistance = 715;
             this.splitContainer1.TabIndex = 0;
             // 
             // ModifySaveControls
@@ -1134,9 +1494,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.Controls.Add(this.splitContainer1);
-            this.MinimumSize = new System.Drawing.Size(395, 400);
+            this.MinimumSize = new System.Drawing.Size(395, 290);
             this.Name = "ModifySaveControls";
-            this.Size = new System.Drawing.Size(585, 716);
+            this.Size = new System.Drawing.Size(650, 775);
             this.extractGroupBox.ResumeLayout(false);
             this.extractGroupBox.PerformLayout();
             this.manualGroupBox.ResumeLayout(false);
@@ -1148,17 +1508,27 @@
             ((System.ComponentModel.ISupportInitialize)(this.fogNumericUpDown)).EndInit();
             this.mutantGroupBox.ResumeLayout(false);
             this.mutantGroupBox.PerformLayout();
-            this.reflectorGroupBox.ResumeLayout(false);
-            this.reflectorGroupBox.PerformLayout();
+            this.reflectorStopGroupBox.ResumeLayout(false);
+            this.reflectorStopGroupBox.PerformLayout();
             this.processGroupBox.ResumeLayout(false);
             this.processGroupBox.PerformLayout();
             this.generalGroupBox.ResumeLayout(false);
             this.generalGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleNumericUpDown)).EndInit();
             this.dataFlowLayoutPanel.ResumeLayout(false);
+            this.zombieScalingGroupBox.ResumeLayout(false);
+            this.zombieScalingGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleHarpyNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleVenomNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleStrongNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleDressedNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleMediumNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleWeakNumericUpDown)).EndInit();
             this.vodGroupBox.ResumeLayout(false);
             this.vodGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.vodStackNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vodStackCityHallsNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vodStackTavernsNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vodStackDwellingsNumericUpDown)).EndInit();
             this.ccExtraGroupBox.ResumeLayout(false);
             this.ccExtraGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ccFoodNumericUpDown)).EndInit();
@@ -1168,7 +1538,8 @@
             this.warehousesGroupBox.ResumeLayout(false);
             this.warehousesGroupBox.PerformLayout();
             this.processFlowLayoutPanel.ResumeLayout(false);
-            this.processPanel.ResumeLayout(false);
+            this.reflectorPanel.ResumeLayout(false);
+            this.reflectorgroupBox.ResumeLayout(false);
             this.tableLayoutPanel.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -1183,7 +1554,7 @@
         private System.Windows.Forms.TextBox saveFileTextBox;
         private System.Windows.Forms.Button saveFileChooseButton;
         private System.Windows.Forms.CheckBox backupCheckBox;
-        private System.Windows.Forms.GroupBox reflectorGroupBox;
+        private System.Windows.Forms.GroupBox reflectorStopGroupBox;
         private System.Windows.Forms.RadioButton reflectorExtractRadioButton;
         private System.Windows.Forms.RadioButton reflectorRepackRadioButton;
         private System.Windows.Forms.RadioButton reflectorExitRadioButton;
@@ -1223,16 +1594,12 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.GroupBox vodGroupBox;
-        private System.Windows.Forms.NumericUpDown vodStackNumericUpDown;
-        private System.Windows.Forms.RadioButton vodStackRadioButton;
-        private System.Windows.Forms.RadioButton vodLeaveRadioButton;
-        private System.Windows.Forms.RadioButton vodRemoveRadioButton;
+        private System.Windows.Forms.NumericUpDown vodStackDwellingsNumericUpDown;
         private System.Windows.Forms.ComboBox giftComboBox;
-        private System.Windows.Forms.Panel processPanel;
+        private System.Windows.Forms.Panel reflectorPanel;
         private System.Windows.Forms.NumericUpDown giftNumericUpDown;
         private System.Windows.Forms.Label bonusLabel;
         private System.Windows.Forms.GroupBox extractGroupBox;
-        private System.Windows.Forms.RadioButton vodReplaceRadioButton;
         private System.Windows.Forms.ComboBox vodReplaceComboBox;
         private System.ComponentModel.BackgroundWorker modifySaveBackgroundWorker;
         private System.Windows.Forms.CheckBox swarmsCheckBox;
@@ -1256,5 +1623,29 @@
         private System.Windows.Forms.CheckBox ccGiftCheckBox;
         private System.Windows.Forms.NumericUpDown zombieScaleNumericUpDown;
         private System.Windows.Forms.CheckBox zombieScaleCheckBox;
+        private System.Windows.Forms.CheckBox vodStackTavernsCheckBox;
+        private System.Windows.Forms.CheckBox vodReplaceCheckBox;
+        private System.Windows.Forms.CheckBox vodStackDwellingCheckBox;
+        private System.Windows.Forms.NumericUpDown vodStackCityHallsNumericUpDown;
+        private System.Windows.Forms.CheckBox vodStackCityHallsCheckBox;
+        private System.Windows.Forms.NumericUpDown vodStackTavernsNumericUpDown;
+        private System.Windows.Forms.Label vodDividerLabel;
+        private System.Windows.Forms.GroupBox zombieScalingGroupBox;
+        private System.Windows.Forms.Label zombieScaleDividerLabel;
+        private System.Windows.Forms.CheckBox zombieScaleDressedCheckBox;
+        private System.Windows.Forms.CheckBox zombieScaleMediumCheckBox;
+        private System.Windows.Forms.CheckBox zombieScaleWeakCheckBox;
+        private System.Windows.Forms.CheckBox zombieScaleHarpyCheckBox;
+        private System.Windows.Forms.CheckBox zombieScaleVenomCheckBox;
+        private System.Windows.Forms.CheckBox zombieScaleStrongCheckBox;
+        private System.Windows.Forms.NumericUpDown zombieScaleHarpyNumericUpDown;
+        private System.Windows.Forms.NumericUpDown zombieScaleVenomNumericUpDown;
+        private System.Windows.Forms.NumericUpDown zombieScaleStrongNumericUpDown;
+        private System.Windows.Forms.NumericUpDown zombieScaleDressedNumericUpDown;
+        private System.Windows.Forms.NumericUpDown zombieScaleMediumNumericUpDown;
+        private System.Windows.Forms.NumericUpDown zombieScaleWeakNumericUpDown;
+        private System.Windows.Forms.GroupBox reflectorgroupBox;
+        private System.Windows.Forms.CheckBox reflectorShowOutputCheckBox;
+        private System.Windows.Forms.Button reflectorStopButton;
     }
 }

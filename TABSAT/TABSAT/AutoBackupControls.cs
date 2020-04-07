@@ -48,6 +48,7 @@ namespace TABSAT
         private void autoBackupCheckBox_CheckedChanged( object sender, EventArgs e )
         {
             backupsManager.setAutoBackup( autoBackupCheckBox.Checked );
+            // Could toggle the button text too, if we have some feedback as to the state of autobackup..?
         }
 
         private void backupFolderChooseButton_Click( object sender, EventArgs e )
