@@ -364,7 +364,7 @@ Most researched techs from a nearly-completed game:
 12658363830661735733	ZombieVenom
 
 
-An arrow in flight:
+An arrow (from a Ballista?) in flight:
               <Complex type="ZX.Entities.Proyectile, TheyAreBillions">
                 <Properties>
                   <Simple name="Distance" value="4.219689" />
