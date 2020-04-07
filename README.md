@@ -11,7 +11,7 @@ Common use-cases would be:
 [Guide to the Save Modification Features](https://github.com/DaneelTrevize/TABSAT/blob/master/Features.md) that make the game easier/different/harder, as well as the Auto-Backup functionality.
 
 Usage Demonstration animations:  
-[TABSAT 1.0](https://github.com/DaneelTrevize/TABSAT/blob/master/screenshots/Demo%203.mkv).  
+[TABSAT 1.0](https://github.com/DaneelTrevize/TABSAT/blob/master/screenshots/Demo%203.mkv?raw=true).  
 
 [Download a Release](https://github.com/DaneelTrevize/TABSAT/releases) and launch TABSAT.exe to be presented with the GUI (Graphical User Interface):
 
