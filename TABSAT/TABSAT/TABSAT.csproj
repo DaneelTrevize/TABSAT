@@ -152,9 +152,6 @@
     <None Include="Resources\TAB_properties_menu.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\TAB_updates_menu.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\TAB_ignore_popup.png" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +163,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\masterTag.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TAB_updates_menu_top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TAB_updates_menu_bottom.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
