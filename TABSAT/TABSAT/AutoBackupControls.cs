@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
 using static TABSAT.MainWindow;
 
@@ -40,6 +41,10 @@ namespace TABSAT
 
             savesCheckedListBox.ItemCheck += savesCheckedListBox_ItemCheck;
 
+            if( !Directory.Exists( savesDir ) )     // Refactor this single usage of System.IO in a Forms class, by refactoring how BackupsManager is constructed vs when backupsManager.loadActiveSaves() is called.
+            {
+                throw new ArgumentException( "The provided saves directory does not exist." );
+            }
             savesDirectory = savesDir;
             statusWriter = sW;
             backupsManager = null;

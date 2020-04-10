@@ -41,6 +41,7 @@ namespace TABSAT
                     }
                 }
             }
+            Console.Error.WriteLine( "They Are Billions was not found." );
             return null;
         }
 
@@ -62,6 +63,7 @@ namespace TABSAT
                     }
                 }
             }
+            Console.Error.WriteLine( "Steam registry value was not found." );
             return null;
         }
 
@@ -93,7 +95,8 @@ namespace TABSAT
         {
             if( !Directory.Exists( savesDir ) )
             {
-                throw new ArgumentException( "The provided saves directory does not exist." );
+                //throw new ArgumentException( "The provided saves directory does not exist." );
+                return null;
             }
             DirectoryInfo savesDirInfo = new DirectoryInfo( savesDir );
             FileInfo[] savesInfo = savesDirInfo.GetFiles( SAVES_FILTER );
