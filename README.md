@@ -3,8 +3,8 @@
 This tool is intended to help players backup, restore, and modify their save games.
 
 Common use-cases would be:  
-* Enabling playing with the Caustic Lands map generation (more Giants, Mutants, Uber-VOD and resources distribution) while having the terrain tile & sound theme of Frozen Highlands, Desert Wastelands, etc.  
-* Removing the relatively new Mutants from the otherwise-Classic 800% difficulty Survival mode.  
+* Enabling playing with the Caustic Lands map generation (more Giants, Mutants, Uber-VOD and resources distribution) while having the terrain tiles & sound theme of Frozen Highlands, or Desert Wastelands, etc.  
+* Removing the relatively new Mutants from the otherwise-Classic 800% difficulty Survival mode option.  
 * Restarting a game save to day 0, to replay a rare layout, or to try a different strategy.  
 * Reverting to a game save prior to some irksome mistake, or extreme RNG.  
 

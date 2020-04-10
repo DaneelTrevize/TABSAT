@@ -190,7 +190,7 @@ namespace TABSAT
             this.popupLabel.Name = "popupLabel";
             this.popupLabel.Size = new System.Drawing.Size(213, 83);
             this.popupLabel.TabIndex = 0;
-            this.popupLabel.Text = "During normal Save modification,\r\na \'Data Files Corrupted\' popup will appear.\r\nPl" +
+            this.popupLabel.Text = "During normal Save modification, a\r\n\'Data Files Corrupted\' popup will appear.\r\nPl" +
     "ease do not interact with it.";
             this.popupLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 

@@ -349,21 +349,6 @@ Most researched techs from a nearly-completed game:
         </Dictionary>
 
 
-<Dictionary name="LevelFastSerializedEntities" keyType="System.UInt64, mscorlib"
-<Simple value="
-13102967879573781082	ZombieWeakA
-11373321006229815036	ZombieWeakB
-4497312170973781002		ZombieWeakC
-17464596434855839240	ZombieWorkerA
-10676594063526581		ZombieWorkerB
-3569719832138441992		ZombieMediumA
-12882220683103625178	ZombieMediumB
-8945324363763426993		ZombieDressedA
-6498716987293858679		ZombieStrongA
-1214272082232025268		ZombieHarpy
-12658363830661735733	ZombieVenom
-
-
 An arrow (from a Ballista?) in flight:
               <Complex type="ZX.Entities.Proyectile, TheyAreBillions">
                 <Properties>

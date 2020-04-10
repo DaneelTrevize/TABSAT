@@ -14,7 +14,7 @@ Consider approaches to keeping Backups TreeView sorted by baseName, then lastWri
 Use state Enums, FSM and change listeners for GUI/TABSAT when modifying file, and ReflectorManager?
 
 
-Provide a button to stop the Reflector whenever it's running?
+#Provide a button to stop the Reflector whenever it's running?
 
 Provide an option to leave the Reflector deployed, and verify whether it is during ReflectorManager initialisation? Including file checksum?
 
@@ -29,6 +29,8 @@ Would TABReflector need to technically be a graphical application, with a hidden
 
 
 Expand use of Octokit.net, or something like Squirrel.Windows, for auto-updating TABSAT from Github?
+
+Dynamically generate some duplicated UI elements, such as CheckBox and NumericUpDown per scalable zombie type?
 
 ----
 
@@ -56,7 +58,7 @@ Might have to have a pseudo daily/8-hourly/faster wave, that spawns unit types &
 --
 Could affect difficulty either way:
 
-Offer to adjust scaling of (all?) zombies population & VOD buildings per type?
+#Offer to adjust scaling of (all?) zombies population & VOD buildings per type?
 Also offer to make (population) scaling non-uniform, but based on distance from CC?
 
 Swap the locations of different types to affect distribution difficulty?

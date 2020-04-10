@@ -261,6 +261,27 @@ namespace TABSAT
             }
         }
 
+        private void zombieScaleCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            if( ( (CheckBox) sender ).Checked )
+            {
+                zombieScaleWeakCheckBox.Checked = false;
+                zombieScaleMediumCheckBox.Checked = false;
+                zombieScaleDressedCheckBox.Checked = false;
+                zombieScaleStrongCheckBox.Checked = false;
+                zombieScaleVenomCheckBox.Checked = false;
+                zombieScaleHarpyCheckBox.Checked = false;
+            }
+        }
+
+        private void notZombieScaleCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            if( ( (CheckBox) sender ).Checked )
+            {
+                zombieScaleCheckBox.Checked = false;
+            }
+        }
+
         private void vodReplaceCheckBox_CheckedChanged( object sender, EventArgs e )
         {
             if( ( (CheckBox) sender ).Checked )
@@ -351,8 +372,7 @@ namespace TABSAT
             warehousesGroupBox.Enabled = true;
             generalGroupBox.Enabled = true;
             saveFileGroupBox.Enabled = true;
-            modifyGroupBox.Enabled = true;
-            //manualGroupBox.Enabled = true;
+            //modifyGroupBox and manualGroupBox are handled in reassessExtractionOption()
             extractGroupBox.Enabled = true;
             reflectorStopGroupBox.Enabled = true;
         }
@@ -514,6 +534,44 @@ namespace TABSAT
 
             try
             {
+                // Zombie Population Scaling
+                if( zombieScaleCheckBox.Checked )
+                {
+                    decimal scale = zombieScaleNumericUpDown.Value;
+                    statusWriter( "Scaling Zombie population x" + scale + '.' );
+                    dataEditor.scalePopulation( scale );
+                }
+                else
+                {
+                    SortedDictionary<SaveEditor.ScalableZombieGroups, decimal> scalableZombieGroupFactors = new SortedDictionary<SaveEditor.ScalableZombieGroups, decimal>();
+                    if( zombieScaleWeakCheckBox.Checked )
+                    {
+                        scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.WEAK, zombieScaleWeakNumericUpDown.Value );
+                    }
+                    if( zombieScaleMediumCheckBox.Checked )
+                    {
+                        scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.MEDIUM, zombieScaleMediumNumericUpDown.Value );
+                    }
+                    if( zombieScaleDressedCheckBox.Checked )
+                    {
+                        scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.DRESSED, zombieScaleDressedNumericUpDown.Value );
+                    }
+                    if( zombieScaleStrongCheckBox.Checked )
+                    {
+                        scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.STRONG, zombieScaleStrongNumericUpDown.Value );
+                    }
+                    if( zombieScaleVenomCheckBox.Checked )
+                    {
+                        scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.VENOM, zombieScaleVenomNumericUpDown.Value );
+                    }
+                    if( zombieScaleHarpyCheckBox.Checked )
+                    {
+                        scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.HARPY, zombieScaleHarpyNumericUpDown.Value );
+                    }
+                    statusWriter( "Scaling Zombie population per type." );
+                    dataEditor.scalePopulation( scalableZombieGroupFactors );
+                }
+
                 // Mutants
                 if( mutantsRemoveRadio.Checked )
                 {
@@ -631,12 +689,6 @@ namespace TABSAT
                 {
                     statusWriter( "Disabling Mayors." );
                     dataEditor.disableMayors();
-                }
-                if( zombieScaleCheckBox.Checked )
-                {
-                    decimal scale = zombieScaleNumericUpDown.Value;
-                    statusWriter( "Scaling Zombie population x" + scale  + '.' );
-                    dataEditor.scalePopulation( scale );
                 }
 
                 dataEditor.save();

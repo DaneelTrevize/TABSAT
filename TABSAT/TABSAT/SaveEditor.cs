@@ -85,6 +85,31 @@ namespace TABSAT
         }
         internal static readonly Dictionary<GiftableTypes, string> giftableTypeNames;
 
+        internal enum ScalableZombieTypes : UInt64
+        {
+            ZombieWeakA = 13102967879573781082,
+            ZombieWeakB = 11373321006229815036,
+            ZombieWeakC = 4497312170973781002,
+            ZombieWorkerA = 17464596434855839240,
+            ZombieWorkerB = 10676594063526581,
+            ZombieMediumA = 3569719832138441992,
+            ZombieMediumB = 12882220683103625178,
+            ZombieDressedA = 8945324363763426993,
+            ZombieStrongA = 6498716987293858679,
+            ZombieHarpy = 1214272082232025268,
+            ZombieVenom = 12658363830661735733
+        }
+        internal enum ScalableZombieGroups
+        {
+            WEAK,
+            MEDIUM,
+            DRESSED,
+            STRONG,
+            VENOM,
+            HARPY
+        }
+        internal static readonly Dictionary<ScalableZombieGroups,SortedSet<ScalableZombieTypes>> scalableZombieTypeGroups;
+
         static SaveEditor()
         {
             Dictionary<VodSizes, string> vsn = new Dictionary<VodSizes, string>();
@@ -154,6 +179,14 @@ namespace TABSAT
             gtn.Add( GiftableTypes.TheVictorious, "The Victorious" );
             gtn.Add( GiftableTypes.TheTransmutator, "The Atlas Transmutator" );
             giftableTypeNames = new Dictionary<GiftableTypes, string>( gtn );
+
+            scalableZombieTypeGroups = new Dictionary<ScalableZombieGroups, SortedSet<ScalableZombieTypes>>();
+            scalableZombieTypeGroups.Add( ScalableZombieGroups.WEAK, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieWeakA, ScalableZombieTypes.ZombieWeakB, ScalableZombieTypes.ZombieWeakC } );
+            scalableZombieTypeGroups.Add( ScalableZombieGroups.MEDIUM, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieWorkerA, ScalableZombieTypes.ZombieWorkerB, ScalableZombieTypes.ZombieMediumA, ScalableZombieTypes.ZombieMediumB } );
+            scalableZombieTypeGroups.Add( ScalableZombieGroups.DRESSED, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieDressedA } );
+            scalableZombieTypeGroups.Add( ScalableZombieGroups.STRONG, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieStrongA } );
+            scalableZombieTypeGroups.Add( ScalableZombieGroups.VENOM, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieVenom } );
+            scalableZombieTypeGroups.Add( ScalableZombieGroups.HARPY, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieHarpy } );
         }
 
         // TAB cell coordinates are origin top left, before 45 degree rotation clockwise. Positive x is due SE, positive y is due SW.
@@ -756,6 +789,223 @@ namespace TABSAT
                 select i;
         }
 
+        internal void scalePopulation( decimal scale )
+        {
+            if( scale < 0.0M )
+            {
+                throw new ArgumentOutOfRangeException( "Scale must not be negative." );
+            }
+
+            if( scale == 1.0M )
+            {
+                return;     // Nothing needs be done
+            }
+
+            SortedDictionary<ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<ScalableZombieTypes, decimal>();
+            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWeakA, scale );
+            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWeakB, scale );
+            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWeakC, scale );
+            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWorkerA, scale );
+            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWorkerB, scale );
+            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieMediumA, scale );
+            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieMediumB, scale );
+            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieDressedA, scale );
+            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieStrongA, scale );
+            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieVenom, scale );
+            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieHarpy, scale );
+            scalePopulation( scalableZombieTypeFactors );
+        }
+
+        internal void scalePopulation( SortedDictionary<ScalableZombieGroups, decimal> scalableZombieGroupFactors )
+        {
+            SortedDictionary<ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<ScalableZombieTypes, decimal>();
+
+            foreach( var k_v in scalableZombieGroupFactors )
+            {
+                decimal scale = k_v.Value;
+
+                if( scale < 0.0M )
+                {
+                    throw new ArgumentOutOfRangeException( "Scale must not be negative." );
+                }
+                if( scale == 1.0M )
+                {
+                    continue;     // Nothing needs be done
+                }
+
+                switch( k_v.Key )
+                {
+                    case ScalableZombieGroups.WEAK:
+                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWeakA, scale );
+                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWeakB, scale );
+                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWeakC, scale );
+                        break;
+                    case ScalableZombieGroups.MEDIUM:
+                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWorkerA, scale );
+                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWorkerB, scale );
+                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieMediumA, scale );
+                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieMediumB, scale );
+                        break;
+                    case ScalableZombieGroups.DRESSED:
+                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieDressedA, scale );
+                        break;
+                    case ScalableZombieGroups.STRONG:
+                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieStrongA, scale );
+                        break;
+                    case ScalableZombieGroups.VENOM:
+                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieVenom, scale );
+                        break;
+                    case ScalableZombieGroups.HARPY:
+                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieHarpy, scale );
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            scalePopulation( scalableZombieTypeFactors );
+        }
+
+        private void scalePopulation( SortedDictionary<ScalableZombieTypes, decimal> scalableZombieTypeFactors )
+        {
+            /*
+             *        <Dictionary name="LevelFastSerializedEntities" >
+             *          <Items>
+             *            <Item>
+             *              <Simple />
+             *              <Collection >
+             *                <Items>
+             *                  <Complex>
+             *                    <Properties>
+             *                      <Simple name="A" value=
+             */
+
+            void duplicateZombie( XElement com, LinkedList<XElement> copiedZombies )
+            {
+                XElement zCopy = new XElement( com );       // Duplicate at the same position
+                ( from s in zCopy.Element( "Properties" ).Elements( "Simple" )
+                  where (string) s.Attribute( "name" ) == "A"
+                  select s ).First().SetAttributeValue( "value", getNewID() );
+                copiedZombies.AddLast( zCopy );
+            }
+
+            XAttribute getCapacity( XElement col )
+            {
+                // Get the capacity for each ZombieType
+                /*
+                 *             <Item>
+                 *               <Simple />
+                 *               <Collection >
+                 *                 <Properties>
+                 *                   <Simple name="Capacity" value=
+                 * 
+                 */
+                return ( from s in col.Element( "Properties" ).Elements( "Simple" )
+                         where (string) s.Attribute( "name" ) == "Capacity"
+                         select s ).First().Attribute( "value" );
+            }
+
+            Random rand = new Random();
+            var selectedZombies = new LinkedList<XElement>();
+
+            var zombieTypes = getLevelZombieTypesItems();
+
+            foreach( var t in zombieTypes )
+            {
+                UInt64 zombieTypeInt = Convert.ToUInt64( t.Element( "Simple" ).Attribute( "value" ).Value );
+                //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
+                if( !Enum.IsDefined( typeof( ScalableZombieTypes ), zombieTypeInt ) )
+                {
+                    continue;   // Can't scale this type
+                }
+
+                ScalableZombieTypes zombieType = (ScalableZombieTypes) zombieTypeInt;
+                if( !scalableZombieTypeFactors.ContainsKey( zombieType ) )
+                {
+                    continue;   // Won't be scaling this type
+                }
+
+                decimal scale = scalableZombieTypeFactors[zombieType];
+                int multiples = (int) scale;                // How many duplicates to certainly make of each zombie
+                double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per zombie
+                //Console.WriteLine( "multiples: " + multiples + ", chance: " + chance );
+
+                var col = t.Element( "Collection" );
+
+                if( scale < 1.0M )
+                {
+                    // chance is now chance to not remove existing zombies
+                    // selectedZombies will be those removed
+
+                    if( scale == 0.0M )
+                    {
+                        // No need to iterate and count
+                        col.Element( "Items" ).RemoveNodes();
+
+                        getCapacity( col ).SetValue( 0 );
+                    }
+                    else
+                    {
+                        // 0 > scale < 1
+                        foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
+                        {
+                            if( chance < rand.NextDouble() )
+                            {
+                                // Removing within foreach doen't work, without .ToList(). Might as well collect candidates so we also have an O(1) count for later too
+                                selectedZombies.AddLast( com );
+                            }
+                        }
+
+                        //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
+
+                        foreach( var i in selectedZombies )
+                        {
+                            i.Remove();
+                        }
+
+                        // Update capacity count
+                        var cap = getCapacity( col );
+                        UInt64 newCap = (UInt64) ( Convert.ToInt32( cap.Value ) - selectedZombies.Count );  // Assume actual UInt64 Capacity value is positive Int32 size and no less than Count removed
+                        cap.SetValue( newCap );
+                        //Console.WriteLine( "newCap: " + newCap );
+
+                        selectedZombies.Clear();
+                    }
+                }
+                else
+                {
+
+                    foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
+                    {
+                        // First the certain duplications
+                        for( int m = multiples; m <= multiples; m++ )
+                        {
+                            duplicateZombie( com, selectedZombies );
+                        }
+                        // And now the chance-based duplication
+                        if( chance >= rand.NextDouble() )   // If the chance is not less than the roll
+                        {
+                            duplicateZombie( com, selectedZombies );
+                        }
+                    }
+
+                    //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
+
+                    foreach( var i in selectedZombies )
+                    {
+                        col.Element( "Items" ).Add( i );
+                    }
+
+                    // Update capacity count
+                    var cap = getCapacity( col );
+                    UInt64 newCap = Convert.ToUInt64( cap.Value ) + (UInt64) selectedZombies.Count;
+                    cap.SetValue( newCap );
+                    //Console.WriteLine( "newCap: " + newCap );
+
+                    selectedZombies.Clear();
+                }
+            }
+        }
 
         private void findMutantsAndGiants()
         {
@@ -993,6 +1243,7 @@ namespace TABSAT
             return getLevelEntitiesOfTypes( VOD_SMALL_TYPE, VOD_MEDIUM_TYPE, VOD_LARGE_TYPE );
             //Console.WriteLine( "vodItems: " + vodItems.Count() );
         }
+
         private UInt64 getHighestID()
         {
             // Get all the UInt64 entity IDs, from LevelEntities, LevelFastSerializedEntities, ExtraEntities
@@ -1053,7 +1304,7 @@ namespace TABSAT
             //Console.WriteLine( "extrasIDs: " + extrasIDs.Count() );
             addIDs( extrasIDs );
             //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
-
+            /*
             void dumpIDs()
             {
                 StringBuilder ids = new StringBuilder( uniqueIDs.Count * 16 );  // 16 hex chars per 64 bit uint64
@@ -1067,7 +1318,7 @@ namespace TABSAT
                 File.WriteAllText( idFile, ids.ToString() );
             }
             //dumpIDs();
-
+            */
             return uniqueIDs.Last();
         }
 
@@ -1150,53 +1401,6 @@ namespace TABSAT
                 // Need some add/remove entity delegates, to refactor this and zombie type scaling?
 
             }
-        }
-
-        internal void giftEntities( GiftableTypes giftable, uint count )
-        {
-            string giftableID = giftable.ToString( "D" );
-            XElement templates = getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "BonusEntityTemplates" );
-            /*if( templates == null )
-            {
-                Console.Error.WriteLine( "Unable to find BonusEntityTemplates." );
-                return;
-            }*/
-            XElement items = templates.Element( "Items" );
-            if( items.HasElements )
-            {
-                // Add to the existing gifted entities if this type already has some
-                foreach( XElement i in items.Elements( "Item" ) )
-                {
-                    var simples = ( from s in i.Elements( "Simple" ) select s );
-                    if( simples.First().Attribute( "value" ).Value == giftableID )    // Template/TypeID matches
-                    {
-                        XAttribute secondSimpleValue = simples.Skip( 1 ).First().Attribute( "value" );
-                        int existing;
-                        if( !Int32.TryParse( secondSimpleValue.Value, out existing ) )
-                        {
-                            Console.Error.WriteLine( "Unable to find the number of gifted entities of type: " + giftable );
-                        }
-                        else
-                        {
-                            secondSimpleValue.SetValue( existing + count );
-                        }
-
-                        return;
-                    }
-                }
-            }
-            // Else add a new gifted entity pairing to this dictionary
-            XElement giftItem = new XElement( "Item" );
-
-            XElement simple = new XElement( "Simple" );
-            simple.SetAttributeValue( "value", giftableID );
-            giftItem.Add( simple  );
-
-            simple = new XElement( "Simple" );
-            simple.SetAttributeValue( "value", count );
-            giftItem.Add( simple );
-
-            items.Add( giftItem );
         }
 
         internal void removeFog( uint radius = 0 )
@@ -1373,6 +1577,53 @@ namespace TABSAT
             }
         }
 
+        internal void giftEntities( GiftableTypes giftable, uint count )
+        {
+            string giftableID = giftable.ToString( "D" );
+            XElement templates = getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "BonusEntityTemplates" );
+            /*if( templates == null )
+            {
+                Console.Error.WriteLine( "Unable to find BonusEntityTemplates." );
+                return;
+            }*/
+            XElement items = templates.Element( "Items" );
+            if( items.HasElements )
+            {
+                // Add to the existing gifted entities if this type already has some
+                foreach( XElement i in items.Elements( "Item" ) )
+                {
+                    var simples = ( from s in i.Elements( "Simple" ) select s );
+                    if( simples.First().Attribute( "value" ).Value == giftableID )    // Template/TypeID matches
+                    {
+                        XAttribute secondSimpleValue = simples.Skip( 1 ).First().Attribute( "value" );
+                        int existing;
+                        if( !Int32.TryParse( secondSimpleValue.Value, out existing ) )
+                        {
+                            Console.Error.WriteLine( "Unable to find the number of gifted entities of type: " + giftable );
+                        }
+                        else
+                        {
+                            secondSimpleValue.SetValue( existing + count );
+                        }
+
+                        return;
+                    }
+                }
+            }
+            // Else add a new gifted entity pairing to this dictionary
+            XElement giftItem = new XElement( "Item" );
+
+            XElement simple = new XElement( "Simple" );
+            simple.SetAttributeValue( "value", giftableID );
+            giftItem.Add( simple );
+
+            simple = new XElement( "Simple" );
+            simple.SetAttributeValue( "value", count );
+            giftItem.Add( simple );
+
+            items.Add( giftItem );
+        }
+
         internal void fillStorage( bool gold, bool wood, bool stone, bool iron, bool oil )
         {
             /*
@@ -1499,148 +1750,6 @@ namespace TABSAT
             //                    <Simple name="AllowMayors" value="True" />
             XElement allowMayors = getFirstSimplePropertyNamed( getDataExtension(), "AllowMayors" );
             allowMayors.SetAttributeValue( "value", "False" );
-        }
-
-        internal void scalePopulation( decimal scale )
-        {
-            if( scale < 0.0M )
-            {
-                throw new ArgumentOutOfRangeException( "Scale must not be negative." );
-            }
-
-            if( scale == 1.0M )
-            {
-                return;     // Nothing needs be done
-            }
-            else
-            {
-                int multiples = (int) scale;                // How many duplicates to certainly make of each zombie
-                double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per zombie
-                Random rand = new Random();
-                //Console.WriteLine( "multiples: " + multiples + ", chance: " + chance );
-
-                var zombieTypes = getLevelZombieTypesItems();
-
-                var selectedZombies = new LinkedList<XElement>();
-
-                XAttribute getCapacity( XElement col )
-                {
-                    // Get the capacity for each ZombieType
-                    /*
-                     *             <Item>
-                     *               <Simple />
-                     *               <Collection >
-                     *                 <Properties>
-                     *                   <Simple name="Capacity" value=
-                     * 
-                     */
-                    return ( from s in col.Element( "Properties" ).Elements( "Simple" )
-                             where (string) s.Attribute( "name" ) == "Capacity"
-                             select s ).First().Attribute( "value" );
-                }
-
-                if( scale < 1.0M )
-                {
-                    // chance is now chance to not remove existing zombies
-                    // selectedZombies will be those removed
-
-                    foreach( var t in zombieTypes )
-                    {
-                        var col = t.Element( "Collection" );
-
-                        if( scale == 0.0M )
-                        {
-                            // No need to iterate and count
-                            col.Element( "Items" ).RemoveNodes();
-
-                            getCapacity( col ).SetValue( 0 );
-                        }
-                        else
-                        {
-                            // 0 > scale < 1
-                            foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
-                            {
-                                if( chance < rand.NextDouble() )
-                                {
-                                    // Removing within foreach doen't work, without .ToList(). Might as well collect candidates so we also have an O(1) count for later too
-                                    selectedZombies.AddLast( com );
-                                }
-                            }
-
-                            //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
-
-                            foreach( var i in selectedZombies )
-                            {
-                                i.Remove();
-                            }
-
-                            var cap = getCapacity( col );
-                            UInt64 newCap = (UInt64) ( Convert.ToInt32( cap.Value ) - selectedZombies.Count );  // Assume actual UInt64 Capacity value is positive Int32 size and no less than Count removed
-                            cap.SetValue( newCap );
-
-                            selectedZombies.Clear();
-                        }
-                    }
-                }
-                else
-                {
-
-                    /*
-                     *        <Dictionary name="LevelFastSerializedEntities" >
-                     *          <Items>
-                     *            <Item>
-                     *              <Simple />
-                     *              <Collection >
-                     *                <Items>
-                     *                  <Complex>
-                     *                    <Properties>
-                     *                      <Simple name="A" value=
-                     */
-
-                    void duplicateZombie( XElement com, LinkedList<XElement> copiedZombies )
-                    {
-                        XElement zCopy = new XElement( com );       // Duplicate at the same position
-                        ( from s in zCopy.Element( "Properties" ).Elements( "Simple" )
-                          where (string) s.Attribute( "name" ) == "A"
-                          select s ).First().SetAttributeValue( "value", getNewID() );
-                        copiedZombies.AddLast( zCopy );
-                    }
-
-                    foreach( var t in zombieTypes )
-                    {
-                        //Console.WriteLine( "zombieType: " + t.Element( "Simple" ) );
-                        var col = t.Element( "Collection" );
-
-                        foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
-                        {
-                            // First the certain duplications
-                            for( int m = multiples; m <= multiples; m++ )
-                            {
-                                duplicateZombie( com, selectedZombies );
-                            }
-                            // And now the chance-based duplication
-                            if( chance >= rand.NextDouble() )   // If the chance is not less than the roll
-                            {
-                                duplicateZombie( com, selectedZombies );
-                            }
-                        }
-
-                        //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
-
-                        foreach( var i in selectedZombies )
-                        {
-                            col.Element( "Items" ).Add( i );
-                        }
-
-                        var cap = getCapacity( col );
-                        UInt64 newCap = Convert.ToUInt64( cap.Value ) + (UInt64) selectedZombies.Count;
-                        cap.SetValue( newCap );
-
-                        selectedZombies.Clear();
-                    }
-                }
-            }
-
         }
     }
 }

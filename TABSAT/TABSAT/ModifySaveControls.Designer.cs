@@ -305,9 +305,9 @@
             this.backupCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.backupCheckBox.Location = new System.Drawing.Point(6, 21);
             this.backupCheckBox.Name = "backupCheckBox";
-            this.backupCheckBox.Size = new System.Drawing.Size(99, 17);
+            this.backupCheckBox.Size = new System.Drawing.Size(101, 17);
             this.backupCheckBox.TabIndex = 1;
-            this.backupCheckBox.Text = "Backup original";
+            this.backupCheckBox.Text = "Backup Original";
             this.backupCheckBox.UseVisualStyleBackColor = true;
             // 
             // modifyGroupBox
@@ -702,6 +702,7 @@
             this.zombieScaleCheckBox.TabIndex = 1;
             this.zombieScaleCheckBox.Text = "All non-Giant/Mutant types";
             this.zombieScaleCheckBox.UseVisualStyleBackColor = true;
+            this.zombieScaleCheckBox.CheckedChanged += new System.EventHandler(this.zombieScaleCheckBox_CheckedChanged);
             // 
             // dataFlowLayoutPanel
             // 
@@ -765,6 +766,7 @@
             0,
             0,
             65536});
+            this.zombieScaleHarpyNumericUpDown.ValueChanged += new System.EventHandler(this.numericUpDown_ValueChanged);
             // 
             // zombieScaleVenomNumericUpDown
             // 
@@ -788,6 +790,7 @@
             0,
             0,
             65536});
+            this.zombieScaleVenomNumericUpDown.ValueChanged += new System.EventHandler(this.numericUpDown_ValueChanged);
             // 
             // zombieScaleStrongNumericUpDown
             // 
@@ -811,6 +814,7 @@
             0,
             0,
             65536});
+            this.zombieScaleStrongNumericUpDown.ValueChanged += new System.EventHandler(this.numericUpDown_ValueChanged);
             // 
             // zombieScaleDressedNumericUpDown
             // 
@@ -834,6 +838,7 @@
             0,
             0,
             65536});
+            this.zombieScaleDressedNumericUpDown.ValueChanged += new System.EventHandler(this.numericUpDown_ValueChanged);
             // 
             // zombieScaleMediumNumericUpDown
             // 
@@ -857,6 +862,7 @@
             0,
             0,
             65536});
+            this.zombieScaleMediumNumericUpDown.ValueChanged += new System.EventHandler(this.numericUpDown_ValueChanged);
             // 
             // zombieScaleWeakNumericUpDown
             // 
@@ -887,10 +893,11 @@
             this.zombieScaleHarpyCheckBox.AutoSize = true;
             this.zombieScaleHarpyCheckBox.Location = new System.Drawing.Point(6, 161);
             this.zombieScaleHarpyCheckBox.Name = "zombieScaleHarpyCheckBox";
-            this.zombieScaleHarpyCheckBox.Size = new System.Drawing.Size(54, 17);
+            this.zombieScaleHarpyCheckBox.Size = new System.Drawing.Size(91, 17);
             this.zombieScaleHarpyCheckBox.TabIndex = 13;
-            this.zombieScaleHarpyCheckBox.Text = "Harpy";
+            this.zombieScaleHarpyCheckBox.Text = "Harpy (Witch)";
             this.zombieScaleHarpyCheckBox.UseVisualStyleBackColor = true;
+            this.zombieScaleHarpyCheckBox.CheckedChanged += new System.EventHandler(this.notZombieScaleCheckBox_CheckedChanged);
             // 
             // zombieScaleVenomCheckBox
             // 
@@ -901,16 +908,18 @@
             this.zombieScaleVenomCheckBox.TabIndex = 11;
             this.zombieScaleVenomCheckBox.Text = "Venom (Spitter)";
             this.zombieScaleVenomCheckBox.UseVisualStyleBackColor = true;
+            this.zombieScaleVenomCheckBox.CheckedChanged += new System.EventHandler(this.notZombieScaleCheckBox_CheckedChanged);
             // 
             // zombieScaleStrongCheckBox
             // 
             this.zombieScaleStrongCheckBox.AutoSize = true;
             this.zombieScaleStrongCheckBox.Location = new System.Drawing.Point(6, 115);
             this.zombieScaleStrongCheckBox.Name = "zombieScaleStrongCheckBox";
-            this.zombieScaleStrongCheckBox.Size = new System.Drawing.Size(89, 17);
+            this.zombieScaleStrongCheckBox.Size = new System.Drawing.Size(102, 17);
             this.zombieScaleStrongCheckBox.TabIndex = 9;
-            this.zombieScaleStrongCheckBox.Text = "Strong (Fatty)";
+            this.zombieScaleStrongCheckBox.Text = "Strong (Chubby)";
             this.zombieScaleStrongCheckBox.UseVisualStyleBackColor = true;
+            this.zombieScaleStrongCheckBox.CheckedChanged += new System.EventHandler(this.notZombieScaleCheckBox_CheckedChanged);
             // 
             // zombieScaleDividerLabel
             // 
@@ -929,6 +938,7 @@
             this.zombieScaleDressedCheckBox.TabIndex = 7;
             this.zombieScaleDressedCheckBox.Text = "Dressed (Executive)";
             this.zombieScaleDressedCheckBox.UseVisualStyleBackColor = true;
+            this.zombieScaleDressedCheckBox.CheckedChanged += new System.EventHandler(this.notZombieScaleCheckBox_CheckedChanged);
             // 
             // zombieScaleMediumCheckBox
             // 
@@ -939,6 +949,7 @@
             this.zombieScaleMediumCheckBox.TabIndex = 5;
             this.zombieScaleMediumCheckBox.Text = "Medium (Runner)";
             this.zombieScaleMediumCheckBox.UseVisualStyleBackColor = true;
+            this.zombieScaleMediumCheckBox.CheckedChanged += new System.EventHandler(this.notZombieScaleCheckBox_CheckedChanged);
             // 
             // zombieScaleWeakCheckBox
             // 
@@ -949,6 +960,7 @@
             this.zombieScaleWeakCheckBox.TabIndex = 3;
             this.zombieScaleWeakCheckBox.Text = "Weak (Walker)";
             this.zombieScaleWeakCheckBox.UseVisualStyleBackColor = true;
+            this.zombieScaleWeakCheckBox.CheckedChanged += new System.EventHandler(this.notZombieScaleCheckBox_CheckedChanged);
             // 
             // vodGroupBox
             // 
