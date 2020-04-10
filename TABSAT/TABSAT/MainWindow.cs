@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace TABSAT
@@ -13,12 +14,13 @@ namespace TABSAT
 
         public delegate void StatusWriterDelegate( string status );
 
-        internal static void shiftTextViewRight( TextBox textBox )
-        {
-            // Set the cursor to the end of the file path, to better see the file name
-            textBox.SelectionStart = textBox.Text.Length;
-            textBox.SelectionLength = 0;
-        }
+
+        private const int ATTACH_PARENT_PROCESS = -1;
+
+        [DllImport( "kernel32", SetLastError = true )]
+        [return: MarshalAs( UnmanagedType.Bool )]
+        private static extern bool AttachConsole( int dwProcessId );
+
 
         /// <summary>
         ///  The main entry point for the application.
@@ -26,28 +28,23 @@ namespace TABSAT
         [STAThread]
         static void Main( string[] args )
         {
+            string TABdirectory = args.Length >= 1 ? args[0] : TAB.GetExeDirectory();
+            string savesDirectory = args.Length >= 2 ? args[1] : TAB.DEFAULT_SAVES_DIRECTORY;
+
+            if( AttachConsole( ATTACH_PARENT_PROCESS ) )
+            {
+                Console.WriteLine( "They Are Billions directory:\t" + TABdirectory );
+                Console.WriteLine( "Saves directory:\t\t" + savesDirectory );
+            }
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
-            Application.Run( new MainWindow( TAB.DEFAULT_SAVES_DIRECTORY ) );
-
+            Application.Run( new MainWindow( TABdirectory, savesDirectory ) );
         }
 
-        public MainWindow( string savesDirectory )
+        public MainWindow( string TABdirectory, string savesDirectory )
         {
             InitializeComponent();
-            //Width = 950;
-            //Height = 900;
-            //MinimumSize = new System.Drawing.Size( 800, 825 );
-
-            string TABdirectory = TAB.GetExeDirectory();
-            /*
-            while( TABdirectory == null )
-            {
-                // open dialog to choose directory, test for TAB via TABSAT?
-            }
-            */
-            statusWriter( "They Are Billions directory:\t" + TABdirectory );
 
             initModifySaveControl( TABdirectory, savesDirectory );
 
@@ -83,10 +80,25 @@ namespace TABSAT
 
         private void initModifySaveControl( string TABdirectory, string savesDirectory )
         {
-            ReflectorManager reflectorManager = new ReflectorManager( TABdirectory );
-            ModifyManager modifyManager = new ModifyManager( TABdirectory, reflectorManager, ModifyManager.DEFAULT_EDITS_DIRECTORY );
+            //statusWriter( "They Are Billions directory:\t" + TABdirectory );
 
-            modifySaveC = new ModifySaveControls( modifyManager, statusWriter, savesDirectory );
+            ReflectorManager reflectorManager = null;
+            ModifyManager modifyManager = null;
+            try
+            {
+                reflectorManager = new ReflectorManager( TABdirectory );
+                modifyManager = new ModifyManager( TABdirectory, reflectorManager, ModifyManager.DEFAULT_EDITS_DIRECTORY );
+                modifySaveC = new ModifySaveControls( modifyManager, statusWriter, savesDirectory );
+            }
+            catch( Exception e )
+            {
+                statusWriter( "Unable to initialise Save Modification control." );
+                statusWriter( e.Message );
+
+                modifySaveC = null;
+                return;
+            }
+
             modifySaveC.Dock = DockStyle.Fill;
             modifySaveC.Name = "modifySaveC";
             saveEditorTabPage.Controls.Add( modifySaveC );
@@ -96,7 +108,18 @@ namespace TABSAT
 
         private void initAutoBackupControl( string savesDirectory )
         {
-            autoBackupC = new AutoBackupControls( savesDirectory, statusWriter );
+            try
+            {
+                autoBackupC = new AutoBackupControls( savesDirectory, statusWriter );
+            }
+            catch( Exception e )
+            {
+                statusWriter( "Unable to initialise Backups control." );
+                statusWriter( e.Message );
+
+                autoBackupC = null;
+                return;
+            }
             autoBackupC.Dock = DockStyle.Fill;
             autoBackupC.Name = "autoBackupC";
             autoBackupTabPage.Controls.Add( autoBackupC );
@@ -106,14 +129,23 @@ namespace TABSAT
         {
             if( tabControl1.SelectedIndex == 1 )    // Assumes Modify tab page is 2nd
             {
-                modifySaveC.refreshSaveFileChoice();
+                if( modifySaveC != null )
+                {
+                    modifySaveC.refreshSaveFileChoice();
+                }
             }
         }
 
         private void MainWindow_FormClosing( object sender, FormClosingEventArgs e )
         {
-            modifySaveC.removeReflector();
-            autoBackupC.stopWatcher();
+            if( modifySaveC != null )
+            {
+                modifySaveC.removeReflector();
+            }
+            if( autoBackupC != null )
+            {
+                autoBackupC.stopWatcher();
+            }
         }
     }
 }
