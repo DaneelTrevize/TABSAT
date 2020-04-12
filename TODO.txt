@@ -15,8 +15,6 @@ Consider approaches to keeping Backups TreeView sorted by baseName, then lastWri
 Use state Enums, FSM and change listeners for GUI/TABSAT when modifying file, and ReflectorManager?
 
 
-#Provide a button to stop the Reflector whenever it's running?
-
 Provide an option to leave the Reflector deployed, and verify whether it is during ReflectorManager initialisation? Including file checksum?
 
 
@@ -60,6 +58,7 @@ Might have to have a pseudo daily/8-hourly/faster wave, that spawns unit types &
 Could affect difficulty either way:
 
 Offer to make (population) scaling non-uniform, but based on distance from CC?
+Or applicable per compass quadrant?
 
 Swap the locations of different types to affect distribution difficulty?
 Specifically, could:

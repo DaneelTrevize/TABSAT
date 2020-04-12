@@ -37,15 +37,15 @@ See [the spreadsheets generated in the Modded Mayors repo](https://github.com/Da
 E.g. Harpy x0.5 is a 50% chance to keep/remove each Harpy.  
 Spitter x2.1 would duplicate each Spitter plus a 10% chance to triplicate them.
 
+* Stack multiple copies of VOD buildings at their existing positions by a decimal factor, on a per-type basis.  
+E.g. Dwellings x1.5 is a 50% chance to duplicate each Dwelling.
+
 ## Make the game harder
 
 * Enable Swarms (Waves) to come from several directions. Earlier swarms can come from any 2 cardinal directions at once, later swarms from any 3.  
 N.b. The on-screen text and icons will represent all chosen directions, but the audio announcement will only name the first direction per swarm.
 
 * Disabling Mayors. No new mayors will be granted for reaching colony population thresholds.
-
-* Stack multiple copies of VOD buildings at their existing positions by a decimal factor, on a per-type basis.  
-E.g. Dwellings x1.5 is a 50% chance to duplicate each Dwelling.
 
 ----
 

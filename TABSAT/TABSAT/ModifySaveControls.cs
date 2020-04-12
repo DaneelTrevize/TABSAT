@@ -16,6 +16,7 @@ namespace TABSAT
         private readonly List<CheckBox> ccExtrasCheckBoxes;
         private readonly List<CheckBox> warehousesFillCheckBoxes;
         private readonly List<CheckBox> generalCheckBoxes;
+        private bool automatedStateSetting;
 
         private static bool anyChecked( IList<CheckBox> boxes )
         {
@@ -62,6 +63,8 @@ namespace TABSAT
             generalCheckBoxes.Add( themeCheckBox );
             generalCheckBoxes.Add( swarmsCheckBox );
             generalCheckBoxes.Add( disableMayorsCheckBox );
+
+            automatedStateSetting = false;
 
             saveOpenFileDialog.Filter = "TAB Save Files|" + TAB.SAVES_FILTER;// + "|Data files|*.dat";
             saveOpenFileDialog.InitialDirectory = savesDirectory;
@@ -201,29 +204,36 @@ namespace TABSAT
             if( num == zombieScaleNumericUpDown )
             {
                 zombieScaleCheckBox.Checked = true;
-                // And alter the specific type NumericUpDowns to match, without checking their checkboxes instead?
+                automatedStateSetting = true;
+                zombieScaleWeakNumericUpDown.Value = zombieScaleNumericUpDown.Value;
+                zombieScaleMediumNumericUpDown.Value = zombieScaleNumericUpDown.Value;
+                zombieScaleDressedNumericUpDown.Value = zombieScaleNumericUpDown.Value;
+                zombieScaleStrongNumericUpDown.Value = zombieScaleNumericUpDown.Value;
+                zombieScaleVenomNumericUpDown.Value = zombieScaleNumericUpDown.Value;
+                zombieScaleHarpyNumericUpDown.Value = zombieScaleNumericUpDown.Value;
+                automatedStateSetting = false;
             }
-            else if( num == zombieScaleWeakNumericUpDown )
+            else if( num == zombieScaleWeakNumericUpDown && !automatedStateSetting )
             {
                 zombieScaleWeakCheckBox.Checked = true;
             }
-            else if( num == zombieScaleMediumNumericUpDown )
+            else if( num == zombieScaleMediumNumericUpDown && !automatedStateSetting )
             {
                 zombieScaleMediumCheckBox.Checked = true;
             }
-            else if( num == zombieScaleDressedNumericUpDown )
+            else if( num == zombieScaleDressedNumericUpDown && !automatedStateSetting )
             {
                 zombieScaleDressedCheckBox.Checked = true;
             }
-            else if( num == zombieScaleStrongNumericUpDown )
+            else if( num == zombieScaleStrongNumericUpDown && !automatedStateSetting )
             {
                 zombieScaleStrongCheckBox.Checked = true;
             }
-            else if( num == zombieScaleVenomNumericUpDown )
+            else if( num == zombieScaleVenomNumericUpDown && !automatedStateSetting )
             {
                 zombieScaleVenomCheckBox.Checked = true;
             }
-            else if( num == zombieScaleHarpyNumericUpDown )
+            else if( num == zombieScaleHarpyNumericUpDown && !automatedStateSetting )
             {
                 zombieScaleHarpyCheckBox.Checked = true;
             }
@@ -340,7 +350,7 @@ namespace TABSAT
                 reflectorExtractRadioButton.Enabled = false;
                 if( reflectorExtractRadioButton.Checked )
                 {
-                    reflectorRepackRadioButton.Checked = true;
+                    reflectorRepackRadioButton.Checked = true;  // Reset radio group to a enabled option
                 }
             }
         }
@@ -425,6 +435,10 @@ namespace TABSAT
             {
                 modifyManager.stopReflector();
             }
+            else
+            {   // reflectorExitRadioButton.Checked == true
+                reflectorStopButton.Enabled = true;
+            }
 
             if( extractTidyRadioButton.Checked )
             {
@@ -461,6 +475,10 @@ namespace TABSAT
                 {
                     modifyManager.stopReflector();
                 }
+                else
+                {
+                    reflectorStopButton.Enabled = true;
+                }
                 return;
             }
             else
@@ -474,6 +492,10 @@ namespace TABSAT
             if( reflectorExtractRadioButton.Checked )
             {
                 modifyManager.stopReflector();
+            }
+            else
+            {
+                reflectorStopButton.Enabled = true;
             }
         }
 
@@ -503,6 +525,12 @@ namespace TABSAT
             }
 
             resetSaveFileChoice();
+        }
+
+        private void reflectorStopButton_Click( object sender, EventArgs e )
+        {
+            reflectorStopButton.Enabled = false;
+            modifyManager.stopReflector();
         }
 
         private bool extractSave()

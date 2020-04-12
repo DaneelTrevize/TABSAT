@@ -754,10 +754,10 @@
             65536});
             this.zombieScaleHarpyNumericUpDown.Location = new System.Drawing.Point(174, 160);
             this.zombieScaleHarpyNumericUpDown.Maximum = new decimal(new int[] {
-            20,
+            3,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleHarpyNumericUpDown.Name = "zombieScaleHarpyNumericUpDown";
             this.zombieScaleHarpyNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleHarpyNumericUpDown.TabIndex = 12;
@@ -778,10 +778,10 @@
             65536});
             this.zombieScaleVenomNumericUpDown.Location = new System.Drawing.Point(174, 137);
             this.zombieScaleVenomNumericUpDown.Maximum = new decimal(new int[] {
-            20,
+            3,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleVenomNumericUpDown.Name = "zombieScaleVenomNumericUpDown";
             this.zombieScaleVenomNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleVenomNumericUpDown.TabIndex = 10;
@@ -802,10 +802,10 @@
             65536});
             this.zombieScaleStrongNumericUpDown.Location = new System.Drawing.Point(174, 114);
             this.zombieScaleStrongNumericUpDown.Maximum = new decimal(new int[] {
-            20,
+            3,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleStrongNumericUpDown.Name = "zombieScaleStrongNumericUpDown";
             this.zombieScaleStrongNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleStrongNumericUpDown.TabIndex = 8;
@@ -826,10 +826,10 @@
             65536});
             this.zombieScaleDressedNumericUpDown.Location = new System.Drawing.Point(174, 91);
             this.zombieScaleDressedNumericUpDown.Maximum = new decimal(new int[] {
-            20,
+            3,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleDressedNumericUpDown.Name = "zombieScaleDressedNumericUpDown";
             this.zombieScaleDressedNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleDressedNumericUpDown.TabIndex = 6;
@@ -850,10 +850,10 @@
             65536});
             this.zombieScaleMediumNumericUpDown.Location = new System.Drawing.Point(174, 68);
             this.zombieScaleMediumNumericUpDown.Maximum = new decimal(new int[] {
-            20,
+            3,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleMediumNumericUpDown.Name = "zombieScaleMediumNumericUpDown";
             this.zombieScaleMediumNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleMediumNumericUpDown.TabIndex = 4;
@@ -874,10 +874,10 @@
             65536});
             this.zombieScaleWeakNumericUpDown.Location = new System.Drawing.Point(174, 45);
             this.zombieScaleWeakNumericUpDown.Maximum = new decimal(new int[] {
-            20,
+            3,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleWeakNumericUpDown.Name = "zombieScaleWeakNumericUpDown";
             this.zombieScaleWeakNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleWeakNumericUpDown.TabIndex = 2;
@@ -1445,6 +1445,7 @@
             this.reflectorStopButton.TabIndex = 1;
             this.reflectorStopButton.Text = "Stop Reflector";
             this.reflectorStopButton.UseVisualStyleBackColor = true;
+            this.reflectorStopButton.Click += new System.EventHandler(this.reflectorStopButton_Click);
             // 
             // reflectorShowOutputCheckBox
             // 
