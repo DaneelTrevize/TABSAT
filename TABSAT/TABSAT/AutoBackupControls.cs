@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.IO;
 using System.Windows.Forms;
 using static TABSAT.MainWindow;
 
@@ -31,23 +30,17 @@ namespace TABSAT
          *  For changes, re-checksum active save & check for backup
          */
 
-        private readonly string savesDirectory;
         private readonly StatusWriterDelegate statusWriter;
         private BackupsManager backupsManager;
 
-        public AutoBackupControls( string savesDir, StatusWriterDelegate sW )
+        public AutoBackupControls( string savesDirectory, StatusWriterDelegate sW )
         {
             InitializeComponent();
 
             savesCheckedListBox.ItemCheck += savesCheckedListBox_ItemCheck;
 
-            if( !Directory.Exists( savesDir ) )     // Refactor this single usage of System.IO in a Forms class, by refactoring how BackupsManager is constructed vs when backupsManager.loadActiveSaves() is called.
-            {
-                throw new ArgumentException( "The provided saves directory does not exist." );
-            }
-            savesDirectory = savesDir;
             statusWriter = sW;
-            backupsManager = null;
+            backupsManager = new BackupsManager( savesDirectory, statusWriter );
         }
 
         private void autoBackupCheckBox_CheckedChanged( object sender, EventArgs e )
@@ -124,12 +117,9 @@ namespace TABSAT
 
         internal void stopWatcher()
         {
-            if( backupsManager != null )
-            {
-                backupsManager.setAutoBackup( false );
+            backupsManager.setAutoBackup( false );
 
-                backupsManager.stopWatcher();
-            }
+            backupsManager.stopWatcher();
         }
 
         private void backupsTreeView_AfterSelect( object sender, TreeViewEventArgs e )
@@ -191,8 +181,6 @@ namespace TABSAT
 
         private void AutoBackupControls_Load( object sender, EventArgs e )
         {
-            backupsManager = new BackupsManager( savesDirectory, statusWriter );
-
             backupsManager.ActiveSavesChanged += refreshActiveSaves;
             backupsManager.BackupSavesChanged += refreshBackupSaves;
 
