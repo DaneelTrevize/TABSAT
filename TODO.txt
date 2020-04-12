@@ -1,5 +1,6 @@
 
 Add a cap to population scaling, to keep it below the ~65k soft TAB limit?
+Unify the population scaling and the Mutant/Giant options, where applicable?
 
 Offer to toggle Enable/Disable state of Mayors, Showing full map, etc? So users needn't manually edit to revert such options.
 
@@ -58,8 +59,7 @@ Might have to have a pseudo daily/8-hourly/faster wave, that spawns unit types &
 --
 Could affect difficulty either way:
 
-#Offer to adjust scaling of (all?) zombies population & VOD buildings per type?
-Also offer to make (population) scaling non-uniform, but based on distance from CC?
+Offer to make (population) scaling non-uniform, but based on distance from CC?
 
 Swap the locations of different types to affect distribution difficulty?
 Specifically, could:

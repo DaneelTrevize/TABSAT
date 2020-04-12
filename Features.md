@@ -33,7 +33,9 @@ N.b. City Halls can spawn thousands more zombies and cause pathing issues, which
 * Changing the map Theme. This not only changes the visuals and background sound, but also inherits the rules modifiers of the standard themes, such as Frozen Highlands slowing zombies & increasing power consumption, or Desert Wasteland increasing zombie speed and range of noise.  
 See [the spreadsheets generated in the Modded Mayors repo](https://github.com/DaneelTrevize/Modded-Mayors/tree/master/Source) for the specific data from the MapThemes table.
 
-* Scaling the zombie population by a decimal factor, per zombie. E.g. 0.5 is a 50% chance to keep/remove each zombie. 2.1 would duplicate each zombie plus a 10% chance to triplicate them.
+* Scaling the zombie population by a decimal factor, on a per-type basis.  
+E.g. Harpy x0.5 is a 50% chance to keep/remove each Harpy.  
+Spitter x2.1 would duplicate each Spitter plus a 10% chance to triplicate them.
 
 ## Make the game harder
 
@@ -42,7 +44,8 @@ N.b. The on-screen text and icons will represent all chosen directions, but the 
 
 * Disabling Mayors. No new mayors will be granted for reaching colony population thresholds.
 
-* Stack multiple copies of VOD buildings at their existing positions.
+* Stack multiple copies of VOD buildings at their existing positions by a decimal factor, on a per-type basis.  
+E.g. Dwellings x1.5 is a 50% chance to duplicate each Dwelling.
 
 ----
 
