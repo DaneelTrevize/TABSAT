@@ -350,7 +350,7 @@ namespace TABSAT
                 reflectorExtractRadioButton.Enabled = false;
                 if( reflectorExtractRadioButton.Checked )
                 {
-                    reflectorRepackRadioButton.Checked = true;
+                    reflectorRepackRadioButton.Checked = true;  // Reset radio group to a enabled option
                 }
             }
         }
@@ -435,6 +435,10 @@ namespace TABSAT
             {
                 modifyManager.stopReflector();
             }
+            else
+            {   // reflectorExitRadioButton.Checked == true
+                reflectorStopButton.Enabled = true;
+            }
 
             if( extractTidyRadioButton.Checked )
             {
@@ -471,6 +475,10 @@ namespace TABSAT
                 {
                     modifyManager.stopReflector();
                 }
+                else
+                {
+                    reflectorStopButton.Enabled = true;
+                }
                 return;
             }
             else
@@ -484,6 +492,10 @@ namespace TABSAT
             if( reflectorExtractRadioButton.Checked )
             {
                 modifyManager.stopReflector();
+            }
+            else
+            {
+                reflectorStopButton.Enabled = true;
             }
         }
 
@@ -513,6 +525,12 @@ namespace TABSAT
             }
 
             resetSaveFileChoice();
+        }
+
+        private void reflectorStopButton_Click( object sender, EventArgs e )
+        {
+            reflectorStopButton.Enabled = false;
+            modifyManager.stopReflector();
         }
 
         private bool extractSave()

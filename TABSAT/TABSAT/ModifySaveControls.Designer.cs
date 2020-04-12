@@ -1445,6 +1445,7 @@
             this.reflectorStopButton.TabIndex = 1;
             this.reflectorStopButton.Text = "Stop Reflector";
             this.reflectorStopButton.UseVisualStyleBackColor = true;
+            this.reflectorStopButton.Click += new System.EventHandler(this.reflectorStopButton_Click);
             // 
             // reflectorShowOutputCheckBox
             // 
