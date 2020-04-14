@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 using static TABSAT.MainWindow;
 
@@ -113,8 +114,6 @@ namespace TABSAT
 
             themeComboBox.SelectedIndexChanged += comboHandler;
             zombieScaleNumericUpDown.ValueChanged += numericHandler;
-
-            reflectorShowOutputCheckBox.Checked = false;
         }
 
         internal void reflectorOutputHandler( object sendingProcess, DataReceivedEventArgs outLine )
@@ -154,16 +153,28 @@ namespace TABSAT
                 {
                     // Editing a backup will not trigger a checksum update once the modified file is repacked, confuses AutoBackup UI
                     statusWriter( "Please do not modify files within the backups directory: " + file );
+                    return;
                 }
-                else
-                {
-                    setSaveFile( file );
-                }
+
+                setSaveFile( file );
             }
         }
 
         private void setSaveFile( string saveFile )
         {
+            if( modifyManager.getState() == ModifyManager.SaveState.EXTRACTED )
+            {
+                // We're skipping repacking
+                extractRepackSaveButton.Text = "Manual Modify";
+
+                if( reflectorStopRepackCheckBox.Checked )
+                {
+                    modifyManager.stopReflector();
+                }
+
+                enableChoices();
+            }
+
             saveFileTextBox.Text = saveFile;
 
             modifyManager.setSaveFile( saveFile );
@@ -310,81 +321,31 @@ namespace TABSAT
             }
         }
 
-        private void extractRadioButtons_CheckedChanged( object sender, EventArgs e )
+        private void reassessExtractionOption()     // Refactor around state & event?
         {
-            // Do stuff only if the radio button is checked (or the action will run twice).
-            if( ( (RadioButton) sender ).Checked )
-            {
-                reassessExtractionOption();
-            }
-        }
-
-        private void reflectorShowOutputCheckBox_CheckedChanged( object sender, EventArgs e )
-        {
-            if( reflectorShowOutputCheckBox.Checked )
-            {
-                splitContainer1.Panel2Collapsed = false;
-                reflectorShowOutputCheckBox.Text = "Hide Output";
-            }
-            else
-            {
-                splitContainer1.Panel2Collapsed = true;
-                reflectorShowOutputCheckBox.Text = "Show Output";
-            }
-        }
-
-        private void reassessExtractionOption()
-        {
-            if( extractManualRadioButton.Checked )
-            {
-                modifyGroupBox.Enabled = false;
-                manualGroupBox.Enabled = true;
-                extractSaveButton.Enabled = modifyManager.hasSaveFile();
-                reflectorExtractRadioButton.Enabled = true;
-            }
-            else
-            {
-                modifyGroupBox.Enabled = true;
-                modifySaveButton.Enabled = modifyManager.hasSaveFile();
-                manualGroupBox.Enabled = false;
-                reflectorExtractRadioButton.Enabled = false;
-                if( reflectorExtractRadioButton.Checked )
-                {
-                    reflectorRepackRadioButton.Checked = true;  // Reset radio group to a enabled option
-                }
-            }
+            quickModifySaveButton.Enabled = modifyManager.hasSaveFile();
+            extractRepackSaveButton.Enabled = modifyManager.hasSaveFile();
         }
 
         private void disableChoices()
         {
             // Don't let different options be chosen during file operations
-            zombieScalingGroupBox.Enabled = false;
-            vodGroupBox.Enabled = false;
-            mutantGroupBox.Enabled = false;
-            fogGroupBox.Enabled = false;
-            ccExtraGroupBox.Enabled = false;
-            warehousesGroupBox.Enabled = false;
-            generalGroupBox.Enabled = false;
+            dataFlowLayoutPanel.Enabled = false;
             saveFileGroupBox.Enabled = false;
-            modifyGroupBox.Enabled = false;
-            //manualGroupBox.Enabled = false;    // Don't disable this for when we're doing a multi-button-click-required manual cycle
-            extractGroupBox.Enabled = false;
-            reflectorStopGroupBox.Enabled = false;
+            quickModifySaveButton.Enabled = false;
+            extractRepackSaveButton.Enabled = false;
+            extractLeaveCheckBox.Enabled = false;
+            reflectorStopRepackCheckBox.Enabled = false;
+            reflectorStopExtractCheckBox.Enabled = false;
         }
 
         private void enableChoices()
         {
-            vodGroupBox.Enabled = true;
-            zombieScalingGroupBox.Enabled = true;
-            mutantGroupBox.Enabled = true;
-            fogGroupBox.Enabled = true;
-            ccExtraGroupBox.Enabled = true;
-            warehousesGroupBox.Enabled = true;
-            generalGroupBox.Enabled = true;
+            dataFlowLayoutPanel.Enabled = true;
             saveFileGroupBox.Enabled = true;
-            //modifyGroupBox and manualGroupBox are handled in reassessExtractionOption()
-            extractGroupBox.Enabled = true;
-            reflectorStopGroupBox.Enabled = true;
+            extractLeaveCheckBox.Enabled = true;
+            reflectorStopRepackCheckBox.Enabled = true;
+            reflectorStopExtractCheckBox.Enabled = true;
         }
 
         private void modifySaveButton_Click( object sender, EventArgs e )
@@ -398,25 +359,10 @@ namespace TABSAT
 
         private void modifySave_DoWork( object sender, DoWorkEventArgs e )
         {
-            if( !extractManualRadioButton.Checked )
+            // Firstly extract the save
+            if( !extractSave() )
             {
-                // Firstly extract the save
-                if( !extractSave() )
-                {
-                    if( reflectorRepackRadioButton.Checked )    // Refactor how this _Click handles potentially failing in 2+ places and trying to stop the Reflector in 3...
-                    {
-                        modifyManager.stopReflector();
-                    }
-
-                    resetSaveFileChoice();
-                    return;
-                }
-            }
-
-            // Make modifications
-            if( !modifyExtractedSave() )
-            {
-                if( reflectorRepackRadioButton.Checked )
+                if( reflectorStopRepackCheckBox.Checked )    // Refactor how this _Click handles potentially failing in 2+ places and trying to stop the Reflector in 3...
                 {
                     modifyManager.stopReflector();
                 }
@@ -425,13 +371,22 @@ namespace TABSAT
                 return;
             }
 
-            if( !extractManualRadioButton.Checked )
+            // Make modifications
+            if( !modifyExtractedSave() )
             {
-                // Backup & Repack the save
-                backupAndRepackSave();
+                if( reflectorStopRepackCheckBox.Checked )
+                {
+                    modifyManager.stopReflector();
+                }
+
+                resetSaveFileChoice();
+                return;
             }
 
-            if( reflectorRepackRadioButton.Checked )
+            // Backup & Repack the save
+            backupAndRepackSave();
+
+            if( reflectorStopRepackCheckBox.Checked )
             {
                 modifyManager.stopReflector();
             }
@@ -440,7 +395,7 @@ namespace TABSAT
                 reflectorStopButton.Enabled = true;
             }
 
-            if( extractTidyRadioButton.Checked )
+            if( !extractLeaveCheckBox.Checked )
             {
                 // Remove the extracted files
                 modifyManager.removeDecryptedDir();
@@ -450,19 +405,40 @@ namespace TABSAT
             resetSaveFileChoice();
         }
 
-        private void extractSaveButton_Click( object sender, EventArgs e )
+        private void extractRepackSaveButton_Click( object sender, EventArgs e )
         {
-            if( !modifyManager.hasSaveFile() )
-            {
-                // Error?
-                return;
-            }
-
             disableChoices();
 
-            modifySaveBackgroundWorker = new BackgroundWorker();
-            modifySaveBackgroundWorker.DoWork += new DoWorkEventHandler( extractSave_DoWork );
-            modifySaveBackgroundWorker.RunWorkerAsync();
+            switch( modifyManager.getState() )
+            {
+                case ModifyManager.SaveState.SET:
+                    //Extracting
+
+                    modifySaveBackgroundWorker = new BackgroundWorker();
+                    modifySaveBackgroundWorker.DoWork += new DoWorkEventHandler( extractSave_DoWork );
+                    modifySaveBackgroundWorker.RunWorkerAsync();
+
+                    break;
+                case ModifyManager.SaveState.EXTRACTED:
+                    // Repacking
+
+                    backupAndRepackSave();
+
+                    if( reflectorStopRepackCheckBox.Checked )
+                    {
+                        modifyManager.stopReflector();
+                        reflectorStopButton.Enabled = false;
+                    }
+
+                    extractRepackSaveButton.Text = "Manual Modify";
+
+                    resetSaveFileChoice();
+
+                    break;
+                default:
+                    // Error?
+                    return;
+            }
         }
 
         private void extractSave_DoWork( object sender, DoWorkEventArgs e )
@@ -470,61 +446,29 @@ namespace TABSAT
             if( !extractSave() )
             {
                 resetSaveFileChoice();
-
-                if( reflectorExtractRadioButton.Checked )
-                {
-                    modifyManager.stopReflector();
-                }
-                else
-                {
-                    reflectorStopButton.Enabled = true;
-                }
-                return;
             }
             else
             {
                 modifyExtractedSave();  // Unchecked
 
-                repackSaveButton.Enabled = true;
-                skipRepackButton.Enabled = true;
+                extractRepackSaveButton.Text = "Repack the Save File";
+                extractRepackSaveButton.Enabled = true;     // For repacking
+                saveFileGroupBox.Enabled = true;            // For skipping
             }
 
-            if( reflectorExtractRadioButton.Checked )
+            if( reflectorStopExtractCheckBox.Enabled && reflectorStopExtractCheckBox.Checked )
             {
                 modifyManager.stopReflector();
             }
             else
             {
-                reflectorStopButton.Enabled = true;
+                reflectorStopButton.Enabled = true; // If the reflector isn't being automatically stopped, let the user manually do so
             }
         }
 
-        private void repackSaveButton_Click( object sender, EventArgs e )
+        private void reflectorStopRepackCheckBox_CheckedChanged( object sender, EventArgs e )
         {
-            repackSaveButton.Enabled = false;
-            skipRepackButton.Enabled = false;
-
-            backupAndRepackSave();
-
-            if( reflectorRepackRadioButton.Checked )
-            {
-                modifyManager.stopReflector();
-            }
-
-            resetSaveFileChoice();
-        }
-
-        private void skipRepackButton_Click( object sender, EventArgs e )
-        {
-            repackSaveButton.Enabled = false;
-            skipRepackButton.Enabled = false;
-
-            if( reflectorRepackRadioButton.Checked )
-            {
-                modifyManager.stopReflector();
-            }
-
-            resetSaveFileChoice();
+            reflectorStopExtractCheckBox.Enabled = reflectorStopRepackCheckBox.Checked;
         }
 
         private void reflectorStopButton_Click( object sender, EventArgs e )
@@ -535,9 +479,9 @@ namespace TABSAT
 
         private bool extractSave()
         {
-            extractSaveButton.Enabled = false;  // Should live in extractSaveButton_Click(), thus not be triggered by modifySaveButton_Click()?
+            extractRepackSaveButton.Enabled = false;  // Should live in extractSaveButton_Click(), thus not be triggered by modifySaveButton_Click()?
 
-            string saveFile = modifyManager.extractSave( extractTidyRadioButton.Checked );
+            string saveFile = modifyManager.extractSave( !extractLeaveCheckBox.Checked );
             if( saveFile == null )
             {
                 statusWriter( "Unable to extract save file." );
@@ -596,8 +540,12 @@ namespace TABSAT
                     {
                         scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.HARPY, zombieScaleHarpyNumericUpDown.Value );
                     }
-                    statusWriter( "Scaling Zombie population per type." );
-                    dataEditor.scalePopulation( scalableZombieGroupFactors );
+
+                    if( scalableZombieGroupFactors.Any() )
+                    {
+                        statusWriter( "Scaling Zombie population per type." );
+                        dataEditor.scalePopulation( scalableZombieGroupFactors );
+                    }
                 }
 
                 // Mutants

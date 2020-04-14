@@ -21,17 +21,12 @@ namespace TABSAT
          *  Exiting will have to terminate the reflector's environment, in order to end the stalled TAB assembly thread.
          */
 
-        /*
-        enum SaveState
+        internal enum SaveState
         {
-            WAITING_FOR_FILE,
-            HAVE_FILE,
-            EXTRACTING,
-            HAVE_EXTRACTED,
-            //BACKING_UP,
-            REPACKING
+            UNSET,
+            SET,
+            EXTRACTED
         };
-        */
 
         internal static readonly string DEFAULT_EDITS_DIRECTORY = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\TABSAT\edits\" );
 
@@ -39,6 +34,7 @@ namespace TABSAT
         private readonly string editsDir;
         private string currentSaveFile;
         private string currentDecryptDir;
+        private SaveState state;    // Should lock() access?
 
 
         private static string backupSave( string saveFile, string backupDir, bool tryCheckFile )     // Refactor this into new BackupsManager features?
@@ -177,21 +173,33 @@ namespace TABSAT
             if( file == null )
             {
                 currentSaveFile = null;
+                state = SaveState.UNSET;
             }
             else
             {
                 currentSaveFile = file;
+                state = SaveState.SET;
             }
             currentDecryptDir = null;
         }
 
+        internal SaveState getState()  // Refactor into event SaveFileSet?
+        {
+            return state;
+        }
+
         internal bool hasSaveFile()
         {
-            return currentSaveFile != null;
+            return state == ModifyManager.SaveState.SET;
         }
 
         internal string extractSave( bool useTempDir )
         {
+            if( state != SaveState.SET )
+            {
+                throw new InvalidOperationException( "Save File has not been set." );
+            }
+
             if( useTempDir )
             {
                 currentDecryptDir = Path.Combine( Path.GetTempPath(), Path.GetRandomFileName() );  // A random "file"/folder name under the user's temp directory
@@ -225,21 +233,35 @@ namespace TABSAT
 
             unpackSave( currentSaveFile, currentDecryptDir, password );
 
+            state = SaveState.EXTRACTED;
+
             return currentSaveFile;
         }
 
         internal SaveEditor getSaveEditor()
         {
+            if( state != SaveState.EXTRACTED )
+            {
+                throw new InvalidOperationException( "Save File has not been extracted." );
+            }
             return new SaveEditor( currentDecryptDir );
         }
 
         internal string backupSave()
         {
+            if( state != SaveState.EXTRACTED )
+            {
+                throw new InvalidOperationException( "Save File has not been extracted." );
+            }
             return backupSave( currentSaveFile, editsDir, true );
         }
 
         internal string repackDirAsSave()
         {
+            if( state != SaveState.EXTRACTED )
+            {
+                throw new InvalidOperationException( "Save File has not been extracted." );
+            }
             // Don't create unencrypted saves where TAB or auto-backup watchers might see them
             string unencryptedSaveFile = Path.Combine( Path.GetTempPath(), Path.GetFileName( currentSaveFile ) );
 
@@ -260,8 +282,14 @@ namespace TABSAT
 
         internal void removeDecryptedDir()
         {
+            if( state != SaveState.EXTRACTED )
+            {
+                throw new InvalidOperationException( "Save File has not been extracted." );
+            }
             // Completely unguarded w.r.t. state, or IO exceptions...
             Directory.Delete( currentDecryptDir, true );
+
+            //setSaveFile( currentSaveFile ); To reset currentDecryptDir and state?
         }
 
         internal void stopReflector()

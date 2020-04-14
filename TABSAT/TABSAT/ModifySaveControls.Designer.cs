@@ -28,20 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.extractGroupBox = new System.Windows.Forms.GroupBox();
-            this.extractLeaveRadioButton = new System.Windows.Forms.RadioButton();
-            this.extractTidyRadioButton = new System.Windows.Forms.RadioButton();
-            this.extractManualRadioButton = new System.Windows.Forms.RadioButton();
-            this.manualGroupBox = new System.Windows.Forms.GroupBox();
-            this.skipRepackButton = new System.Windows.Forms.Button();
-            this.repackSaveButton = new System.Windows.Forms.Button();
-            this.extractSaveButton = new System.Windows.Forms.Button();
+            this.extractLeaveCheckBox = new System.Windows.Forms.CheckBox();
+            this.extractRepackSaveButton = new System.Windows.Forms.Button();
             this.saveFileGroupBox = new System.Windows.Forms.GroupBox();
             this.saveFileTextBox = new System.Windows.Forms.TextBox();
             this.saveFileChooseButton = new System.Windows.Forms.Button();
             this.backupCheckBox = new System.Windows.Forms.CheckBox();
-            this.modifyGroupBox = new System.Windows.Forms.GroupBox();
-            this.modifySaveButton = new System.Windows.Forms.Button();
+            this.quickModifySaveButton = new System.Windows.Forms.Button();
             this.fogGroupBox = new System.Windows.Forms.GroupBox();
             this.fogClearRadioButton = new System.Windows.Forms.RadioButton();
             this.fogNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -57,12 +50,12 @@
             this.mutantReplaceAllRadio = new System.Windows.Forms.RadioButton();
             this.mutantsRemoveRadio = new System.Windows.Forms.RadioButton();
             this.mutantsNothingRadio = new System.Windows.Forms.RadioButton();
-            this.reflectorStopGroupBox = new System.Windows.Forms.GroupBox();
-            this.reflectorExtractRadioButton = new System.Windows.Forms.RadioButton();
-            this.reflectorRepackRadioButton = new System.Windows.Forms.RadioButton();
-            this.reflectorExitRadioButton = new System.Windows.Forms.RadioButton();
-            this.processGroupBox = new System.Windows.Forms.GroupBox();
+            this.reflectorStopExtractCheckBox = new System.Windows.Forms.CheckBox();
+            this.reflectorStopRepackCheckBox = new System.Windows.Forms.CheckBox();
+            this.reflectorStopButton = new System.Windows.Forms.Button();
+            this.reflectorOutputGroupBox = new System.Windows.Forms.GroupBox();
             this.reflectorTextBox = new System.Windows.Forms.TextBox();
+            this.verticalDividerLabel = new System.Windows.Forms.Label();
             this.modifyHintLabel = new System.Windows.Forms.Label();
             this.generalGroupBox = new System.Windows.Forms.GroupBox();
             this.disableMayorsCheckBox = new System.Windows.Forms.CheckBox();
@@ -117,23 +110,18 @@
             this.warehousesFillWoodCheckBox = new System.Windows.Forms.CheckBox();
             this.warehousesFillGoldCheckBox = new System.Windows.Forms.CheckBox();
             this.warehousesFillStoneCheckBox = new System.Windows.Forms.CheckBox();
+            this.modifyGroupBox = new System.Windows.Forms.GroupBox();
+            this.reflectorSplitContainer = new System.Windows.Forms.SplitContainer();
             this.processFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.reflectorPanel = new System.Windows.Forms.Panel();
-            this.reflectorgroupBox = new System.Windows.Forms.GroupBox();
-            this.reflectorStopButton = new System.Windows.Forms.Button();
-            this.reflectorShowOutputCheckBox = new System.Windows.Forms.CheckBox();
-            this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.reflectorGroupBox = new System.Windows.Forms.GroupBox();
             this.modifySaveBackgroundWorker = new System.ComponentModel.BackgroundWorker();
-            this.extractGroupBox.SuspendLayout();
-            this.manualGroupBox.SuspendLayout();
+            this.optionsSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.horizontalDividerLabel = new System.Windows.Forms.Label();
             this.saveFileGroupBox.SuspendLayout();
-            this.modifyGroupBox.SuspendLayout();
             this.fogGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fogNumericUpDown)).BeginInit();
             this.mutantGroupBox.SuspendLayout();
-            this.reflectorStopGroupBox.SuspendLayout();
-            this.processGroupBox.SuspendLayout();
+            this.reflectorOutputGroupBox.SuspendLayout();
             this.generalGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleNumericUpDown)).BeginInit();
             this.dataFlowLayoutPanel.SuspendLayout();
@@ -154,133 +142,64 @@
             ((System.ComponentModel.ISupportInitialize)(this.ccWorkersNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.giftNumericUpDown)).BeginInit();
             this.warehousesGroupBox.SuspendLayout();
+            this.modifyGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.reflectorSplitContainer)).BeginInit();
+            this.reflectorSplitContainer.Panel1.SuspendLayout();
+            this.reflectorSplitContainer.Panel2.SuspendLayout();
+            this.reflectorSplitContainer.SuspendLayout();
             this.processFlowLayoutPanel.SuspendLayout();
-            this.reflectorPanel.SuspendLayout();
-            this.reflectorgroupBox.SuspendLayout();
-            this.tableLayoutPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
+            this.reflectorGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.optionsSplitContainer)).BeginInit();
+            this.optionsSplitContainer.Panel1.SuspendLayout();
+            this.optionsSplitContainer.Panel2.SuspendLayout();
+            this.optionsSplitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
-            // extractGroupBox
+            // extractLeaveCheckBox
             // 
-            this.extractGroupBox.Controls.Add(this.extractLeaveRadioButton);
-            this.extractGroupBox.Controls.Add(this.extractTidyRadioButton);
-            this.extractGroupBox.Controls.Add(this.extractManualRadioButton);
-            this.extractGroupBox.Location = new System.Drawing.Point(510, 69);
-            this.extractGroupBox.Name = "extractGroupBox";
-            this.extractGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.extractGroupBox.Size = new System.Drawing.Size(131, 90);
-            this.extractGroupBox.TabIndex = 1;
-            this.extractGroupBox.TabStop = false;
-            this.extractGroupBox.Text = "Extracted Files";
+            this.extractLeaveCheckBox.Checked = true;
+            this.extractLeaveCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.extractLeaveCheckBox.Location = new System.Drawing.Point(6, 20);
+            this.extractLeaveCheckBox.Name = "extractLeaveCheckBox";
+            this.extractLeaveCheckBox.Size = new System.Drawing.Size(130, 30);
+            this.extractLeaveCheckBox.TabIndex = 2;
+            this.extractLeaveCheckBox.Text = "Leave Extracted Files";
+            this.extractLeaveCheckBox.UseVisualStyleBackColor = true;
             // 
-            // extractLeaveRadioButton
+            // extractRepackSaveButton
             // 
-            this.extractLeaveRadioButton.AutoSize = true;
-            this.extractLeaveRadioButton.Checked = true;
-            this.extractLeaveRadioButton.Location = new System.Drawing.Point(6, 42);
-            this.extractLeaveRadioButton.Name = "extractLeaveRadioButton";
-            this.extractLeaveRadioButton.Size = new System.Drawing.Size(102, 17);
-            this.extractLeaveRadioButton.TabIndex = 1;
-            this.extractLeaveRadioButton.TabStop = true;
-            this.extractLeaveRadioButton.Text = "Leave After Use";
-            this.extractLeaveRadioButton.UseVisualStyleBackColor = true;
-            this.extractLeaveRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
-            // 
-            // extractTidyRadioButton
-            // 
-            this.extractTidyRadioButton.AutoSize = true;
-            this.extractTidyRadioButton.Location = new System.Drawing.Point(6, 19);
-            this.extractTidyRadioButton.Name = "extractTidyRadioButton";
-            this.extractTidyRadioButton.Size = new System.Drawing.Size(112, 17);
-            this.extractTidyRadioButton.TabIndex = 0;
-            this.extractTidyRadioButton.Text = "Remove After Use";
-            this.extractTidyRadioButton.UseVisualStyleBackColor = true;
-            this.extractTidyRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
-            // 
-            // extractManualRadioButton
-            // 
-            this.extractManualRadioButton.AutoSize = true;
-            this.extractManualRadioButton.Location = new System.Drawing.Point(6, 65);
-            this.extractManualRadioButton.Name = "extractManualRadioButton";
-            this.extractManualRadioButton.Size = new System.Drawing.Size(125, 17);
-            this.extractManualRadioButton.TabIndex = 2;
-            this.extractManualRadioButton.Text = "Manual Editing Mode";
-            this.extractManualRadioButton.UseVisualStyleBackColor = true;
-            this.extractManualRadioButton.CheckedChanged += new System.EventHandler(this.extractRadioButtons_CheckedChanged);
-            // 
-            // manualGroupBox
-            // 
-            this.manualGroupBox.Controls.Add(this.skipRepackButton);
-            this.manualGroupBox.Controls.Add(this.repackSaveButton);
-            this.manualGroupBox.Controls.Add(this.extractSaveButton);
-            this.manualGroupBox.Enabled = false;
-            this.manualGroupBox.Location = new System.Drawing.Point(119, 3);
-            this.manualGroupBox.Name = "manualGroupBox";
-            this.manualGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.manualGroupBox.Size = new System.Drawing.Size(384, 60);
-            this.manualGroupBox.TabIndex = 3;
-            this.manualGroupBox.TabStop = false;
-            this.manualGroupBox.Text = "Manual Editing Mode";
-            // 
-            // skipRepackButton
-            // 
-            this.skipRepackButton.Enabled = false;
-            this.skipRepackButton.Location = new System.Drawing.Point(258, 19);
-            this.skipRepackButton.Name = "skipRepackButton";
-            this.skipRepackButton.Size = new System.Drawing.Size(120, 30);
-            this.skipRepackButton.TabIndex = 2;
-            this.skipRepackButton.Text = "Skip Repacking";
-            this.skipRepackButton.UseVisualStyleBackColor = true;
-            this.skipRepackButton.Click += new System.EventHandler(this.skipRepackButton_Click);
-            // 
-            // repackSaveButton
-            // 
-            this.repackSaveButton.Enabled = false;
-            this.repackSaveButton.Location = new System.Drawing.Point(132, 19);
-            this.repackSaveButton.Name = "repackSaveButton";
-            this.repackSaveButton.Size = new System.Drawing.Size(120, 30);
-            this.repackSaveButton.TabIndex = 1;
-            this.repackSaveButton.Text = "Repack the Save File";
-            this.repackSaveButton.UseVisualStyleBackColor = true;
-            this.repackSaveButton.Click += new System.EventHandler(this.repackSaveButton_Click);
-            // 
-            // extractSaveButton
-            // 
-            this.extractSaveButton.Enabled = false;
-            this.extractSaveButton.Location = new System.Drawing.Point(6, 19);
-            this.extractSaveButton.Name = "extractSaveButton";
-            this.extractSaveButton.Size = new System.Drawing.Size(120, 30);
-            this.extractSaveButton.TabIndex = 0;
-            this.extractSaveButton.Text = "Extract the Save File";
-            this.extractSaveButton.UseVisualStyleBackColor = true;
-            this.extractSaveButton.Click += new System.EventHandler(this.extractSaveButton_Click);
+            this.extractRepackSaveButton.Enabled = false;
+            this.extractRepackSaveButton.Location = new System.Drawing.Point(143, 19);
+            this.extractRepackSaveButton.Name = "extractRepackSaveButton";
+            this.extractRepackSaveButton.Size = new System.Drawing.Size(120, 30);
+            this.extractRepackSaveButton.TabIndex = 1;
+            this.extractRepackSaveButton.Text = "Manual Modify";
+            this.extractRepackSaveButton.UseVisualStyleBackColor = true;
+            this.extractRepackSaveButton.Click += new System.EventHandler(this.extractRepackSaveButton_Click);
             // 
             // saveFileGroupBox
             // 
+            this.saveFileGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.saveFileGroupBox.Controls.Add(this.saveFileTextBox);
             this.saveFileGroupBox.Controls.Add(this.saveFileChooseButton);
             this.saveFileGroupBox.Controls.Add(this.backupCheckBox);
-            this.saveFileGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.saveFileGroupBox.Location = new System.Drawing.Point(6, 486);
+            this.saveFileGroupBox.Location = new System.Drawing.Point(6, 6);
             this.saveFileGroupBox.Margin = new System.Windows.Forms.Padding(6);
             this.saveFileGroupBox.Name = "saveFileGroupBox";
-            this.saveFileGroupBox.Size = new System.Drawing.Size(638, 50);
-            this.saveFileGroupBox.TabIndex = 0;
+            this.saveFileGroupBox.Size = new System.Drawing.Size(573, 60);
+            this.saveFileGroupBox.TabIndex = 1;
             this.saveFileGroupBox.TabStop = false;
             this.saveFileGroupBox.Text = "Save File";
             // 
             // saveFileTextBox
             // 
             this.saveFileTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveFileTextBox.Location = new System.Drawing.Point(111, 18);
+            this.saveFileTextBox.Location = new System.Drawing.Point(105, 25);
             this.saveFileTextBox.Name = "saveFileTextBox";
             this.saveFileTextBox.ReadOnly = true;
             this.saveFileTextBox.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.saveFileTextBox.Size = new System.Drawing.Size(383, 20);
+            this.saveFileTextBox.Size = new System.Drawing.Size(336, 20);
             this.saveFileTextBox.TabIndex = 0;
             this.saveFileTextBox.TabStop = false;
             this.saveFileTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -289,7 +208,7 @@
             // saveFileChooseButton
             // 
             this.saveFileChooseButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.saveFileChooseButton.Location = new System.Drawing.Point(512, 12);
+            this.saveFileChooseButton.Location = new System.Drawing.Point(447, 19);
             this.saveFileChooseButton.Name = "saveFileChooseButton";
             this.saveFileChooseButton.Size = new System.Drawing.Size(120, 30);
             this.saveFileChooseButton.TabIndex = 0;
@@ -303,33 +222,22 @@
             this.backupCheckBox.AutoSize = true;
             this.backupCheckBox.Checked = true;
             this.backupCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.backupCheckBox.Location = new System.Drawing.Point(6, 21);
+            this.backupCheckBox.Location = new System.Drawing.Point(6, 27);
             this.backupCheckBox.Name = "backupCheckBox";
             this.backupCheckBox.Size = new System.Drawing.Size(101, 17);
             this.backupCheckBox.TabIndex = 1;
             this.backupCheckBox.Text = "Backup Original";
             this.backupCheckBox.UseVisualStyleBackColor = true;
             // 
-            // modifyGroupBox
+            // quickModifySaveButton
             // 
-            this.modifyGroupBox.Controls.Add(this.modifySaveButton);
-            this.modifyGroupBox.Location = new System.Drawing.Point(509, 3);
-            this.modifyGroupBox.Name = "modifyGroupBox";
-            this.modifyGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.modifyGroupBox.Size = new System.Drawing.Size(132, 60);
-            this.modifyGroupBox.TabIndex = 0;
-            this.modifyGroupBox.TabStop = false;
-            this.modifyGroupBox.Text = "Quick Mode";
-            // 
-            // modifySaveButton
-            // 
-            this.modifySaveButton.Location = new System.Drawing.Point(6, 19);
-            this.modifySaveButton.Name = "modifySaveButton";
-            this.modifySaveButton.Size = new System.Drawing.Size(120, 30);
-            this.modifySaveButton.TabIndex = 0;
-            this.modifySaveButton.Text = "Modify the Save File";
-            this.modifySaveButton.UseVisualStyleBackColor = true;
-            this.modifySaveButton.Click += new System.EventHandler(this.modifySaveButton_Click);
+            this.quickModifySaveButton.Location = new System.Drawing.Point(269, 19);
+            this.quickModifySaveButton.Name = "quickModifySaveButton";
+            this.quickModifySaveButton.Size = new System.Drawing.Size(120, 30);
+            this.quickModifySaveButton.TabIndex = 0;
+            this.quickModifySaveButton.Text = "Quick Modify";
+            this.quickModifySaveButton.UseVisualStyleBackColor = true;
+            this.quickModifySaveButton.Click += new System.EventHandler(this.modifySaveButton_Click);
             // 
             // fogGroupBox
             // 
@@ -529,63 +437,51 @@
             this.mutantsNothingRadio.Text = "Do not modify";
             this.mutantsNothingRadio.UseVisualStyleBackColor = true;
             // 
-            // reflectorStopGroupBox
+            // reflectorStopExtractCheckBox
             // 
-            this.reflectorStopGroupBox.Controls.Add(this.reflectorExtractRadioButton);
-            this.reflectorStopGroupBox.Controls.Add(this.reflectorRepackRadioButton);
-            this.reflectorStopGroupBox.Controls.Add(this.reflectorExitRadioButton);
-            this.reflectorStopGroupBox.Location = new System.Drawing.Point(137, 0);
-            this.reflectorStopGroupBox.Name = "reflectorStopGroupBox";
-            this.reflectorStopGroupBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.reflectorStopGroupBox.Size = new System.Drawing.Size(152, 90);
-            this.reflectorStopGroupBox.TabIndex = 2;
-            this.reflectorStopGroupBox.TabStop = false;
-            this.reflectorStopGroupBox.Text = "Reflector Stops:";
+            this.reflectorStopExtractCheckBox.Location = new System.Drawing.Point(143, 19);
+            this.reflectorStopExtractCheckBox.Name = "reflectorStopExtractCheckBox";
+            this.reflectorStopExtractCheckBox.Size = new System.Drawing.Size(125, 30);
+            this.reflectorStopExtractCheckBox.TabIndex = 1;
+            this.reflectorStopExtractCheckBox.Text = "Stop After Extracting";
+            this.reflectorStopExtractCheckBox.UseVisualStyleBackColor = true;
             // 
-            // reflectorExtractRadioButton
+            // reflectorStopRepackCheckBox
             // 
-            this.reflectorExtractRadioButton.AutoSize = true;
-            this.reflectorExtractRadioButton.Enabled = false;
-            this.reflectorExtractRadioButton.Location = new System.Drawing.Point(6, 65);
-            this.reflectorExtractRadioButton.Name = "reflectorExtractRadioButton";
-            this.reflectorExtractRadioButton.Size = new System.Drawing.Size(143, 17);
-            this.reflectorExtractRadioButton.TabIndex = 2;
-            this.reflectorExtractRadioButton.Text = "After extracting Save File";
-            this.reflectorExtractRadioButton.UseVisualStyleBackColor = true;
+            this.reflectorStopRepackCheckBox.Checked = true;
+            this.reflectorStopRepackCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.reflectorStopRepackCheckBox.Location = new System.Drawing.Point(6, 20);
+            this.reflectorStopRepackCheckBox.Name = "reflectorStopRepackCheckBox";
+            this.reflectorStopRepackCheckBox.Size = new System.Drawing.Size(128, 30);
+            this.reflectorStopRepackCheckBox.TabIndex = 0;
+            this.reflectorStopRepackCheckBox.Text = "Stop After Repacking";
+            this.reflectorStopRepackCheckBox.UseVisualStyleBackColor = true;
+            this.reflectorStopRepackCheckBox.CheckedChanged += new System.EventHandler(this.reflectorStopRepackCheckBox_CheckedChanged);
             // 
-            // reflectorRepackRadioButton
+            // reflectorStopButton
             // 
-            this.reflectorRepackRadioButton.AutoSize = true;
-            this.reflectorRepackRadioButton.Checked = true;
-            this.reflectorRepackRadioButton.Location = new System.Drawing.Point(6, 42);
-            this.reflectorRepackRadioButton.Name = "reflectorRepackRadioButton";
-            this.reflectorRepackRadioButton.Size = new System.Drawing.Size(144, 17);
-            this.reflectorRepackRadioButton.TabIndex = 1;
-            this.reflectorRepackRadioButton.TabStop = true;
-            this.reflectorRepackRadioButton.Text = "After repacking Save File";
-            this.reflectorRepackRadioButton.UseVisualStyleBackColor = true;
+            this.reflectorStopButton.Enabled = false;
+            this.reflectorStopButton.Location = new System.Drawing.Point(269, 19);
+            this.reflectorStopButton.Name = "reflectorStopButton";
+            this.reflectorStopButton.Size = new System.Drawing.Size(120, 30);
+            this.reflectorStopButton.TabIndex = 2;
+            this.reflectorStopButton.Text = "Stop Reflector";
+            this.reflectorStopButton.UseVisualStyleBackColor = true;
+            this.reflectorStopButton.Click += new System.EventHandler(this.reflectorStopButton_Click);
             // 
-            // reflectorExitRadioButton
+            // reflectorOutputGroupBox
             // 
-            this.reflectorExitRadioButton.AutoSize = true;
-            this.reflectorExitRadioButton.Location = new System.Drawing.Point(6, 19);
-            this.reflectorExitRadioButton.Name = "reflectorExitRadioButton";
-            this.reflectorExitRadioButton.Size = new System.Drawing.Size(104, 17);
-            this.reflectorExitRadioButton.TabIndex = 0;
-            this.reflectorExitRadioButton.Text = "On TABSAT Exit";
-            this.reflectorExitRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // processGroupBox
-            // 
-            this.processGroupBox.Controls.Add(this.reflectorTextBox);
-            this.processGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.processGroupBox.Location = new System.Drawing.Point(0, 0);
-            this.processGroupBox.Margin = new System.Windows.Forms.Padding(6);
-            this.processGroupBox.Name = "processGroupBox";
-            this.processGroupBox.Size = new System.Drawing.Size(650, 56);
-            this.processGroupBox.TabIndex = 0;
-            this.processGroupBox.TabStop = false;
-            this.processGroupBox.Text = "Reflector Process Output";
+            this.reflectorOutputGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.reflectorOutputGroupBox.Controls.Add(this.reflectorTextBox);
+            this.reflectorOutputGroupBox.Location = new System.Drawing.Point(3, 3);
+            this.reflectorOutputGroupBox.MinimumSize = new System.Drawing.Size(150, 30);
+            this.reflectorOutputGroupBox.Name = "reflectorOutputGroupBox";
+            this.reflectorOutputGroupBox.Size = new System.Drawing.Size(164, 128);
+            this.reflectorOutputGroupBox.TabIndex = 2;
+            this.reflectorOutputGroupBox.TabStop = false;
+            this.reflectorOutputGroupBox.Text = "Reflector Output";
             // 
             // reflectorTextBox
             // 
@@ -595,20 +491,30 @@
             this.reflectorTextBox.Multiline = true;
             this.reflectorTextBox.Name = "reflectorTextBox";
             this.reflectorTextBox.ReadOnly = true;
-            this.reflectorTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.reflectorTextBox.Size = new System.Drawing.Size(644, 37);
+            this.reflectorTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.reflectorTextBox.Size = new System.Drawing.Size(158, 109);
             this.reflectorTextBox.TabIndex = 0;
             this.reflectorTextBox.Text = "Reflector not yet deployed.";
             this.reflectorTextBox.WordWrap = false;
             // 
+            // verticalDividerLabel
+            // 
+            this.verticalDividerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.verticalDividerLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.verticalDividerLabel.Location = new System.Drawing.Point(168, 0);
+            this.verticalDividerLabel.Name = "verticalDividerLabel";
+            this.verticalDividerLabel.Size = new System.Drawing.Size(2, 134);
+            this.verticalDividerLabel.TabIndex = 2;
+            // 
             // modifyHintLabel
             // 
-            this.modifyHintLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.modifyHintLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.modifyHintLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.modifyHintLabel.Location = new System.Drawing.Point(76, 4);
+            this.modifyHintLabel.Location = new System.Drawing.Point(42, 11);
             this.modifyHintLabel.MinimumSize = new System.Drawing.Size(2, 30);
             this.modifyHintLabel.Name = "modifyHintLabel";
-            this.modifyHintLabel.Size = new System.Drawing.Size(497, 30);
+            this.modifyHintLabel.Size = new System.Drawing.Size(500, 30);
             this.modifyHintLabel.TabIndex = 0;
             this.modifyHintLabel.Text = "1) Choose which Modifications to make.   2) Choose which Save File to modify.   3" +
     ") Start the Process.";
@@ -706,6 +612,9 @@
             // 
             // dataFlowLayoutPanel
             // 
+            this.dataFlowLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dataFlowLayoutPanel.AutoScroll = true;
             this.dataFlowLayoutPanel.Controls.Add(this.zombieScalingGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.vodGroupBox);
@@ -714,10 +623,9 @@
             this.dataFlowLayoutPanel.Controls.Add(this.ccExtraGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.warehousesGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.generalGroupBox);
-            this.dataFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataFlowLayoutPanel.Location = new System.Drawing.Point(3, 41);
+            this.dataFlowLayoutPanel.Location = new System.Drawing.Point(3, 44);
             this.dataFlowLayoutPanel.Name = "dataFlowLayoutPanel";
-            this.dataFlowLayoutPanel.Size = new System.Drawing.Size(644, 436);
+            this.dataFlowLayoutPanel.Size = new System.Drawing.Size(579, 435);
             this.dataFlowLayoutPanel.TabIndex = 0;
             // 
             // zombieScalingGroupBox
@@ -1174,7 +1082,7 @@
             this.ccFoodNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.ccFoodNumericUpDown.TabIndex = 0;
             this.ccFoodNumericUpDown.Value = new decimal(new int[] {
-            10,
+            100,
             0,
             0,
             0});
@@ -1202,7 +1110,7 @@
             this.ccEnergyNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.ccEnergyNumericUpDown.TabIndex = 2;
             this.ccEnergyNumericUpDown.Value = new decimal(new int[] {
-            10,
+            100,
             0,
             0,
             0});
@@ -1230,7 +1138,7 @@
             this.ccWorkersNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.ccWorkersNumericUpDown.TabIndex = 4;
             this.ccWorkersNumericUpDown.Value = new decimal(new int[] {
-            10,
+            100,
             0,
             0,
             0});
@@ -1253,7 +1161,7 @@
             this.giftNumericUpDown.Size = new System.Drawing.Size(35, 20);
             this.giftNumericUpDown.TabIndex = 6;
             this.giftNumericUpDown.Value = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
             0});
@@ -1402,129 +1310,123 @@
             this.warehousesFillStoneCheckBox.Text = "Stone";
             this.warehousesFillStoneCheckBox.UseVisualStyleBackColor = true;
             // 
+            // modifyGroupBox
+            // 
+            this.modifyGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.modifyGroupBox.Controls.Add(this.extractRepackSaveButton);
+            this.modifyGroupBox.Controls.Add(this.quickModifySaveButton);
+            this.modifyGroupBox.Controls.Add(this.extractLeaveCheckBox);
+            this.modifyGroupBox.Location = new System.Drawing.Point(7, 3);
+            this.modifyGroupBox.MaximumSize = new System.Drawing.Size(395, 0);
+            this.modifyGroupBox.MinimumSize = new System.Drawing.Size(130, 60);
+            this.modifyGroupBox.Name = "modifyGroupBox";
+            this.modifyGroupBox.Size = new System.Drawing.Size(395, 60);
+            this.modifyGroupBox.TabIndex = 0;
+            this.modifyGroupBox.TabStop = false;
+            this.modifyGroupBox.Text = "Modify Save";
+            // 
+            // reflectorSplitContainer
+            // 
+            this.reflectorSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.reflectorSplitContainer.Location = new System.Drawing.Point(3, 75);
+            this.reflectorSplitContainer.Name = "reflectorSplitContainer";
+            // 
+            // reflectorSplitContainer.Panel1
+            // 
+            this.reflectorSplitContainer.Panel1.Controls.Add(this.verticalDividerLabel);
+            this.reflectorSplitContainer.Panel1.Controls.Add(this.reflectorOutputGroupBox);
+            this.reflectorSplitContainer.Panel1MinSize = 165;
+            // 
+            // reflectorSplitContainer.Panel2
+            // 
+            this.reflectorSplitContainer.Panel2.Controls.Add(this.processFlowLayoutPanel);
+            this.reflectorSplitContainer.Panel2MinSize = 405;
+            this.reflectorSplitContainer.Size = new System.Drawing.Size(579, 134);
+            this.reflectorSplitContainer.SplitterDistance = 170;
+            this.reflectorSplitContainer.TabIndex = 1;
+            // 
             // processFlowLayoutPanel
             // 
             this.processFlowLayoutPanel.AutoScroll = true;
             this.processFlowLayoutPanel.Controls.Add(this.modifyGroupBox);
-            this.processFlowLayoutPanel.Controls.Add(this.manualGroupBox);
-            this.processFlowLayoutPanel.Controls.Add(this.extractGroupBox);
-            this.processFlowLayoutPanel.Controls.Add(this.reflectorPanel);
+            this.processFlowLayoutPanel.Controls.Add(this.reflectorGroupBox);
             this.processFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.processFlowLayoutPanel.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.processFlowLayoutPanel.Location = new System.Drawing.Point(3, 545);
+            this.processFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.processFlowLayoutPanel.Name = "processFlowLayoutPanel";
-            this.processFlowLayoutPanel.Size = new System.Drawing.Size(644, 167);
+            this.processFlowLayoutPanel.Size = new System.Drawing.Size(405, 134);
             this.processFlowLayoutPanel.TabIndex = 0;
             // 
-            // reflectorPanel
+            // reflectorGroupBox
             // 
-            this.reflectorPanel.Controls.Add(this.reflectorStopGroupBox);
-            this.reflectorPanel.Controls.Add(this.reflectorgroupBox);
-            this.reflectorPanel.Location = new System.Drawing.Point(214, 69);
-            this.reflectorPanel.Name = "reflectorPanel";
-            this.reflectorPanel.Size = new System.Drawing.Size(290, 90);
-            this.reflectorPanel.TabIndex = 0;
+            this.reflectorGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.reflectorGroupBox.Controls.Add(this.reflectorStopButton);
+            this.reflectorGroupBox.Controls.Add(this.reflectorStopExtractCheckBox);
+            this.reflectorGroupBox.Controls.Add(this.reflectorStopRepackCheckBox);
+            this.reflectorGroupBox.Location = new System.Drawing.Point(7, 69);
+            this.reflectorGroupBox.MaximumSize = new System.Drawing.Size(525, 0);
+            this.reflectorGroupBox.MinimumSize = new System.Drawing.Size(130, 60);
+            this.reflectorGroupBox.Name = "reflectorGroupBox";
+            this.reflectorGroupBox.Size = new System.Drawing.Size(395, 60);
+            this.reflectorGroupBox.TabIndex = 1;
+            this.reflectorGroupBox.TabStop = false;
+            this.reflectorGroupBox.Text = "Reflector Process";
             // 
-            // reflectorgroupBox
+            // optionsSplitContainer
             // 
-            this.reflectorgroupBox.Controls.Add(this.reflectorStopButton);
-            this.reflectorgroupBox.Controls.Add(this.reflectorShowOutputCheckBox);
-            this.reflectorgroupBox.Location = new System.Drawing.Point(0, 0);
-            this.reflectorgroupBox.Name = "reflectorgroupBox";
-            this.reflectorgroupBox.Size = new System.Drawing.Size(131, 90);
-            this.reflectorgroupBox.TabIndex = 4;
-            this.reflectorgroupBox.TabStop = false;
-            this.reflectorgroupBox.Text = "Reflector Process";
+            this.optionsSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.optionsSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.optionsSplitContainer.Name = "optionsSplitContainer";
+            this.optionsSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // reflectorStopButton
+            // optionsSplitContainer.Panel1
             // 
-            this.reflectorStopButton.Enabled = false;
-            this.reflectorStopButton.Location = new System.Drawing.Point(6, 18);
-            this.reflectorStopButton.Name = "reflectorStopButton";
-            this.reflectorStopButton.Size = new System.Drawing.Size(120, 30);
-            this.reflectorStopButton.TabIndex = 1;
-            this.reflectorStopButton.Text = "Stop Reflector";
-            this.reflectorStopButton.UseVisualStyleBackColor = true;
-            this.reflectorStopButton.Click += new System.EventHandler(this.reflectorStopButton_Click);
+            this.optionsSplitContainer.Panel1.Controls.Add(this.dataFlowLayoutPanel);
+            this.optionsSplitContainer.Panel1.Controls.Add(this.modifyHintLabel);
+            this.optionsSplitContainer.Panel1MinSize = 240;
             // 
-            // reflectorShowOutputCheckBox
+            // optionsSplitContainer.Panel2
             // 
-            this.reflectorShowOutputCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
-            this.reflectorShowOutputCheckBox.Checked = true;
-            this.reflectorShowOutputCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.reflectorShowOutputCheckBox.Location = new System.Drawing.Point(6, 54);
-            this.reflectorShowOutputCheckBox.Name = "reflectorShowOutputCheckBox";
-            this.reflectorShowOutputCheckBox.Size = new System.Drawing.Size(120, 30);
-            this.reflectorShowOutputCheckBox.TabIndex = 0;
-            this.reflectorShowOutputCheckBox.Text = "Hide Output";
-            this.reflectorShowOutputCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.reflectorShowOutputCheckBox.UseVisualStyleBackColor = true;
-            this.reflectorShowOutputCheckBox.CheckedChanged += new System.EventHandler(this.reflectorShowOutputCheckBox_CheckedChanged);
+            this.optionsSplitContainer.Panel2.Controls.Add(this.horizontalDividerLabel);
+            this.optionsSplitContainer.Panel2.Controls.Add(this.saveFileGroupBox);
+            this.optionsSplitContainer.Panel2.Controls.Add(this.reflectorSplitContainer);
+            this.optionsSplitContainer.Panel2MinSize = 145;
+            this.optionsSplitContainer.Size = new System.Drawing.Size(585, 700);
+            this.optionsSplitContainer.SplitterDistance = 484;
+            this.optionsSplitContainer.TabIndex = 1;
             // 
-            // tableLayoutPanel
+            // horizontalDividerLabel
             // 
-            this.tableLayoutPanel.AutoScroll = true;
-            this.tableLayoutPanel.ColumnCount = 1;
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel.Controls.Add(this.saveFileGroupBox, 0, 2);
-            this.tableLayoutPanel.Controls.Add(this.dataFlowLayoutPanel, 0, 1);
-            this.tableLayoutPanel.Controls.Add(this.modifyHintLabel, 0, 0);
-            this.tableLayoutPanel.Controls.Add(this.processFlowLayoutPanel, 0, 3);
-            this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel.Name = "tableLayoutPanel";
-            this.tableLayoutPanel.RowCount = 4;
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 72F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 62F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 28F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(650, 715);
-            this.tableLayoutPanel.TabIndex = 0;
-            // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.tableLayoutPanel);
-            this.splitContainer1.Panel1MinSize = 200;
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.processGroupBox);
-            this.splitContainer1.Panel2MinSize = 52;
-            this.splitContainer1.Size = new System.Drawing.Size(650, 775);
-            this.splitContainer1.SplitterDistance = 715;
-            this.splitContainer1.TabIndex = 0;
+            this.horizontalDividerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.horizontalDividerLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.horizontalDividerLabel.Location = new System.Drawing.Point(0, 0);
+            this.horizontalDividerLabel.Name = "horizontalDividerLabel";
+            this.horizontalDividerLabel.Size = new System.Drawing.Size(585, 2);
+            this.horizontalDividerLabel.TabIndex = 2;
             // 
             // ModifySaveControls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.Controls.Add(this.splitContainer1);
-            this.MinimumSize = new System.Drawing.Size(395, 290);
+            this.Controls.Add(this.optionsSplitContainer);
+            this.MinimumSize = new System.Drawing.Size(580, 290);
             this.Name = "ModifySaveControls";
-            this.Size = new System.Drawing.Size(650, 775);
-            this.extractGroupBox.ResumeLayout(false);
-            this.extractGroupBox.PerformLayout();
-            this.manualGroupBox.ResumeLayout(false);
+            this.Size = new System.Drawing.Size(585, 700);
             this.saveFileGroupBox.ResumeLayout(false);
             this.saveFileGroupBox.PerformLayout();
-            this.modifyGroupBox.ResumeLayout(false);
             this.fogGroupBox.ResumeLayout(false);
             this.fogGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fogNumericUpDown)).EndInit();
             this.mutantGroupBox.ResumeLayout(false);
             this.mutantGroupBox.PerformLayout();
-            this.reflectorStopGroupBox.ResumeLayout(false);
-            this.reflectorStopGroupBox.PerformLayout();
-            this.processGroupBox.ResumeLayout(false);
-            this.processGroupBox.PerformLayout();
+            this.reflectorOutputGroupBox.ResumeLayout(false);
+            this.reflectorOutputGroupBox.PerformLayout();
             this.generalGroupBox.ResumeLayout(false);
             this.generalGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleNumericUpDown)).EndInit();
@@ -1550,14 +1452,17 @@
             ((System.ComponentModel.ISupportInitialize)(this.giftNumericUpDown)).EndInit();
             this.warehousesGroupBox.ResumeLayout(false);
             this.warehousesGroupBox.PerformLayout();
+            this.modifyGroupBox.ResumeLayout(false);
+            this.reflectorSplitContainer.Panel1.ResumeLayout(false);
+            this.reflectorSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.reflectorSplitContainer)).EndInit();
+            this.reflectorSplitContainer.ResumeLayout(false);
             this.processFlowLayoutPanel.ResumeLayout(false);
-            this.reflectorPanel.ResumeLayout(false);
-            this.reflectorgroupBox.ResumeLayout(false);
-            this.tableLayoutPanel.ResumeLayout(false);
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
+            this.reflectorGroupBox.ResumeLayout(false);
+            this.optionsSplitContainer.Panel1.ResumeLayout(false);
+            this.optionsSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.optionsSplitContainer)).EndInit();
+            this.optionsSplitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1567,21 +1472,10 @@
         private System.Windows.Forms.TextBox saveFileTextBox;
         private System.Windows.Forms.Button saveFileChooseButton;
         private System.Windows.Forms.CheckBox backupCheckBox;
-        private System.Windows.Forms.GroupBox reflectorStopGroupBox;
-        private System.Windows.Forms.RadioButton reflectorExtractRadioButton;
-        private System.Windows.Forms.RadioButton reflectorRepackRadioButton;
-        private System.Windows.Forms.RadioButton reflectorExitRadioButton;
-        private System.Windows.Forms.GroupBox processGroupBox;
+        private System.Windows.Forms.GroupBox reflectorOutputGroupBox;
         private System.Windows.Forms.TextBox reflectorTextBox;
-        private System.Windows.Forms.RadioButton extractManualRadioButton;
-        private System.Windows.Forms.RadioButton extractLeaveRadioButton;
-        private System.Windows.Forms.RadioButton extractTidyRadioButton;
-        private System.Windows.Forms.GroupBox manualGroupBox;
-        private System.Windows.Forms.Button skipRepackButton;
-        private System.Windows.Forms.Button repackSaveButton;
-        private System.Windows.Forms.Button extractSaveButton;
-        private System.Windows.Forms.GroupBox modifyGroupBox;
-        private System.Windows.Forms.Button modifySaveButton;
+        private System.Windows.Forms.Button extractRepackSaveButton;
+        private System.Windows.Forms.Button quickModifySaveButton;
         private System.Windows.Forms.GroupBox fogGroupBox;
         private System.Windows.Forms.RadioButton fogLeaveRadioButton;
         private System.Windows.Forms.RadioButton fogRemoveRadioButton;
@@ -1603,16 +1497,11 @@
         private System.Windows.Forms.RadioButton mutantReplaceAllRadio;
         private System.Windows.Forms.ComboBox mutantReplaceAllComboBox;
         private System.Windows.Forms.FlowLayoutPanel dataFlowLayoutPanel;
-        private System.Windows.Forms.FlowLayoutPanel processFlowLayoutPanel;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
-        private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.GroupBox vodGroupBox;
         private System.Windows.Forms.NumericUpDown vodStackDwellingsNumericUpDown;
         private System.Windows.Forms.ComboBox giftComboBox;
-        private System.Windows.Forms.Panel reflectorPanel;
         private System.Windows.Forms.NumericUpDown giftNumericUpDown;
         private System.Windows.Forms.Label bonusLabel;
-        private System.Windows.Forms.GroupBox extractGroupBox;
         private System.Windows.Forms.ComboBox vodReplaceComboBox;
         private System.ComponentModel.BackgroundWorker modifySaveBackgroundWorker;
         private System.Windows.Forms.CheckBox swarmsCheckBox;
@@ -1657,8 +1546,16 @@
         private System.Windows.Forms.NumericUpDown zombieScaleDressedNumericUpDown;
         private System.Windows.Forms.NumericUpDown zombieScaleMediumNumericUpDown;
         private System.Windows.Forms.NumericUpDown zombieScaleWeakNumericUpDown;
-        private System.Windows.Forms.GroupBox reflectorgroupBox;
-        private System.Windows.Forms.CheckBox reflectorShowOutputCheckBox;
         private System.Windows.Forms.Button reflectorStopButton;
+        private System.Windows.Forms.CheckBox extractLeaveCheckBox;
+        private System.Windows.Forms.CheckBox reflectorStopRepackCheckBox;
+        private System.Windows.Forms.CheckBox reflectorStopExtractCheckBox;
+        private System.Windows.Forms.GroupBox modifyGroupBox;
+        private System.Windows.Forms.GroupBox reflectorGroupBox;
+        private System.Windows.Forms.FlowLayoutPanel processFlowLayoutPanel;
+        private System.Windows.Forms.SplitContainer reflectorSplitContainer;
+        private System.Windows.Forms.SplitContainer optionsSplitContainer;
+        private System.Windows.Forms.Label horizontalDividerLabel;
+        private System.Windows.Forms.Label verticalDividerLabel;
     }
 }

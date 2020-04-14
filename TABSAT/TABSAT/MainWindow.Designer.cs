@@ -48,6 +48,7 @@ namespace TABSAT
             this.autoBackupTabPage = new System.Windows.Forms.TabPage();
             this.statusTextBox = new System.Windows.Forms.TextBox();
             this.tabsLogSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.horizontalDiviverLabel = new System.Windows.Forms.Label();
             this.cloudGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.updatesBottomPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.updatesTopPictureBox)).BeginInit();
@@ -145,7 +146,7 @@ namespace TABSAT
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(660, 745);
+            this.tabControl1.Size = new System.Drawing.Size(660, 769);
             this.tabControl1.TabIndex = 0;
             // 
             // beforeUsingTabPage
@@ -155,7 +156,7 @@ namespace TABSAT
             this.beforeUsingTabPage.Location = new System.Drawing.Point(4, 22);
             this.beforeUsingTabPage.Name = "beforeUsingTabPage";
             this.beforeUsingTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.beforeUsingTabPage.Size = new System.Drawing.Size(652, 719);
+            this.beforeUsingTabPage.Size = new System.Drawing.Size(652, 743);
             this.beforeUsingTabPage.TabIndex = 0;
             this.beforeUsingTabPage.Text = " Before using TABSAT ";
             this.beforeUsingTabPage.UseVisualStyleBackColor = true;
@@ -169,7 +170,7 @@ namespace TABSAT
             this.noticesFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.noticesFlowLayoutPanel.Location = new System.Drawing.Point(3, 3);
             this.noticesFlowLayoutPanel.Name = "noticesFlowLayoutPanel";
-            this.noticesFlowLayoutPanel.Size = new System.Drawing.Size(646, 713);
+            this.noticesFlowLayoutPanel.Size = new System.Drawing.Size(646, 737);
             this.noticesFlowLayoutPanel.TabIndex = 3;
             // 
             // corruptionGroupBox
@@ -210,10 +211,11 @@ namespace TABSAT
             this.logResizeLabel.Location = new System.Drawing.Point(3, 687);
             this.logResizeLabel.MinimumSize = new System.Drawing.Size(210, 23);
             this.logResizeLabel.Name = "logResizeLabel";
-            this.logResizeLabel.Size = new System.Drawing.Size(640, 23);
+            this.logResizeLabel.Size = new System.Drawing.Size(640, 45);
             this.logResizeLabel.TabIndex = 2;
-            this.logResizeLabel.Text = "In TABSAT, you can drag a transparent handle to resize the footer text areas, suc" +
-    "h as the Log below.";
+            this.logResizeLabel.Text = "In TABSAT, you can drag a thin handle to resize certain areas, such as the Log be" +
+    "low.\r\nThe Save Modification options area can be resized vertically.\r\nThe Reflect" +
+    "or Output can be resized horizontally.";
             this.logResizeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // saveEditorTabPage
@@ -221,7 +223,7 @@ namespace TABSAT
             this.saveEditorTabPage.Location = new System.Drawing.Point(4, 22);
             this.saveEditorTabPage.Name = "saveEditorTabPage";
             this.saveEditorTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.saveEditorTabPage.Size = new System.Drawing.Size(652, 719);
+            this.saveEditorTabPage.Size = new System.Drawing.Size(652, 743);
             this.saveEditorTabPage.TabIndex = 1;
             this.saveEditorTabPage.Text = " Modify Save Files ";
             this.saveEditorTabPage.UseVisualStyleBackColor = true;
@@ -230,21 +232,23 @@ namespace TABSAT
             // 
             this.autoBackupTabPage.Location = new System.Drawing.Point(4, 22);
             this.autoBackupTabPage.Name = "autoBackupTabPage";
-            this.autoBackupTabPage.Size = new System.Drawing.Size(652, 719);
+            this.autoBackupTabPage.Size = new System.Drawing.Size(652, 743);
             this.autoBackupTabPage.TabIndex = 2;
             this.autoBackupTabPage.Text = "Automatically Backup Save Files";
             this.autoBackupTabPage.UseVisualStyleBackColor = true;
             // 
             // statusTextBox
             // 
+            this.statusTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.statusTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.statusTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.statusTextBox.Location = new System.Drawing.Point(0, 0);
+            this.statusTextBox.Location = new System.Drawing.Point(0, 2);
             this.statusTextBox.Multiline = true;
             this.statusTextBox.Name = "statusTextBox";
             this.statusTextBox.ReadOnly = true;
             this.statusTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.statusTextBox.Size = new System.Drawing.Size(660, 33);
+            this.statusTextBox.Size = new System.Drawing.Size(660, 32);
             this.statusTextBox.TabIndex = 0;
             this.statusTextBox.Text = "Latest version available at:\thttps://github.com/DaneelTrevize/TABSAT/releases\r\nTA" +
     "BSAT Log:";
@@ -266,19 +270,30 @@ namespace TABSAT
             // 
             // tabsLogSplitContainer.Panel2
             // 
+            this.tabsLogSplitContainer.Panel2.Controls.Add(this.horizontalDiviverLabel);
             this.tabsLogSplitContainer.Panel2.Controls.Add(this.statusTextBox);
-            this.tabsLogSplitContainer.Panel2MinSize = 32;
-            this.tabsLogSplitContainer.Size = new System.Drawing.Size(660, 782);
-            this.tabsLogSplitContainer.SplitterDistance = 745;
+            this.tabsLogSplitContainer.Panel2MinSize = 34;
+            this.tabsLogSplitContainer.Size = new System.Drawing.Size(660, 807);
+            this.tabsLogSplitContainer.SplitterDistance = 769;
             this.tabsLogSplitContainer.TabIndex = 2;
+            // 
+            // horizontalDiviverLabel
+            // 
+            this.horizontalDiviverLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.horizontalDiviverLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.horizontalDiviverLabel.Location = new System.Drawing.Point(0, 0);
+            this.horizontalDiviverLabel.Name = "horizontalDiviverLabel";
+            this.horizontalDiviverLabel.Size = new System.Drawing.Size(660, 2);
+            this.horizontalDiviverLabel.TabIndex = 3;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(684, 806);
+            this.ClientSize = new System.Drawing.Size(684, 831);
             this.Controls.Add(this.tabsLogSplitContainer);
-            this.MinimumSize = new System.Drawing.Size(700, 415);
+            this.MinimumSize = new System.Drawing.Size(650, 520);
             this.Name = "MainWindow";
             this.Text = "TABSAT - They Are Billions Save Automation Tool";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
@@ -321,6 +336,7 @@ namespace TABSAT
         private System.Windows.Forms.FlowLayoutPanel noticesFlowLayoutPanel;
         private System.Windows.Forms.PictureBox updatesBottomPictureBox;
         private System.Windows.Forms.PictureBox updatesTopPictureBox;
+        private System.Windows.Forms.Label horizontalDiviverLabel;
     }
 }
 
