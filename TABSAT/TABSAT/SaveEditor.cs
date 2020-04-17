@@ -671,6 +671,96 @@ namespace TABSAT
             data.Save( dataFile );
         }
 
+        private IEnumerable<XElement> getLevelZombieTypesItems()
+        {
+            /*
+             *        <Dictionary name="LevelFastSerializedEntities" >
+             *          <Items>
+             *            <Item>
+             *              <Simple />
+             *              <Collection >
+             */
+            return getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelFastSerializedEntities" ).Element( "Items" ).Elements( "Item" );
+        }
+
+        private UInt64 getHighestID()
+        {
+            // Get all the UInt64 entity IDs, from LevelEntities, LevelFastSerializedEntities, ExtraEntities
+
+            SortedSet<UInt64> uniqueIDs = new SortedSet<UInt64>();
+            void addIDs( IEnumerable<string> ids )
+            {
+                foreach( string i in ids )
+                {
+                    UInt64 id = Convert.ToUInt64( i );
+                    if( !uniqueIDs.Add( id ) )
+                    {
+                        Console.Error.WriteLine( "Duplicate ID found: " + i );
+                    }
+                }
+            }
+
+            IEnumerable<string> entityIDs =
+                from i in getLevelEntitiesItems().Elements( "Item" )
+                select i.Element( "Simple" ).Attribute( "value" ).Value;
+            //Console.WriteLine( "entityIDs: " + entityIDs.Count() );
+            addIDs( entityIDs );
+            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
+
+            /*
+             *        <Dictionary name="LevelFastSerializedEntities" >
+             *          <Items>
+             *            <Item>
+             *              <Simple />
+             *              <Collection >
+             *                <Items>
+             *                  <Complex>
+             *                    <Properties>
+             *                      <Simple name="A" value=
+             */
+            var fastItems = from zombieType in getLevelZombieTypesItems()
+                            select zombieType.Element( "Collection" ).Element( "Items" );
+            //Console.WriteLine( "zombieTypes: " + fastItems.Count() );
+            var fastIDs = from c in fastItems.Elements( "Complex" )
+                          let s = c.Element( "Properties" ).Elements( "Simple" )
+                          from a in s
+                          where (string) a.Attribute( "name" ) == "A"
+                          select (string) a.Attribute( "value" );
+            //Console.WriteLine( "fastIDs: " + fastIDs.Count() );
+            addIDs( fastIDs );
+            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
+
+            /*
+             *          <Collection name="ExtraEntities" >
+                          <Items>
+                            <Complex>
+                              <Properties>
+                                <Simple name="ID" value="
+             */
+            XElement extrasItems = getFirstPropertyOfTypeNamed( getMapDrawer(), "Collection", "ExtraEntities" ).Element( "Items" );
+            var extrasIDs = from c in extrasItems.Elements( "Complex" )
+                            select getFirstSimplePropertyNamed( c, "ID" ).Attribute( "value" ).Value;
+            //Console.WriteLine( "extrasIDs: " + extrasIDs.Count() );
+            addIDs( extrasIDs );
+            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
+            /*
+            void dumpIDs()
+            {
+                StringBuilder ids = new StringBuilder( uniqueIDs.Count * 16 );  // 16 hex chars per 64 bit uint64
+                foreach( UInt64 id in uniqueIDs )
+                {
+                    ids.AppendFormat( "{0:X16}\n", id );
+                }
+                DirectoryInfo saveDir = Directory.GetParent( dataFile );
+                string idFile = Path.Combine( saveDir.Parent.FullName, saveDir.Name + "_IDs.txt" );     // In the edits directory, file named after the save
+                Console.WriteLine( "Dumping IDs to " + idFile );
+                File.WriteAllText( idFile, ids.ToString() );
+            }
+            //dumpIDs();
+            */
+            return uniqueIDs.Last();
+        }
+
         private UInt64 getNewID()
         {
             if( nextNewID == 0 )    // Need to actually assess whether this file has already had greater-than-FIRST_NEW_ID values used.
@@ -745,36 +835,6 @@ namespace TABSAT
                 extension = getFirstComplexPropertyNamed( getGeneratedLevel(), "Data" ).Element( "Properties" ).Element( "Complex" );   // only one Complex, named Extension
             }
             return extension;
-        }
-
-        private void duplicateLevelEntities( IEnumerable<XElement> items, uint multiplier )
-        {
-            // Assume a collection of LevelEntity Items. For each, generate multiplier-many duplicates in the same position, with new unique IDs. Add them to LevelEntities once all prepared.
-            LinkedList<XElement> copiedItems = new LinkedList<XElement>();
-
-            foreach( XElement i in items )
-            {
-                for( int m = 1; m < multiplier; m++ )   // Start at 1 because we already have the first copy of each VOD in the map
-                {
-                    XElement iCopy = new XElement( i );
-
-                    var newID = getNewID();
-                    XElement simple = iCopy.Element( "Simple" );
-                    simple.SetAttributeValue( "value", newID );
-                    XElement complex = iCopy.Element( "Complex" );
-                    getFirstSimplePropertyNamed( complex, "ID" ).SetAttributeValue( "value", newID );
-
-                    copiedItems.AddLast( iCopy );
-                }
-            }
-
-            //Console.WriteLine( "copiedItems: " + copiedItems.Count );
-
-            var e = getLevelEntitiesItems();
-            foreach( var i in copiedItems )
-            {
-                e.Add( i );
-            }
         }
 
         private IEnumerable<XElement> getLevelEntitiesOfTypes( params string[] types )
@@ -955,7 +1015,6 @@ namespace TABSAT
                                 selectedZombies.AddLast( com );
                             }
                         }
-
                         //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
 
                         foreach( var i in selectedZombies )
@@ -988,7 +1047,6 @@ namespace TABSAT
                             duplicateZombie( com, selectedZombies );
                         }
                     }
-
                     //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
 
                     foreach( var i in selectedZombies )
@@ -1226,100 +1284,10 @@ namespace TABSAT
             }
         }
 
-        private IEnumerable<XElement> getLevelZombieTypesItems()
-        {
-            /*
-             *        <Dictionary name="LevelFastSerializedEntities" >
-             *          <Items>
-             *            <Item>
-             *              <Simple />
-             *              <Collection >
-             */
-            return getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelFastSerializedEntities" ).Element( "Items" ).Elements( "Item" );
-        }
-
         private IEnumerable<XElement> getVODs()
         {
             return getLevelEntitiesOfTypes( VOD_SMALL_TYPE, VOD_MEDIUM_TYPE, VOD_LARGE_TYPE );
             //Console.WriteLine( "vodItems: " + vodItems.Count() );
-        }
-
-        private UInt64 getHighestID()
-        {
-            // Get all the UInt64 entity IDs, from LevelEntities, LevelFastSerializedEntities, ExtraEntities
-
-            SortedSet<UInt64> uniqueIDs = new SortedSet<UInt64>();
-            void addIDs( IEnumerable<string> ids )
-            {
-                foreach( string i in ids )
-                {
-                    UInt64 id = Convert.ToUInt64( i );
-                    if( !uniqueIDs.Add( id ) )
-                    {
-                        Console.Error.WriteLine( "Duplicate ID found: " + i );
-                    }
-                }
-            }
-
-            IEnumerable<string> entityIDs =
-                from i in getLevelEntitiesItems().Elements( "Item" )
-                select i.Element( "Simple" ).Attribute( "value" ).Value;
-            //Console.WriteLine( "entityIDs: " + entityIDs.Count() );
-            addIDs( entityIDs );
-            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
-
-            /*
-             *        <Dictionary name="LevelFastSerializedEntities" >
-             *          <Items>
-             *            <Item>
-             *              <Simple />
-             *              <Collection >
-             *                <Items>
-             *                  <Complex>
-             *                    <Properties>
-             *                      <Simple name="A" value=
-             */
-            var fastItems = from zombieType in getLevelZombieTypesItems()
-                            select zombieType.Element( "Collection" ).Element( "Items" );
-            //Console.WriteLine( "zombieTypes: " + fastItems.Count() );
-            var fastIDs = from c in fastItems.Elements( "Complex" )
-                          let s = c.Element( "Properties" ).Elements( "Simple" )
-                          from a in s
-                          where (string) a.Attribute( "name" ) == "A"
-                          select (string) a.Attribute( "value" );
-            //Console.WriteLine( "fastIDs: " + fastIDs.Count() );
-            addIDs( fastIDs );
-            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
-
-            /*
-             *          <Collection name="ExtraEntities" >
-                          <Items>
-                            <Complex>
-                              <Properties>
-                                <Simple name="ID" value="
-             */
-            XElement extrasItems = getFirstPropertyOfTypeNamed( getMapDrawer(), "Collection", "ExtraEntities" ).Element( "Items" );
-            var extrasIDs = from c in extrasItems.Elements( "Complex" )
-                            select getFirstSimplePropertyNamed( c, "ID" ).Attribute( "value" ).Value;
-            //Console.WriteLine( "extrasIDs: " + extrasIDs.Count() );
-            addIDs( extrasIDs );
-            //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
-            /*
-            void dumpIDs()
-            {
-                StringBuilder ids = new StringBuilder( uniqueIDs.Count * 16 );  // 16 hex chars per 64 bit uint64
-                foreach( UInt64 id in uniqueIDs )
-                {
-                    ids.AppendFormat( "{0:X16}\n", id );
-                }
-                DirectoryInfo saveDir = Directory.GetParent( dataFile );
-                string idFile = Path.Combine( saveDir.Parent.FullName, saveDir.Name + "_IDs.txt" );     // In the edits directory, file named after the save
-                Console.WriteLine( "Dumping IDs to " + idFile );
-                File.WriteAllText( idFile, ids.ToString() );
-            }
-            //dumpIDs();
-            */
-            return uniqueIDs.Last();
         }
 
         internal void resizeVODs( VodSizes vodSize )
@@ -1382,8 +1350,39 @@ namespace TABSAT
             }
         }
 
+        private void duplicateLevelEntities( IEnumerable<XElement> items, uint multiplier )
+        {
+            // Assume a collection of LevelEntity Items. For each, generate multiplier-many duplicates in the same position, with new unique IDs. Add them to LevelEntities once all prepared.
+            LinkedList<XElement> copiedItems = new LinkedList<XElement>();
+
+            foreach( XElement i in items )
+            {
+                for( uint m = 1; m < multiplier; m++ )   // Start at 1 because we already have the first copy of each VOD in the map
+                {
+                    XElement iCopy = new XElement( i );
+
+                    var newID = getNewID();
+                    XElement simple = iCopy.Element( "Simple" );
+                    simple.SetAttributeValue( "value", newID );
+                    XElement complex = iCopy.Element( "Complex" );
+                    getFirstSimplePropertyNamed( complex, "ID" ).SetAttributeValue( "value", newID );
+
+                    copiedItems.AddLast( iCopy );
+                }
+            }
+            //Console.WriteLine( "copiedItems: " + copiedItems.Count );
+
+            var e = getLevelEntitiesItems();
+            foreach( var i in copiedItems )
+            {
+                e.Add( i );
+            }
+        }
+
         internal void stackVODbuildings( VodSizes size, decimal scale )
         {
+            // Could use some add/remove entity delegates, to refactor this and zombie type scaling? Except zombie type collections can be RemoveNodes()'d per type, while level entities are all mixed in 1 collection.
+            
             if( scale < 0.0M )
             {
                 throw new ArgumentOutOfRangeException( "Scale must not be negative." );
@@ -1393,13 +1392,81 @@ namespace TABSAT
             {
                 return;     // Nothing needs be done
             }
+
+            void duplicateVOD( XElement i, LinkedList<XElement> copiedVODs )
+            {
+                XElement vCopy = new XElement( i );       // Duplicate at the same position
+                var newID = getNewID();
+                vCopy.Element( "Simple" ).SetAttributeValue( "value", newID );
+                getFirstSimplePropertyNamed( vCopy.Element( "Complex" ), "ID" ).SetAttributeValue( "value", newID );
+
+                copiedVODs.AddLast( vCopy );
+            }
+
+            Random rand = new Random();
+            var selectedVODs = new LinkedList<XElement>();
+
+            string vodType;
+            switch( size )
+            {
+                default:
+                case VodSizes.SMALL:
+                    vodType = VOD_SMALL_TYPE;
+                    break;
+                case VodSizes.MEDIUM:
+                    vodType = VOD_MEDIUM_TYPE;
+                    break;
+                case VodSizes.LARGE:
+                    vodType = VOD_LARGE_TYPE;
+                    break;
+            }
+
+            uint multiples = (uint) scale;                // How many duplicates to certainly make of each entity
+            double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per entity
+
+            if( scale < 1.0M )
+            {
+                // chance is now chance to not remove existing VODs
+                // selectedVODs will be those removed
+
+                // 0 >= scale < 1
+                foreach( var i in getLevelEntitiesOfTypes( vodType ) )
+                {
+                    if( scale == 0.0M || chance < rand.NextDouble() )
+                    {
+                        selectedVODs.AddLast( i );
+                    }
+                }
+                //Console.WriteLine( "selectedVODs: " + selectedVODs.Count );
+
+                foreach( var i in selectedVODs )
+                {
+                    i.Remove();
+                }
+            }
             else
             {
-                int multiples = (int) scale;                // How many duplicates to certainly make of each entity
-                double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per entity
 
-                // Need some add/remove entity delegates, to refactor this and zombie type scaling?
+                foreach( var i in getLevelEntitiesOfTypes( vodType ) )
+                {
+                    // First the certain duplications
+                    for( uint m = multiples; m <= multiples; m++ )
+                    {
+                        duplicateVOD( i, selectedVODs );
+                    }
+                    // And now the chance-based duplication
+                    if( chance >= rand.NextDouble() )   // If the chance is not less than the roll
+                    {
+                        duplicateVOD( i, selectedVODs );
+                    }
+                }
+                //Console.WriteLine( "selectedVODs: " + selectedVODs.Count );
 
+                var e = getLevelEntitiesItems();
+                foreach( var i in selectedVODs )
+                {
+                    e.Add( i );
+                }
             }
         }
 

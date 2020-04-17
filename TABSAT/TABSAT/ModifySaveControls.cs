@@ -88,16 +88,42 @@ namespace TABSAT
             var comboHandler = new EventHandler( comboBox_SelectedIndexChanged );
             var numericHandler = new EventHandler( numericUpDown_ValueChanged );
 
+            zombieScaleCheckBox.CheckedChanged += zombieScaleCheckBox_CheckedChanged;
+            zombieScaleWeakCheckBox.CheckedChanged += notZombieScaleCheckBox_CheckedChanged;
+            zombieScaleMediumCheckBox.CheckedChanged += notZombieScaleCheckBox_CheckedChanged;
+            zombieScaleDressedCheckBox.CheckedChanged += notZombieScaleCheckBox_CheckedChanged;
+            zombieScaleStrongCheckBox.CheckedChanged += notZombieScaleCheckBox_CheckedChanged;
+            zombieScaleVenomCheckBox.CheckedChanged += notZombieScaleCheckBox_CheckedChanged;
+            zombieScaleHarpyCheckBox.CheckedChanged += notZombieScaleCheckBox_CheckedChanged;
+
+            zombieScaleNumericUpDown.ValueChanged += numericHandler;
+            zombieScaleWeakNumericUpDown.ValueChanged += numericHandler;
+            zombieScaleMediumNumericUpDown.ValueChanged += numericHandler;
+            zombieScaleDressedNumericUpDown.ValueChanged += numericHandler;
+            zombieScaleStrongNumericUpDown.ValueChanged += numericHandler;
+            zombieScaleVenomNumericUpDown.ValueChanged += numericHandler;
+            zombieScaleHarpyNumericUpDown.ValueChanged += numericHandler;
+
+
             mutantReplaceAllComboBox.SelectedIndexChanged += comboHandler;
             mutantMoveGlobalComboBox.SelectedIndexChanged += comboHandler;
             mutantMoveWhatComboBox.SelectedIndexChanged += comboHandler;
 
+
             fogNumericUpDown.ValueChanged += numericHandler;
 
+
+            vodReplaceCheckBox.CheckedChanged += vodReplaceCheckBox_CheckedChanged;
+            vodStackDwellingCheckBox.CheckedChanged += notVodReplaceCheckBox_CheckedChanged;
+            vodStackTavernsCheckBox.CheckedChanged += notVodReplaceCheckBox_CheckedChanged;
+            vodStackCityHallsCheckBox.CheckedChanged += notVodReplaceCheckBox_CheckedChanged;
+
             vodReplaceComboBox.SelectedIndexChanged += comboHandler;
+
             vodStackDwellingsNumericUpDown.ValueChanged += numericHandler;
             vodStackTavernsNumericUpDown.ValueChanged += numericHandler;
             vodStackCityHallsNumericUpDown.ValueChanged += numericHandler;
+
 
             ccFoodNumericUpDown.ValueChanged += numericHandler;
             ccEnergyNumericUpDown.ValueChanged += numericHandler;
@@ -106,9 +132,10 @@ namespace TABSAT
             giftComboBox.SelectedIndexChanged += comboHandler;
             giftNumericUpDown.ValueChanged += numericHandler;
 
+
             themeComboBox.SelectedIndexChanged += comboHandler;
-            zombieScaleNumericUpDown.ValueChanged += numericHandler;
         }
+
         private void comboBox_SelectedIndexChanged( object sender, EventArgs e )
         {
             var box = (ComboBox) sender;
@@ -250,7 +277,7 @@ namespace TABSAT
 
         internal bool anyModificationChosen()
         {
-            return anyChecked( zombieScalingCheckBoxes ) || anyChecked( vodCheckBoxes ) || mutantsNothingRadio.Checked || fogLeaveRadioButton.Checked || anyChecked( ccExtrasCheckBoxes ) || ccGiftCheckBox.Checked || anyChecked( warehousesFillCheckBoxes ) || anyChecked( generalCheckBoxes );
+            return anyChecked( zombieScalingCheckBoxes ) || anyChecked( vodCheckBoxes ) || !mutantsNothingRadio.Checked || !fogLeaveRadioButton.Checked || anyChecked( ccExtrasCheckBoxes ) || ccGiftCheckBox.Checked || anyChecked( warehousesFillCheckBoxes ) || anyChecked( generalCheckBoxes );
         }
 
         internal bool modifySave( SaveEditor dataEditor )
@@ -428,6 +455,5 @@ namespace TABSAT
             }
             return true;
         }
-
     }
 }
