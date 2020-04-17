@@ -104,6 +104,12 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="ModifyManagerControls.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ModifyManagerControls.Designer.cs">
+      <DependentUpon>ModifyManagerControls.cs</DependentUpon>
+    </Compile>
     <Compile Include="ModifySaveControls.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -125,6 +131,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModifyManagerControls.resx">
+      <DependentUpon>ModifyManagerControls.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ModifySaveControls.resx">
       <DependentUpon>ModifySaveControls.cs</DependentUpon>

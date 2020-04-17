@@ -8,7 +8,7 @@ namespace TABSAT
     {
         private const string NOW_UTC_FORMAT = "yyyy/MM/dd HH:mm:ss.fff";
 
-        private ModifySaveControls modifySaveC;
+        private ModifyManagerControls modifySaveC;
         private AutoBackupControls autoBackupC;
         private UpdatesManager updatesM;
 
@@ -88,7 +88,7 @@ namespace TABSAT
             {
                 reflectorManager = new ReflectorManager( TABdirectory );
                 modifyManager = new ModifyManager( TABdirectory, reflectorManager, ModifyManager.DEFAULT_EDITS_DIRECTORY );
-                modifySaveC = new ModifySaveControls( modifyManager, statusWriter, savesDirectory );
+                modifySaveC = new ModifyManagerControls( modifyManager, statusWriter, savesDirectory );
             }
             catch( Exception e )
             {
