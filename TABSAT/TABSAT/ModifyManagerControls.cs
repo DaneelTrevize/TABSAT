@@ -118,12 +118,14 @@ namespace TABSAT
             saveFileGroupBox.Enabled = true;
             extractLeaveCheckBox.Enabled = true;
             reflectorStopRepackCheckBox.Enabled = true;
-            reflectorStopExtractCheckBox.Enabled = true;
+            reflectorStopExtractCheckBox.Enabled = reflectorStopRepackCheckBox.Checked;
         }
 
         private void modifySaveButton_Click( object sender, EventArgs e )
         {
             disableChoices();
+
+            reflectorStopButton.Enabled = false;    // Don't allow stopping attempts during operation
 
             modifySaveBackgroundWorker = new BackgroundWorker();
             modifySaveBackgroundWorker.DoWork += new DoWorkEventHandler( modifySave_DoWork );
@@ -182,6 +184,8 @@ namespace TABSAT
         {
             disableChoices();
 
+            reflectorStopButton.Enabled = false;    // Don't allow stopping attempts during operation
+
             switch( modifyManager.getState() )
             {
                 case ModifyManager.SaveState.SET:
@@ -200,7 +204,10 @@ namespace TABSAT
                     if( reflectorStopRepackCheckBox.Checked )
                     {
                         modifyManager.stopReflector();
-                        reflectorStopButton.Enabled = false;
+                    }
+                    else
+                    {
+                        reflectorStopButton.Enabled = true; // If the reflector isn't being automatically stopped, let the user manually do so
                     }
 
                     extractRepackSaveButton.Text = "Manual Modify";
@@ -229,7 +236,7 @@ namespace TABSAT
                 saveFileGroupBox.Enabled = true;            // For skipping
             }
 
-            if( reflectorStopExtractCheckBox.Enabled && reflectorStopExtractCheckBox.Checked )
+            if( reflectorStopExtractCheckBox.Checked )
             {
                 modifyManager.stopReflector();
             }
@@ -242,6 +249,7 @@ namespace TABSAT
         private void reflectorStopRepackCheckBox_CheckedChanged( object sender, EventArgs e )
         {
             reflectorStopExtractCheckBox.Enabled = reflectorStopRepackCheckBox.Checked;
+            reflectorStopExtractCheckBox.Checked = false;   // Never leave it checked when disabled. Elsewhere can't check enabled status before using checked status as it's disabled during operations.
         }
 
         private void reflectorStopButton_Click( object sender, EventArgs e )

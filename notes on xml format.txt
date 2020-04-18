@@ -183,6 +183,7 @@ Always visible Mutant/HugeZombies?
 
 
 Most researched techs from a nearly-completed game:
+Market? -1996452004
 
               <Complex type="ZX.Entities.Foundry, TheyAreBillions">
                 <Properties>
@@ -407,6 +408,12 @@ An arrow (from a Ballista?) in flight:
                   <Simple name="Z_Offset" value="0" />
                 </Properties>
               </Complex>
+
+
+W.r.t RNG, there is also this property:
+    <Complex name="SurvivalModeParams">
+      <Properties>
+        <Simple name="Seed" value="-1302028316" />
 
 
 Dev typos & inconsistencies:

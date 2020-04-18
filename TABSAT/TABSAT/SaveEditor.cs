@@ -928,6 +928,8 @@ namespace TABSAT
 
         private void scalePopulation( SortedDictionary<ScalableZombieTypes, decimal> scalableZombieTypeFactors )
         {
+            // Aggro'd zombies (also?) occur in LevelEntities, won't be removed just by removing from LevelFastSerializedEntities
+
             /*
              *        <Dictionary name="LevelFastSerializedEntities" >
              *          <Items>
