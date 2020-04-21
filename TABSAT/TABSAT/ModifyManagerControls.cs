@@ -19,7 +19,7 @@ namespace TABSAT
             modifyManager = m;
             statusWriter = sW;
             modifySaveControls = new ModifySaveControls( statusWriter );
-            modifySaveControls.Location = new System.Drawing.Point( 3, 45 );
+            modifySaveControls.Location = new System.Drawing.Point( 3, 0 );
             modifySaveControls.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
             modifySaveControls.Name = "modifySaveControls";
             optionsSplitContainer.Panel1.Controls.Add( modifySaveControls );
@@ -54,6 +54,11 @@ namespace TABSAT
                     setSaveFile( saveFile );
                 }
             }
+        }
+
+        private void resetButton_Click( object sender, EventArgs e )
+        {
+            modifySaveControls.resetChoices();
         }
 
         private void saveFileChooseButton_Click( object sender, EventArgs e )
@@ -103,6 +108,7 @@ namespace TABSAT
         private void disableChoices()
         {
             // Don't let different options be chosen during file operations
+            resetButton.Enabled = false;
             modifySaveControls.Enabled = false;
             saveFileGroupBox.Enabled = false;
             quickModifySaveButton.Enabled = false;
@@ -114,6 +120,7 @@ namespace TABSAT
 
         private void enableChoices()
         {
+            resetButton.Enabled = true;
             modifySaveControls.Enabled = true;
             saveFileGroupBox.Enabled = true;
             extractLeaveCheckBox.Enabled = true;

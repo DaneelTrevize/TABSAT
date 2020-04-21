@@ -7,7 +7,13 @@ using System.Xml.Linq;
 
 namespace TABSAT
 {
-    internal class SaveEditor
+    interface CommandCenterPosition
+    {
+        float CCX();
+        float CCY();
+    }
+
+    internal class SaveEditor : CommandCenterPosition
     {
         internal enum VodSizes
         {
@@ -27,6 +33,15 @@ namespace TABSAT
             VO
         }
         internal static readonly Dictionary<ThemeType, string> themeTypeNames;
+
+        internal enum SwarmDirections
+        {
+            ONE,
+            TWO,
+            ALL_BUT_ONE,
+            ALL
+        }
+        internal static readonly Dictionary<SwarmDirections, string> SwarmDirectionsNames;
 
         internal enum GiftableTypes : UInt64
         {
@@ -126,6 +141,13 @@ namespace TABSAT
             ttn.Add( ThemeType.DS, "Desert Wasteland" );
             ttn.Add( ThemeType.VO, "Caustic Lands" );
             themeTypeNames = new Dictionary<ThemeType, string>( ttn );
+
+            Dictionary<SwarmDirections, string> sdn = new Dictionary<SwarmDirections, string>();
+            sdn.Add( SwarmDirections.ONE, "Any 1" );
+            sdn.Add( SwarmDirections.TWO, "Any 2" );
+            sdn.Add( SwarmDirections.ALL_BUT_ONE, "All but 1" );
+            sdn.Add( SwarmDirections.ALL, "All" );
+            SwarmDirectionsNames = new Dictionary<SwarmDirections, string>( sdn );
 
             Dictionary<GiftableTypes, string> gtn = new Dictionary<GiftableTypes, string>();
             gtn.Add( GiftableTypes.Ranger, "Ranger" );
@@ -243,48 +265,101 @@ namespace TABSAT
         private const string MUTANT_PROJECT_IMAGE = @"3097669356589096184";
 
         // "&" will be encoded to "&amp;" when setting XAttribute value
+        private const string GENERATORS_1_DIRECTION = @"N | E | S | W";
         private const string GENERATORS_2_DIRECTIONS = @"N & E | E & S | S & W | W & N | N & S | E & W";
         private const string GENERATORS_3_DIRECTIONS = @"E & S & W | S & W & N | W & N & E | N & E & S";
+        private const string GENERATORS_4_DIRECTIONS = @"N & E & S & W";
 
         private const int RESOURCE_STORE_CAPACITY = 50;
         private const int GOLD_STORAGE_FACTOR = 40;
 
         private const UInt64 FIRST_NEW_ID = 0x8000000000000000;
 
-        private class HugeZombieIconComparer : IComparer<HugeZombieIcon>
+        private class HugeZombieComparer : IComparer<HugeZombie>
         {
-            public int Compare( HugeZombieIcon a, HugeZombieIcon b )
+            public int Compare( HugeZombie a, HugeZombie b )
             {
                 return b.getDistanceSquared().CompareTo( a.getDistanceSquared() );  // b.CompareTo( a ) for reversed order
             }
         }
-        private static readonly IComparer<HugeZombieIcon> iconDistanceComparer = new HugeZombieIconComparer();
+        private static readonly IComparer<HugeZombie> hugeZombieDistanceComparer = new HugeZombieComparer();
 
         private class HugeZombie
         {
+            private readonly CommandCenterPosition cc;
             readonly XElement entityItem;
-            public readonly ulong id;
+            public readonly UInt64 id;
             private readonly XElement complex;
-            private bool isMutantNotGiant;
+            private CompassDirection? dir;      // Nullability tracks lazy calculating of this and distance
+            private float distanceSquared;
             private XElement components;
             private XElement behaviour;
             private XElement cMovable;
             private XAttribute entityPositionValue;
 
-            public HugeZombie( XElement i )
+            public HugeZombie( CommandCenterPosition c, XElement i )
             {
+                cc = c;
                 entityItem = i;
-                id = (ulong) entityItem.Element( "Simple" ).Attribute( "value" );
-
+                id = (UInt64) entityItem.Element( "Simple" ).Attribute( "value" );
                 complex = entityItem.Element( "Complex" );
-                isMutantNotGiant = (string) complex.Attribute( "type" ) == MUTANT_TYPE;
-
-                //Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant:\t\t" + id );
+                dir = null;
             }
 
             internal bool IsMutantNotGiant()
             {
-                return isMutantNotGiant;
+                return (string) complex.Attribute( "type" ) == MUTANT_TYPE;
+            }
+
+            internal CompassDirection getDirection()
+            {
+                if( dir == null )
+                {
+                    assessPosition();
+                }
+                return (CompassDirection) dir;
+            }
+
+            internal float getDistanceSquared()
+            {
+                if( dir == null )
+                {
+                    assessPosition();
+                }
+                return distanceSquared;
+            }
+
+            private XAttribute getPositionValue()
+            {
+                if( entityPositionValue == null )
+                {
+                    entityPositionValue = getFirstSimplePropertyNamed( complex, "Position" ).Attribute( "value" );
+                }
+                return entityPositionValue;
+            }
+
+            private void assessPosition()
+            {
+                string xy = (string) getPositionValue();
+                //Console.WriteLine( "Position:\t\t" + xy );
+                string[] xySplit = xy.Split( ';' );
+                float x = float.Parse( xySplit[0] );
+                float y = float.Parse( xySplit[1] );
+
+                if( x <= cc.CCX() )
+                {
+                    // North or West
+                    dir = y <= cc.CCY() ? CompassDirection.North : CompassDirection.West;
+                }
+                else
+                {
+                    // East or South
+                    dir = y <= cc.CCY() ? CompassDirection.East : CompassDirection.South;
+                }
+
+                distanceSquared = ( x - cc.CCX() ) * ( x - cc.CCX() ) + ( y - cc.CCY() ) * ( y - cc.CCY() );
+
+                //Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant:\t\t" + id + ",\tPosition: " + x + ", " + y + "\tis: " + dir + ",\tdistanceSquared: " + distanceSquared );
             }
 
             private XElement getComponents()
@@ -313,15 +388,6 @@ namespace TABSAT
                     cMovable = getComplexItemOfType( getComponents(), CMOVABLE_TYPE );
                 }
                 return cMovable;
-            }
-
-            private XAttribute getPositionValue()
-            {
-                if( entityPositionValue == null )
-                {
-                    entityPositionValue = getFirstSimplePropertyNamed( complex, "Position" ).Attribute( "value" );
-                }
-                return entityPositionValue;
             }
 
             internal void relocate( HugeZombie other )
@@ -356,13 +422,10 @@ namespace TABSAT
                 {
                     currentLastDestinyProcessed.SetAttributeValue( "value", farthestPositionString );
                 }
-            }
 
-            internal void delete()
-            {
-                entityItem.Remove();
+                dir = null;     // no need to trigger assessPosition() yet
             }
-
+            
             internal void swapZombieType()
             {
                 /*
@@ -399,7 +462,7 @@ namespace TABSAT
                 string behaviour;
                 string pathCapacity;
                 string size;
-                if( isMutantNotGiant )
+                if( IsMutantNotGiant() )
                 {
                     type = GIANT_TYPE;
                     flags = "None";
@@ -425,8 +488,8 @@ namespace TABSAT
                     pathCapacity = "0";
                     size = MUTANT_SIZE;
 
-                    // Doesn't yet add this element for Giants that lack it...
-                    string cInflamable = @"<Complex type=""ZX.Components.CInflamable, TheyAreBillions"">
+                    string cInflamable =
+                    @"<Complex type=""ZX.Components.CInflamable, TheyAreBillions"">
                         <Properties>
                           <Complex name=""EntityRef"">
                             <Properties>
@@ -437,6 +500,8 @@ namespace TABSAT
                           <Simple name=""TimeUnderFire"" value=""0"" />
                         </Properties>
                       </Complex>";
+                    XElement inflamable = XElement.Parse( cInflamable );
+                    getComponents().Element( "Items" ).Add( inflamable );
                 }
 
                 complex.Attribute( "type" ).SetValue( type );
@@ -446,36 +511,26 @@ namespace TABSAT
                 getBehaviour().Attribute( "type" ).SetValue( behaviour );
                 getFirstSimplePropertyNamed( path, "Capacity" ).Attribute( "value" ).SetValue( pathCapacity );
                 getFirstSimplePropertyNamed( complex, "Size" ).Attribute( "value" ).SetValue( size );
-
-                isMutantNotGiant = !isMutantNotGiant;
             }
         }
 
         private class HugeZombieIcon
         {
-            private readonly SaveEditor editor;
-            private readonly XElement icon; //<Complex type="ZX.ZXMiniMapIndicatorInfo...">
-            public readonly ulong id;
+            private readonly XElement icon;     //<Complex type="ZX.ZXMiniMapIndicatorInfo...">
+            public readonly UInt64 id;
             private readonly XElement image;    //<Simple name="IDProjectImage">
-            private bool isMutantNotGiant;
             private XAttribute iconCellValue;
-            private CompassDirection? dir;  // Nullability tracks lazy calculating of this and distance
-            private int distanceSquared;
 
-            public HugeZombieIcon( SaveEditor e, XElement i )
+            public HugeZombieIcon( XElement i )
             {
-                editor = e;
                 icon = i;
 
                 //                 <Complex name="EntityRef">
                 //                   <Properties >
                 //                     <Simple name = "IDEntity"
-                id = (ulong) getFirstComplexPropertyNamed( icon, "EntityRef" ).Element( "Properties" ).Element( "Simple" ).Attribute( "value" );
+                id = (UInt64) getFirstComplexPropertyNamed( icon, "EntityRef" ).Element( "Properties" ).Element( "Simple" ).Attribute( "value" );
 
                 image = getFirstSimplePropertyNamed( icon, "IDProjectImage" );
-                isMutantNotGiant = (string) image.Attribute( "value" ) == MUTANT_PROJECT_IMAGE;
-
-                dir = null;
 
                 //Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant Icon:\t" + id );
             }
@@ -490,53 +545,6 @@ namespace TABSAT
                 return iconCellValue;
             }
 
-            internal bool IsMutantNotGiant()
-            {
-                return isMutantNotGiant;
-            }
-
-            internal CompassDirection getDirection()
-            {
-                if( dir == null )
-                {
-                    assessPosition();
-                }
-                return (CompassDirection) dir;
-            }
-
-            internal int getDistanceSquared()
-            {
-                if( dir == null )
-                {
-                    assessPosition();
-                }
-                return distanceSquared;
-            }
-
-            private void assessPosition()
-            {
-                string xy = (string) getCellValue();
-                //Console.WriteLine( "Cell:\t\t" + xy );
-                string[] xySplit = xy.Split( ';' );
-                int x = int.Parse( xySplit[0] );
-                int y = int.Parse( xySplit[1] );
-
-                if( x <= editor.commandCenterX )
-                {
-                    // North or West
-                    dir = y <= editor.commandCenterY ? CompassDirection.North : CompassDirection.West;
-                }
-                else
-                {
-                    // East or South
-                    dir = y <= editor.commandCenterY ? CompassDirection.East : CompassDirection.South;
-                }
-
-                distanceSquared = ( x - editor.commandCenterX ) * ( x - editor.commandCenterX ) + ( y - editor.commandCenterY ) * ( y - editor.commandCenterY );
-
-                //Console.WriteLine( ( isMutantNotGiant ? "Mut" : "Gi" ) + "ant:\t\t" + id + ",\tPosition: " + x + ", " + y + "\tis: " + dir + ",\tdistanceSquared: " + distanceSquared );
-            }
-
             internal void relocate( HugeZombieIcon otherIcon )
             {
                 if( this.id == otherIcon.id )
@@ -545,9 +553,8 @@ namespace TABSAT
                 }
 
                 getCellValue().SetValue( otherIcon.getCellValue().Value );
-                dir = null;     // no need to trigger assessPosition() yet
 
-                //Console.WriteLine( "Mutant icon: " + id + " relocated to: " + getCellValue().Value );
+                //Console.WriteLine( "Icon: " + id + " relocated to: " + getCellValue().Value );
             }
 
             internal void delete()
@@ -562,7 +569,7 @@ namespace TABSAT
                 string project_image;
                 string text;
                 string title;
-                if( isMutantNotGiant )
+                if( (string) image.Attribute( "value" ) == MUTANT_PROJECT_IMAGE )
                 {
                     project_image = GIANT_PROJECT_IMAGE;
                     text = @"It was previously detected as a Mutant.";
@@ -578,8 +585,6 @@ namespace TABSAT
                 image.Attribute( "value" ).SetValue( project_image );
                 getFirstSimplePropertyNamed( icon, "Text" ).Attribute( "value" ).SetValue( text );
                 getFirstSimplePropertyNamed( icon, "Title" ).Attribute( "value" ).SetValue( title );
-
-                isMutantNotGiant = !isMutantNotGiant;
             }
         }
 
@@ -590,12 +595,12 @@ namespace TABSAT
         private XElement generatedLevel;
         private XElement extension;
         private XElement mapDrawer;
-        private readonly int commandCenterX;
-        private readonly int commandCenterY;
-        private readonly SortedDictionary<ulong, HugeZombie> mutants;
-        private readonly SortedDictionary<ulong, HugeZombie> giants;
-        private readonly LinkedList<HugeZombieIcon> mutantIcons;
-        private readonly LinkedList<HugeZombieIcon> giantIcons;
+        private readonly float commandCenterX;
+        private readonly float commandCenterY;
+        private SortedDictionary<UInt64, HugeZombie> _hugeZombies;
+        private SortedDictionary<UInt64, HugeZombieIcon> _icons;
+        private SortedSet<UInt64> _giants;
+        private SortedSet<UInt64> _mutants;
         private UInt64 nextNewID;
 
         private static XElement getFirstPropertyOfTypeNamed( XElement c, string type, string name )
@@ -641,14 +646,10 @@ namespace TABSAT
 
             data = XElement.Load( dataFile );
 
-            mutants = new SortedDictionary<ulong, HugeZombie>();
-            giants = new SortedDictionary<ulong, HugeZombie>();
-
             //<Complex name="Root" type="ZX.ZXGameState, TheyAreBillions">
             //  < Properties >
             //    <Complex name="LevelState">
             levelComplex = getFirstComplexPropertyNamed( data, "LevelState" );
-
 
             //      <Properties>
             //        <Simple name="CurrentCommandCenterCell"
@@ -657,13 +658,24 @@ namespace TABSAT
             string[] xySplit = xy.Split( ';' );
             commandCenterX = int.Parse( xySplit[0] );
             commandCenterY = int.Parse( xySplit[1] );
-
             //Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
 
-            mutantIcons = new LinkedList<HugeZombieIcon>();
-            giantIcons = new LinkedList<HugeZombieIcon>();
+            _hugeZombies = null;
+            _icons = null;
+            _giants = null;
+            _mutants = null;
 
             nextNewID = 0;
+        }
+
+        public float CCX()
+        {
+            return commandCenterX;
+        }
+
+        public float CCY()
+        {
+            return commandCenterY;
         }
 
         internal void save()    // Doesn't take parameter to save modified file to a different location?
@@ -681,6 +693,18 @@ namespace TABSAT
              *              <Collection >
              */
             return getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelFastSerializedEntities" ).Element( "Items" ).Elements( "Item" );
+        }
+
+        private XElement getMapDrawer()
+        {
+            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+            //                  <Properties>
+            //                    <Complex name="MapDrawer">
+            if( mapDrawer == null )
+            {
+                mapDrawer = getFirstComplexPropertyNamed( getDataExtension(), "MapDrawer" );
+            }
+            return mapDrawer;
         }
 
         private UInt64 getHighestID()
@@ -847,6 +871,73 @@ namespace TABSAT
                       where types.Contains( type )
                       select c ).Any()
                 select i;
+        }
+
+        private void newHugeZombie( XElement i )
+        {
+            HugeZombie z = new HugeZombie( this, i );
+            _hugeZombies.Add( z.id, z );
+            ( z.IsMutantNotGiant() ? _mutants : _giants ).Add( z.id );
+        }
+
+        private SortedSet<UInt64> resetHugeZombies( bool giantsNotMutants )
+        {
+            _giants = new SortedSet<UInt64>();
+            _mutants = new SortedSet<UInt64>();
+            _hugeZombies = new SortedDictionary<ulong, HugeZombie>();
+            foreach( XElement i in getLevelEntitiesOfTypes( GIANT_TYPE, MUTANT_TYPE ) )
+            {
+                newHugeZombie( i );
+            }
+            //Console.WriteLine( "Giants count: " + giants.Count() );
+            //Console.WriteLine( "Mutants count: " + mutants.Count() );
+            return giantsNotMutants ? _giants : _mutants;
+        }
+
+        private SortedDictionary<UInt64, HugeZombie> getHugeZombies()
+        {
+            if( _hugeZombies == null )
+            {
+                resetHugeZombies( true );
+            }
+            return _hugeZombies;
+        }
+
+        private SortedSet<UInt64> getGiants()
+        {
+            if( _giants == null )
+            {
+                return resetHugeZombies( true );
+            }
+            return _giants;
+        }
+
+        private SortedSet<UInt64> getMutants()
+        {
+            if( _mutants == null )
+            {
+                return resetHugeZombies( false );
+            }
+            return _mutants;
+        }
+
+        private SortedDictionary<UInt64, HugeZombieIcon> getIcons()
+        {
+            if( _icons == null )
+            {
+                _icons = new SortedDictionary<ulong, HugeZombieIcon>();
+
+                XElement iconsItems = getFirstPropertyOfTypeNamed( levelComplex, "Collection", "MiniMapIndicators" ).Element( "Items" );
+
+                foreach( XElement c in iconsItems.Elements( "Complex" ) )
+                {
+                    HugeZombieIcon z = new HugeZombieIcon( c );
+                    _icons.Add( z.id, z );
+                }
+
+                //Console.WriteLine( "Icons count: " + _icons.Count() );
+            }
+            return _icons;
         }
 
         internal void scalePopulation( decimal scale )
@@ -1039,7 +1130,7 @@ namespace TABSAT
                     foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
                     {
                         // First the certain duplications
-                        for( int m = multiples; m <= multiples; m++ )
+                        for( int m = 1; m < multiples; m++ )
                         {
                             duplicateZombie( com, selectedZombies );
                         }
@@ -1067,67 +1158,86 @@ namespace TABSAT
             }
         }
 
-        private void findMutantsAndGiants()
+        internal void scaleHugePopulation( bool giantsNotMutants, decimal scale )
         {
-            IEnumerable<XElement> bigBoys = getLevelEntitiesOfTypes( MUTANT_TYPE, GIANT_TYPE );
-
-            //Console.WriteLine( "bigBoys count: " + bigBoys.Count() );
-            foreach( XElement big in bigBoys )
+            if( scale == 1.0M )
             {
-                HugeZombie z = new HugeZombie( big );
-                ( z.IsMutantNotGiant() ? mutants : giants ).Add( z.id, z );
+                return;     // Nothing needs be done
             }
 
-            XElement iconsColl = getFirstPropertyOfTypeNamed( levelComplex, "Collection", "MiniMapIndicators" );
+            var selectedZombies = generateScaledEntitiesList( giantsNotMutants ? GIANT_TYPE : MUTANT_TYPE, scale );
 
-            // Find all Mutant minimap icons
-            foreach( XElement c in iconsColl.Element( "Items" ).Elements( "Complex" ) )
+            var icons = getIcons();
+            var hugeZombies = getHugeZombies();
+
+            if( scale < 1.0M )
             {
-                HugeZombieIcon z = new HugeZombieIcon( this, c );
-                if( z.IsMutantNotGiant() )
+                foreach( var i in selectedZombies )
                 {
-                    mutantIcons.AddLast( z );
+                    var id = (UInt64) i.Element( "Simple" ).Attribute( "value" );
+                    //HugeZombie z = new HugeZombie( this, i );
+
+                    // First find and remove their minimap icons
+                    HugeZombieIcon icon;
+                    if( icons.TryGetValue( id, out icon ) )
+                    {
+                        icons.Remove( id );
+                        icon.delete();
+                    }
+                    else
+                    {
+                        Console.WriteLine( "Icon not found for HugeZombie id:" + id );
+                    }
+
+                    // Now remove the references and LevelEntity
+                    //z.delete();
+                    hugeZombies.Remove( id );
+                    ( giantsNotMutants ? _giants : _mutants ).Remove( id );
+
+                    i.Remove();
                 }
-                else
+            }
+            else
+            {
+                var e = getLevelEntitiesItems();
+                foreach( var i in selectedZombies )
                 {
-                    giantIcons.AddLast( z );
+                    e.Add( i );
+
+                    newHugeZombie( i );
+                    /*
+                    // Also find and duplicate their minimap icon
+                    var id = (UInt64) i.Element( "Simple" ).Attribute( "value" );   // But we need their pre-copy ID, to find an existing Icon..?
+                    HugeZombieIcon icon;
+                    if( icons.TryGetValue( id, out icon ) )
+                    {
+                        
+                    }
+                    else
+                    {
+                        Console.WriteLine( "Icon not found for HugeZombie id:" + id );
+                    }*/
+                    // Just have to depend upon the game to generate new icons once the save is loaded...
                 }
             }
-
-            //Console.WriteLine( "Mutants count: " + mutants.Count() + ", icons count: " + mutantIcons.Count() );
-            //Console.WriteLine( "Giants count: " + giants.Count() + ", icons count: " + giantIcons.Count() );
         }
-
-        internal void removeMutants()
-        {
-            findMutantsAndGiants();
-
-            // Remove mutants and their icons
-            foreach( HugeZombie z in mutants.Values )
-            {
-                z.delete();
-            }
-            foreach( HugeZombieIcon i in mutantIcons )
-            {
-                i.delete();
-            }
-
-        }
-
+        
         internal void replaceHugeZombies( bool toGiantNotMutant )
         {
-            findMutantsAndGiants();
-
+            var mutants = getMutants();
             if( toGiantNotMutant && !mutants.Any() )
             {
                 //Console.WriteLine( "No Mutants to replace." );
                 return;
             }
+            var giants = getGiants();
             if( !toGiantNotMutant && !giants.Any() )
             {
                 //Console.WriteLine( "No Giants to replace." );
                 return;
             }
+            var hugeZombies = getHugeZombies();
+            var icons = getIcons();
 
             /*
              * for each HugeZombie:
@@ -1136,86 +1246,108 @@ namespace TABSAT
              * Reset their behaviour, and target positions, but keep OpenNodes IDs?
              * 
              */
-            var fromDictionary = toGiantNotMutant ? mutants : giants;
-            var toDictionary = toGiantNotMutant ? giants : mutants;
-            foreach( var z in fromDictionary.Values )
+            var fromSet = toGiantNotMutant ? mutants : giants;
+            var toSet = toGiantNotMutant ? giants : mutants;
+            foreach( var id in fromSet )
             {
-                z.swapZombieType();
-                toDictionary.Add( z.id, z );
-            }
-            fromDictionary.Clear();
+                hugeZombies[id].swapZombieType();
+                toSet.Add( id );
 
-            // Also swap the Icons types for associated EntityRef IDEntity values
-            LinkedList<HugeZombieIcon> fromList = toGiantNotMutant ? mutantIcons : giantIcons;
-            LinkedList<HugeZombieIcon> toList = toGiantNotMutant ? giantIcons : mutantIcons;
-            foreach( var icon in fromList )
-            {
-                icon.swapZombieType();
-                toList.AddLast( icon );
+                HugeZombieIcon icon;
+                if( icons.TryGetValue( id, out icon ) )
+                {
+                    icon.swapZombieType();
+                }
             }
-            fromList.Clear();
+            fromSet.Clear();
         }
 
         internal void relocateMutants( bool toGiantNotMutant, bool perDirection )
         {
-            findMutantsAndGiants();
-
+            var mutants = getMutants();
             if( !mutants.Any() )
             {
                 //Console.WriteLine( "No Mutants to relocate." );
                 return;
             }
 
-            // Globally, or per direction, we'll have a list of huge zombie icons to find the farthest of, and a list of mutants to relocate, as well as their corresponding icons?
+            void relocateMutants( ICollection<HugeZombie> movingMutants, HugeZombie farthest )
+            {
+                var icons = getIcons();
+                HugeZombieIcon farthestIcon = null;
+                if( icons.ContainsKey( farthest.id ) )
+                {
+                    farthestIcon = icons[farthest.id];
+                }
 
-            SortedDictionary<CompassDirection,List<HugeZombieIcon>> mutantsPerDirection = new SortedDictionary<CompassDirection,List<HugeZombieIcon>>();
+                foreach( HugeZombie z in movingMutants )
+                {
+                    z.relocate( farthest );
+
+                    // Also see if both HugeZombies have had icons generated, for 1 to be repositioned to the other
+                    HugeZombieIcon icon;
+                    if( farthestIcon != null && icons.TryGetValue( z.id, out icon ) )
+                    {
+                        icons[z.id].relocate( farthestIcon );
+                    }
+                }
+            }
+
+            var giants = getGiants();
+            var hugeZombies = getHugeZombies();
+
+            // Globally, or per direction, we'll have a list of huge zombie to find the farthest of, and a list of mutants to relocate, as well as their corresponding icons?
+
+            SortedDictionary<CompassDirection,List<HugeZombie>> mutantsPerDirection = new SortedDictionary<CompassDirection,List<HugeZombie>>();
             foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
             {
-                mutantsPerDirection.Add( d, new List<HugeZombieIcon>( mutants.Count ) );
+                mutantsPerDirection.Add( d, new List<HugeZombie>( mutants.Count ) );
             }
-            SortedDictionary<CompassDirection,List<HugeZombieIcon>> giantsPerDirection = new SortedDictionary<CompassDirection,List<HugeZombieIcon>>();
+            SortedDictionary<CompassDirection,List<HugeZombie>> giantsPerDirection = new SortedDictionary<CompassDirection,List<HugeZombie>>();
             foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
             {
-                giantsPerDirection.Add( d, new List<HugeZombieIcon>( giants.Count ) );
+                giantsPerDirection.Add( d, new List<HugeZombie>( giants.Count ) );
             }
-            List<HugeZombieIcon> farthestMutantShortlist = new List<HugeZombieIcon>();
-            List<HugeZombieIcon> farthestGiantShortlist = new List<HugeZombieIcon>();
+            List<HugeZombie> farthestMutantShortlist = new List<HugeZombie>();
+            List<HugeZombie> farthestGiantShortlist = new List<HugeZombie>();
 
 
-            // Split icons by direction
-            foreach( HugeZombieIcon mutant in mutantIcons )
+            // Split huge zombies by direction
+            foreach( var z in mutants )
             {
+                HugeZombie mutant = hugeZombies[z];
                 mutantsPerDirection[mutant.getDirection()].Add( mutant );
             }
-            foreach( HugeZombieIcon giant in giantIcons )
+            foreach( var z in giants )
             {
+                HugeZombie giant = hugeZombies[z];
                 giantsPerDirection[giant.getDirection()].Add( giant );
             }
 
             // Sort each direction, take the farthest, form a new shortlist and sort that for the overall farthest
             foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
             {
-                List<HugeZombieIcon> mutantsInDirection = mutantsPerDirection[d];
+                List<HugeZombie> mutantsInDirection = mutantsPerDirection[d];
                 if( mutantsInDirection.Count > 0 )
                 {
-                    mutantsInDirection.Sort( iconDistanceComparer );
+                    mutantsInDirection.Sort( hugeZombieDistanceComparer );
                     farthestMutantShortlist.Add( mutantsInDirection.First() );
                 }
             }
             foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
             {
-                List<HugeZombieIcon> giantsInDirection = giantsPerDirection[d];
+                List<HugeZombie> giantsInDirection = giantsPerDirection[d];
                 if( giantsInDirection.Count > 0 )
                 {
-                    giantsInDirection.Sort( iconDistanceComparer );
+                    giantsInDirection.Sort( hugeZombieDistanceComparer );
                     farthestGiantShortlist.Add( giantsInDirection.First() );
                 }
             }
 
-            farthestMutantShortlist.Sort( iconDistanceComparer );
-            farthestGiantShortlist.Sort( iconDistanceComparer );
-            HugeZombieIcon globalFarthestMutant = farthestMutantShortlist.FirstOrDefault();
-            HugeZombieIcon globalFarthestGiant = farthestGiantShortlist.FirstOrDefault();
+            farthestMutantShortlist.Sort( hugeZombieDistanceComparer );
+            farthestGiantShortlist.Sort( hugeZombieDistanceComparer );
+            HugeZombie globalFarthestMutant = farthestMutantShortlist.FirstOrDefault();
+            HugeZombie globalFarthestGiant = farthestGiantShortlist.FirstOrDefault();
             
 
             if( perDirection )
@@ -1226,16 +1358,16 @@ namespace TABSAT
 
                 foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
                 {
-                    List<HugeZombieIcon> mutantsInDirection = mutantsPerDirection[d];
+                    List<HugeZombie> mutantsInDirection = mutantsPerDirection[d];
                     if( mutantsInDirection.Count > 0 )
                     {
                         // There are mutants in this direction to relocation
 
-                        HugeZombieIcon relocateTo = null;
+                        HugeZombie relocateTo;
                         // Should and could we use a Giant?
                         if( toGiantNotMutant )
                         {
-                            List<HugeZombieIcon> giantsInDirection = giantsPerDirection[d];
+                            List<HugeZombie> giantsInDirection = giantsPerDirection[d];
                             if( giantsInDirection.Count > 0 )
                             {
                                 relocateTo = giantsInDirection.First();
@@ -1263,33 +1395,21 @@ namespace TABSAT
             else
             {
                 // Should and could we use a Giant?
-                HugeZombieIcon farthestIcon = toGiantNotMutant ? globalFarthestGiant : globalFarthestMutant;
-                if( farthestIcon == null )
+                HugeZombie farthest = toGiantNotMutant ? globalFarthestGiant : globalFarthestMutant;
+                if( farthest == null )
                 {
                     //Console.WriteLine( "No Giants to relocate Mutants onto, using farthest Mutant." );
-                    farthestIcon = globalFarthestMutant;
+                    farthest = globalFarthestMutant;
                 }
 
-                relocateMutants( mutantIcons, farthestIcon );
+                var movingMutants = new List<HugeZombie>( mutants.Count );
+                foreach( var m in mutantsPerDirection.Values )
+                {
+                    movingMutants.AddRange( m );
+                }
+                relocateMutants( movingMutants, farthest );
             }
 
-        }
-
-        private void relocateMutants( ICollection<HugeZombieIcon> mutantIcons, HugeZombieIcon farthestIcon )
-        {
-            foreach( HugeZombieIcon icon in mutantIcons )
-            {
-                HugeZombie mutant = mutants[icon.id];
-                icon.relocate( farthestIcon );
-                HugeZombie farthest = ( farthestIcon.IsMutantNotGiant() ? mutants : giants )[farthestIcon.id];
-                mutant.relocate( farthest );
-            }
-        }
-
-        private IEnumerable<XElement> getVODs()
-        {
-            return getLevelEntitiesOfTypes( VOD_SMALL_TYPE, VOD_MEDIUM_TYPE, VOD_LARGE_TYPE );
-            //Console.WriteLine( "vodItems: " + vodItems.Count() );
         }
 
         internal void resizeVODs( VodSizes vodSize )
@@ -1313,7 +1433,8 @@ namespace TABSAT
                                   <Simple name="CheckHiddingUnits" value="False" />
              */
 
-            IEnumerable<XElement> vodItems = getVODs();
+            IEnumerable<XElement> vodItems = getLevelEntitiesOfTypes( VOD_SMALL_TYPE, VOD_MEDIUM_TYPE, VOD_LARGE_TYPE );
+            //Console.WriteLine( "vodItems: " + vodItems.Count() );
 
             string newType;
             string newIDTemplate;
@@ -1352,61 +1473,75 @@ namespace TABSAT
             }
         }
 
-        private void duplicateLevelEntities( IEnumerable<XElement> items, uint multiplier )
+        private LinkedList<XElement> generateScaledEntitiesList( string entityType, decimal scale )
         {
-            // Assume a collection of LevelEntity Items. For each, generate multiplier-many duplicates in the same position, with new unique IDs. Add them to LevelEntities once all prepared.
-            LinkedList<XElement> copiedItems = new LinkedList<XElement>();
-
-            foreach( XElement i in items )
-            {
-                for( uint m = 1; m < multiplier; m++ )   // Start at 1 because we already have the first copy of each VOD in the map
-                {
-                    XElement iCopy = new XElement( i );
-
-                    var newID = getNewID();
-                    XElement simple = iCopy.Element( "Simple" );
-                    simple.SetAttributeValue( "value", newID );
-                    XElement complex = iCopy.Element( "Complex" );
-                    getFirstSimplePropertyNamed( complex, "ID" ).SetAttributeValue( "value", newID );
-
-                    copiedItems.AddLast( iCopy );
-                }
-            }
-            //Console.WriteLine( "copiedItems: " + copiedItems.Count );
-
-            var e = getLevelEntitiesItems();
-            foreach( var i in copiedItems )
-            {
-                e.Add( i );
-            }
-        }
-
-        internal void stackVODbuildings( VodSizes size, decimal scale )
-        {
-            // Could use some add/remove entity delegates, to refactor this and zombie type scaling? Except zombie type collections can be RemoveNodes()'d per type, while level entities are all mixed in 1 collection.
-            
             if( scale < 0.0M )
             {
                 throw new ArgumentOutOfRangeException( "Scale must not be negative." );
             }
 
+            void duplicateLevelEntity( XElement i, LinkedList<XElement> copiedEntities )
+            {
+                XElement iCopy = new XElement( i );     // Duplicate at the same position
+                var newID = getNewID();
+                iCopy.Element( "Simple" ).SetAttributeValue( "value", newID );
+                getFirstSimplePropertyNamed( iCopy.Element( "Complex" ), "ID" ).SetAttributeValue( "value", newID );
+
+                copiedEntities.AddLast( iCopy );
+            }
+
+            uint multiples = (uint) scale;              // How many duplicates to certainly make of each entity
+            double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per entity
+
+            Random rand = new Random();
+
+            var selectedEntities = new LinkedList<XElement>();
+
+            if( scale < 1.0M )
+            {
+                // chance is now chance to not remove existing entities
+                // selectedEntities will be those removed
+
+                // 0 >= scale < 1
+                foreach( var i in getLevelEntitiesOfTypes( entityType ) )
+                {
+                    if( scale == 0.0M || chance < rand.NextDouble() )
+                    {
+                        selectedEntities.AddLast( i );
+                    }
+                }
+                //Console.WriteLine( "selectedEntities: " + selectedEntities.Count );
+            }
+            else
+            {
+
+                foreach( var i in getLevelEntitiesOfTypes( entityType ) )
+                {
+                    // First the certain duplications
+                    for( uint m = 1; m < multiples; m++ )
+                    {
+                        duplicateLevelEntity( i, selectedEntities );
+                    }
+                    // And now the chance-based duplication
+                    if( chance >= rand.NextDouble() )   // If the chance is not less than the roll
+                    {
+                        duplicateLevelEntity( i, selectedEntities );
+                    }
+                }
+                //Console.WriteLine( "selectedEntities: " + selectedEntities.Count );
+            }
+
+            return selectedEntities;
+        }
+
+        internal void stackVODbuildings( VodSizes size, decimal scale )
+        {
+            // Could use some add/remove entity delegates, to refactor this and zombie type scaling? Except zombie type collections can be RemoveNodes()'d per type, while level entities are all mixed in 1 collection.
+
             if( scale == 1.0M )
             {
                 return;     // Nothing needs be done
             }
-
-            void duplicateVOD( XElement i, LinkedList<XElement> copiedVODs )
-            {
-                XElement vCopy = new XElement( i );       // Duplicate at the same position
-                var newID = getNewID();
-                vCopy.Element( "Simple" ).SetAttributeValue( "value", newID );
-                getFirstSimplePropertyNamed( vCopy.Element( "Complex" ), "ID" ).SetAttributeValue( "value", newID );
-
-                copiedVODs.AddLast( vCopy );
-            }
-
-            Random rand = new Random();
-            var selectedVODs = new LinkedList<XElement>();
 
             string vodType;
             switch( size )
@@ -1423,24 +1558,10 @@ namespace TABSAT
                     break;
             }
 
-            uint multiples = (uint) scale;                // How many duplicates to certainly make of each entity
-            double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per entity
+            var selectedVODs = generateScaledEntitiesList( vodType, scale );
 
             if( scale < 1.0M )
             {
-                // chance is now chance to not remove existing VODs
-                // selectedVODs will be those removed
-
-                // 0 >= scale < 1
-                foreach( var i in getLevelEntitiesOfTypes( vodType ) )
-                {
-                    if( scale == 0.0M || chance < rand.NextDouble() )
-                    {
-                        selectedVODs.AddLast( i );
-                    }
-                }
-                //Console.WriteLine( "selectedVODs: " + selectedVODs.Count );
-
                 foreach( var i in selectedVODs )
                 {
                     i.Remove();
@@ -1448,22 +1569,6 @@ namespace TABSAT
             }
             else
             {
-
-                foreach( var i in getLevelEntitiesOfTypes( vodType ) )
-                {
-                    // First the certain duplications
-                    for( uint m = multiples; m <= multiples; m++ )
-                    {
-                        duplicateVOD( i, selectedVODs );
-                    }
-                    // And now the chance-based duplication
-                    if( chance >= rand.NextDouble() )   // If the chance is not less than the roll
-                    {
-                        duplicateVOD( i, selectedVODs );
-                    }
-                }
-                //Console.WriteLine( "selectedVODs: " + selectedVODs.Count );
-
                 var e = getLevelEntitiesItems();
                 foreach( var i in selectedVODs )
                 {
@@ -1524,6 +1629,8 @@ namespace TABSAT
                 }
             }
 
+            int commandCenterX = (int) CCX();
+            int commandCenterY = (int) CCY();
             // Fill outside the circle with 00 00 00 FF, aka step 4 bytes at a time. Centered on CC
             int beforeCCx = commandCenterX - radius;
             int beforeCCy = commandCenterY - radius;
@@ -1594,18 +1701,6 @@ namespace TABSAT
             //        <Simple name="ShowFullMap" value="False" />
             XElement ShowFullMap = getFirstSimplePropertyNamed( levelComplex, "ShowFullMap" );
             ShowFullMap.SetAttributeValue( "value", "True" );
-        }
-
-        private XElement getMapDrawer()
-        {
-            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
-            //                  <Properties>
-            //                    <Complex name="MapDrawer">
-            if( mapDrawer == null )
-            {
-                mapDrawer = getFirstComplexPropertyNamed( getDataExtension(), "MapDrawer" );
-            }
-            return mapDrawer;
         }
 
         internal void addExtraSupplies( uint food, uint energy, uint workers )
@@ -1754,30 +1849,42 @@ namespace TABSAT
             paramsThemeType.SetAttributeValue( "value", themeValue );
         }
 
-        internal void splitSwarms()
+        internal void setSwarms( bool earlierNotLater, SwarmDirections directions )
         {
             /*
              * The LevelEvents Collection appears to be duplicated (w.r.t. Generators) at different depths in a single save file,
              * a single method works from both given the correct starting element.
              */
-            void splitEasyAndHardSwarms( XElement collectionContainer )
+            void setSwarm( XElement collectionContainer, string s, string g )
             {
                 XElement eventsItems = getFirstPropertyOfTypeNamed( collectionContainer, "Collection", "LevelEvents" ).Element( "Items" );
-                var easyComplex = ( from c in eventsItems.Elements( "Complex" )
-                                    where (string) getFirstSimplePropertyNamed( c, "Name" ).Attribute( "value" ) == "Swarm Easy"
-                                    select c ).FirstOrDefault();
-                if( easyComplex != null )
+                var complex = ( from c in eventsItems.Elements( "Complex" )
+                                where (string) getFirstSimplePropertyNamed( c, "Name" ).Attribute( "value" ) == s
+                                select c ).FirstOrDefault();
+                if( complex != null )
                 {
-                    getFirstSimplePropertyNamed( easyComplex, "Generators" ).SetAttributeValue( "value", GENERATORS_2_DIRECTIONS );
+                    getFirstSimplePropertyNamed( complex, "Generators" ).SetAttributeValue( "value", g );
                 }
+            }
 
-                var hardComplex = ( from c in eventsItems.Elements( "Complex" )
-                                    where (string) getFirstSimplePropertyNamed( c, "Name" ).Attribute( "value" ) == "Swarm Hard"
-                                    select c ).FirstOrDefault();
-                if( hardComplex != null )
-                {
-                    getFirstSimplePropertyNamed( hardComplex, "Generators" ).SetAttributeValue( "value", GENERATORS_3_DIRECTIONS );
-                }
+            string swarmName = earlierNotLater ? "Swarm Easy" : "Swarm Hard";
+
+            string generators;
+            switch( directions )
+            {
+                default:
+                case SwarmDirections.ONE:
+                    generators = GENERATORS_1_DIRECTION;
+                    break;
+                case SwarmDirections.TWO:
+                    generators = GENERATORS_2_DIRECTIONS;
+                    break;
+                case SwarmDirections.ALL_BUT_ONE:
+                    generators = GENERATORS_3_DIRECTIONS;
+                    break;
+                case SwarmDirections.ALL:
+                    generators = GENERATORS_4_DIRECTIONS;
+                    break;
             }
 
             /*
@@ -1791,7 +1898,7 @@ namespace TABSAT
              *                <Simple name="Generators" value=
              */
             // getFirstPropertyOfTypeNamed( levelComplex, "Collection", "LevelEvents" ).Element( "Items" );
-            splitEasyAndHardSwarms( levelComplex );
+            setSwarm( levelComplex, swarmName, generators );
 
             /*
              *         <Complex name="CurrentGeneratedLevel">
@@ -1808,7 +1915,7 @@ namespace TABSAT
              *                            <Simple name="Generators" value=
              */
             // getFirstPropertyOfTypeNamed( getDataExtension(), "Collection", "LevelEvents" ).Element( "Items" );
-            splitEasyAndHardSwarms( getDataExtension() );
+            setSwarm( getDataExtension(), swarmName, generators );
 
         }
 

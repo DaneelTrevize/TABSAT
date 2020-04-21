@@ -24,10 +24,20 @@ namespace TABSAT
 
         private async void checkUpdates()
         {
-            var releases = await Task.Run( () => {
-                var client = new GitHubClient( new ProductHeaderValue( USER_AGENT ) );
-                return client.Repository.Release.GetAll( GITHUB_USER, GITHUB_REPO );
-            } );
+            System.Collections.Generic.IReadOnlyList<Release> releases = null;
+            try
+            {
+                releases = await Task.Run( () => {
+                    var client = new GitHubClient( new ProductHeaderValue( USER_AGENT ) );
+                    return client.Repository.Release.GetAll( GITHUB_USER, GITHUB_REPO );
+                } );
+            }
+            catch( ApiException ae )
+            {
+                statusWriter( "An error occured while checking for TABSAT updates. See https://www.githubstatus.com/ for more information." );
+                Console.Error.WriteLine( "Update checking error:" + Environment.NewLine + ae.Message );
+                return;
+            }
 
             if( releases.Count < 2 )
             {

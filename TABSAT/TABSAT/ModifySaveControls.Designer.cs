@@ -30,6 +30,12 @@
         {
             this.dataFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.zombieScalingGroupBox = new System.Windows.Forms.GroupBox();
+            this.zombiesScalingHorizontalDividerLabel = new System.Windows.Forms.Label();
+            this.zombieScalingVerticalDividerLabel = new System.Windows.Forms.Label();
+            this.zombieScaleMutantNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.zombieScaleGiantNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.zombieScaleMutantCheckBox = new System.Windows.Forms.CheckBox();
+            this.zombieScaleGiantCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleHarpyNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.zombieScaleVenomNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.zombieScaleStrongNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -39,12 +45,19 @@
             this.zombieScaleHarpyCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleVenomCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleStrongCheckBox = new System.Windows.Forms.CheckBox();
-            this.zombieScaleDividerLabel = new System.Windows.Forms.Label();
             this.zombieScaleDressedCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleMediumCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleWeakCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.zombieScaleCheckBox = new System.Windows.Forms.CheckBox();
+            this.mutantGroupBox = new System.Windows.Forms.GroupBox();
+            this.mutantReplaceAllComboBox = new System.Windows.Forms.ComboBox();
+            this.mutantMoveGlobalComboBox = new System.Windows.Forms.ComboBox();
+            this.mutantMoveWhatComboBox = new System.Windows.Forms.ComboBox();
+            this.mutantsMoveRadio = new System.Windows.Forms.RadioButton();
+            this.mutantMoveCCLabel = new System.Windows.Forms.Label();
+            this.mutantReplaceAllRadio = new System.Windows.Forms.RadioButton();
+            this.mutantsNothingRadio = new System.Windows.Forms.RadioButton();
             this.vodGroupBox = new System.Windows.Forms.GroupBox();
             this.vodDividerLabel = new System.Windows.Forms.Label();
             this.vodStackCityHallsNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -55,15 +68,6 @@
             this.vodReplaceCheckBox = new System.Windows.Forms.CheckBox();
             this.vodStackDwellingsNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.vodStackDwellingCheckBox = new System.Windows.Forms.CheckBox();
-            this.mutantGroupBox = new System.Windows.Forms.GroupBox();
-            this.mutantReplaceAllComboBox = new System.Windows.Forms.ComboBox();
-            this.mutantMoveGlobalComboBox = new System.Windows.Forms.ComboBox();
-            this.mutantMoveWhatComboBox = new System.Windows.Forms.ComboBox();
-            this.mutantsMoveRadio = new System.Windows.Forms.RadioButton();
-            this.mutantMoveCCLabel = new System.Windows.Forms.Label();
-            this.mutantReplaceAllRadio = new System.Windows.Forms.RadioButton();
-            this.mutantsRemoveRadio = new System.Windows.Forms.RadioButton();
-            this.mutantsNothingRadio = new System.Windows.Forms.RadioButton();
             this.fogGroupBox = new System.Windows.Forms.GroupBox();
             this.fogClearRadioButton = new System.Windows.Forms.RadioButton();
             this.fogNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -85,18 +89,25 @@
             this.ccExtraEnergyCheckBox = new System.Windows.Forms.CheckBox();
             this.ccExtraFoodCheckBox = new System.Windows.Forms.CheckBox();
             this.warehousesGroupBox = new System.Windows.Forms.GroupBox();
+            this.warehousesFillGoldCheckBox = new System.Windows.Forms.CheckBox();
             this.warehousesFillOilCheckBox = new System.Windows.Forms.CheckBox();
             this.warehousesFillIronCheckBox = new System.Windows.Forms.CheckBox();
             this.warehousesFillWoodCheckBox = new System.Windows.Forms.CheckBox();
-            this.warehousesFillGoldCheckBox = new System.Windows.Forms.CheckBox();
             this.warehousesFillStoneCheckBox = new System.Windows.Forms.CheckBox();
+            this.swarmsGroupBox = new System.Windows.Forms.GroupBox();
+            this.swarmHardComboBox = new System.Windows.Forms.ComboBox();
+            this.swarmEasyComboBox = new System.Windows.Forms.ComboBox();
+            this.swarmsFasterCheckBox = new System.Windows.Forms.CheckBox();
+            this.swarmsHardCheckBox = new System.Windows.Forms.CheckBox();
+            this.swarmsEasyCheckBox = new System.Windows.Forms.CheckBox();
             this.generalGroupBox = new System.Windows.Forms.GroupBox();
             this.disableMayorsCheckBox = new System.Windows.Forms.CheckBox();
-            this.swarmsCheckBox = new System.Windows.Forms.CheckBox();
             this.themeComboBox = new System.Windows.Forms.ComboBox();
             this.themeCheckBox = new System.Windows.Forms.CheckBox();
             this.dataFlowLayoutPanel.SuspendLayout();
             this.zombieScalingGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleMutantNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleGiantNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleHarpyNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleVenomNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleStrongNumericUpDown)).BeginInit();
@@ -104,11 +115,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleMediumNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleWeakNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleNumericUpDown)).BeginInit();
+            this.mutantGroupBox.SuspendLayout();
             this.vodGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vodStackCityHallsNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.vodStackTavernsNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.vodStackDwellingsNumericUpDown)).BeginInit();
-            this.mutantGroupBox.SuspendLayout();
             this.fogGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fogNumericUpDown)).BeginInit();
             this.ccExtraGroupBox.SuspendLayout();
@@ -117,6 +128,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ccWorkersNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.giftNumericUpDown)).BeginInit();
             this.warehousesGroupBox.SuspendLayout();
+            this.swarmsGroupBox.SuspendLayout();
             this.generalGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -124,20 +136,27 @@
             // 
             this.dataFlowLayoutPanel.AutoScroll = true;
             this.dataFlowLayoutPanel.Controls.Add(this.zombieScalingGroupBox);
-            this.dataFlowLayoutPanel.Controls.Add(this.vodGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.mutantGroupBox);
+            this.dataFlowLayoutPanel.Controls.Add(this.vodGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.fogGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.ccExtraGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.warehousesGroupBox);
+            this.dataFlowLayoutPanel.Controls.Add(this.swarmsGroupBox);
             this.dataFlowLayoutPanel.Controls.Add(this.generalGroupBox);
             this.dataFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.dataFlowLayoutPanel.Name = "dataFlowLayoutPanel";
-            this.dataFlowLayoutPanel.Size = new System.Drawing.Size(578, 433);
+            this.dataFlowLayoutPanel.Size = new System.Drawing.Size(570, 505);
             this.dataFlowLayoutPanel.TabIndex = 1;
             // 
             // zombieScalingGroupBox
             // 
+            this.zombieScalingGroupBox.Controls.Add(this.zombiesScalingHorizontalDividerLabel);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScalingVerticalDividerLabel);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleMutantNumericUpDown);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleGiantNumericUpDown);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleMutantCheckBox);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleGiantCheckBox);
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleHarpyNumericUpDown);
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleVenomNumericUpDown);
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleStrongNumericUpDown);
@@ -147,7 +166,6 @@
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleHarpyCheckBox);
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleVenomCheckBox);
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleStrongCheckBox);
-            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleDividerLabel);
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleDressedCheckBox);
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleMediumCheckBox);
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleWeakCheckBox);
@@ -155,10 +173,92 @@
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleCheckBox);
             this.zombieScalingGroupBox.Location = new System.Drawing.Point(3, 3);
             this.zombieScalingGroupBox.Name = "zombieScalingGroupBox";
-            this.zombieScalingGroupBox.Size = new System.Drawing.Size(220, 185);
+            this.zombieScalingGroupBox.Size = new System.Drawing.Size(380, 160);
             this.zombieScalingGroupBox.TabIndex = 0;
             this.zombieScalingGroupBox.TabStop = false;
             this.zombieScalingGroupBox.Text = "Zombie Population Scaling";
+            // 
+            // zombiesScalingHorizontalDividerLabel
+            // 
+            this.zombiesScalingHorizontalDividerLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.zombiesScalingHorizontalDividerLabel.Location = new System.Drawing.Point(174, 77);
+            this.zombiesScalingHorizontalDividerLabel.Name = "zombiesScalingHorizontalDividerLabel";
+            this.zombiesScalingHorizontalDividerLabel.Size = new System.Drawing.Size(205, 2);
+            this.zombiesScalingHorizontalDividerLabel.TabIndex = 20;
+            // 
+            // zombieScalingVerticalDividerLabel
+            // 
+            this.zombieScalingVerticalDividerLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.zombieScalingVerticalDividerLabel.Location = new System.Drawing.Point(173, 10);
+            this.zombieScalingVerticalDividerLabel.Name = "zombieScalingVerticalDividerLabel";
+            this.zombieScalingVerticalDividerLabel.Size = new System.Drawing.Size(2, 144);
+            this.zombieScalingVerticalDividerLabel.TabIndex = 19;
+            // 
+            // zombieScaleMutantNumericUpDown
+            // 
+            this.zombieScaleMutantNumericUpDown.DecimalPlaces = 1;
+            this.zombieScaleMutantNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.zombieScaleMutantNumericUpDown.Location = new System.Drawing.Point(333, 110);
+            this.zombieScaleMutantNumericUpDown.Maximum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.zombieScaleMutantNumericUpDown.Name = "zombieScaleMutantNumericUpDown";
+            this.zombieScaleMutantNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.zombieScaleMutantNumericUpDown.TabIndex = 4;
+            this.zombieScaleMutantNumericUpDown.Value = new decimal(new int[] {
+            11,
+            0,
+            0,
+            65536});
+            // 
+            // zombieScaleGiantNumericUpDown
+            // 
+            this.zombieScaleGiantNumericUpDown.DecimalPlaces = 1;
+            this.zombieScaleGiantNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.zombieScaleGiantNumericUpDown.Location = new System.Drawing.Point(333, 87);
+            this.zombieScaleGiantNumericUpDown.Maximum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.zombieScaleGiantNumericUpDown.Name = "zombieScaleGiantNumericUpDown";
+            this.zombieScaleGiantNumericUpDown.Size = new System.Drawing.Size(40, 20);
+            this.zombieScaleGiantNumericUpDown.TabIndex = 2;
+            this.zombieScaleGiantNumericUpDown.Value = new decimal(new int[] {
+            11,
+            0,
+            0,
+            65536});
+            // 
+            // zombieScaleMutantCheckBox
+            // 
+            this.zombieScaleMutantCheckBox.AutoSize = true;
+            this.zombieScaleMutantCheckBox.Location = new System.Drawing.Point(179, 111);
+            this.zombieScaleMutantCheckBox.Name = "zombieScaleMutantCheckBox";
+            this.zombieScaleMutantCheckBox.Size = new System.Drawing.Size(64, 17);
+            this.zombieScaleMutantCheckBox.TabIndex = 5;
+            this.zombieScaleMutantCheckBox.Text = "Mutants";
+            this.zombieScaleMutantCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // zombieScaleGiantCheckBox
+            // 
+            this.zombieScaleGiantCheckBox.AutoSize = true;
+            this.zombieScaleGiantCheckBox.Location = new System.Drawing.Point(179, 88);
+            this.zombieScaleGiantCheckBox.Name = "zombieScaleGiantCheckBox";
+            this.zombieScaleGiantCheckBox.Size = new System.Drawing.Size(56, 17);
+            this.zombieScaleGiantCheckBox.TabIndex = 3;
+            this.zombieScaleGiantCheckBox.Text = "Giants";
+            this.zombieScaleGiantCheckBox.UseVisualStyleBackColor = true;
             // 
             // zombieScaleHarpyNumericUpDown
             // 
@@ -168,7 +268,7 @@
             0,
             0,
             65536});
-            this.zombieScaleHarpyNumericUpDown.Location = new System.Drawing.Point(174, 160);
+            this.zombieScaleHarpyNumericUpDown.Location = new System.Drawing.Point(129, 133);
             this.zombieScaleHarpyNumericUpDown.Maximum = new decimal(new int[] {
             3,
             0,
@@ -176,7 +276,7 @@
             0});
             this.zombieScaleHarpyNumericUpDown.Name = "zombieScaleHarpyNumericUpDown";
             this.zombieScaleHarpyNumericUpDown.Size = new System.Drawing.Size(40, 20);
-            this.zombieScaleHarpyNumericUpDown.TabIndex = 12;
+            this.zombieScaleHarpyNumericUpDown.TabIndex = 16;
             this.zombieScaleHarpyNumericUpDown.Value = new decimal(new int[] {
             11,
             0,
@@ -191,7 +291,7 @@
             0,
             0,
             65536});
-            this.zombieScaleVenomNumericUpDown.Location = new System.Drawing.Point(174, 137);
+            this.zombieScaleVenomNumericUpDown.Location = new System.Drawing.Point(129, 110);
             this.zombieScaleVenomNumericUpDown.Maximum = new decimal(new int[] {
             3,
             0,
@@ -199,7 +299,7 @@
             0});
             this.zombieScaleVenomNumericUpDown.Name = "zombieScaleVenomNumericUpDown";
             this.zombieScaleVenomNumericUpDown.Size = new System.Drawing.Size(40, 20);
-            this.zombieScaleVenomNumericUpDown.TabIndex = 10;
+            this.zombieScaleVenomNumericUpDown.TabIndex = 14;
             this.zombieScaleVenomNumericUpDown.Value = new decimal(new int[] {
             11,
             0,
@@ -214,7 +314,7 @@
             0,
             0,
             65536});
-            this.zombieScaleStrongNumericUpDown.Location = new System.Drawing.Point(174, 114);
+            this.zombieScaleStrongNumericUpDown.Location = new System.Drawing.Point(129, 87);
             this.zombieScaleStrongNumericUpDown.Maximum = new decimal(new int[] {
             3,
             0,
@@ -222,7 +322,7 @@
             0});
             this.zombieScaleStrongNumericUpDown.Name = "zombieScaleStrongNumericUpDown";
             this.zombieScaleStrongNumericUpDown.Size = new System.Drawing.Size(40, 20);
-            this.zombieScaleStrongNumericUpDown.TabIndex = 8;
+            this.zombieScaleStrongNumericUpDown.TabIndex = 12;
             this.zombieScaleStrongNumericUpDown.Value = new decimal(new int[] {
             11,
             0,
@@ -237,7 +337,7 @@
             0,
             0,
             65536});
-            this.zombieScaleDressedNumericUpDown.Location = new System.Drawing.Point(174, 91);
+            this.zombieScaleDressedNumericUpDown.Location = new System.Drawing.Point(129, 64);
             this.zombieScaleDressedNumericUpDown.Maximum = new decimal(new int[] {
             3,
             0,
@@ -245,7 +345,7 @@
             0});
             this.zombieScaleDressedNumericUpDown.Name = "zombieScaleDressedNumericUpDown";
             this.zombieScaleDressedNumericUpDown.Size = new System.Drawing.Size(40, 20);
-            this.zombieScaleDressedNumericUpDown.TabIndex = 6;
+            this.zombieScaleDressedNumericUpDown.TabIndex = 10;
             this.zombieScaleDressedNumericUpDown.Value = new decimal(new int[] {
             11,
             0,
@@ -260,7 +360,7 @@
             0,
             0,
             65536});
-            this.zombieScaleMediumNumericUpDown.Location = new System.Drawing.Point(174, 68);
+            this.zombieScaleMediumNumericUpDown.Location = new System.Drawing.Point(129, 41);
             this.zombieScaleMediumNumericUpDown.Maximum = new decimal(new int[] {
             3,
             0,
@@ -268,7 +368,7 @@
             0});
             this.zombieScaleMediumNumericUpDown.Name = "zombieScaleMediumNumericUpDown";
             this.zombieScaleMediumNumericUpDown.Size = new System.Drawing.Size(40, 20);
-            this.zombieScaleMediumNumericUpDown.TabIndex = 4;
+            this.zombieScaleMediumNumericUpDown.TabIndex = 8;
             this.zombieScaleMediumNumericUpDown.Value = new decimal(new int[] {
             11,
             0,
@@ -283,7 +383,7 @@
             0,
             0,
             65536});
-            this.zombieScaleWeakNumericUpDown.Location = new System.Drawing.Point(174, 45);
+            this.zombieScaleWeakNumericUpDown.Location = new System.Drawing.Point(129, 18);
             this.zombieScaleWeakNumericUpDown.Maximum = new decimal(new int[] {
             3,
             0,
@@ -291,7 +391,7 @@
             0});
             this.zombieScaleWeakNumericUpDown.Name = "zombieScaleWeakNumericUpDown";
             this.zombieScaleWeakNumericUpDown.Size = new System.Drawing.Size(40, 20);
-            this.zombieScaleWeakNumericUpDown.TabIndex = 2;
+            this.zombieScaleWeakNumericUpDown.TabIndex = 6;
             this.zombieScaleWeakNumericUpDown.Value = new decimal(new int[] {
             11,
             0,
@@ -301,68 +401,60 @@
             // zombieScaleHarpyCheckBox
             // 
             this.zombieScaleHarpyCheckBox.AutoSize = true;
-            this.zombieScaleHarpyCheckBox.Location = new System.Drawing.Point(6, 161);
+            this.zombieScaleHarpyCheckBox.Location = new System.Drawing.Point(6, 134);
             this.zombieScaleHarpyCheckBox.Name = "zombieScaleHarpyCheckBox";
             this.zombieScaleHarpyCheckBox.Size = new System.Drawing.Size(91, 17);
-            this.zombieScaleHarpyCheckBox.TabIndex = 13;
+            this.zombieScaleHarpyCheckBox.TabIndex = 17;
             this.zombieScaleHarpyCheckBox.Text = "Harpy (Witch)";
             this.zombieScaleHarpyCheckBox.UseVisualStyleBackColor = true;
             // 
             // zombieScaleVenomCheckBox
             // 
             this.zombieScaleVenomCheckBox.AutoSize = true;
-            this.zombieScaleVenomCheckBox.Location = new System.Drawing.Point(6, 138);
+            this.zombieScaleVenomCheckBox.Location = new System.Drawing.Point(6, 111);
             this.zombieScaleVenomCheckBox.Name = "zombieScaleVenomCheckBox";
             this.zombieScaleVenomCheckBox.Size = new System.Drawing.Size(98, 17);
-            this.zombieScaleVenomCheckBox.TabIndex = 11;
+            this.zombieScaleVenomCheckBox.TabIndex = 15;
             this.zombieScaleVenomCheckBox.Text = "Venom (Spitter)";
             this.zombieScaleVenomCheckBox.UseVisualStyleBackColor = true;
             // 
             // zombieScaleStrongCheckBox
             // 
             this.zombieScaleStrongCheckBox.AutoSize = true;
-            this.zombieScaleStrongCheckBox.Location = new System.Drawing.Point(6, 115);
+            this.zombieScaleStrongCheckBox.Location = new System.Drawing.Point(6, 88);
             this.zombieScaleStrongCheckBox.Name = "zombieScaleStrongCheckBox";
             this.zombieScaleStrongCheckBox.Size = new System.Drawing.Size(102, 17);
-            this.zombieScaleStrongCheckBox.TabIndex = 9;
+            this.zombieScaleStrongCheckBox.TabIndex = 13;
             this.zombieScaleStrongCheckBox.Text = "Strong (Chubby)";
             this.zombieScaleStrongCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // zombieScaleDividerLabel
-            // 
-            this.zombieScaleDividerLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.zombieScaleDividerLabel.Location = new System.Drawing.Point(2, 41);
-            this.zombieScaleDividerLabel.Name = "zombieScaleDividerLabel";
-            this.zombieScaleDividerLabel.Size = new System.Drawing.Size(217, 2);
-            this.zombieScaleDividerLabel.TabIndex = 13;
             // 
             // zombieScaleDressedCheckBox
             // 
             this.zombieScaleDressedCheckBox.AutoSize = true;
-            this.zombieScaleDressedCheckBox.Location = new System.Drawing.Point(6, 92);
+            this.zombieScaleDressedCheckBox.Location = new System.Drawing.Point(6, 65);
             this.zombieScaleDressedCheckBox.Name = "zombieScaleDressedCheckBox";
             this.zombieScaleDressedCheckBox.Size = new System.Drawing.Size(121, 17);
-            this.zombieScaleDressedCheckBox.TabIndex = 7;
+            this.zombieScaleDressedCheckBox.TabIndex = 11;
             this.zombieScaleDressedCheckBox.Text = "Dressed (Executive)";
             this.zombieScaleDressedCheckBox.UseVisualStyleBackColor = true;
             // 
             // zombieScaleMediumCheckBox
             // 
             this.zombieScaleMediumCheckBox.AutoSize = true;
-            this.zombieScaleMediumCheckBox.Location = new System.Drawing.Point(6, 69);
+            this.zombieScaleMediumCheckBox.Location = new System.Drawing.Point(6, 42);
             this.zombieScaleMediumCheckBox.Name = "zombieScaleMediumCheckBox";
             this.zombieScaleMediumCheckBox.Size = new System.Drawing.Size(107, 17);
-            this.zombieScaleMediumCheckBox.TabIndex = 5;
+            this.zombieScaleMediumCheckBox.TabIndex = 9;
             this.zombieScaleMediumCheckBox.Text = "Medium (Runner)";
             this.zombieScaleMediumCheckBox.UseVisualStyleBackColor = true;
             // 
             // zombieScaleWeakCheckBox
             // 
             this.zombieScaleWeakCheckBox.AutoSize = true;
-            this.zombieScaleWeakCheckBox.Location = new System.Drawing.Point(6, 46);
+            this.zombieScaleWeakCheckBox.Location = new System.Drawing.Point(6, 19);
             this.zombieScaleWeakCheckBox.Name = "zombieScaleWeakCheckBox";
             this.zombieScaleWeakCheckBox.Size = new System.Drawing.Size(98, 17);
-            this.zombieScaleWeakCheckBox.TabIndex = 3;
+            this.zombieScaleWeakCheckBox.TabIndex = 7;
             this.zombieScaleWeakCheckBox.Text = "Weak (Walker)";
             this.zombieScaleWeakCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -374,7 +466,7 @@
             0,
             0,
             65536});
-            this.zombieScaleNumericUpDown.Location = new System.Drawing.Point(174, 18);
+            this.zombieScaleNumericUpDown.Location = new System.Drawing.Point(333, 41);
             this.zombieScaleNumericUpDown.Maximum = new decimal(new int[] {
             20,
             0,
@@ -392,12 +484,108 @@
             // zombieScaleCheckBox
             // 
             this.zombieScaleCheckBox.AutoSize = true;
-            this.zombieScaleCheckBox.Location = new System.Drawing.Point(6, 19);
+            this.zombieScaleCheckBox.Location = new System.Drawing.Point(179, 42);
             this.zombieScaleCheckBox.Name = "zombieScaleCheckBox";
             this.zombieScaleCheckBox.Size = new System.Drawing.Size(152, 17);
             this.zombieScaleCheckBox.TabIndex = 1;
             this.zombieScaleCheckBox.Text = "All non-Giant/Mutant types";
             this.zombieScaleCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // mutantGroupBox
+            // 
+            this.mutantGroupBox.Controls.Add(this.mutantReplaceAllComboBox);
+            this.mutantGroupBox.Controls.Add(this.mutantMoveGlobalComboBox);
+            this.mutantGroupBox.Controls.Add(this.mutantMoveWhatComboBox);
+            this.mutantGroupBox.Controls.Add(this.mutantsMoveRadio);
+            this.mutantGroupBox.Controls.Add(this.mutantMoveCCLabel);
+            this.mutantGroupBox.Controls.Add(this.mutantReplaceAllRadio);
+            this.mutantGroupBox.Controls.Add(this.mutantsNothingRadio);
+            this.mutantGroupBox.Location = new System.Drawing.Point(3, 169);
+            this.mutantGroupBox.Name = "mutantGroupBox";
+            this.mutantGroupBox.Size = new System.Drawing.Size(220, 115);
+            this.mutantGroupBox.TabIndex = 2;
+            this.mutantGroupBox.TabStop = false;
+            this.mutantGroupBox.Text = "Mutants";
+            // 
+            // mutantReplaceAllComboBox
+            // 
+            this.mutantReplaceAllComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mutantReplaceAllComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mutantReplaceAllComboBox.FormattingEnabled = true;
+            this.mutantReplaceAllComboBox.Items.AddRange(new object[] {
+            "Mutants with Giants",
+            "Giants with Mutants"});
+            this.mutantReplaceAllComboBox.Location = new System.Drawing.Point(69, 40);
+            this.mutantReplaceAllComboBox.Name = "mutantReplaceAllComboBox";
+            this.mutantReplaceAllComboBox.Size = new System.Drawing.Size(117, 21);
+            this.mutantReplaceAllComboBox.TabIndex = 1;
+            // 
+            // mutantMoveGlobalComboBox
+            // 
+            this.mutantMoveGlobalComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mutantMoveGlobalComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mutantMoveGlobalComboBox.FormattingEnabled = true;
+            this.mutantMoveGlobalComboBox.Items.AddRange(new object[] {
+            "anywhere on the map",
+            "per compass quadrant"});
+            this.mutantMoveGlobalComboBox.Location = new System.Drawing.Point(83, 88);
+            this.mutantMoveGlobalComboBox.Name = "mutantMoveGlobalComboBox";
+            this.mutantMoveGlobalComboBox.Size = new System.Drawing.Size(131, 21);
+            this.mutantMoveGlobalComboBox.TabIndex = 4;
+            // 
+            // mutantMoveWhatComboBox
+            // 
+            this.mutantMoveWhatComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mutantMoveWhatComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mutantMoveWhatComboBox.FormattingEnabled = true;
+            this.mutantMoveWhatComboBox.Items.AddRange(new object[] {
+            "Giant",
+            "Mutant"});
+            this.mutantMoveWhatComboBox.Location = new System.Drawing.Point(105, 63);
+            this.mutantMoveWhatComboBox.Name = "mutantMoveWhatComboBox";
+            this.mutantMoveWhatComboBox.Size = new System.Drawing.Size(57, 21);
+            this.mutantMoveWhatComboBox.TabIndex = 3;
+            // 
+            // mutantsMoveRadio
+            // 
+            this.mutantsMoveRadio.AutoSize = true;
+            this.mutantsMoveRadio.Location = new System.Drawing.Point(6, 65);
+            this.mutantsMoveRadio.Name = "mutantsMoveRadio";
+            this.mutantsMoveRadio.Size = new System.Drawing.Size(102, 17);
+            this.mutantsMoveRadio.TabIndex = 5;
+            this.mutantsMoveRadio.Text = "Move to farthest";
+            this.mutantsMoveRadio.UseVisualStyleBackColor = true;
+            // 
+            // mutantMoveCCLabel
+            // 
+            this.mutantMoveCCLabel.AutoSize = true;
+            this.mutantMoveCCLabel.Location = new System.Drawing.Point(42, 92);
+            this.mutantMoveCCLabel.Name = "mutantMoveCCLabel";
+            this.mutantMoveCCLabel.Size = new System.Drawing.Size(44, 13);
+            this.mutantMoveCCLabel.TabIndex = 0;
+            this.mutantMoveCCLabel.Text = "from CC";
+            // 
+            // mutantReplaceAllRadio
+            // 
+            this.mutantReplaceAllRadio.AutoSize = true;
+            this.mutantReplaceAllRadio.Location = new System.Drawing.Point(6, 42);
+            this.mutantReplaceAllRadio.Name = "mutantReplaceAllRadio";
+            this.mutantReplaceAllRadio.Size = new System.Drawing.Size(65, 17);
+            this.mutantReplaceAllRadio.TabIndex = 2;
+            this.mutantReplaceAllRadio.Text = "Replace";
+            this.mutantReplaceAllRadio.UseVisualStyleBackColor = true;
+            // 
+            // mutantsNothingRadio
+            // 
+            this.mutantsNothingRadio.AutoSize = true;
+            this.mutantsNothingRadio.Checked = true;
+            this.mutantsNothingRadio.Location = new System.Drawing.Point(6, 19);
+            this.mutantsNothingRadio.Name = "mutantsNothingRadio";
+            this.mutantsNothingRadio.Size = new System.Drawing.Size(90, 17);
+            this.mutantsNothingRadio.TabIndex = 0;
+            this.mutantsNothingRadio.TabStop = true;
+            this.mutantsNothingRadio.Text = "Do not modify";
+            this.mutantsNothingRadio.UseVisualStyleBackColor = true;
             // 
             // vodGroupBox
             // 
@@ -410,7 +598,7 @@
             this.vodGroupBox.Controls.Add(this.vodReplaceCheckBox);
             this.vodGroupBox.Controls.Add(this.vodStackDwellingsNumericUpDown);
             this.vodGroupBox.Controls.Add(this.vodStackDwellingCheckBox);
-            this.vodGroupBox.Location = new System.Drawing.Point(229, 3);
+            this.vodGroupBox.Location = new System.Drawing.Point(229, 169);
             this.vodGroupBox.Name = "vodGroupBox";
             this.vodGroupBox.Size = new System.Drawing.Size(220, 115);
             this.vodGroupBox.TabIndex = 1;
@@ -420,7 +608,7 @@
             // vodDividerLabel
             // 
             this.vodDividerLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.vodDividerLabel.Location = new System.Drawing.Point(2, 41);
+            this.vodDividerLabel.Location = new System.Drawing.Point(2, 39);
             this.vodDividerLabel.Name = "vodDividerLabel";
             this.vodDividerLabel.Size = new System.Drawing.Size(217, 2);
             this.vodDividerLabel.TabIndex = 12;
@@ -433,7 +621,7 @@
             0,
             0,
             65536});
-            this.vodStackCityHallsNumericUpDown.Location = new System.Drawing.Point(174, 92);
+            this.vodStackCityHallsNumericUpDown.Location = new System.Drawing.Point(174, 90);
             this.vodStackCityHallsNumericUpDown.Maximum = new decimal(new int[] {
             3,
             0,
@@ -451,7 +639,7 @@
             // vodStackCityHallsCheckBox
             // 
             this.vodStackCityHallsCheckBox.AutoSize = true;
-            this.vodStackCityHallsCheckBox.Location = new System.Drawing.Point(6, 92);
+            this.vodStackCityHallsCheckBox.Location = new System.Drawing.Point(6, 90);
             this.vodStackCityHallsCheckBox.Name = "vodStackCityHallsCheckBox";
             this.vodStackCityHallsCheckBox.Size = new System.Drawing.Size(100, 17);
             this.vodStackCityHallsCheckBox.TabIndex = 7;
@@ -468,7 +656,7 @@
             0,
             0,
             65536});
-            this.vodStackTavernsNumericUpDown.Location = new System.Drawing.Point(174, 68);
+            this.vodStackTavernsNumericUpDown.Location = new System.Drawing.Point(174, 66);
             this.vodStackTavernsNumericUpDown.Maximum = new decimal(new int[] {
             3,
             0,
@@ -486,7 +674,7 @@
             // vodStackTavernsCheckBox
             // 
             this.vodStackTavernsCheckBox.AutoSize = true;
-            this.vodStackTavernsCheckBox.Location = new System.Drawing.Point(6, 69);
+            this.vodStackTavernsCheckBox.Location = new System.Drawing.Point(6, 67);
             this.vodStackTavernsCheckBox.Name = "vodStackTavernsCheckBox";
             this.vodStackTavernsCheckBox.Size = new System.Drawing.Size(96, 17);
             this.vodStackTavernsCheckBox.TabIndex = 5;
@@ -525,7 +713,7 @@
             0,
             0,
             65536});
-            this.vodStackDwellingsNumericUpDown.Location = new System.Drawing.Point(174, 46);
+            this.vodStackDwellingsNumericUpDown.Location = new System.Drawing.Point(174, 44);
             this.vodStackDwellingsNumericUpDown.Maximum = new decimal(new int[] {
             3,
             0,
@@ -543,125 +731,12 @@
             // vodStackDwellingCheckBox
             // 
             this.vodStackDwellingCheckBox.AutoSize = true;
-            this.vodStackDwellingCheckBox.Location = new System.Drawing.Point(6, 46);
+            this.vodStackDwellingCheckBox.Location = new System.Drawing.Point(6, 44);
             this.vodStackDwellingCheckBox.Name = "vodStackDwellingCheckBox";
             this.vodStackDwellingCheckBox.Size = new System.Drawing.Size(102, 17);
             this.vodStackDwellingCheckBox.TabIndex = 3;
             this.vodStackDwellingCheckBox.Text = "Stack Dwellings";
             this.vodStackDwellingCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // mutantGroupBox
-            // 
-            this.mutantGroupBox.Controls.Add(this.mutantReplaceAllComboBox);
-            this.mutantGroupBox.Controls.Add(this.mutantMoveGlobalComboBox);
-            this.mutantGroupBox.Controls.Add(this.mutantMoveWhatComboBox);
-            this.mutantGroupBox.Controls.Add(this.mutantsMoveRadio);
-            this.mutantGroupBox.Controls.Add(this.mutantMoveCCLabel);
-            this.mutantGroupBox.Controls.Add(this.mutantReplaceAllRadio);
-            this.mutantGroupBox.Controls.Add(this.mutantsRemoveRadio);
-            this.mutantGroupBox.Controls.Add(this.mutantsNothingRadio);
-            this.mutantGroupBox.Location = new System.Drawing.Point(3, 194);
-            this.mutantGroupBox.Name = "mutantGroupBox";
-            this.mutantGroupBox.Size = new System.Drawing.Size(345, 115);
-            this.mutantGroupBox.TabIndex = 2;
-            this.mutantGroupBox.TabStop = false;
-            this.mutantGroupBox.Text = "Mutants";
-            // 
-            // mutantReplaceAllComboBox
-            // 
-            this.mutantReplaceAllComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.mutantReplaceAllComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.mutantReplaceAllComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mutantReplaceAllComboBox.FormattingEnabled = true;
-            this.mutantReplaceAllComboBox.Items.AddRange(new object[] {
-            "Mutants with Giants",
-            "Giants with Mutants"});
-            this.mutantReplaceAllComboBox.Location = new System.Drawing.Point(81, 63);
-            this.mutantReplaceAllComboBox.Name = "mutantReplaceAllComboBox";
-            this.mutantReplaceAllComboBox.Size = new System.Drawing.Size(117, 21);
-            this.mutantReplaceAllComboBox.TabIndex = 3;
-            // 
-            // mutantMoveGlobalComboBox
-            // 
-            this.mutantMoveGlobalComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.mutantMoveGlobalComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.mutantMoveGlobalComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mutantMoveGlobalComboBox.FormattingEnabled = true;
-            this.mutantMoveGlobalComboBox.Items.AddRange(new object[] {
-            "anywhere on the map",
-            "per compass quadrant"});
-            this.mutantMoveGlobalComboBox.Location = new System.Drawing.Point(208, 86);
-            this.mutantMoveGlobalComboBox.Name = "mutantMoveGlobalComboBox";
-            this.mutantMoveGlobalComboBox.Size = new System.Drawing.Size(131, 21);
-            this.mutantMoveGlobalComboBox.TabIndex = 6;
-            // 
-            // mutantMoveWhatComboBox
-            // 
-            this.mutantMoveWhatComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.mutantMoveWhatComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.mutantMoveWhatComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mutantMoveWhatComboBox.FormattingEnabled = true;
-            this.mutantMoveWhatComboBox.Items.AddRange(new object[] {
-            "Giant",
-            "Mutant"});
-            this.mutantMoveWhatComboBox.Location = new System.Drawing.Point(105, 86);
-            this.mutantMoveWhatComboBox.Name = "mutantMoveWhatComboBox";
-            this.mutantMoveWhatComboBox.Size = new System.Drawing.Size(57, 21);
-            this.mutantMoveWhatComboBox.TabIndex = 5;
-            // 
-            // mutantsMoveRadio
-            // 
-            this.mutantsMoveRadio.AutoSize = true;
-            this.mutantsMoveRadio.Location = new System.Drawing.Point(6, 88);
-            this.mutantsMoveRadio.Name = "mutantsMoveRadio";
-            this.mutantsMoveRadio.Size = new System.Drawing.Size(102, 17);
-            this.mutantsMoveRadio.TabIndex = 4;
-            this.mutantsMoveRadio.Text = "Move to farthest";
-            this.mutantsMoveRadio.UseVisualStyleBackColor = true;
-            // 
-            // mutantMoveCCLabel
-            // 
-            this.mutantMoveCCLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.mutantMoveCCLabel.AutoSize = true;
-            this.mutantMoveCCLabel.Location = new System.Drawing.Point(164, 90);
-            this.mutantMoveCCLabel.Name = "mutantMoveCCLabel";
-            this.mutantMoveCCLabel.Size = new System.Drawing.Size(44, 13);
-            this.mutantMoveCCLabel.TabIndex = 0;
-            this.mutantMoveCCLabel.Text = "from CC";
-            // 
-            // mutantReplaceAllRadio
-            // 
-            this.mutantReplaceAllRadio.AutoSize = true;
-            this.mutantReplaceAllRadio.Location = new System.Drawing.Point(6, 65);
-            this.mutantReplaceAllRadio.Name = "mutantReplaceAllRadio";
-            this.mutantReplaceAllRadio.Size = new System.Drawing.Size(79, 17);
-            this.mutantReplaceAllRadio.TabIndex = 2;
-            this.mutantReplaceAllRadio.Text = "Replace All";
-            this.mutantReplaceAllRadio.UseVisualStyleBackColor = true;
-            // 
-            // mutantsRemoveRadio
-            // 
-            this.mutantsRemoveRadio.AutoSize = true;
-            this.mutantsRemoveRadio.Location = new System.Drawing.Point(6, 42);
-            this.mutantsRemoveRadio.Name = "mutantsRemoveRadio";
-            this.mutantsRemoveRadio.Size = new System.Drawing.Size(79, 17);
-            this.mutantsRemoveRadio.TabIndex = 1;
-            this.mutantsRemoveRadio.Text = "Remove All";
-            this.mutantsRemoveRadio.UseVisualStyleBackColor = true;
-            // 
-            // mutantsNothingRadio
-            // 
-            this.mutantsNothingRadio.AutoSize = true;
-            this.mutantsNothingRadio.Checked = true;
-            this.mutantsNothingRadio.Location = new System.Drawing.Point(6, 19);
-            this.mutantsNothingRadio.Name = "mutantsNothingRadio";
-            this.mutantsNothingRadio.Size = new System.Drawing.Size(90, 17);
-            this.mutantsNothingRadio.TabIndex = 0;
-            this.mutantsNothingRadio.TabStop = true;
-            this.mutantsNothingRadio.Text = "Do not modify";
-            this.mutantsNothingRadio.UseVisualStyleBackColor = true;
             // 
             // fogGroupBox
             // 
@@ -670,10 +745,10 @@
             this.fogGroupBox.Controls.Add(this.fogShowFullRadioButton);
             this.fogGroupBox.Controls.Add(this.fogRemoveRadioButton);
             this.fogGroupBox.Controls.Add(this.fogLeaveRadioButton);
-            this.fogGroupBox.Location = new System.Drawing.Point(354, 194);
+            this.fogGroupBox.Location = new System.Drawing.Point(3, 290);
             this.fogGroupBox.Name = "fogGroupBox";
             this.fogGroupBox.Size = new System.Drawing.Size(220, 115);
-            this.fogGroupBox.TabIndex = 3;
+            this.fogGroupBox.TabIndex = 5;
             this.fogGroupBox.TabStop = false;
             this.fogGroupBox.Text = "Fog of War";
             // 
@@ -763,10 +838,10 @@
             this.ccExtraGroupBox.Controls.Add(this.ccExtraWorkersCheckBox);
             this.ccExtraGroupBox.Controls.Add(this.ccExtraEnergyCheckBox);
             this.ccExtraGroupBox.Controls.Add(this.ccExtraFoodCheckBox);
-            this.ccExtraGroupBox.Location = new System.Drawing.Point(3, 315);
+            this.ccExtraGroupBox.Location = new System.Drawing.Point(229, 290);
             this.ccExtraGroupBox.Name = "ccExtraGroupBox";
             this.ccExtraGroupBox.Size = new System.Drawing.Size(220, 115);
-            this.ccExtraGroupBox.TabIndex = 4;
+            this.ccExtraGroupBox.TabIndex = 3;
             this.ccExtraGroupBox.TabStop = false;
             this.ccExtraGroupBox.Text = "Command Center Extra Supplies";
             // 
@@ -971,22 +1046,32 @@
             // 
             // warehousesGroupBox
             // 
+            this.warehousesGroupBox.Controls.Add(this.warehousesFillGoldCheckBox);
             this.warehousesGroupBox.Controls.Add(this.warehousesFillOilCheckBox);
             this.warehousesGroupBox.Controls.Add(this.warehousesFillIronCheckBox);
             this.warehousesGroupBox.Controls.Add(this.warehousesFillWoodCheckBox);
-            this.warehousesGroupBox.Controls.Add(this.warehousesFillGoldCheckBox);
             this.warehousesGroupBox.Controls.Add(this.warehousesFillStoneCheckBox);
-            this.warehousesGroupBox.Location = new System.Drawing.Point(229, 315);
+            this.warehousesGroupBox.Location = new System.Drawing.Point(455, 290);
             this.warehousesGroupBox.Name = "warehousesGroupBox";
-            this.warehousesGroupBox.Size = new System.Drawing.Size(119, 90);
-            this.warehousesGroupBox.TabIndex = 5;
+            this.warehousesGroupBox.Size = new System.Drawing.Size(110, 115);
+            this.warehousesGroupBox.TabIndex = 4;
             this.warehousesGroupBox.TabStop = false;
             this.warehousesGroupBox.Text = "Fill Storage";
+            // 
+            // warehousesFillGoldCheckBox
+            // 
+            this.warehousesFillGoldCheckBox.AutoSize = true;
+            this.warehousesFillGoldCheckBox.Location = new System.Drawing.Point(61, 19);
+            this.warehousesFillGoldCheckBox.Name = "warehousesFillGoldCheckBox";
+            this.warehousesFillGoldCheckBox.Size = new System.Drawing.Size(48, 17);
+            this.warehousesFillGoldCheckBox.TabIndex = 0;
+            this.warehousesFillGoldCheckBox.Text = "Gold";
+            this.warehousesFillGoldCheckBox.UseVisualStyleBackColor = true;
             // 
             // warehousesFillOilCheckBox
             // 
             this.warehousesFillOilCheckBox.AutoSize = true;
-            this.warehousesFillOilCheckBox.Location = new System.Drawing.Point(61, 65);
+            this.warehousesFillOilCheckBox.Location = new System.Drawing.Point(6, 88);
             this.warehousesFillOilCheckBox.Name = "warehousesFillOilCheckBox";
             this.warehousesFillOilCheckBox.Size = new System.Drawing.Size(38, 17);
             this.warehousesFillOilCheckBox.TabIndex = 4;
@@ -1006,65 +1091,109 @@
             // warehousesFillWoodCheckBox
             // 
             this.warehousesFillWoodCheckBox.AutoSize = true;
-            this.warehousesFillWoodCheckBox.Location = new System.Drawing.Point(6, 42);
+            this.warehousesFillWoodCheckBox.Location = new System.Drawing.Point(6, 19);
             this.warehousesFillWoodCheckBox.Name = "warehousesFillWoodCheckBox";
             this.warehousesFillWoodCheckBox.Size = new System.Drawing.Size(55, 17);
             this.warehousesFillWoodCheckBox.TabIndex = 1;
             this.warehousesFillWoodCheckBox.Text = "Wood";
             this.warehousesFillWoodCheckBox.UseVisualStyleBackColor = true;
             // 
-            // warehousesFillGoldCheckBox
-            // 
-            this.warehousesFillGoldCheckBox.AutoSize = true;
-            this.warehousesFillGoldCheckBox.Location = new System.Drawing.Point(6, 19);
-            this.warehousesFillGoldCheckBox.Name = "warehousesFillGoldCheckBox";
-            this.warehousesFillGoldCheckBox.Size = new System.Drawing.Size(48, 17);
-            this.warehousesFillGoldCheckBox.TabIndex = 0;
-            this.warehousesFillGoldCheckBox.Text = "Gold";
-            this.warehousesFillGoldCheckBox.UseVisualStyleBackColor = true;
-            // 
             // warehousesFillStoneCheckBox
             // 
             this.warehousesFillStoneCheckBox.AutoSize = true;
-            this.warehousesFillStoneCheckBox.Location = new System.Drawing.Point(61, 42);
+            this.warehousesFillStoneCheckBox.Location = new System.Drawing.Point(6, 42);
             this.warehousesFillStoneCheckBox.Name = "warehousesFillStoneCheckBox";
             this.warehousesFillStoneCheckBox.Size = new System.Drawing.Size(54, 17);
             this.warehousesFillStoneCheckBox.TabIndex = 2;
             this.warehousesFillStoneCheckBox.Text = "Stone";
             this.warehousesFillStoneCheckBox.UseVisualStyleBackColor = true;
             // 
+            // swarmsGroupBox
+            // 
+            this.swarmsGroupBox.Controls.Add(this.swarmHardComboBox);
+            this.swarmsGroupBox.Controls.Add(this.swarmEasyComboBox);
+            this.swarmsGroupBox.Controls.Add(this.swarmsFasterCheckBox);
+            this.swarmsGroupBox.Controls.Add(this.swarmsHardCheckBox);
+            this.swarmsGroupBox.Controls.Add(this.swarmsEasyCheckBox);
+            this.swarmsGroupBox.Location = new System.Drawing.Point(3, 411);
+            this.swarmsGroupBox.Name = "swarmsGroupBox";
+            this.swarmsGroupBox.Size = new System.Drawing.Size(220, 90);
+            this.swarmsGroupBox.TabIndex = 6;
+            this.swarmsGroupBox.TabStop = false;
+            this.swarmsGroupBox.Text = "Swarms (Waves)";
+            // 
+            // swarmHardComboBox
+            // 
+            this.swarmHardComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.swarmHardComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.swarmHardComboBox.FormattingEnabled = true;
+            this.swarmHardComboBox.Location = new System.Drawing.Point(151, 62);
+            this.swarmHardComboBox.Name = "swarmHardComboBox";
+            this.swarmHardComboBox.Size = new System.Drawing.Size(63, 21);
+            this.swarmHardComboBox.TabIndex = 3;
+            // 
+            // swarmEasyComboBox
+            // 
+            this.swarmEasyComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.swarmEasyComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.swarmEasyComboBox.FormattingEnabled = true;
+            this.swarmEasyComboBox.Location = new System.Drawing.Point(151, 39);
+            this.swarmEasyComboBox.Name = "swarmEasyComboBox";
+            this.swarmEasyComboBox.Size = new System.Drawing.Size(63, 21);
+            this.swarmEasyComboBox.TabIndex = 1;
+            // 
+            // swarmsFasterCheckBox
+            // 
+            this.swarmsFasterCheckBox.AutoSize = true;
+            this.swarmsFasterCheckBox.Enabled = false;
+            this.swarmsFasterCheckBox.Location = new System.Drawing.Point(6, 19);
+            this.swarmsFasterCheckBox.Name = "swarmsFasterCheckBox";
+            this.swarmsFasterCheckBox.Size = new System.Drawing.Size(181, 17);
+            this.swarmsFasterCheckBox.TabIndex = 0;
+            this.swarmsFasterCheckBox.Text = "Set to 50 Days Challenge timings";
+            this.swarmsFasterCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // swarmsHardCheckBox
+            // 
+            this.swarmsHardCheckBox.AutoSize = true;
+            this.swarmsHardCheckBox.Location = new System.Drawing.Point(6, 65);
+            this.swarmsHardCheckBox.Name = "swarmsHardCheckBox";
+            this.swarmsHardCheckBox.Size = new System.Drawing.Size(139, 17);
+            this.swarmsHardCheckBox.TabIndex = 4;
+            this.swarmsHardCheckBox.Text = "Later swarms directions:";
+            this.swarmsHardCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // swarmsEasyCheckBox
+            // 
+            this.swarmsEasyCheckBox.AutoSize = true;
+            this.swarmsEasyCheckBox.Location = new System.Drawing.Point(6, 42);
+            this.swarmsEasyCheckBox.Name = "swarmsEasyCheckBox";
+            this.swarmsEasyCheckBox.Size = new System.Drawing.Size(144, 17);
+            this.swarmsEasyCheckBox.TabIndex = 2;
+            this.swarmsEasyCheckBox.Text = "Earlier swarms directions:";
+            this.swarmsEasyCheckBox.UseVisualStyleBackColor = true;
+            // 
             // generalGroupBox
             // 
             this.generalGroupBox.Controls.Add(this.disableMayorsCheckBox);
-            this.generalGroupBox.Controls.Add(this.swarmsCheckBox);
             this.generalGroupBox.Controls.Add(this.themeComboBox);
             this.generalGroupBox.Controls.Add(this.themeCheckBox);
-            this.generalGroupBox.Location = new System.Drawing.Point(354, 315);
+            this.generalGroupBox.Location = new System.Drawing.Point(229, 411);
             this.generalGroupBox.Name = "generalGroupBox";
-            this.generalGroupBox.Size = new System.Drawing.Size(220, 90);
-            this.generalGroupBox.TabIndex = 6;
+            this.generalGroupBox.Size = new System.Drawing.Size(220, 65);
+            this.generalGroupBox.TabIndex = 7;
             this.generalGroupBox.TabStop = false;
             this.generalGroupBox.Text = "General Rules";
             // 
             // disableMayorsCheckBox
             // 
             this.disableMayorsCheckBox.AutoSize = true;
-            this.disableMayorsCheckBox.Location = new System.Drawing.Point(6, 65);
+            this.disableMayorsCheckBox.Location = new System.Drawing.Point(6, 42);
             this.disableMayorsCheckBox.Name = "disableMayorsCheckBox";
             this.disableMayorsCheckBox.Size = new System.Drawing.Size(98, 17);
-            this.disableMayorsCheckBox.TabIndex = 3;
+            this.disableMayorsCheckBox.TabIndex = 2;
             this.disableMayorsCheckBox.Text = "Disable Mayors";
             this.disableMayorsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // swarmsCheckBox
-            // 
-            this.swarmsCheckBox.AutoSize = true;
-            this.swarmsCheckBox.Location = new System.Drawing.Point(6, 42);
-            this.swarmsCheckBox.Name = "swarmsCheckBox";
-            this.swarmsCheckBox.Size = new System.Drawing.Size(206, 17);
-            this.swarmsCheckBox.TabIndex = 2;
-            this.swarmsCheckBox.Text = "Swarms spawn from multiple directions";
-            this.swarmsCheckBox.UseVisualStyleBackColor = true;
             // 
             // themeComboBox
             // 
@@ -1093,12 +1222,13 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.dataFlowLayoutPanel);
-            this.MinimumSize = new System.Drawing.Size(370, 190);
             this.Name = "ModifySaveControls";
-            this.Size = new System.Drawing.Size(578, 433);
+            this.Size = new System.Drawing.Size(570, 505);
             this.dataFlowLayoutPanel.ResumeLayout(false);
             this.zombieScalingGroupBox.ResumeLayout(false);
             this.zombieScalingGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleMutantNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieScaleGiantNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleHarpyNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleVenomNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleStrongNumericUpDown)).EndInit();
@@ -1106,13 +1236,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleMediumNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleWeakNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleNumericUpDown)).EndInit();
+            this.mutantGroupBox.ResumeLayout(false);
+            this.mutantGroupBox.PerformLayout();
             this.vodGroupBox.ResumeLayout(false);
             this.vodGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vodStackCityHallsNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.vodStackTavernsNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.vodStackDwellingsNumericUpDown)).EndInit();
-            this.mutantGroupBox.ResumeLayout(false);
-            this.mutantGroupBox.PerformLayout();
             this.fogGroupBox.ResumeLayout(false);
             this.fogGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fogNumericUpDown)).EndInit();
@@ -1124,6 +1254,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.giftNumericUpDown)).EndInit();
             this.warehousesGroupBox.ResumeLayout(false);
             this.warehousesGroupBox.PerformLayout();
+            this.swarmsGroupBox.ResumeLayout(false);
+            this.swarmsGroupBox.PerformLayout();
             this.generalGroupBox.ResumeLayout(false);
             this.generalGroupBox.PerformLayout();
             this.ResumeLayout(false);
@@ -1143,7 +1275,6 @@
         private System.Windows.Forms.CheckBox zombieScaleHarpyCheckBox;
         private System.Windows.Forms.CheckBox zombieScaleVenomCheckBox;
         private System.Windows.Forms.CheckBox zombieScaleStrongCheckBox;
-        private System.Windows.Forms.Label zombieScaleDividerLabel;
         private System.Windows.Forms.CheckBox zombieScaleDressedCheckBox;
         private System.Windows.Forms.CheckBox zombieScaleMediumCheckBox;
         private System.Windows.Forms.CheckBox zombieScaleWeakCheckBox;
@@ -1166,7 +1297,6 @@
         private System.Windows.Forms.RadioButton mutantsMoveRadio;
         private System.Windows.Forms.Label mutantMoveCCLabel;
         private System.Windows.Forms.RadioButton mutantReplaceAllRadio;
-        private System.Windows.Forms.RadioButton mutantsRemoveRadio;
         private System.Windows.Forms.RadioButton mutantsNothingRadio;
         private System.Windows.Forms.GroupBox fogGroupBox;
         private System.Windows.Forms.RadioButton fogClearRadioButton;
@@ -1196,8 +1326,19 @@
         private System.Windows.Forms.CheckBox warehousesFillStoneCheckBox;
         private System.Windows.Forms.GroupBox generalGroupBox;
         private System.Windows.Forms.CheckBox disableMayorsCheckBox;
-        private System.Windows.Forms.CheckBox swarmsCheckBox;
+        private System.Windows.Forms.CheckBox swarmsEasyCheckBox;
         private System.Windows.Forms.ComboBox themeComboBox;
         private System.Windows.Forms.CheckBox themeCheckBox;
+        private System.Windows.Forms.CheckBox zombieScaleMutantCheckBox;
+        private System.Windows.Forms.CheckBox zombieScaleGiantCheckBox;
+        private System.Windows.Forms.NumericUpDown zombieScaleMutantNumericUpDown;
+        private System.Windows.Forms.NumericUpDown zombieScaleGiantNumericUpDown;
+        private System.Windows.Forms.GroupBox swarmsGroupBox;
+        private System.Windows.Forms.CheckBox swarmsHardCheckBox;
+        private System.Windows.Forms.Label zombieScalingVerticalDividerLabel;
+        private System.Windows.Forms.CheckBox swarmsFasterCheckBox;
+        private System.Windows.Forms.Label zombiesScalingHorizontalDividerLabel;
+        private System.Windows.Forms.ComboBox swarmHardComboBox;
+        private System.Windows.Forms.ComboBox swarmEasyComboBox;
     }
 }
