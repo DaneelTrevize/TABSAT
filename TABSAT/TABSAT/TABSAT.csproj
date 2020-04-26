@@ -98,6 +98,7 @@
       <DependentUpon>AutoBackupControls.cs</DependentUpon>
     </Compile>
     <Compile Include="BackupsManager.cs" />
+    <Compile Include="LevelEntities.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
