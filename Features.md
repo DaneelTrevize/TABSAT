@@ -41,8 +41,9 @@ E.g. Dwellings x1.5 is a 50% chance to duplicate each Dwelling.
 * Set the Swarms (Waves) to come according to the 50 Days Challenge timings.  
 N.b. This does not add the 'Neighbouring Colony gifts' or decrease the zombie density to that of the official 50 Challenge custom game.
 
-* Enable Swarms to come from several directions. Earlier swarms can come from any 2 cardinal directions at once, later swarms from any 3.  
-N.b. The on-screen text and icons will represent all chosen directions, but the audio announcement will only name the first direction per swarm.
+* Set the number of directions for Swarms to come from at once, from the pre-final swarm's default of 1, up to the final swarm's default of 4 (which is not reduced by these modifications).  
+Swarms are defined in 2 sets, Earlier swarms which consist of Walkers and Runners, and Later swarms which also have Executives and Chubbies (Fatties).  
+N.b. The on-screen text and icons will represent all current directions of a swarm, but the audio announcement will only name 1 direction per swarm.
 
 * Disabling Mayors. No new mayors will be granted for reaching colony population thresholds.
 
