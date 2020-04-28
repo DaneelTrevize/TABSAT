@@ -415,9 +415,13 @@ W.r.t RNG, there is also this property:
       <Properties>
         <Simple name="Seed" value="-1302028316" />
 
+50 Days custom game:
+    <Simple name="GameMode" value="CustomLevel" />
+	
+        <Simple name="ScoreFactorFixed" type="System.Single, mscorlib" value="3.5" />
 
 Dev typos & inconsistencies:
-"ZX.ZXMiniMapIndicatorInfectedSwarn" not Swarm
+"ZXMiniMapIndicatorInfectedSwarn" not Swarm
 "OnlyOneExecutedCommandsFinished" not Once
 "DeffensesLife" not Defences
 "WareHouse" not Warehouse
@@ -425,3 +429,5 @@ Dev typos & inconsistencies:
 "Maxtorage" not MaxStorage
 "desinfection" not disinfection
 "Proyectile", "ProyectileType" not Projectile
+"ZXAction_GiveEnitiesAsBonus" not Entities
+"AddExcedingAsPickableResources" not Exceeding

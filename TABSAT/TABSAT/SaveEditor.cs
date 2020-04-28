@@ -42,8 +42,11 @@ namespace TABSAT
             iconsItems = new SortedDictionary<ulong, XElement>();
             foreach( var icon in SaveEditor.getFirstPropertyOfTypeNamed( levelComplex, "Collection", "MiniMapIndicators" ).Element( "Items" ).Elements( "Complex" ) )
             {
-                //<Complex type="ZX.ZXMiniMapIndicatorInfo...">
-                iconsItems.Add( (UInt64) getID( icon ), icon );
+                // Check it's not for ZXMiniMapIndicatorInfectedSwarn or something else
+                if( (string) icon.Attribute( "type" ) == @"ZX.ZXMiniMapIndicatorInfo, TheyAreBillions" )
+                {
+                    iconsItems.Add( (UInt64) getID( icon ), icon );
+                }
             }
         }
 
@@ -215,7 +218,7 @@ namespace TABSAT
         }
         internal static readonly Dictionary<GiftableTypes, string> giftableTypeNames;
 
-        internal enum ScalableZombieTypes : UInt64
+        private enum ScalableZombieTypes : UInt64
         {
             ZombieWeakA = 13102967879573781082,
             ZombieWeakB = 11373321006229815036,
@@ -238,7 +241,49 @@ namespace TABSAT
             VENOM,
             HARPY
         }
-        internal static readonly Dictionary<ScalableZombieGroups,SortedSet<ScalableZombieTypes>> scalableZombieTypeGroups;
+        private static readonly Dictionary<ScalableZombieGroups,SortedSet<ScalableZombieTypes>> scalableZombieTypeGroups;
+
+        private readonly struct SwarmTimings
+        {
+            internal SwarmTimings( string s, string g, string r, string n )
+            {
+                startTime = s;
+                gameTime = g;
+                repeatTime = r;
+                notifyTime = n;
+            }
+            internal string startTime { get; }
+            internal string gameTime { get; }
+            internal string repeatTime { get; }
+            internal string notifyTime { get; }
+        }
+        private readonly struct SwarmTimingSet
+        {
+            internal SwarmTimingSet( SwarmTimings Won, SwarmTimings Final, SwarmTimings Easy, SwarmTimings Hard, SwarmTimings Weak, SwarmTimings Medium )
+            {
+                this.Won = Won;
+                this.Final = Final;
+                this.Easy = Easy;
+                this.Hard = Hard;
+                this.Weak = Weak;
+                this.Medium = Medium;
+            }
+            internal SwarmTimings Won { get; }
+            internal SwarmTimings Final { get; }
+            internal SwarmTimings Easy { get; }
+            internal SwarmTimings Hard { get; }
+            internal SwarmTimings Weak { get; }
+            internal SwarmTimings Medium { get; }
+        }
+        private enum GameFinish
+        {
+            Day50,
+            Day80,
+            Day100,
+            Day120,
+            Day150
+        }
+        private static readonly SortedDictionary<GameFinish, SwarmTimingSet> swarmTimings;
 
         static SaveEditor()
         {
@@ -324,6 +369,30 @@ namespace TABSAT
             scalableZombieTypeGroups.Add( ScalableZombieGroups.STRONG, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieStrongA } );
             scalableZombieTypeGroups.Add( ScalableZombieGroups.VENOM, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieVenom } );
             scalableZombieTypeGroups.Add( ScalableZombieGroups.HARPY, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieHarpy } );
+
+            swarmTimings = new SortedDictionary<GameFinish, SwarmTimingSet>();
+            swarmTimings.Add( GameFinish.Day100, new SwarmTimingSet(    // Taken from a <Simple name="ChallengeType" value="CommunityChallenge" /> map
+                Won: new SwarmTimings( "2400", "2400", "0", "0" ),
+                Final: new SwarmTimings( "2208", "2208", "0", "2184" ),
+                Easy: new SwarmTimings( "312", "312", "240", "304" ),
+                Hard: new SwarmTimings( "1210", "1200", "168", "1202" ),
+                Weak: new SwarmTimings( "48", "48", "48", "0" ),
+                Medium: new SwarmTimings( "616", "600", "144", "0" ) ) );
+            swarmTimings.Add( GameFinish.Day80, new SwarmTimingSet(
+                Won: new SwarmTimings( "1920", "1920", "0", "0" ),
+                Final: new SwarmTimings( "1767", "1767", "0", "1743" ),
+                Easy: new SwarmTimings( "252", "250", "192", "244" ),
+                Hard: new SwarmTimings( "969", "960", "135", "961" ),
+                Weak: new SwarmTimings( "39", "39", "39", "0" ),
+                Medium: new SwarmTimings( "482", "480", "116", "0" ) ) );
+            swarmTimings.Add( GameFinish.Day50, new SwarmTimingSet(
+                Won: new SwarmTimings( "1200", "1200", "0", "0" ),
+                Final: new SwarmTimings( "1104", "1104", "0", "1080" ),
+                Easy: new SwarmTimings( "174", "156", "120", "166" ),
+                Hard: new SwarmTimings( "610", "600", "84", "602" ),
+                Weak: new SwarmTimings( "120", "120", "60", "0" ),
+                Medium: new SwarmTimings( "482", "480", "120", "0" ) ) );
+
         }
 
         // TAB cell coordinates are origin top left, before 45 degree rotation clockwise. Positive x is due SE, positive y is due SW.
@@ -335,6 +404,12 @@ namespace TABSAT
             West
         }
 
+        private const string LEVEL_EVENT_GAME_WON_NAME = @"Game Won";
+        private const string SWARM_FINAL_NAME = @"Final Swarm";
+        private const string SWARM_EASY_NAME = @"Swarm Easy";
+        private const string SWARM_HARD_NAME = @"Swarm Hard";
+        private const string SWARM_ROAMING_WEAK_NAME = @"Roaming Infected Weak";
+        private const string SWARM_ROAMING_MEDIUM_NAME = @"Roaming Infected Medium";
         // "&" will be encoded to "&amp;" when setting XAttribute value
         private const string GENERATORS_1_DIRECTION = @"N | E | S | W";
         private const string GENERATORS_2_DIRECTIONS = @"N & E | E & S | S & W | W & N | N & S | E & W";
@@ -1354,25 +1429,59 @@ namespace TABSAT
             paramsThemeType.SetAttributeValue( "value", themeValue );
         }
 
-        internal void setSwarms( bool earlierNotLater, SwarmDirections directions )
+        private XElement getSwarmByName( XElement collectionContainer, string name )
         {
             /*
              * The LevelEvents Collection appears to be duplicated (w.r.t. Generators) at different depths in a single save file,
              * a single method works from both given the correct starting element.
              */
+            XElement eventsItems = getFirstPropertyOfTypeNamed( collectionContainer, "Collection", "LevelEvents" ).Element( "Items" );
+            return ( from c in eventsItems.Elements( "Complex" )
+                     where (string) getFirstSimplePropertyNamed( c, "Name" ).Attribute( "value" ) == name
+                     select c ).FirstOrDefault();
+        }
+
+        internal void fasterSwarms()
+        {
+            void setTimes( XElement c, SwarmTimings times )
+            {
+                if( c != null )
+                {
+                    getFirstSimplePropertyNamed( c, "StartTimeH" ).SetAttributeValue( "value", times.startTime );
+                    getFirstSimplePropertyNamed( c, "GameTimeH" ).SetAttributeValue( "value", times.gameTime );
+                    getFirstSimplePropertyNamed( c, "RepeatTimeH" ).SetAttributeValue( "value", times.repeatTime );
+                    getFirstSimplePropertyNamed( c, "StartNotifyTimeH" ).SetAttributeValue( "value", times.notifyTime );
+                }
+            }
+
+            void setTimesPair( string name, SwarmTimings times )
+            {
+                setTimes( getSwarmByName( levelComplex, name ), times );
+                setTimes( getSwarmByName( getDataExtension(), name ), times );
+            }
+
+            var finish = GameFinish.Day50;
+            var timings = swarmTimings[finish];
+            setTimesPair( LEVEL_EVENT_GAME_WON_NAME, timings.Won );
+            setTimesPair( SWARM_FINAL_NAME, timings.Final );
+            setTimesPair( SWARM_EASY_NAME, timings.Easy );
+            setTimesPair( SWARM_HARD_NAME, timings.Hard );
+            setTimesPair( SWARM_ROAMING_WEAK_NAME, timings.Weak );
+            setTimesPair( SWARM_ROAMING_MEDIUM_NAME, timings.Medium );
+        }
+
+        internal void setSwarms( bool earlierNotLater, SwarmDirections directions )
+        {
             void setSwarm( XElement collectionContainer, string s, string g )
             {
-                XElement eventsItems = getFirstPropertyOfTypeNamed( collectionContainer, "Collection", "LevelEvents" ).Element( "Items" );
-                var complex = ( from c in eventsItems.Elements( "Complex" )
-                                where (string) getFirstSimplePropertyNamed( c, "Name" ).Attribute( "value" ) == s
-                                select c ).FirstOrDefault();
+                var complex = getSwarmByName( collectionContainer, s );
                 if( complex != null )
                 {
                     getFirstSimplePropertyNamed( complex, "Generators" ).SetAttributeValue( "value", g );
                 }
             }
 
-            string swarmName = earlierNotLater ? "Swarm Easy" : "Swarm Hard";
+            string swarmName = earlierNotLater ? SWARM_EASY_NAME : SWARM_HARD_NAME;
 
             string generators;
             switch( directions )
@@ -1416,7 +1525,7 @@ namespace TABSAT
              *					  <Items>
              *                        <Complex>
              *                          <Properties>
-             *                            <Simple name="Name" value="Swarm Easy" />
+             *                            <Simple name="Name" value=
              *                            <Simple name="Generators" value=
              */
             // getFirstPropertyOfTypeNamed( getDataExtension(), "Collection", "LevelEvents" ).Element( "Items" );

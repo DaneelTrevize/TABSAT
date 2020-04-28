@@ -69,7 +69,6 @@ Swap the closest Mutants with the farthest Giants?
 
 Alter the size and composition of waves?
 Alter the number and timing of waves?
-Effectively could offer 50-day challenge map on demand?
 
 Set certain mayors as already chosen? To benefit or miss out on their benefits, depending how they're handled.
 

@@ -14,6 +14,20 @@ namespace TABSAT
         internal const string VOD_LARGE_TYPE = @"ZX.Entities.DoomBuildingLarge, TheyAreBillions";
         internal const string WAREHOUSE_TYPE = @"ZX.Entities.WareHouse, TheyAreBillions";
         internal const string OILPOOL_TYPE = @"ZX.Entities.OilSource, TheyAreBillions";
+        //@"ZX.Entities.Raven, TheyAreBillions"  @"12735209386004068058"
+        //@"ZX.Entities.PickableEnergy, TheyAreBillions"  @"5768965425817495539"
+        //@"ZX.Entities.PickableFood, TheyAreBillions"  @"3195137037877540492"
+        //@"ZX.Entities.CommandCenter, TheyAreBillions"  @"3153977018683405164"
+        //@"ZX.Entities.ExplosiveBarrel, TheyAreBillions"  @"4963903858315893432"
+        //@"ZX.Entities.PickableWood, TheyAreBillions"  @"526554950743885365"
+        //@"ZX.Entities.PickableGold, TheyAreBillions"  @"18025200598184898750"
+        //???  @"1040" @"ZX.Components.CUnitGenerator"
+        //@"ZX.Entities., TheyAreBillions"  @""
+        //@"ZX.Entities., TheyAreBillions"  @""
+        //@"ZX.Entities., TheyAreBillions"  @""
+        //@"ZX.Entities., TheyAreBillions"  @""
+        //@"ZX.Entities., TheyAreBillions"  @""
+        //@"ZX.Entities., TheyAreBillions"  @""
 
         private const string CLIFE_TYPE = @"ZX.Components.CLife, TheyAreBillions";
         private const string CINFLAMABLE = @"ZX.Components.CInflamable, TheyAreBillions";
@@ -103,6 +117,11 @@ namespace TABSAT
                 trackEntity( i );
             }
             //Console.WriteLine( " Finished." );
+            /*Console.WriteLine( "Level entity types count: " + typesToIDs.Count );
+            foreach( var k_v in typesToIDs )
+            {
+                Console.WriteLine( "key: " + k_v.Key + "\tcount: " + k_v.Value.Count ); ;
+            }*/
         }
 
         private void trackEntity( XElement i )
@@ -111,10 +130,9 @@ namespace TABSAT
             entityItems.Add( id, i );
 
             var type = (string) i.Element( "Complex" ).Attribute( "type" );
-            // Temporary type limiting, for performance reason
-            if( !new SortedSet<string>() { GIANT_TYPE, MUTANT_TYPE, VOD_SMALL_TYPE, VOD_MEDIUM_TYPE, VOD_LARGE_TYPE, WAREHOUSE_TYPE }.Contains( type) )
+            if( type == null )
             {
-                return;
+                type = "CUnitGenerator?";      // At least CUnitGenerator entities lack a type attribute & value, use a placeholder
             }
 
             SortedSet<UInt64> typeIDs;

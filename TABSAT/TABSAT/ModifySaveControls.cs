@@ -62,7 +62,8 @@ namespace TABSAT
             warehousesFillCheckBoxes.Add( warehousesFillIronCheckBox );
             warehousesFillCheckBoxes.Add( warehousesFillOilCheckBox );
             warehousesFillCheckBoxes.Add( warehousesFillGoldCheckBox );
-            swarmsCheckBoxes = new List<CheckBox>( 2 );
+            swarmsCheckBoxes = new List<CheckBox>( 3 );
+            swarmsCheckBoxes.Add( swarmsFasterCheckBox );
             swarmsCheckBoxes.Add( swarmsEasyCheckBox );
             swarmsCheckBoxes.Add( swarmsHardCheckBox );
             generalCheckBoxes = new List<CheckBox>( 2 );
@@ -474,6 +475,11 @@ namespace TABSAT
                 }
 
                 // Swarms
+                if( swarmsFasterCheckBox.Checked )
+                {
+                    statusWriter( "Setting swarms to 50 Days Challenge timings." );
+                    dataEditor.fasterSwarms();
+                }
                 if( swarmsEasyCheckBox.Checked )
                 {
                     KeyValuePair<SaveEditor.SwarmDirections, string> kv = (KeyValuePair<SaveEditor.SwarmDirections, string>) swarmEasyComboBox.SelectedItem;

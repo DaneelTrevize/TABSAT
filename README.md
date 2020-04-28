@@ -18,6 +18,14 @@ Usage Demonstration animations:
 ![UI 2 1](https://github.com/DaneelTrevize/TABSAT/blob/master/screenshots/UI%202%201.png)
 
 ----
+
+## Non-Steam-based game owners
+
+For those who purchased TAB outside of Steam, e.g. via Origin, you will need to pass TABSAT the path to your TAB install as a command line argument. There is a .bat file [here](https://github.com/DaneelTrevize/TABSAT/blob/master/TABSAT/TABSAT/bin/x64/Release/TABSAT.bat) that can be modified to do so (and is also for seeing console output should you be experiencing other issues), and serves as an example for creating your own shortcut or integrating with a launcher.  
+A second path argument can be passed to provide a non-default TAB saves location.
+
+----
+
 ## Furthur development
 
 For more information about the goals of this project, please see [TABSAT.txt](https://github.com/DaneelTrevize/TABSAT/blob/master/TABSAT.txt).

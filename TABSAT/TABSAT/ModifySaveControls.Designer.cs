@@ -1145,7 +1145,6 @@
             // swarmsFasterCheckBox
             // 
             this.swarmsFasterCheckBox.AutoSize = true;
-            this.swarmsFasterCheckBox.Enabled = false;
             this.swarmsFasterCheckBox.Location = new System.Drawing.Point(6, 19);
             this.swarmsFasterCheckBox.Name = "swarmsFasterCheckBox";
             this.swarmsFasterCheckBox.Size = new System.Drawing.Size(181, 17);
