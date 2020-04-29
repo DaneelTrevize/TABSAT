@@ -11,6 +11,7 @@ namespace TABSAT
         private readonly ModifyManager modifyManager;
         private readonly StatusWriterDelegate statusWriter;
         private readonly ModifySaveControls modifySaveControls;
+        private MapViewer mapViewer;
 
         public ModifyManagerControls( ModifyManager m, StatusWriterDelegate sW, string savesDirectory )
         {
@@ -97,6 +98,24 @@ namespace TABSAT
             modifyManager.setSaveFile( saveFile );
 
             reassessExtractionOption();
+
+            tempViewMap( saveFile );
+        }
+
+        private void tempViewMap( string saveFile )
+        {
+            var extractedSave = System.IO.Path.Combine( ModifyManager.DEFAULT_EDITS_DIRECTORY, System.IO.Path.GetFileNameWithoutExtension( saveFile ) );
+            if( System.IO.Directory.Exists( extractedSave ) )
+            {
+                /*
+                BeginInvoke(    // Assume all calls to this containing method are from off-UI-thread workers?
+                    new Action( () => {
+
+                    } )
+                );*/
+                mapViewer = new MapViewer( statusWriter, new SaveReader( extractedSave ) );
+                mapViewer.Show();
+            }
         }
 
         private void reassessExtractionOption()     // Refactor around state & event?
@@ -141,48 +160,26 @@ namespace TABSAT
 
         private void modifySave_DoWork( object sender, DoWorkEventArgs e )
         {
+
             // Firstly extract the save
-            if( !extractSave() )
+            if( extractSave() )
             {
-                if( reflectorStopRepackCheckBox.Checked )    // Refactor how this _Click handles potentially failing in 2+ places and trying to stop the Reflector in 3...
+                // Make modifications
+                if( modifyExtractedSave() )
                 {
-                    modifyManager.stopReflector();
+                    // Backup & Repack the save
+                    backupAndRepackSave();
                 }
 
-                resetSaveFileChoice();
-                return;
-            }
-
-            // Make modifications
-            if( !modifyExtractedSave() )
-            {
-                if( reflectorStopRepackCheckBox.Checked )
+                if( !extractLeaveCheckBox.Checked )
                 {
-                    modifyManager.stopReflector();
+                    // Remove the extracted files
+                    modifyManager.removeDecryptedDir();
+                    statusWriter( "Removed extracted files." );
                 }
-
-                resetSaveFileChoice();
-                return;
             }
 
-            // Backup & Repack the save
-            backupAndRepackSave();
-
-            if( reflectorStopRepackCheckBox.Checked )
-            {
-                modifyManager.stopReflector();
-            }
-            else
-            {   // reflectorExitRadioButton.Checked == true
-                reflectorStopButton.Enabled = true;
-            }
-
-            if( !extractLeaveCheckBox.Checked )
-            {
-                // Remove the extracted files
-                modifyManager.removeDecryptedDir();
-                statusWriter( "Removed extracted files." );
-            }
+            determineReflectorResponsibility();
 
             resetSaveFileChoice();
         }
@@ -206,16 +203,9 @@ namespace TABSAT
                 case ModifyManager.SaveState.EXTRACTED:
                     // Repacking
 
-                    backupAndRepackSave();
+                    backupAndRepackSave();  // Should refactor into a repackSave_DoWork, in case reflector was stopped after extracting and it'll take time to restart it..?
 
-                    if( reflectorStopRepackCheckBox.Checked )
-                    {
-                        modifyManager.stopReflector();
-                    }
-                    else
-                    {
-                        reflectorStopButton.Enabled = true; // If the reflector isn't being automatically stopped, let the user manually do so
-                    }
+                    determineReflectorResponsibility();
 
                     extractRepackSaveButton.Text = "Manual Modify";
 
@@ -223,7 +213,7 @@ namespace TABSAT
 
                     break;
                 default:
-                    // Error?
+                    Console.Error.WriteLine( "extractRepackSaveButton_Click() should not have been invoked, invalid modifyManager state." );
                     return;
             }
         }
@@ -243,14 +233,7 @@ namespace TABSAT
                 saveFileGroupBox.Enabled = true;            // For skipping
             }
 
-            if( reflectorStopExtractCheckBox.Checked )
-            {
-                modifyManager.stopReflector();
-            }
-            else
-            {
-                reflectorStopButton.Enabled = true; // If the reflector isn't being automatically stopped, let the user manually do so
-            }
+            determineReflectorResponsibility();
         }
 
         private void reflectorStopRepackCheckBox_CheckedChanged( object sender, EventArgs e )
@@ -313,6 +296,18 @@ namespace TABSAT
 
             string newSaveFile = modifyManager.repackDirAsSave();
             statusWriter( "New Save File created:\t" + newSaveFile );
+        }
+
+        private void determineReflectorResponsibility()
+        {
+            if( reflectorStopRepackCheckBox.Checked )
+            {
+                modifyManager.stopReflector();
+            }
+            else
+            {
+                reflectorStopButton.Enabled = true; // If the reflector isn't being automatically stopped, let the user manually do so
+            }
         }
 
         private void resetSaveFileChoice()

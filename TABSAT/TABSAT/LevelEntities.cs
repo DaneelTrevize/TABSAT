@@ -19,15 +19,18 @@ namespace TABSAT
         //@"ZX.Entities.PickableFood, TheyAreBillions"  @"3195137037877540492"
         //@"ZX.Entities.CommandCenter, TheyAreBillions"  @"3153977018683405164"
         //@"ZX.Entities.ExplosiveBarrel, TheyAreBillions"  @"4963903858315893432"
-        //@"ZX.Entities.PickableWood, TheyAreBillions"  @"526554950743885365"
         //@"ZX.Entities.PickableGold, TheyAreBillions"  @"18025200598184898750"
-        //???  @"1040" @"ZX.Components.CUnitGenerator"
+        //@"ZX.Entities.PickableWood, TheyAreBillions"  @"526554950743885365"
+        //@"ZX.Entities.PickableStone, TheyAreBillions"  @"3280721770111095074"
+        //@"ZX.Entities.PickableIron, TheyAreBillions"  @"13398426522155325346"
+        //@"ZX.Entities.PickableOil, TheyAreBillions"  @"6915758403222462548"
+
+        //@"ZX.Entities.MapSign, TheyAreBillions"  @"8008600744737996051"               SignWoodSmallA
+        //@"ZX.Entities.GenericInteractive, TheyAreBillions"  @"3895270953278513917"    Console
+        //@"ZX.Entities.GenericInteractive, TheyAreBillions"  @"4750080934714817242"    Communicator
         //@"ZX.Entities., TheyAreBillions"  @""
-        //@"ZX.Entities., TheyAreBillions"  @""
-        //@"ZX.Entities., TheyAreBillions"  @""
-        //@"ZX.Entities., TheyAreBillions"  @""
-        //@"ZX.Entities., TheyAreBillions"  @""
-        //@"ZX.Entities., TheyAreBillions"  @""
+
+        //@"1040" @"ZX.Components.CUnitGenerator"
 
         private const string CLIFE_TYPE = @"ZX.Components.CLife, TheyAreBillions";
         private const string CINFLAMABLE = @"ZX.Components.CInflamable, TheyAreBillions";
@@ -43,12 +46,21 @@ namespace TABSAT
         private const string VOD_MEDIUM_ID_TEMPLATE = @"293812117068830615";
         private const string VOD_SMALL_ID_TEMPLATE = @"8702552346733362645";
         private const string OILPOOL_ID_TEMPLATE = @"14597207313853823957";
-        //private const string foodTruck_ID_TEMPLATE = @"x";
-        //private const string turretDefence_ID_TEMPLATE = @"x";    // Multiple types, per compass direction?
-        //private const string pickableRubble_ID_TEMPLATE = @"x";
-        //private const string energyMast_ID_TEMPLATE = @"x";
-        //private const string bigForestMast_ID_TEMPLATE = @"x";
-        //private const string volcano_ID_TEMPLATE = @"x";          // Multiple sizes?
+
+        private const string TruckA_ID_TEMPLATE = @"1130949242559706282";
+        private const string FortressBarLeft_ID_TEMPLATE = @"1858993070642015232";
+        private const string FortressBarRight_ID_TEMPLATE = @"5955209075099213047";
+        private const string RuinTreasureA_BR_ID_TEMPLATE = @"5985530356264170826";
+        private const string RuinTreasureA_TM_ID_TEMPLATE = @"257584999789546783";
+        private const string RuinTreasureA_AL_ID_TEMPLATE = @"8971922455791567927";
+        private const string RuinTreasureA_DS_ID_TEMPLATE = @"3137634406804904509";
+        private const string RuinTreasureA_VO_ID_TEMPLATE = @"807600697508101881";
+        private const string TensionTowerMediumFlip_ID_TEMPLATE = @"2617794739528169237";
+        private const string TensionTowerMedium_ID_TEMPLATE = @"4533866769353242870";
+        private const string TensionTowerHighFlip_ID_TEMPLATE = @"2342596987766548617";
+        private const string TensionTowerHigh_ID_TEMPLATE = @"3359149191582161849";
+        private const string VOLCANO_ID_TEMPLATE = @"5660774435759652919";      // Multiple sizes?
+        //private const string _ID_TEMPLATE = @"";
 
         private const string GIANT_LIFE = @"10000";
         private const string MUTANT_LIFE = @"4000";
@@ -77,35 +89,42 @@ namespace TABSAT
         private readonly SortedDictionary<UInt64, XElement> entityItems;
         private readonly SortedDictionary<string, SortedSet<UInt64>> typesToIDs;
 
-        private static XElement getComplex( XElement entity )
+        private static XElement getComponents( XElement complex )
         {
-            return entity.Element( "Complex" );
-        }
-
-        private static XElement getComponents( XElement entity )
-        {
-            return SaveEditor.getComponents( getComplex( entity ) );
+            /*return ( from c in complex.Element( "Properties" ).Elements( "Collection" )
+                     where (string) c.Attribute( "name" ) == "Components"
+                     select c ).Single();*/
+            return SaveReader.getFirstPropertyOfTypeNamed( complex, "Collection", "Components" );
         }
 
         private static XElement getBehaviour( XElement entity )
         {
-            XElement currentCBehaviour = SaveEditor.getComplexItemOfType( getComponents( entity ), CBEHAVIOUR_TYPE );
-            return SaveEditor.getFirstComplexPropertyNamed( currentCBehaviour, "Behaviour" );
+            XElement currentCBehaviour = getComplexItemOfType( getComponents( entity.Element( "Complex" ) ), CBEHAVIOUR_TYPE );
+            return SaveReader.getFirstComplexPropertyNamed( currentCBehaviour, "Behaviour" );
         }
 
         private static XElement getMovable( XElement entity )
         {
-            return SaveEditor.getComplexItemOfType( getComponents( entity ), CMOVABLE_TYPE );
+            return getComplexItemOfType( getComponents( entity.Element( "Complex" ) ), CMOVABLE_TYPE );
         }
 
         private static XAttribute getPosition( XElement entity )
         {
-            return SaveEditor.getFirstSimplePropertyNamed( getComplex( entity ), "Position" ).Attribute( "value" );
+            return SaveReader.getFirstSimplePropertyNamed( entity.Element( "Complex" ), "Position" ).Attribute( "value" );
         }
+
+        private static XElement getComplexItemOfType( XElement components, string type, bool assumeExists = true )
+        {
+            var i = ( from c in components.Element( "Items" ).Elements( "Complex" )
+                      where (string) c.Attribute( "type" ) == type
+                      select c );
+            return assumeExists ? i.Single() : i.SingleOrDefault();
+        }
+
 
         internal LevelEntities( XElement levelComplex )
         {
-            levelEntitiesItems = SaveEditor.getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelEntities" ).Element( "Items" );
+            levelEntitiesItems = SaveReader.getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelEntities" ).Element( "Items" );
 
             entityItems = new SortedDictionary<UInt64, XElement>();
             typesToIDs = new SortedDictionary<string, SortedSet<UInt64>>();
@@ -123,6 +142,7 @@ namespace TABSAT
                 Console.WriteLine( "key: " + k_v.Key + "\tcount: " + k_v.Value.Count ); ;
             }*/
         }
+
 
         private void trackEntity( XElement i )
         {
@@ -203,7 +223,7 @@ namespace TABSAT
             return new SortedSet<UInt64>( typeIDs );
         }
 
-        internal LinkedList<SaveEditor.MapPosition> getPositions( string type, CommandCenterPosition cc )
+        internal LinkedList<SaveEditor.MapPosition> getPositions( string type, MapData cc )
         {
             var positions = new LinkedList<SaveEditor.MapPosition>();
             SortedSet<UInt64> typeIDs;
@@ -239,7 +259,7 @@ namespace TABSAT
                 XElement iCopy = new XElement( i );     // Duplicate at the same position
                 var newID = editor.newID();
                 iCopy.Element( "Simple" ).SetAttributeValue( "value", newID );
-                SaveEditor.getFirstSimplePropertyNamed( iCopy.Element( "Complex" ), "ID" ).SetAttributeValue( "value", newID );
+                SaveReader.getFirstSimplePropertyNamed( iCopy.Element( "Complex" ), "ID" ).SetAttributeValue( "value", newID );
 
                 Add( iCopy );
                 dupedEntities.AddLast( new ScaledEntity( (UInt64) i.Element( "Simple" ).Attribute( "value" ), newID ) );
@@ -313,17 +333,17 @@ namespace TABSAT
 
             // We're after 3 different values in 2 different <Complex under Components
             // 1
-            XElement currentBehaviourTargetPosition = SaveEditor.getFirstSimplePropertyNamed( SaveEditor.getFirstComplexPropertyNamed( getBehaviour( originEntity ), "Data" ), "TargetPosition" );
+            XElement currentBehaviourTargetPosition = SaveReader.getFirstSimplePropertyNamed( SaveReader.getFirstComplexPropertyNamed( getBehaviour( originEntity ), "Data" ), "TargetPosition" );
 
             // 2
-            XElement currentMovableTargetPosition = SaveEditor.getFirstSimplePropertyNamed( getMovable( originEntity ), "TargetPosition" );
+            XElement currentMovableTargetPosition = SaveReader.getFirstSimplePropertyNamed( getMovable( originEntity ), "TargetPosition" );
             // 3
-            XElement currentLastDestinyProcessed = SaveEditor.getFirstSimplePropertyNamed( getMovable( originEntity ), "LastDestinyProcessed" );
+            XElement currentLastDestinyProcessed = SaveReader.getFirstSimplePropertyNamed( getMovable( originEntity ), "LastDestinyProcessed" );
 
             string farthestPositionString = (string) getPosition( destinationEntity );
 
             getPosition( originEntity ).SetValue( farthestPositionString );
-            SaveEditor.getFirstSimplePropertyNamed( getComplex( originEntity ), "LastPosition" ).SetAttributeValue( "value", farthestPositionString );
+            SaveReader.getFirstSimplePropertyNamed( originEntity.Element( "Complex" ), "LastPosition" ).SetAttributeValue( "value", farthestPositionString );
             if( currentBehaviourTargetPosition != null )
             {
                 currentBehaviourTargetPosition.SetAttributeValue( "value", farthestPositionString );
@@ -341,98 +361,97 @@ namespace TABSAT
         internal void swapZombieType( UInt64 id )
         {
             XElement entity;
-            if( entityItems.TryGetValue( id, out entity ) )
+            if( !entityItems.TryGetValue( id, out entity ) )
             {
-                /*
-                    * change the <Item><Complex type=> from ZX.Entities.ZombieMutant to ZombieGiant
-                    * change the <Item><Complex><Properties><Simple name= value=> IDTemplate, Flags, Size
-                    * change the <Item><Complex><Properties><Collection name="Components"><Items><Complex type="ZX.Components.CLife..."><Simple name="Life" value="4000" /> life value
-                    * 
-                    * mutants have <Item><Complex><Properties><Collection name="Components"><Items><Complex type="ZX.Components.CInflamable..."> but giants don't
-                    * 
-                    * replace all <Item><Complex><Properties><Collection name="Components"><Items><Complex type="ZX.Components.CBehaviour...>? But keep all
-                    * ...<Properties><Complex name="Behaviour"><Properties><Complex name="Data"><Properties><Complex name="InternalData"><Properties><Collection name="OpenNodes"><Items><Simple value=...> values?
-                    * A lot of ID numbers are paired with state numbers under ..<Complex name="InternalData"><Properties><Dictionary name="MemCompositorCurrentChild"><Items><Item><Simple value=>
-                    * 
-                    * The NodeStates Dictionary has Items that aren't unique to each zombie entity, or uncommon between save files...
-                    * 
-                    * <Complex type="ZX.Components.CMovable...><Properties><Collection name="Path"><Properties><Simple name="Capacity" value="0" /> is value 4 for Giants
-                    * 
-                    * (It seems <Simple name="BehaviourModelCheckSum" value=> is always "2014060645", for Mutants or Giants, or Rangers, Ravens, etc)
-                    * 
-                    * and reset <Item><Complex><Properties><Collection name="Components"><Items><Complex type="ZX.Components.CMovable..."><Properties><Null name="TargetPosition" /> ?
-                    * 
-                    */
+                Console.Error.WriteLine( "Could not type-swap LevelEntity: " + id );
+                return;
+            }
+            /*
+            * change the <Item><Complex type=> from ZX.Entities.ZombieMutant to ZombieGiant
+            * change the <Item><Complex><Properties><Simple name= value=> IDTemplate, Flags, Size
+            * change the <Item><Complex><Properties><Collection name="Components"><Items><Complex type="ZX.Components.CLife..."><Simple name="Life" value="4000" /> life value
+            * 
+            * mutants have <Item><Complex><Properties><Collection name="Components"><Items><Complex type="ZX.Components.CInflamable..."> but giants don't
+            * 
+            * replace all <Item><Complex><Properties><Collection name="Components"><Items><Complex type="ZX.Components.CBehaviour...>? But keep all
+            * ...<Properties><Complex name="Behaviour"><Properties><Complex name="Data"><Properties><Complex name="InternalData"><Properties><Collection name="OpenNodes"><Items><Simple value=...> values?
+            * A lot of ID numbers are paired with state numbers under ..<Complex name="InternalData"><Properties><Dictionary name="MemCompositorCurrentChild"><Items><Item><Simple value=>
+            * 
+            * The NodeStates Dictionary has Items that aren't unique to each zombie entity, or uncommon between save files...
+            * 
+            * <Complex type="ZX.Components.CMovable...><Properties><Collection name="Path"><Properties><Simple name="Capacity" value="0" /> is value 4 for Giants
+            * 
+            * (It seems <Simple name="BehaviourModelCheckSum" value=> is always "2014060645", for Mutants or Giants, or Rangers, Ravens, etc)
+            * 
+            * and reset <Item><Complex><Properties><Collection name="Components"><Items><Complex type="ZX.Components.CMovable..."><Properties><Null name="TargetPosition" /> ?
+            * 
+            */
 
-                XElement complex = entity.Element( "Complex" );
-                XElement components = getComponents( entity );
-                XElement cLife = SaveEditor.getComplexItemOfType( components, CLIFE_TYPE );
+            XElement complex = entity.Element( "Complex" );
+            XElement components = getComponents( complex );
+            XElement cLife = getComplexItemOfType( components, CLIFE_TYPE );
 
-                XElement path = ( from c in getMovable( entity ).Element( "Properties" ).Elements( "Collection" )
-                                    where (string) c.Attribute( "name" ) == "Path"
-                                    select c ).SingleOrDefault();
+            /*XElement path = ( from c in getMovable( entity ).Element( "Properties" ).Elements( "Collection" )
+                                where (string) c.Attribute( "name" ) == "Path"
+                                select c ).SingleOrDefault();*/
+            XElement path = SaveReader.getFirstPropertyOfTypeNamed( getMovable( entity ), "Collection", "Path" );
 
-                string type;
-                string flags;
-                string template;
-                string life;
-                string behaviour;
-                string pathCapacity;
-                string size;
-                if( (string) complex.Attribute( "type" ) == MUTANT_TYPE )
+            string type;
+            string flags;
+            string template;
+            string life;
+            string behaviour;
+            string pathCapacity;
+            string size;
+            if( (string) complex.Attribute( "type" ) == MUTANT_TYPE )
+            {
+                type = GIANT_TYPE;
+                flags = "None";
+                template = GIANT_ID_TEMPLATE;
+                life = GIANT_LIFE;
+                behaviour = GIANT_BEHAVIOUR_TYPE;
+                pathCapacity = "4";
+                size = GIANT_SIZE;
+
+                XElement cInflamable = getComplexItemOfType( components, CINFLAMABLE, false );
+                if( cInflamable != null )
                 {
-                    type = GIANT_TYPE;
-                    flags = "None";
-                    template = GIANT_ID_TEMPLATE;
-                    life = GIANT_LIFE;
-                    behaviour = GIANT_BEHAVIOUR_TYPE;
-                    pathCapacity = "4";
-                    size = GIANT_SIZE;
-
-                    XElement cInflamable = SaveEditor.getComplexItemOfType( components, CINFLAMABLE, false );
-                    if( cInflamable != null )
-                    {
-                        cInflamable.Remove();
-                    }
+                    cInflamable.Remove();
                 }
-                else
-                {
-                    type = MUTANT_TYPE;
-                    flags = "IsOneCellSize";
-                    template = MUTANT_ID_TEMPLATE;
-                    life = MUTANT_LIFE;
-                    behaviour = MUTANT_BEHAVIOUR_TYPE;
-                    pathCapacity = "0";
-                    size = MUTANT_SIZE;
-
-                    string cInflamable =
-                    @"<Complex type=""ZX.Components.CInflamable, TheyAreBillions"">
-                    <Properties>
-                        <Complex name=""EntityRef"">
-                        <Properties>
-                            <Simple name=""IDEntity"" value=""0"" />
-                        </Properties>
-                        </Complex>
-                        <Null name=""Fire"" />
-                        <Simple name=""TimeUnderFire"" value=""0"" />
-                    </Properties>
-                    </Complex>";
-                    XElement inflamable = XElement.Parse( cInflamable );
-                    components.Element( "Items" ).Add( inflamable );
-                }
-
-                complex.Attribute( "type" ).SetValue( type );
-                SaveEditor.getFirstSimplePropertyNamed( complex, "Flags" ).Attribute( "value" ).SetValue( flags );
-                SaveEditor.getFirstSimplePropertyNamed( complex, "IDTemplate" ).Attribute( "value" ).SetValue( template );
-                SaveEditor.getFirstSimplePropertyNamed( cLife, "Life" ).Attribute( "value" ).SetValue( life );
-                getBehaviour( entity ).Attribute( "type" ).SetValue( behaviour );
-                SaveEditor.getFirstSimplePropertyNamed( path, "Capacity" ).Attribute( "value" ).SetValue( pathCapacity );
-                SaveEditor.getFirstSimplePropertyNamed( complex, "Size" ).Attribute( "value" ).SetValue( size );
             }
             else
             {
-                Console.Error.WriteLine( "Could not type-swap LevelEntity: " + id );
+                type = MUTANT_TYPE;
+                flags = "IsOneCellSize";
+                template = MUTANT_ID_TEMPLATE;
+                life = MUTANT_LIFE;
+                behaviour = MUTANT_BEHAVIOUR_TYPE;
+                pathCapacity = "0";
+                size = MUTANT_SIZE;
+
+                string cInflamable =
+                @"<Complex type=""ZX.Components.CInflamable, TheyAreBillions"">
+                <Properties>
+                    <Complex name=""EntityRef"">
+                    <Properties>
+                        <Simple name=""IDEntity"" value=""0"" />
+                    </Properties>
+                    </Complex>
+                    <Null name=""Fire"" />
+                    <Simple name=""TimeUnderFire"" value=""0"" />
+                </Properties>
+                </Complex>";
+                XElement inflamable = XElement.Parse( cInflamable );
+                components.Element( "Items" ).Add( inflamable );
             }
+
+            complex.Attribute( "type" ).SetValue( type );
+            SaveReader.getFirstSimplePropertyNamed( complex, "Flags" ).Attribute( "value" ).SetValue( flags );
+            SaveReader.getFirstSimplePropertyNamed( complex, "IDTemplate" ).Attribute( "value" ).SetValue( template );
+            SaveReader.getFirstSimplePropertyNamed( cLife, "Life" ).Attribute( "value" ).SetValue( life );
+            getBehaviour( entity ).Attribute( "type" ).SetValue( behaviour );
+            SaveReader.getFirstSimplePropertyNamed( path, "Capacity" ).Attribute( "value" ).SetValue( pathCapacity );
+            SaveReader.getFirstSimplePropertyNamed( complex, "Size" ).Attribute( "value" ).SetValue( size );
         }
 
         internal void resizeVODs( SaveEditor.VodSizes vodSize )
@@ -489,9 +508,9 @@ namespace TABSAT
             {
                 XElement complex = v.Element( "Complex" );
                 complex.SetAttributeValue( "type", newType );
-                SaveEditor.getFirstSimplePropertyNamed( complex, "IDTemplate" ).SetAttributeValue( "value", newIDTemplate );
-                SaveEditor.getFirstSimplePropertyNamed( SaveEditor.getComplexItemOfType( SaveEditor.getComponents( complex ), CLIFE_TYPE ), "Life" ).SetAttributeValue( "value", newLife );
-                SaveEditor.getFirstSimplePropertyNamed( complex, "Size" ).SetAttributeValue( "value", newSize );
+                SaveReader.getFirstSimplePropertyNamed( complex, "IDTemplate" ).SetAttributeValue( "value", newIDTemplate );
+                SaveReader.getFirstSimplePropertyNamed( getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ), "Life" ).SetAttributeValue( "value", newLife );
+                SaveReader.getFirstSimplePropertyNamed( complex, "Size" ).SetAttributeValue( "value", newSize );
             }
         }
 

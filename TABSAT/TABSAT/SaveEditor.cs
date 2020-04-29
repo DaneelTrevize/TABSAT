@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
 namespace TABSAT
 {
-    interface CommandCenterPosition
-    {
-        float CCX();
-        float CCY();
-    }
-
     interface IDGenerator
     {
         UInt64 newID();
@@ -29,18 +22,18 @@ namespace TABSAT
             //                 <Complex name="EntityRef">
             //                   <Properties >
             //                     <Simple name = "IDEntity"
-            return SaveEditor.getFirstComplexPropertyNamed( icon, "EntityRef" ).Element( "Properties" ).Element( "Simple" ).Attribute( "value" );
+            return SaveReader.getFirstComplexPropertyNamed( icon, "EntityRef" ).Element( "Properties" ).Element( "Simple" ).Attribute( "value" );   // Could use getFirstSimplePropertyNamed( ..., "IDEntity" )?
         }
 
         private static XAttribute getCell( XElement icon )
         {
-            return SaveEditor.getFirstSimplePropertyNamed( icon, "Cell" ).Attribute( "value" );
+            return SaveReader.getFirstSimplePropertyNamed( icon, "Cell" ).Attribute( "value" );
         }
 
         internal MiniMapIcons( XElement levelComplex )
         {
             iconsItems = new SortedDictionary<ulong, XElement>();
-            foreach( var icon in SaveEditor.getFirstPropertyOfTypeNamed( levelComplex, "Collection", "MiniMapIndicators" ).Element( "Items" ).Elements( "Complex" ) )
+            foreach( var icon in SaveReader.getFirstPropertyOfTypeNamed( levelComplex, "Collection", "MiniMapIndicators" ).Element( "Items" ).Elements( "Complex" ) )
             {
                 // Check it's not for ZXMiniMapIndicatorInfectedSwarn or something else
                 if( (string) icon.Attribute( "type" ) == @"ZX.ZXMiniMapIndicatorInfo, TheyAreBillions" )
@@ -86,7 +79,7 @@ namespace TABSAT
             if( iconsItems.TryGetValue( id, out icon ) )
             {
                 //<Simple name="IDProjectImage">
-                XAttribute image = SaveEditor.getFirstSimplePropertyNamed( icon, "IDProjectImage" ).Attribute( "value" );
+                XAttribute image = SaveReader.getFirstSimplePropertyNamed( icon, "IDProjectImage" ).Attribute( "value" );
 
                 string project_image;
                 string text;
@@ -105,8 +98,8 @@ namespace TABSAT
                 }
 
                 image.SetValue( project_image );
-                SaveEditor.getFirstSimplePropertyNamed( icon, "Text" ).Attribute( "value" ).SetValue( text );
-                SaveEditor.getFirstSimplePropertyNamed( icon, "Title" ).Attribute( "value" ).SetValue( title );
+                SaveReader.getFirstSimplePropertyNamed( icon, "Text" ).Attribute( "value" ).SetValue( text );
+                SaveReader.getFirstSimplePropertyNamed( icon, "Title" ).Attribute( "value" ).SetValue( title );
             }
         }
 
@@ -131,294 +124,8 @@ namespace TABSAT
         }
     }
 
-    internal class SaveEditor : CommandCenterPosition, IDGenerator
+    internal class SaveEditor : SaveReader, IDGenerator
     {
-        internal enum VodSizes
-        {
-            SMALL,
-            MEDIUM,
-            LARGE
-        }
-        internal static readonly Dictionary<VodSizes, string> vodSizesNames;
-
-        internal enum ThemeType
-        {
-            FA,
-            BR,
-            TM,
-            AL,
-            DS,
-            VO
-        }
-        internal static readonly Dictionary<ThemeType, string> themeTypeNames;
-
-        internal enum SwarmDirections
-        {
-            ONE,
-            TWO,
-            ALL_BUT_ONE,
-            ALL
-        }
-        internal static readonly Dictionary<SwarmDirections, string> SwarmDirectionsNames;
-
-        internal enum GiftableTypes : UInt64
-        {
-            Ranger = 11462509610414451330,
-            SoldierRegular = 8122295062332983407,
-            Sniper = 6536008488763521408,
-            Lucifer = 16241120227094315491,
-            Thanatos = 13687916016325214957,
-            Titan = 15625692077980454078,
-            // Mutant
-            EnergyWoodTower = 3581872206503330117,      // Tesla tower
-            MillWood = 869623577388046954,
-            MillIron = 12238914991741132226,
-            PowerPlant = 12703689153551509267,
-            Sawmill = 6484699889268923215,
-            Quarry = 4012164333689948063,
-            AdvancedQuarry = 6574833960938744452,
-            OilPlatform = 15110117066074335339,
-            HunterCottage = 706050193872584208,
-            FishermanCottage = 13910727858942983852,
-            Farm = 7709119203238641805,
-            AdvancedFarm = 877281890077159856,
-            WareHouse = 13640414733981798546,
-            Market = 5507471650351043258,
-            Bank = 5036892806562984913,
-            TentHouse = 17301104073651661026,
-            CottageHouse = 1886362466923065378,
-            StoneHouse = 17389931916361639317,
-            WallWood = 16980392503923994773,
-            WallStone = 7684920400170855714,
-            GateWood = 8865737575894196495,
-            GateStone = 18390252716895796075,
-            WatchTowerWood = 11206202837167900273,
-            WatchTowerStone = 16597317129181541225,
-            TrapStakes = 14605210100319949981,          // Stakes Traps
-            TrapBlades = 2562764233779101744,           // Wire Fence Traps
-            TrapMine = 3791255408779778776,             // Land Mine
-            WoodWorkshop = 2943963846200136989,
-            StoneWorkshop = 11153810025740407576,
-            Foundry = 14944401376001533849,
-            SoldiersCenter = 17945382406851792953,
-            AdvancedUnitCenter = 8857617519118038933,
-            LookoutTower = 9352245195514814739,
-            RadarTower = 10083572309367106690,
-            Ballista = 1621013738552581284,
-            MachineGun = 1918604527945708480,           // Wasp
-            ShockingTower = 7671446590444700196,
-            Executor = 782017986530656774,
-            TheInn = 5797915750707445077,
-            TheCrystalPalace = 7936948209186953569,
-            // TheGreatTelescope = ,                    // The Silent Beholder
-            TheSpire = 6908380734610266301,
-            TheTransmutator = 5872990212787919747,
-            TheAcademy = 8274629648718325688,
-            TheVictorious = 6953739609864588774
-        }
-        internal static readonly Dictionary<GiftableTypes, string> giftableTypeNames;
-
-        private enum ScalableZombieTypes : UInt64
-        {
-            ZombieWeakA = 13102967879573781082,
-            ZombieWeakB = 11373321006229815036,
-            ZombieWeakC = 4497312170973781002,
-            ZombieWorkerA = 17464596434855839240,
-            ZombieWorkerB = 10676594063526581,
-            ZombieMediumA = 3569719832138441992,
-            ZombieMediumB = 12882220683103625178,
-            ZombieDressedA = 8945324363763426993,
-            ZombieStrongA = 6498716987293858679,
-            ZombieHarpy = 1214272082232025268,
-            ZombieVenom = 12658363830661735733
-        }
-        internal enum ScalableZombieGroups
-        {
-            WEAK,
-            MEDIUM,
-            DRESSED,
-            STRONG,
-            VENOM,
-            HARPY
-        }
-        private static readonly Dictionary<ScalableZombieGroups,SortedSet<ScalableZombieTypes>> scalableZombieTypeGroups;
-
-        private readonly struct SwarmTimings
-        {
-            internal SwarmTimings( string s, string g, string r, string n )
-            {
-                startTime = s;
-                gameTime = g;
-                repeatTime = r;
-                notifyTime = n;
-            }
-            internal string startTime { get; }
-            internal string gameTime { get; }
-            internal string repeatTime { get; }
-            internal string notifyTime { get; }
-        }
-        private readonly struct SwarmTimingSet
-        {
-            internal SwarmTimingSet( SwarmTimings Won, SwarmTimings Final, SwarmTimings Easy, SwarmTimings Hard, SwarmTimings Weak, SwarmTimings Medium )
-            {
-                this.Won = Won;
-                this.Final = Final;
-                this.Easy = Easy;
-                this.Hard = Hard;
-                this.Weak = Weak;
-                this.Medium = Medium;
-            }
-            internal SwarmTimings Won { get; }
-            internal SwarmTimings Final { get; }
-            internal SwarmTimings Easy { get; }
-            internal SwarmTimings Hard { get; }
-            internal SwarmTimings Weak { get; }
-            internal SwarmTimings Medium { get; }
-        }
-        private enum GameFinish
-        {
-            Day50,
-            Day80,
-            Day100,
-            Day120,
-            Day150
-        }
-        private static readonly SortedDictionary<GameFinish, SwarmTimingSet> swarmTimings;
-
-        static SaveEditor()
-        {
-            Dictionary<VodSizes, string> vsn = new Dictionary<VodSizes, string>();
-            vsn.Add( VodSizes.SMALL, "Dwellings" );
-            vsn.Add( VodSizes.MEDIUM, "Taverns" );
-            vsn.Add( VodSizes.LARGE, "City Halls" );
-            vodSizesNames = new Dictionary<VodSizes, string>( vsn );
-
-            Dictionary<ThemeType, string> ttn = new Dictionary<ThemeType, string>();
-            ttn.Add( ThemeType.FA, "Deep Forest" );
-            ttn.Add( ThemeType.BR, "Dark Moorland" );
-            ttn.Add( ThemeType.TM, "Peaceful Lowlands" );
-            ttn.Add( ThemeType.AL, "Frozen Highlands" );
-            ttn.Add( ThemeType.DS, "Desert Wasteland" );
-            ttn.Add( ThemeType.VO, "Caustic Lands" );
-            themeTypeNames = new Dictionary<ThemeType, string>( ttn );
-
-            Dictionary<SwarmDirections, string> sdn = new Dictionary<SwarmDirections, string>();
-            sdn.Add( SwarmDirections.ONE, "Any 1" );
-            sdn.Add( SwarmDirections.TWO, "Any 2" );
-            sdn.Add( SwarmDirections.ALL_BUT_ONE, "All but 1" );
-            sdn.Add( SwarmDirections.ALL, "All" );
-            SwarmDirectionsNames = new Dictionary<SwarmDirections, string>( sdn );
-
-            Dictionary<GiftableTypes, string> gtn = new Dictionary<GiftableTypes, string>();
-            gtn.Add( GiftableTypes.Ranger, "Ranger" );
-            gtn.Add( GiftableTypes.SoldierRegular, "Soldier" );
-            gtn.Add( GiftableTypes.Sniper, "Sniper" );
-            gtn.Add( GiftableTypes.Lucifer, "Lucifer" );
-            gtn.Add( GiftableTypes.Thanatos, "Thanatos" );
-            gtn.Add( GiftableTypes.Titan, "Titan" );
-            gtn.Add( GiftableTypes.EnergyWoodTower, "Tesla Tower" );
-            gtn.Add( GiftableTypes.MillWood, "Mill" );
-            gtn.Add( GiftableTypes.MillIron, "Advanced Mill" );
-            gtn.Add( GiftableTypes.PowerPlant, "PowerPlant" );
-            gtn.Add( GiftableTypes.Sawmill, "Sawmill" );
-            gtn.Add( GiftableTypes.Quarry, "Quarry" );
-            gtn.Add( GiftableTypes.AdvancedQuarry, "Advanced Quarry" );
-            gtn.Add( GiftableTypes.OilPlatform, "Oil Platform" );
-            gtn.Add( GiftableTypes.HunterCottage, "Hunter Cottage" );
-            gtn.Add( GiftableTypes.FishermanCottage, "Fisherman Cottage" );
-            gtn.Add( GiftableTypes.Farm, "Farm" );
-            gtn.Add( GiftableTypes.AdvancedFarm, "Advanced Farm" );
-            gtn.Add( GiftableTypes.WareHouse, "Warehouse" );
-            gtn.Add( GiftableTypes.Market, "Market" );
-            gtn.Add( GiftableTypes.Bank, "Bank" );
-            gtn.Add( GiftableTypes.TentHouse, "Tent" );
-            gtn.Add( GiftableTypes.CottageHouse, "Cottage" );
-            gtn.Add( GiftableTypes.StoneHouse, "Stone House" );
-            gtn.Add( GiftableTypes.WallWood, "Wood Wall" );
-            gtn.Add( GiftableTypes.WallStone, "Stone Wall" );
-            gtn.Add( GiftableTypes.GateWood, "Wood Gate" );
-            gtn.Add( GiftableTypes.GateStone, "Stone Gate" );
-            gtn.Add( GiftableTypes.WatchTowerWood, "Wood Tower" );
-            gtn.Add( GiftableTypes.WatchTowerStone, "Stone Tower" );
-            gtn.Add( GiftableTypes.TrapStakes, "Stakes Trap" );
-            gtn.Add( GiftableTypes.TrapBlades, "Wire Fence Trap" );
-            gtn.Add( GiftableTypes.TrapMine, "Land Mine" );
-            gtn.Add( GiftableTypes.WoodWorkshop, "Wood Workshop" );
-            gtn.Add( GiftableTypes.StoneWorkshop, "Stone Workshop" );
-            gtn.Add( GiftableTypes.Foundry, "Foundry" );
-            gtn.Add( GiftableTypes.SoldiersCenter, "Soldiers' Center" );
-            gtn.Add( GiftableTypes.AdvancedUnitCenter, "Engineering Center" );
-            gtn.Add( GiftableTypes.LookoutTower, "Lookout Tower" );
-            gtn.Add( GiftableTypes.RadarTower, "Radar Tower" );
-            gtn.Add( GiftableTypes.Ballista, "Ballista" );
-            gtn.Add( GiftableTypes.MachineGun, "Wasp" );
-            gtn.Add( GiftableTypes.ShockingTower, "Shocking Tower" );
-            gtn.Add( GiftableTypes.Executor, "Executor" );
-            gtn.Add( GiftableTypes.TheInn, "The Inn" );
-            gtn.Add( GiftableTypes.TheCrystalPalace, "The Crystal Palace" );
-            gtn.Add( GiftableTypes.TheSpire, "The Lightning Spire" );
-            gtn.Add( GiftableTypes.TheAcademy, "The Academy of Immortals" );
-            gtn.Add( GiftableTypes.TheVictorious, "The Victorious" );
-            gtn.Add( GiftableTypes.TheTransmutator, "The Atlas Transmutator" );
-            giftableTypeNames = new Dictionary<GiftableTypes, string>( gtn );
-
-            scalableZombieTypeGroups = new Dictionary<ScalableZombieGroups, SortedSet<ScalableZombieTypes>>();
-            scalableZombieTypeGroups.Add( ScalableZombieGroups.WEAK, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieWeakA, ScalableZombieTypes.ZombieWeakB, ScalableZombieTypes.ZombieWeakC } );
-            scalableZombieTypeGroups.Add( ScalableZombieGroups.MEDIUM, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieWorkerA, ScalableZombieTypes.ZombieWorkerB, ScalableZombieTypes.ZombieMediumA, ScalableZombieTypes.ZombieMediumB } );
-            scalableZombieTypeGroups.Add( ScalableZombieGroups.DRESSED, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieDressedA } );
-            scalableZombieTypeGroups.Add( ScalableZombieGroups.STRONG, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieStrongA } );
-            scalableZombieTypeGroups.Add( ScalableZombieGroups.VENOM, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieVenom } );
-            scalableZombieTypeGroups.Add( ScalableZombieGroups.HARPY, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieHarpy } );
-
-            swarmTimings = new SortedDictionary<GameFinish, SwarmTimingSet>();
-            swarmTimings.Add( GameFinish.Day100, new SwarmTimingSet(    // Taken from a <Simple name="ChallengeType" value="CommunityChallenge" /> map
-                Won: new SwarmTimings( "2400", "2400", "0", "0" ),
-                Final: new SwarmTimings( "2208", "2208", "0", "2184" ),
-                Easy: new SwarmTimings( "312", "312", "240", "304" ),
-                Hard: new SwarmTimings( "1210", "1200", "168", "1202" ),
-                Weak: new SwarmTimings( "48", "48", "48", "0" ),
-                Medium: new SwarmTimings( "616", "600", "144", "0" ) ) );
-            swarmTimings.Add( GameFinish.Day80, new SwarmTimingSet(
-                Won: new SwarmTimings( "1920", "1920", "0", "0" ),
-                Final: new SwarmTimings( "1767", "1767", "0", "1743" ),
-                Easy: new SwarmTimings( "252", "250", "192", "244" ),
-                Hard: new SwarmTimings( "969", "960", "135", "961" ),
-                Weak: new SwarmTimings( "39", "39", "39", "0" ),
-                Medium: new SwarmTimings( "482", "480", "116", "0" ) ) );
-            swarmTimings.Add( GameFinish.Day50, new SwarmTimingSet(
-                Won: new SwarmTimings( "1200", "1200", "0", "0" ),
-                Final: new SwarmTimings( "1104", "1104", "0", "1080" ),
-                Easy: new SwarmTimings( "174", "156", "120", "166" ),
-                Hard: new SwarmTimings( "610", "600", "84", "602" ),
-                Weak: new SwarmTimings( "120", "120", "60", "0" ),
-                Medium: new SwarmTimings( "482", "480", "120", "0" ) ) );
-
-        }
-
-        // TAB cell coordinates are origin top left, before 45 degree rotation clockwise. Positive x is due SE, positive y is due SW.
-        internal enum CompassDirection
-        {
-            North,
-            East,
-            South,
-            West
-        }
-
-        private const string LEVEL_EVENT_GAME_WON_NAME = @"Game Won";
-        private const string SWARM_FINAL_NAME = @"Final Swarm";
-        private const string SWARM_EASY_NAME = @"Swarm Easy";
-        private const string SWARM_HARD_NAME = @"Swarm Hard";
-        private const string SWARM_ROAMING_WEAK_NAME = @"Roaming Infected Weak";
-        private const string SWARM_ROAMING_MEDIUM_NAME = @"Roaming Infected Medium";
-        // "&" will be encoded to "&amp;" when setting XAttribute value
-        private const string GENERATORS_1_DIRECTION = @"N | E | S | W";
-        private const string GENERATORS_2_DIRECTIONS = @"N & E | E & S | S & W | W & N | N & S | E & W";
-        private const string GENERATORS_3_DIRECTIONS = @"E & S & W | S & W & N | W & N & E | N & E & S";
-        private const string GENERATORS_4_DIRECTIONS = @"N & E & S & W";
-
-        private const int RESOURCE_STORE_CAPACITY = 50;
-        private const int GOLD_STORAGE_FACTOR = 40;
-
         private const UInt64 FIRST_NEW_ID = 0x8000000000000000;
 
         internal class MapPosition
@@ -427,7 +134,7 @@ namespace TABSAT
             public readonly CompassDirection Direction;
             public readonly float distanceSquared;
 
-            public MapPosition( XElement i, CommandCenterPosition cc )
+            public MapPosition( XElement i, MapData cc )
             {
                 ID = (UInt64) i.Element( "Simple" ).Attribute( "value" );
                 string xy = (string) getFirstSimplePropertyNamed( i.Element( "Complex" ), "Position" ).Attribute( "value" );
@@ -461,90 +168,19 @@ namespace TABSAT
         }
         private static readonly IComparer<MapPosition> mapPositionDistanceComparer = new DistanceComparer();
 
-        private readonly string dataFile;
-        private readonly XElement data;
-        private readonly XElement levelComplex;
-        private XElement generatedLevel;
-        private XElement extension;
-        private XElement mapDrawer;
-        private readonly float commandCenterX;
-        private readonly float commandCenterY;
         private readonly LevelEntities entities;
         private readonly MiniMapIcons icons;
         private UInt64 nextNewID;
 
-        internal static XElement getFirstPropertyOfTypeNamed( XElement c, string type, string name )
+
+        public SaveEditor( string filesPath ) : base( filesPath )
         {
-            return ( from s in c.Element( "Properties" ).Elements( type )
-                     where (string) s.Attribute( "name" ) == name
-                     select s ).FirstOrDefault();   // Avoid exception risk of First()?
-        }
-
-        internal static XElement getFirstSimplePropertyNamed( XElement c, string name )
-        {
-            return getFirstPropertyOfTypeNamed( c, "Simple", name );
-        }
-
-        internal static XElement getFirstComplexPropertyNamed( XElement c, string name )
-        {
-            return getFirstPropertyOfTypeNamed( c, "Complex", name );
-        }
-
-        internal static XElement getComponents( XElement complex )
-        {
-            return ( from c in complex.Element( "Properties" ).Elements( "Collection" )
-                     where (string) c.Attribute( "name" ) == "Components"
-                     select c ).Single();
-        }
-
-        internal static XElement getComplexItemOfType( XElement components, string type, bool assumeExists = true )
-        {
-            var i = ( from c in components.Element( "Items" ).Elements( "Complex" )
-                     where (string) c.Attribute( "type" ) == type
-                     select c );
-            return assumeExists ? i.Single() : i.SingleOrDefault();
-        }
-
-
-        public SaveEditor( string filesPath )
-        {
-            dataFile = Path.Combine( filesPath, "Data" );
-            if( !File.Exists( dataFile ) )
-            {
-                throw new ArgumentException( "Data file does not exist: " + dataFile );
-            }
-
-            data = XElement.Load( dataFile );
-
-            //<Complex name="Root" type="ZX.ZXGameState, TheyAreBillions">
-            //  < Properties >
-            //    <Complex name="LevelState">
-            levelComplex = getFirstComplexPropertyNamed( data, "LevelState" );
-
-            //      <Properties>
-            //        <Simple name="CurrentCommandCenterCell"
-            XElement currentCommandCenterCell = getFirstSimplePropertyNamed( levelComplex, "CurrentCommandCenterCell" );
-            string xy = (string) currentCommandCenterCell.Attribute( "value" );
-            string[] xySplit = xy.Split( ';' );
-            commandCenterX = int.Parse( xySplit[0] );
-            commandCenterY = int.Parse( xySplit[1] );
-            //Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
-
             entities = new LevelEntities( levelComplex );
             icons = new MiniMapIcons( levelComplex );
 
             nextNewID = 0;
         }
 
-        public float CCX()
-        {
-            return commandCenterX;
-        }
-
-        public float CCY()
-        {
-            return commandCenterY;
-        }
 
         internal void save()    // Doesn't take parameter to save modified file to a different location?
         {
@@ -561,18 +197,6 @@ namespace TABSAT
              *              <Collection >
              */
             return getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelFastSerializedEntities" ).Element( "Items" ).Elements( "Item" );
-        }
-
-        private XElement getMapDrawer()
-        {
-            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
-            //                  <Properties>
-            //                    <Complex name="MapDrawer">
-            if( mapDrawer == null )
-            {
-                mapDrawer = getFirstComplexPropertyNamed( getDataExtension(), "MapDrawer" );
-            }
-            return mapDrawer;
         }
 
         private UInt64 getHighestID()
@@ -693,30 +317,6 @@ namespace TABSAT
               */
         }
         
-        private XElement getGeneratedLevel()
-        {
-            if( generatedLevel == null )
-            {
-                generatedLevel = getFirstComplexPropertyNamed( levelComplex, "CurrentGeneratedLevel" );
-            }
-            return generatedLevel;
-        }
-
-        private XElement getDataExtension()
-        {
-            //      <Properties>
-            //        <Complex name = "CurrentGeneratedLevel" >
-            //          <Properties>
-            //            <Complex name="Data">
-            //              <Properties>
-            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
-            if( extension == null )
-            {
-                extension = getFirstComplexPropertyNamed( getGeneratedLevel(), "Data" ).Element( "Properties" ).Element( "Complex" );   // only one Complex, named Extension
-            }
-            return extension;
-        }
-        
         internal void scalePopulation( decimal scale )
         {
             if( scale < 0.0M )
@@ -813,9 +413,10 @@ namespace TABSAT
             void duplicateZombie( XElement com, LinkedList<XElement> copiedZombies )
             {
                 XElement zCopy = new XElement( com );       // Duplicate at the same position
-                ( from s in zCopy.Element( "Properties" ).Elements( "Simple" )
+                /*( from s in zCopy.Element( "Properties" ).Elements( "Simple" )
                   where (string) s.Attribute( "name" ) == "A"
-                  select s ).First().SetAttributeValue( "value", newID() );
+                  select s ).Single()*/
+                getFirstSimplePropertyNamed( zCopy, "A" ).SetAttributeValue( "value", newID() );
                 copiedZombies.AddLast( zCopy );
             }
 
@@ -830,9 +431,9 @@ namespace TABSAT
                  *                   <Simple name="Capacity" value=
                  * 
                  */
-                return ( from s in col.Element( "Properties" ).Elements( "Simple" )
+                return /*( from s in col.Element( "Properties" ).Elements( "Simple" )
                          where (string) s.Attribute( "name" ) == "Capacity"
-                         select s ).First().Attribute( "value" );
+                         select s ).Single()*/getFirstSimplePropertyNamed( col, "Capacity" ).Attribute( "value" );
             }
 
             Random rand = new Random();
@@ -1162,28 +763,15 @@ namespace TABSAT
 
         internal void removeFog( uint radius = 0 )
         {
-            //      <Properties>
-            //        <Complex name = "CurrentGeneratedLevel" >
-            //          <Properties>
-            //            <Simple name="NCells" value="256" />
-            XElement ncells = getFirstSimplePropertyNamed( getGeneratedLevel(), "NCells" );
-
-            string cells = (string) ncells.Attribute( "value" );
-            int size;
-            if( !Int32.TryParse( cells, out size ) )
-            {
-                Console.Error.WriteLine( "Unable to find the number of cells in the map." );
-                return;
-            }
-            int rawLength = 4 * size * size;        // 4 bytes just to store 00 00 00 FF or 00 00 00 00, yuck
+            int rawLength = 4 * cellsCount * cellsCount;        // 4 bytes just to store 00 00 00 FF or 00 00 00 00, yuck
 
             // Sadly we can't use String.Create<TState>(Int32, TState, SpanAction<Char,TState>) to avoid duplicate allocation prior to creating the final string
 
-            byte[] clearFog = new byte[rawLength];  // Defaulting to 00 00 00 00, good if we want less than 50% fog...
+            byte[] clearFog = new byte[rawLength];  // Defaulting to 00 00 00 00, good if we want less than 50% fog
 
             if( radius > 0 )
             {
-                circularFog( size, clearFog, radius );
+                circularFog( cellsCount, clearFog, radius );
             }
 
             string layerFog = Convert.ToBase64String( clearFog );
@@ -1199,8 +787,7 @@ namespace TABSAT
 
             void setFog( int s, byte[] f, int x, int y )
             {
-                // Assuming linear assignment, rather than anything fancy like a Hilbert curve...
-                int wordIndex = ( ( y * s ) + x ) * 4;
+                int wordIndex = ( ( y * s ) + x ) * 4;  // This indexing is backwards, because fog is reversed in some manner...
                 f[wordIndex + 3] = 0xFF;
             }
 

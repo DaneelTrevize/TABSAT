@@ -1,6 +1,7 @@
 
+Add an option to delete Backup file sets.
+
 Add a cap to population scaling, to keep it below the ~65k soft TAB limit?
-Unify the population scaling and the Mutant/Giant options, where applicable?
 
 Offer to toggle Enable/Disable state of Mayors, Showing full map, etc? So users needn't manually edit to revert such options.
 
@@ -48,7 +49,7 @@ Make games harder:
 
 Remove Mutants and/or Giant minimap icons?
 
-Remove all Pickable resources & reclaimable buildings? To remove potential early Radar vision or resources chiefly accessed via kiting?
+Remove all Pickable resources & reclaimable buildings (and Fortress walls)? To remove potential early Radar vision or resources chiefly accessed via kiting?
 
 Possibly add a script element (that constantly loops?) to spawns a new zombie per troop loss, with specific loss type to zombie spawned pairing. E.g. Harpy for each ranger, Spitter for each Sniper, Mutant for each Thanatos?
 Might have to have a pseudo daily/8-hourly/faster wave, that spawns unit types & numbers depending on a diff between previous and current troop counts? So quickly replaced units might not trigger snowballing?
@@ -68,7 +69,7 @@ place most/all Spitters in 1 cardinal direction, all Harpies in another, all Fat
 Swap the closest Mutants with the farthest Giants?
 
 Alter the size and composition of waves?
-Alter the number and timing of waves?
+Alter the number and #timing of waves?
 
 Set certain mayors as already chosen? To benefit or miss out on their benefits, depending how they're handled.
 

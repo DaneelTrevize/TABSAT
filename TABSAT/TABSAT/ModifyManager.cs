@@ -200,42 +200,50 @@ namespace TABSAT
                 throw new InvalidOperationException( "Save File has not been set." );
             }
 
-            if( useTempDir )
+            try
             {
-                currentDecryptDir = Path.Combine( Path.GetTempPath(), Path.GetRandomFileName() );  // A random "file"/folder name under the user's temp directory
-            }
-            else
-            {
-                currentDecryptDir = Path.Combine( editsDir, Path.GetFileNameWithoutExtension( currentSaveFile ) );
-            }
-            if( Directory.Exists( currentDecryptDir ) )
-            {
-                // Dynamically generate decrypted file folders for leaving files after modification or for manual edits?
-
-                // Nuke existing files
-                Console.WriteLine( "Deleting the contents of: " + currentDecryptDir );
-                DirectoryInfo decDir = new DirectoryInfo( currentDecryptDir );
-                foreach( FileInfo file in decDir.GetFiles() )
+                if( useTempDir )
                 {
-                    file.Delete();
+                    currentDecryptDir = Path.Combine( Path.GetTempPath(), Path.GetRandomFileName() );  // A random "file"/folder name under the user's temp directory
                 }
-                foreach( DirectoryInfo dir in decDir.GetDirectories() )
+                else
                 {
-                    dir.Delete( true );
+                    currentDecryptDir = Path.Combine( editsDir, Path.GetFileNameWithoutExtension( currentSaveFile ) );
                 }
+                if( Directory.Exists( currentDecryptDir ) )
+                {
+                    // Dynamically generate decrypted file folders for leaving files after modification or for manual edits?
+
+                    // Nuke existing files
+                    Console.WriteLine( "Deleting the contents of: " + currentDecryptDir );
+                    DirectoryInfo decDir = new DirectoryInfo( currentDecryptDir );
+                    foreach( FileInfo file in decDir.GetFiles() )
+                    {
+                        file.Delete();
+                    }
+                    foreach( DirectoryInfo dir in decDir.GetDirectories() )
+                    {
+                        dir.Delete( true );
+                    }
+                }
+                else
+                {
+                    Directory.CreateDirectory( currentDecryptDir );
+                }
+
+                string password = signAndGeneratePassword( currentSaveFile );
+
+                unpackSave( currentSaveFile, currentDecryptDir, password );
+
+                state = SaveState.EXTRACTED;
+
+                return currentSaveFile;
             }
-            else
+            catch( Exception e )
             {
-                Directory.CreateDirectory( currentDecryptDir );
+                Console.Error.WriteLine( e.Message );
+                return null;
             }
-
-            string password = signAndGeneratePassword( currentSaveFile );
-
-            unpackSave( currentSaveFile, currentDecryptDir, password );
-
-            state = SaveState.EXTRACTED;
-
-            return currentSaveFile;
         }
 
         internal SaveEditor getSaveEditor()
@@ -286,8 +294,15 @@ namespace TABSAT
             {
                 throw new InvalidOperationException( "Save File has not been extracted." );
             }
-            // Completely unguarded w.r.t. state, or IO exceptions...
-            Directory.Delete( currentDecryptDir, true );
+
+            try
+            {
+                Directory.Delete( currentDecryptDir, true );
+            }
+            catch( Exception e )
+            {
+                Console.Error.WriteLine( e.Message );
+            }
 
             //setSaveFile( currentSaveFile ); To reset currentDecryptDir and state?
         }
