@@ -7,13 +7,13 @@ namespace TABSAT
 {
     internal class LevelEntities
     {
-        internal const string GIANT_TYPE = @"ZX.Entities.ZombieGiant, TheyAreBillions";
-        internal const string MUTANT_TYPE = @"ZX.Entities.ZombieMutant, TheyAreBillions";
-        internal const string VOD_SMALL_TYPE = @"ZX.Entities.DoomBuildingSmall, TheyAreBillions";
-        internal const string VOD_MEDIUM_TYPE = @"ZX.Entities.DoomBuildingMedium, TheyAreBillions";
-        internal const string VOD_LARGE_TYPE = @"ZX.Entities.DoomBuildingLarge, TheyAreBillions";
-        internal const string WAREHOUSE_TYPE = @"ZX.Entities.WareHouse, TheyAreBillions";
-        internal const string OILPOOL_TYPE = @"ZX.Entities.OilSource, TheyAreBillions";
+        private const string GIANT_TYPE = @"ZX.Entities.ZombieGiant, TheyAreBillions";
+        private const string MUTANT_TYPE = @"ZX.Entities.ZombieMutant, TheyAreBillions";
+        private const string VOD_SMALL_TYPE = @"ZX.Entities.DoomBuildingSmall, TheyAreBillions";
+        private const string VOD_MEDIUM_TYPE = @"ZX.Entities.DoomBuildingMedium, TheyAreBillions";
+        private const string VOD_LARGE_TYPE = @"ZX.Entities.DoomBuildingLarge, TheyAreBillions";
+        //private const string WAREHOUSE_TYPE = @"ZX.Entities.WareHouse, TheyAreBillions";
+        //private const string OILPOOL_TYPE = @"ZX.Entities.OilSource, TheyAreBillions";
         //@"ZX.Entities.Raven, TheyAreBillions"  @"12735209386004068058"
         //@"ZX.Entities.PickableEnergy, TheyAreBillions"  @"5768965425817495539"
         //@"ZX.Entities.PickableFood, TheyAreBillions"  @"3195137037877540492"
@@ -40,16 +40,16 @@ namespace TABSAT
         private const string GIANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombieGiant, TheyAreBillions";
         private const string MUTANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombie, TheyAreBillions";
 
-        private const string GIANT_ID_TEMPLATE = @"6179780658058987152";
-        private const string MUTANT_ID_TEMPLATE = @"4885015758634569309";
-        private const string VOD_LARGE_ID_TEMPLATE = @"3441286325348372349";
-        private const string VOD_MEDIUM_ID_TEMPLATE = @"293812117068830615";
-        private const string VOD_SMALL_ID_TEMPLATE = @"8702552346733362645";
-        private const string OILPOOL_ID_TEMPLATE = @"14597207313853823957";
+        internal const UInt64 GIANT_ID_TEMPLATE = 6179780658058987152;
+        internal const UInt64 MUTANT_ID_TEMPLATE = 4885015758634569309;
+        internal const UInt64 VOD_LARGE_ID_TEMPLATE = 3441286325348372349;
+        internal const UInt64 VOD_MEDIUM_ID_TEMPLATE = 293812117068830615;
+        internal const UInt64 VOD_SMALL_ID_TEMPLATE = 8702552346733362645;
+        internal const UInt64 OILPOOL_ID_TEMPLATE = 14597207313853823957;
 
-        private const string TruckA_ID_TEMPLATE = @"1130949242559706282";
-        private const string FortressBarLeft_ID_TEMPLATE = @"1858993070642015232";
-        private const string FortressBarRight_ID_TEMPLATE = @"5955209075099213047";
+        internal const UInt64 TruckA_ID_TEMPLATE = 1130949242559706282;
+        internal const UInt64 FortressBarLeft_ID_TEMPLATE = 1858993070642015232;
+        internal const UInt64 FortressBarRight_ID_TEMPLATE = 5955209075099213047;
         private const string RuinTreasureA_BR_ID_TEMPLATE = @"5985530356264170826";
         private const string RuinTreasureA_TM_ID_TEMPLATE = @"257584999789546783";
         private const string RuinTreasureA_AL_ID_TEMPLATE = @"8971922455791567927";
@@ -87,7 +87,7 @@ namespace TABSAT
 
         private readonly XElement levelEntitiesItems;
         private readonly SortedDictionary<UInt64, XElement> entityItems;
-        private readonly SortedDictionary<string, SortedSet<UInt64>> typesToIDs;
+        private readonly SortedDictionary<UInt64, SortedSet<UInt64>> templatesToIDs;
 
         private static XElement getComponents( XElement complex )
         {
@@ -121,13 +121,18 @@ namespace TABSAT
             return assumeExists ? i.Single() : i.SingleOrDefault();
         }
 
+        private static UInt64 getTemplate( XElement entity )
+        {
+            return (UInt64) SaveReader.getFirstSimplePropertyNamed( entity.Element( "Complex" ), "IDTemplate" ).Attribute( "value" );
+        }
+
 
         internal LevelEntities( XElement levelComplex )
         {
             levelEntitiesItems = SaveReader.getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelEntities" ).Element( "Items" );
 
             entityItems = new SortedDictionary<UInt64, XElement>();
-            typesToIDs = new SortedDictionary<string, SortedSet<UInt64>>();
+            templatesToIDs = new SortedDictionary<UInt64, SortedSet<UInt64>>();
 
             //Console.Write( "Starting parsing level entities..." );
             // Lazy parse these later, on first use?
@@ -136,8 +141,8 @@ namespace TABSAT
                 trackEntity( i );
             }
             //Console.WriteLine( " Finished." );
-            /*Console.WriteLine( "Level entity types count: " + typesToIDs.Count );
-            foreach( var k_v in typesToIDs )
+            /*Console.WriteLine( "Level entity templates count: " + templatesToIDs.Count );
+            foreach( var k_v in templatesToIDs )
             {
                 Console.WriteLine( "key: " + k_v.Key + "\tcount: " + k_v.Value.Count ); ;
             }*/
@@ -149,17 +154,15 @@ namespace TABSAT
             var id = (UInt64) i.Element( "Simple" ).Attribute( "value" );
             entityItems.Add( id, i );
 
-            var type = (string) i.Element( "Complex" ).Attribute( "type" );
-            if( type == null )
-            {
-                type = "CUnitGenerator?";      // At least CUnitGenerator entities lack a type attribute & value, use a placeholder
-            }
+            // At least CUnitGenerator entities lack a type attribute & value
+
+            var template = getTemplate( i );
 
             SortedSet<UInt64> typeIDs;
-            if( !typesToIDs.TryGetValue( type, out typeIDs ) )
+            if( !templatesToIDs.TryGetValue( template, out typeIDs ) )
             {
                 typeIDs = new SortedSet<UInt64>();
-                typesToIDs.Add( type, typeIDs );
+                templatesToIDs.Add( template, typeIDs );
             }
             typeIDs.Add( id );
         }
@@ -175,9 +178,10 @@ namespace TABSAT
             XElement entity;
             if( entityItems.TryGetValue( id, out entity ) )
             {
-                var type = (string) entity.Element( "Complex" ).Attribute( "type" );
+                var template = getTemplate( entity );
+
                 SortedSet<UInt64> typeIDs;
-                if( typesToIDs.TryGetValue( type, out typeIDs ) )
+                if( templatesToIDs.TryGetValue( template, out typeIDs ) )
                 {
                     typeIDs.Remove( id );
                     // Is OK to leave an empty set of IDs for this type in typesToIDs
@@ -196,13 +200,13 @@ namespace TABSAT
             }
         }
 
-        private IEnumerable<XElement> getEntitiesOfTypes( params string[] types )
+        internal IEnumerable<XElement> getEntitiesOfTemplates( params UInt64[] templates )
         {
             LinkedList<XElement> subset = new LinkedList<XElement>();
-            foreach( var type in types )
+            foreach( var template in templates )
             {
                 SortedSet<UInt64> typeIDs;
-                if( typesToIDs.TryGetValue( type, out typeIDs ) )
+                if( templatesToIDs.TryGetValue( template, out typeIDs ) )
                 {
                     foreach( var id in typeIDs )
                     {
@@ -213,21 +217,21 @@ namespace TABSAT
             return subset;
         }
 
-        internal SortedSet<UInt64> getIDs( string type )
+        internal SortedSet<UInt64> getIDs( UInt64 template )
         {
             SortedSet<UInt64> typeIDs;
-            if( !typesToIDs.TryGetValue( type, out typeIDs ) )
+            if( !templatesToIDs.TryGetValue( template, out typeIDs ) )
             {
                 return new SortedSet<UInt64>();
             }
             return new SortedSet<UInt64>( typeIDs );
         }
 
-        internal LinkedList<SaveEditor.MapPosition> getPositions( string type, MapData cc )
+        internal LinkedList<SaveEditor.MapPosition> getPositions( UInt64 template, MapData cc )
         {
             var positions = new LinkedList<SaveEditor.MapPosition>();
             SortedSet<UInt64> typeIDs;
-            if( typesToIDs.TryGetValue( type, out typeIDs ) )
+            if( templatesToIDs.TryGetValue( template, out typeIDs ) )
             {
                 foreach( var id in typeIDs )
                 {
@@ -237,7 +241,7 @@ namespace TABSAT
             return positions;
         }
 
-        internal SortedSet<UInt64> getIDs()
+        internal SortedSet<UInt64> getAllIDs()
         {
             SortedSet<UInt64> keys = new SortedSet<UInt64>();
             foreach( var k in entityItems.Keys )
@@ -247,7 +251,7 @@ namespace TABSAT
             return keys;
         }
 
-        internal LinkedList<ScaledEntity> scaleEntities( string entityType, decimal scale, IDGenerator editor )
+        internal LinkedList<ScaledEntity> scaleEntities( UInt64 entityTemplate, decimal scale, IDGenerator editor )
         {
             if( scale < 0.0M )
             {
@@ -278,7 +282,7 @@ namespace TABSAT
                 // selectedEntities will be those removed
 
                 // 0 >= scale < 1
-                foreach( var i in getEntitiesOfTypes( entityType ) )
+                foreach( var i in getEntitiesOfTemplates( entityTemplate ) )
                 {
                     if( scale == 0.0M || chance < rand.NextDouble() )
                     {
@@ -292,7 +296,7 @@ namespace TABSAT
             else
             {
 
-                foreach( var i in getEntitiesOfTypes( entityType ) )
+                foreach( var i in getEntitiesOfTemplates( entityTemplate ) )
                 {
                     // First the certain duplications
                     for( uint m = 1; m < multiples; m++ )
@@ -398,7 +402,7 @@ namespace TABSAT
 
             string type;
             string flags;
-            string template;
+            UInt64 template;
             string life;
             string behaviour;
             string pathCapacity;
@@ -454,28 +458,28 @@ namespace TABSAT
             SaveReader.getFirstSimplePropertyNamed( complex, "Size" ).Attribute( "value" ).SetValue( size );
         }
 
-        internal void resizeVODs( SaveEditor.VodSizes vodSize )
+        internal void resizeVODs( SaveReader.VodSizes vodSize )
         {
             string newType;
-            string newIDTemplate;
+            UInt64 newIDTemplate;
             string newLife;
             string newSize;
             switch( vodSize )
             {
                 default:
-                case SaveEditor.VodSizes.SMALL:
+                case SaveReader.VodSizes.SMALL:
                     newType = VOD_SMALL_TYPE;
                     newIDTemplate = VOD_SMALL_ID_TEMPLATE;
                     newLife = VOD_SMALL_LIFE;
                     newSize = VOD_SMALL_SIZE;
                     break;
-                case SaveEditor.VodSizes.MEDIUM:
+                case SaveReader.VodSizes.MEDIUM:
                     newType = VOD_MEDIUM_TYPE;
                     newIDTemplate = VOD_MEDIUM_ID_TEMPLATE;
                     newLife = VOD_MEDIUM_LIFE;
                     newSize = VOD_MEDIUM_SIZE;
                     break;
-                case SaveEditor.VodSizes.LARGE:
+                case SaveReader.VodSizes.LARGE:
                     newType = VOD_LARGE_TYPE;
                     newIDTemplate = VOD_LARGE_ID_TEMPLATE;
                     newLife = VOD_LARGE_LIFE;
@@ -501,7 +505,7 @@ namespace TABSAT
                                   <Simple name="CheckHiddingUnits" value="False" />
              */
 
-            IEnumerable<XElement> vodItems = getEntitiesOfTypes( VOD_SMALL_TYPE, VOD_MEDIUM_TYPE, VOD_LARGE_TYPE );
+            IEnumerable<XElement> vodItems = getEntitiesOfTemplates( VOD_SMALL_ID_TEMPLATE, VOD_MEDIUM_ID_TEMPLATE, VOD_LARGE_ID_TEMPLATE );
             //Console.WriteLine( "vodItems: " + vodItems.Count() );
 
             foreach( XElement v in vodItems.ToList() )  // no ToList() leads to only removing 1 <item> per save modify cycle?!
@@ -514,9 +518,9 @@ namespace TABSAT
             }
         }
 
-        internal void scaleVODs( string vodType, decimal scale, IDGenerator editor )
+        internal void scaleVODs( UInt64 vodTemplate, decimal scale, IDGenerator editor )
         {
-            scaleEntities( vodType, scale, editor );
+            scaleEntities( vodTemplate, scale, editor );
         }
     }
 }

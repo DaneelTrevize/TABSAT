@@ -19,9 +19,10 @@ namespace TABSAT
             NORTHWEST = 0b_1000_0000
         }
 
-        private const Direction CARDINALS = Direction.NORTH | Direction.EAST | Direction.SOUTH | Direction.WEST;
-        private const Direction ORDINALS = Direction.NORTHEAST | Direction.SOUTHEAST | Direction.SOUTHWEST | Direction.NORTHWEST;
-        //private Direction ALL = Direction.NORTH | Direction.NORTHEAST | Direction.EAST | Direction.SOUTHEAST | Direction.SOUTH | Direction.SOUTHWEST | Direction.WEST | Direction.NORTHWEST;
+        //private const Direction CARDINALS = Direction.NORTH | Direction.EAST | Direction.SOUTH | Direction.WEST;
+        //private const Direction ORDINALS = Direction.NORTHEAST | Direction.SOUTHEAST | Direction.SOUTHWEST | Direction.NORTHWEST;
+        private static readonly SortedSet<Direction> CARDINALS = new SortedSet<Direction> { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
+        private static readonly SortedSet<Direction> ORDINALS = new SortedSet<Direction> { Direction.NORTHEAST, Direction.SOUTHEAST, Direction.SOUTHWEST, Direction.NORTHWEST };
 
         private static Direction Reverse( Direction d )
         {
@@ -57,7 +58,7 @@ namespace TABSAT
             {
                 if( x < 0 || y < 0 )
                 {
-                    throw new ArgumentException( "x and y should be positive." );
+                    throw new ArgumentException( "x or y should not be negative." );
                 }
                 this.x = x;
                 this.y = y;
@@ -131,13 +132,13 @@ namespace TABSAT
                 }
             }
         }
-
+        /*
         private static void indexToAxes( int index, int res, out int x, out int y )
         {
             x = index / res;
             y = index % res;
         }
-
+        */
         internal static int axesToIndex( int res, int x, int y )
         {
             return ( x * res ) + y;
@@ -145,14 +146,14 @@ namespace TABSAT
 
         internal class FlowGraph
         {
-            private readonly int res;
+            private readonly int resolution;    // Cells per axis
             private readonly byte[] navigable;
             private readonly SortedDictionary<Position, int> ccDistances;
             private readonly SortedDictionary<Position, Direction> ccDirections;
 
             internal FlowGraph( int r, byte[] n )
             {
-                res = r;
+                resolution = r;
                 navigable = n;
                 ccDistances = new SortedDictionary<Position, int>();
                 ccDirections = new SortedDictionary<Position, Direction>();
@@ -173,40 +174,49 @@ namespace TABSAT
                 favourFlow( ORDINALS );
             }
 
-            private void flood( SortedDictionary<Position, Direction> toVisit, int range, int limit )
+            private void flood( SortedDictionary<Position, Direction> toVisit, int distance, int limit )
             {
+                foreach( var k_v in toVisit )
+                {
+                    recordFlood( k_v.Key, distance, k_v.Value );
+                }
+
+                // Are we done flood filling the map?
+                if( distance + 1 > limit )
+                {
+                    return;
+                }
+
                 var nextToVisit = new SortedDictionary<Position, Direction>();
 
                 foreach( var k_v in toVisit )
                 {
                     var position = k_v.Key;
-                    var fromDir = k_v.Value;
-                    recordPosition( position, range, fromDir );
+                    var reversedFromDir = k_v.Value;    // Used for not flooding back the way we came. No 2 extra Reverse()s needed
 
-                    foreach( Direction forwardDir in Enum.GetValues( typeof( Direction ) ) )
+                    foreach( Direction floodDir in CARDINALS )
                     {
-                        if( ( CARDINALS & forwardDir ) == forwardDir )
+                        if( floodDir != reversedFromDir )
                         {
-                            considerFlood( position, forwardDir, true, range, nextToVisit );
+                            considerFlood( position, floodDir, true, distance, nextToVisit );
                         }
                     }
-                    foreach( Direction forwardDir in Enum.GetValues( typeof( Direction ) ) )
+                    foreach( Direction floodDir in ORDINALS )
                     {
-                        if( ( ORDINALS & forwardDir ) == forwardDir )
+                        if( floodDir != reversedFromDir )
                         {
-                            considerFlood( position, forwardDir, false, range, nextToVisit );
+                            considerFlood( position, floodDir, false, distance, nextToVisit );
                         }
                     }
                 }
 
-                // Are we done flood filling the map?
-                if( range + 1 <= limit && nextToVisit.Any() )
+                if( nextToVisit.Any() )
                 {
-                    flood( nextToVisit, range + 1, limit );
+                    flood( nextToVisit, distance + 1, limit );
                 }
             }
 
-            private void recordPosition( Position position, int distance, Direction direction )
+            private void recordFlood( Position position, int distance, Direction direction )
             {
                 int existing;
                 if( ccDistances.TryGetValue( position, out existing ) )
@@ -220,9 +230,9 @@ namespace TABSAT
                 ccDirections.Add( position, direction );
             }
 
-            private void considerFlood( Position position, Direction forwardDir, bool checkAdjacent, int range, SortedDictionary<Position, Direction>  nextToVisit )
+            private void considerFlood( Position position, Direction floodDir, bool checkAdjacent, int range, SortedDictionary<Position, Direction> nextToVisit )
             {
-                var candidatePos = TryMove( position, forwardDir );
+                var candidatePos = TryMove( position, floodDir );
                 if( candidatePos == null )
                 {
                     return;
@@ -237,6 +247,12 @@ namespace TABSAT
                     }
                 }
 
+                // Test we don't already have a new candidate route to this position before we look up any known distance
+                if( nextToVisit.ContainsKey( candidatePos ) )
+                {
+                    return;
+                }
+
                 // Might the current position be a shorter path to an adjacent navigable?
                 if( ccDistances.TryGetValue( candidatePos, out int distance ) )
                 {
@@ -245,18 +261,15 @@ namespace TABSAT
                         return;
                     }
                 }
-                
-                if( !nextToVisit.ContainsKey( candidatePos ) )
-                {
-                    nextToVisit.Add( candidatePos, Reverse( forwardDir ) );
-                }
-                //nextToVisit[candidatePos] = Reverse( forwardDir );
+
+                nextToVisit.Add( candidatePos, Reverse( floodDir ) );
+                //nextToVisit[candidatePos] = Reverse( floodDir );
             }
 
             private Position TryMove( Position fromPosition, Direction direction )
             {
                 var candidatePos = fromPosition.TryMoveDirection( direction );
-                if( candidatePos == null )  // Unimplemented direction
+                if( candidatePos == null )  // Unimplemented direction or negative coordinate
                 {
                     return null;
                 }
@@ -278,16 +291,16 @@ namespace TABSAT
 
             private bool IsWithinMap( Position p )
             {
-                return p.x >= 0 && p.y >= 0 && p.x < res && p.y < res;
+                return /*p.x >= 0 && p.y >= 0 &&*/ p.x < resolution && p.y < resolution;
             }
 
             private bool IsNavigable( int x, int y )
             {
-                int i = axesToIndex( res, x, y );
+                int i = axesToIndex( resolution, x, y );
                 return navigable[i] == 0x00;  // != SaveReader.NAVIGABLE_BLOCKED
             }
 
-            private void favourFlow( Direction favoured )
+            private void favourFlow( SortedSet<Direction> favoured )
             {
                 var changesToApply = new SortedDictionary<Position, Direction>();
 
@@ -295,14 +308,14 @@ namespace TABSAT
                 {
                     var position = k_v.Key;
                     var direction = k_v.Value;
-                    if( ( favoured & direction ) == direction )
+                    if( favoured.Contains( direction ) )
                     {
                         continue;           // Already favoured, test another position
                     }
 
                     foreach( Direction candidateDirection in Enum.GetValues( typeof( Direction ) ) )
                     {
-                        if( ( favoured & candidateDirection ) == candidateDirection )   // An actual candidate favoured direction
+                        if( favoured.Contains( candidateDirection ) )   // An actual candidate favoured direction
                         {
                             var resultingPosition = TryMove( position, candidateDirection );
                             if( resultingPosition == null )

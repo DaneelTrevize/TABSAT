@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace TABSAT
@@ -14,6 +13,7 @@ namespace TABSAT
         float CCX();
         float CCY();
         int CellsCount();
+        SaveReader.ThemeType Theme();
         SaveReader.LayerData getLayerData( SaveReader.MapLayers layer );
         int getDistance( MapNavigation.Position position );
         MapNavigation.Direction? getDirection( MapNavigation.Position position );
@@ -199,116 +199,117 @@ namespace TABSAT
 
         static SaveReader()
         {
-            Dictionary<VodSizes, string> vsn = new Dictionary<VodSizes, string>();
-            vsn.Add( VodSizes.SMALL, "Dwellings" );
-            vsn.Add( VodSizes.MEDIUM, "Taverns" );
-            vsn.Add( VodSizes.LARGE, "City Halls" );
-            vodSizesNames = new Dictionary<VodSizes, string>( vsn );
+            vodSizesNames = new Dictionary<VodSizes, string> {
+                { VodSizes.SMALL, "Dwellings" },
+                { VodSizes.MEDIUM, "Taverns" },
+                { VodSizes.LARGE, "City Halls" }
+            };
 
-            Dictionary<ThemeType, string> ttn = new Dictionary<ThemeType, string>();
-            ttn.Add( ThemeType.FA, "Deep Forest" );
-            ttn.Add( ThemeType.BR, "Dark Moorland" );
-            ttn.Add( ThemeType.TM, "Peaceful Lowlands" );
-            ttn.Add( ThemeType.AL, "Frozen Highlands" );
-            ttn.Add( ThemeType.DS, "Desert Wasteland" );
-            ttn.Add( ThemeType.VO, "Caustic Lands" );
-            themeTypeNames = new Dictionary<ThemeType, string>( ttn );
+            themeTypeNames = new Dictionary<ThemeType, string> {
+                { ThemeType.FA, "Deep Forest" },
+                { ThemeType.BR, "Dark Moorland" },
+                { ThemeType.TM, "Peaceful Lowlands" },
+                { ThemeType.AL, "Frozen Highlands" },
+                { ThemeType.DS, "Desert Wasteland" },
+                { ThemeType.VO, "Caustic Lands" },
+            };
 
-            Dictionary<SwarmDirections, string> sdn = new Dictionary<SwarmDirections, string>();
-            sdn.Add( SwarmDirections.ONE, "Any 1" );
-            sdn.Add( SwarmDirections.TWO, "Any 2" );
-            sdn.Add( SwarmDirections.ALL_BUT_ONE, "All but 1" );
-            sdn.Add( SwarmDirections.ALL, "All" );
-            SwarmDirectionsNames = new Dictionary<SwarmDirections, string>( sdn );
+            SwarmDirectionsNames = new Dictionary<SwarmDirections, string> {
+                { SwarmDirections.ONE, "Any 1" },
+                { SwarmDirections.TWO, "Any 2" },
+                { SwarmDirections.ALL_BUT_ONE, "All but 1" },
+                { SwarmDirections.ALL, "All" }
+            };
 
-            Dictionary<GiftableTypes, string> gtn = new Dictionary<GiftableTypes, string>();
-            gtn.Add( GiftableTypes.Ranger, "Ranger" );
-            gtn.Add( GiftableTypes.SoldierRegular, "Soldier" );
-            gtn.Add( GiftableTypes.Sniper, "Sniper" );
-            gtn.Add( GiftableTypes.Lucifer, "Lucifer" );
-            gtn.Add( GiftableTypes.Thanatos, "Thanatos" );
-            gtn.Add( GiftableTypes.Titan, "Titan" );
-            gtn.Add( GiftableTypes.Mutant, "Mutant" );
-            gtn.Add( GiftableTypes.EnergyWoodTower, "Tesla Tower" );
-            gtn.Add( GiftableTypes.MillWood, "Mill" );
-            gtn.Add( GiftableTypes.MillIron, "Advanced Mill" );
-            gtn.Add( GiftableTypes.PowerPlant, "PowerPlant" );
-            gtn.Add( GiftableTypes.Sawmill, "Sawmill" );
-            gtn.Add( GiftableTypes.Quarry, "Quarry" );
-            gtn.Add( GiftableTypes.AdvancedQuarry, "Advanced Quarry" );
-            gtn.Add( GiftableTypes.OilPlatform, "Oil Platform" );
-            gtn.Add( GiftableTypes.HunterCottage, "Hunter Cottage" );
-            gtn.Add( GiftableTypes.FishermanCottage, "Fisherman Cottage" );
-            gtn.Add( GiftableTypes.Farm, "Farm" );
-            gtn.Add( GiftableTypes.AdvancedFarm, "Advanced Farm" );
-            gtn.Add( GiftableTypes.WareHouse, "Warehouse" );
-            gtn.Add( GiftableTypes.Market, "Market" );
-            gtn.Add( GiftableTypes.Bank, "Bank" );
-            gtn.Add( GiftableTypes.TentHouse, "Tent" );
-            gtn.Add( GiftableTypes.CottageHouse, "Cottage" );
-            gtn.Add( GiftableTypes.StoneHouse, "Stone House" );
-            gtn.Add( GiftableTypes.WallWood, "Wood Wall" );
-            gtn.Add( GiftableTypes.WallStone, "Stone Wall" );
-            gtn.Add( GiftableTypes.GateWood, "Wood Gate" );
-            gtn.Add( GiftableTypes.GateStone, "Stone Gate" );
-            gtn.Add( GiftableTypes.WatchTowerWood, "Wood Tower" );
-            gtn.Add( GiftableTypes.WatchTowerStone, "Stone Tower" );
-            gtn.Add( GiftableTypes.TrapStakes, "Stakes Trap" );
-            gtn.Add( GiftableTypes.TrapBlades, "Wire Fence Trap" );
-            gtn.Add( GiftableTypes.TrapMine, "Land Mine" );
-            gtn.Add( GiftableTypes.WoodWorkshop, "Wood Workshop" );
-            gtn.Add( GiftableTypes.StoneWorkshop, "Stone Workshop" );
-            gtn.Add( GiftableTypes.Foundry, "Foundry" );
-            gtn.Add( GiftableTypes.SoldiersCenter, "Soldiers' Center" );
-            gtn.Add( GiftableTypes.AdvancedUnitCenter, "Engineering Center" );
-            gtn.Add( GiftableTypes.LookoutTower, "Lookout Tower" );
-            gtn.Add( GiftableTypes.RadarTower, "Radar Tower" );
-            gtn.Add( GiftableTypes.Ballista, "Ballista" );
-            gtn.Add( GiftableTypes.MachineGun, "Wasp" );
-            gtn.Add( GiftableTypes.ShockingTower, "Shocking Tower" );
-            gtn.Add( GiftableTypes.Executor, "Executor" );
-            gtn.Add( GiftableTypes.TheInn, "The Inn" );
-            gtn.Add( GiftableTypes.TheCrystalPalace, "The Crystal Palace" );
-            gtn.Add( GiftableTypes.TheSpire, "The Lightning Spire" );
-            gtn.Add( GiftableTypes.TheAcademy, "The Academy of Immortals" );
-            gtn.Add( GiftableTypes.TheVictorious, "The Victorious" );
-            gtn.Add( GiftableTypes.TheTransmutator, "The Atlas Transmutator" );
-            giftableTypeNames = new Dictionary<GiftableTypes, string>( gtn );
+            giftableTypeNames = new Dictionary<GiftableTypes, string> {
+                { GiftableTypes.Ranger, "Ranger" },
+                { GiftableTypes.SoldierRegular, "Soldier" },
+                { GiftableTypes.Sniper, "Sniper" },
+                { GiftableTypes.Lucifer, "Lucifer" },
+                { GiftableTypes.Thanatos, "Thanatos" },
+                { GiftableTypes.Titan, "Titan" },
+                { GiftableTypes.Mutant, "Mutant" },
+                { GiftableTypes.EnergyWoodTower, "Tesla Tower" },
+                { GiftableTypes.MillWood, "Mill" },
+                { GiftableTypes.MillIron, "Advanced Mill" },
+                { GiftableTypes.PowerPlant, "PowerPlant" },
+                { GiftableTypes.Sawmill, "Sawmill" },
+                { GiftableTypes.Quarry, "Quarry" },
+                { GiftableTypes.AdvancedQuarry, "Advanced Quarry" },
+                { GiftableTypes.OilPlatform, "Oil Platform" },
+                { GiftableTypes.HunterCottage, "Hunter Cottage" },
+                { GiftableTypes.FishermanCottage, "Fisherman Cottage" },
+                { GiftableTypes.Farm, "Farm" },
+                { GiftableTypes.AdvancedFarm, "Advanced Farm" },
+                { GiftableTypes.WareHouse, "Warehouse" },
+                { GiftableTypes.Market, "Market" },
+                { GiftableTypes.Bank, "Bank" },
+                { GiftableTypes.TentHouse, "Tent" },
+                { GiftableTypes.CottageHouse, "Cottage" },
+                { GiftableTypes.StoneHouse, "Stone House" },
+                { GiftableTypes.WallWood, "Wood Wall" },
+                { GiftableTypes.WallStone, "Stone Wall" },
+                { GiftableTypes.GateWood, "Wood Gate" },
+                { GiftableTypes.GateStone, "Stone Gate" },
+                { GiftableTypes.WatchTowerWood, "Wood Tower" },
+                { GiftableTypes.WatchTowerStone, "Stone Tower" },
+                { GiftableTypes.TrapStakes, "Stakes Trap" },
+                { GiftableTypes.TrapBlades, "Wire Fence Trap" },
+                { GiftableTypes.TrapMine, "Land Mine" },
+                { GiftableTypes.WoodWorkshop, "Wood Workshop" },
+                { GiftableTypes.StoneWorkshop, "Stone Workshop" },
+                { GiftableTypes.Foundry, "Foundry" },
+                { GiftableTypes.SoldiersCenter, "Soldiers' Center" },
+                { GiftableTypes.AdvancedUnitCenter, "Engineering Center" },
+                { GiftableTypes.LookoutTower, "Lookout Tower" },
+                { GiftableTypes.RadarTower, "Radar Tower" },
+                { GiftableTypes.Ballista, "Ballista" },
+                { GiftableTypes.MachineGun, "Wasp" },
+                { GiftableTypes.ShockingTower, "Shocking Tower" },
+                { GiftableTypes.Executor, "Executor" },
+                { GiftableTypes.TheInn, "The Inn" },
+                { GiftableTypes.TheCrystalPalace, "The Crystal Palace" },
+                { GiftableTypes.TheSpire, "The Lightning Spire" },
+                { GiftableTypes.TheAcademy, "The Academy of Immortals" },
+                { GiftableTypes.TheVictorious, "The Victorious" },
+                { GiftableTypes.TheTransmutator, "The Atlas Transmutator" }
+            };
 
-            scalableZombieTypeGroups = new Dictionary<ScalableZombieGroups, SortedSet<ScalableZombieTypes>>();
-            scalableZombieTypeGroups.Add( ScalableZombieGroups.WEAK, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieWeakA, ScalableZombieTypes.ZombieWeakB, ScalableZombieTypes.ZombieWeakC } );
-            scalableZombieTypeGroups.Add( ScalableZombieGroups.MEDIUM, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieWorkerA, ScalableZombieTypes.ZombieWorkerB, ScalableZombieTypes.ZombieMediumA, ScalableZombieTypes.ZombieMediumB } );
-            scalableZombieTypeGroups.Add( ScalableZombieGroups.DRESSED, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieDressedA } );
-            scalableZombieTypeGroups.Add( ScalableZombieGroups.STRONG, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieStrongA } );
-            scalableZombieTypeGroups.Add( ScalableZombieGroups.VENOM, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieVenom } );
-            scalableZombieTypeGroups.Add( ScalableZombieGroups.HARPY, new SortedSet<ScalableZombieTypes>() { ScalableZombieTypes.ZombieHarpy } );
+            scalableZombieTypeGroups = new Dictionary<ScalableZombieGroups, SortedSet<ScalableZombieTypes>> {
+                { ScalableZombieGroups.WEAK, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieWeakA, ScalableZombieTypes.ZombieWeakB, ScalableZombieTypes.ZombieWeakC } },
+                { ScalableZombieGroups.MEDIUM, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieWorkerA, ScalableZombieTypes.ZombieWorkerB, ScalableZombieTypes.ZombieMediumA, ScalableZombieTypes.ZombieMediumB } },
+                { ScalableZombieGroups.DRESSED, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieDressedA } },
+                { ScalableZombieGroups.STRONG, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieStrongA } },
+                { ScalableZombieGroups.VENOM, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieVenom } },
+                { ScalableZombieGroups.HARPY, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieHarpy } }
+            };
 
-            swarmTimings = new SortedDictionary<GameFinish, SwarmTimingSet>();
-            swarmTimings.Add( GameFinish.Day100, new SwarmTimingSet(    // Taken from a <Simple name="ChallengeType" value="CommunityChallenge" /> map
-                Won: new SwarmTimings( "2400", "2400", "0", "0" ),
-                Final: new SwarmTimings( "2208", "2208", "0", "2184" ),
-                Easy: new SwarmTimings( "312", "312", "240", "304" ),
-                Hard: new SwarmTimings( "1210", "1200", "168", "1202" ),
-                Weak: new SwarmTimings( "48", "48", "48", "0" ),
-                Medium: new SwarmTimings( "616", "600", "144", "0" ) ) );
-            swarmTimings.Add( GameFinish.Day80, new SwarmTimingSet(
-                Won: new SwarmTimings( "1920", "1920", "0", "0" ),
-                Final: new SwarmTimings( "1767", "1767", "0", "1743" ),
-                Easy: new SwarmTimings( "252", "250", "192", "244" ),
-                Hard: new SwarmTimings( "969", "960", "135", "961" ),
-                Weak: new SwarmTimings( "39", "39", "39", "0" ),
-                Medium: new SwarmTimings( "482", "480", "116", "0" ) ) );
-            swarmTimings.Add( GameFinish.Day50, new SwarmTimingSet(
-                Won: new SwarmTimings( "1200", "1200", "0", "0" ),
-                Final: new SwarmTimings( "1104", "1104", "0", "1080" ),
-                Easy: new SwarmTimings( "174", "156", "120", "166" ),
-                Hard: new SwarmTimings( "610", "600", "84", "602" ),
-                Weak: new SwarmTimings( "120", "120", "60", "0" ),
-                Medium: new SwarmTimings( "482", "480", "120", "0" ) ) );
-
+            swarmTimings = new SortedDictionary<GameFinish, SwarmTimingSet> {
+                { GameFinish.Day100, new SwarmTimingSet(    // Taken from a <Simple name="ChallengeType" value="CommunityChallenge" /> map
+                    Won: new SwarmTimings( "2400", "2400", "0", "0" ),
+                    Final: new SwarmTimings( "2208", "2208", "0", "2184" ),
+                    Easy: new SwarmTimings( "312", "312", "240", "304" ),
+                    Hard: new SwarmTimings( "1210", "1200", "168", "1202" ),
+                    Weak: new SwarmTimings( "48", "48", "48", "0" ),
+                    Medium: new SwarmTimings( "616", "600", "144", "0" ) ) },
+                { GameFinish.Day80, new SwarmTimingSet(
+                    Won: new SwarmTimings( "1920", "1920", "0", "0" ),
+                    Final: new SwarmTimings( "1767", "1767", "0", "1743" ),
+                    Easy: new SwarmTimings( "252", "250", "192", "244" ),
+                    Hard: new SwarmTimings( "969", "960", "135", "961" ),
+                    Weak: new SwarmTimings( "39", "39", "39", "0" ),
+                    Medium: new SwarmTimings( "482", "480", "116", "0" ) ) },
+                { GameFinish.Day50, new SwarmTimingSet(
+                    Won: new SwarmTimings( "1200", "1200", "0", "0" ),
+                    Final: new SwarmTimings( "1104", "1104", "0", "1080" ),
+                    Easy: new SwarmTimings( "174", "156", "120", "166" ),
+                    Hard: new SwarmTimings( "610", "600", "84", "602" ),
+                    Weak: new SwarmTimings( "120", "120", "60", "0" ),
+                    Medium: new SwarmTimings( "482", "480", "120", "0" ) ) }
+            };
         }
 
-        // TAB cell coordinates are origin top left, before 45 degree rotation clockwise. Positive x is due SE, positive y is due SW.
+        // TAB cell coordinates are origin top left?, before 45 degree rotation clockwise. Positive x is due SE, positive y is due SW?
         internal enum CompassDirection
         {
             North,
@@ -340,10 +341,12 @@ namespace TABSAT
         protected readonly int cellsCount;
         protected readonly int commandCenterX;
         protected readonly int commandCenterY;
+        protected readonly LevelEntities entities;
         private readonly Regex layerDataRegex;
         private XElement generatedLevel;
         private XElement extension;
         private XElement mapDrawer;
+        private XElement extrasItems;
         private readonly SortedDictionary<MapLayers, LayerData> layerDataCache;
         private readonly MapNavigation.FlowGraph flowGraph;
 
@@ -364,6 +367,21 @@ namespace TABSAT
             return getFirstPropertyOfTypeNamed( c, "Complex", name );
         }
 
+        protected static void extractCoordinates( XElement property, out int x, out int y )
+        {
+            string xy = (string) property.Attribute( "value" );
+            string[] xySplit = xy.Split( ';' );
+            x = int.Parse( xySplit[0] );
+            y = int.Parse( xySplit[1] );
+        }
+
+        protected static void extractCoordinates( XElement property, out float x, out float y )
+        {
+            string xy = (string) property.Attribute( "value" );
+            string[] xySplit = xy.Split( ';' );
+            x = float.Parse( xySplit[0] );
+            y = float.Parse( xySplit[1] );
+        }
 
         internal SaveReader( string filesPath )
         {
@@ -394,11 +412,10 @@ namespace TABSAT
             //      <Properties>
             //        <Simple name="CurrentCommandCenterCell"
             XElement currentCommandCenterCell = getFirstSimplePropertyNamed( levelComplex, "CurrentCommandCenterCell" );
-            string xy = (string) currentCommandCenterCell.Attribute( "value" );
-            string[] xySplit = xy.Split( ';' );
-            commandCenterX = int.Parse( xySplit[0] );
-            commandCenterY = int.Parse( xySplit[1] );
+            extractCoordinates( currentCommandCenterCell, out commandCenterX, out commandCenterY );
             //Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
+
+            entities = new LevelEntities( levelComplex );
 
             layerDataRegex = new Regex( @"(?:\d+\|){2}(?<data>.+)", RegexOptions.Compiled );    //value="256|256|AAAA..."
             layerDataCache = new SortedDictionary<MapLayers, LayerData>();
@@ -426,16 +443,11 @@ namespace TABSAT
             return cellsCount;
         }
 
-        protected XElement getMapDrawer()
+        public ThemeType Theme()
         {
-            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
-            //                  <Properties>
-            //                    <Complex name="MapDrawer">
-            if( mapDrawer == null )
-            {
-                mapDrawer = getFirstComplexPropertyNamed( getDataExtension(), "MapDrawer" );
-            }
-            return mapDrawer;
+            XAttribute levelThemeType = getFirstSimplePropertyNamed( getMapDrawer(), "ThemeType" ).Attribute( "value" );
+            ThemeType theme = (ThemeType) Enum.Parse( typeof(ThemeType), levelThemeType.Value );
+            return theme;
         }
 
         protected XElement getGeneratedLevel()
@@ -462,6 +474,29 @@ namespace TABSAT
             return extension;
         }
 
+        protected XElement getMapDrawer()
+        {
+            //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
+            //                  <Properties>
+            //                    <Complex name="MapDrawer">
+            if( mapDrawer == null )
+            {
+                mapDrawer = getFirstComplexPropertyNamed( getDataExtension(), "MapDrawer" );
+            }
+            return mapDrawer;
+        }
+
+        protected XElement getExtraEntities()
+        {
+            //                    <Complex name="MapDrawer">
+            //                      <Properties>
+            //                        <Collection name="ExtraEntities" elementType="DXVision.DXEntity, DXVision">
+            if( extrasItems == null )
+            {
+                extrasItems = getFirstPropertyOfTypeNamed( getMapDrawer(), "Collection", "ExtraEntities" ).Element( "Items" );
+            }
+            return extrasItems;
+        }
 
         internal readonly struct LayerData
         {
@@ -626,7 +661,29 @@ namespace TABSAT
                 }
             }
 
-            // What about Fortress layer/entities, oil pools, food trucks, etc?
+            var impassibleTemplates = new[] { LevelEntities.OILPOOL_ID_TEMPLATE, LevelEntities.FortressBarLeft_ID_TEMPLATE, LevelEntities.FortressBarRight_ID_TEMPLATE, LevelEntities.TruckA_ID_TEMPLATE };
+            var impassibles = from c in getExtraEntities().Elements( "Complex" )
+                              where impassibleTemplates.Contains( (UInt64) getFirstSimplePropertyNamed( c, "IDTemplate" ).Attribute( "value" ) )
+                              select c;
+            foreach( var c in impassibles )
+            {
+                float p_x;
+                float p_y;
+                extractCoordinates( getFirstSimplePropertyNamed( c, "Position" ), out p_x, out p_y );
+                int s_x;
+                int s_y;
+                extractCoordinates( getFirstSimplePropertyNamed( c, "Size" ), out s_x, out s_y );
+                int corner_x = (int) p_x - ( s_x / 2 );
+                int corner_y = (int) p_y - ( s_y / 2 );
+                for( int x = 0; x < s_x; x++ )
+                {
+                    for( int y = 0; y < s_y; y++ )
+                    {
+                        int i = MapNavigation.axesToIndex( res, corner_x + x, corner_y + y );
+                        values[i] = NAVIGABLE_BLOCKED;
+                    }
+                }
+            }
 
             // Remove CC from navigable positions
             for( int x = -2; x <= 2; x++ )

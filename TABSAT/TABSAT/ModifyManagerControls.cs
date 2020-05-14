@@ -11,7 +11,6 @@ namespace TABSAT
         private readonly ModifyManager modifyManager;
         private readonly StatusWriterDelegate statusWriter;
         private readonly ModifySaveControls modifySaveControls;
-        private MapViewer mapViewer;
 
         public ModifyManagerControls( ModifyManager m, StatusWriterDelegate sW, string savesDirectory )
         {
@@ -113,8 +112,16 @@ namespace TABSAT
 
                     } )
                 );*/
-                mapViewer = new MapViewer( statusWriter, new SaveReader( extractedSave ) );
-                mapViewer.Show();
+                var mapData = new SaveReader( extractedSave );
+                var mapViewer = new MapViewerControl( mapData );
+                Form f = new Form();
+                f.Text = mapData.Name() + " - MapViewer";
+                f.Width = mapViewer.Width + 20;
+                f.Height = mapViewer.Height + 40;
+                mapViewer.Dock = DockStyle.Fill;
+                f.Controls.Add( mapViewer );
+                f.FormClosing += ( object sender, FormClosingEventArgs e ) => { mapViewer.clearCache(); };
+                f.Show();
             }
         }
 
@@ -233,7 +240,7 @@ namespace TABSAT
                 saveFileGroupBox.Enabled = true;            // For skipping
             }
 
-            determineReflectorResponsibility();
+            determineReflectorResponsibility( false );
         }
 
         private void reflectorStopRepackCheckBox_CheckedChanged( object sender, EventArgs e )
@@ -298,9 +305,9 @@ namespace TABSAT
             statusWriter( "New Save File created:\t" + newSaveFile );
         }
 
-        private void determineReflectorResponsibility()
+        private void determineReflectorResponsibility( bool wereRepacking = true )  // Should instead test modifyManager.getState()?
         {
-            if( reflectorStopRepackCheckBox.Checked )
+            if( wereRepacking ? reflectorStopRepackCheckBox.Checked : reflectorStopExtractCheckBox.Checked )
             {
                 modifyManager.stopReflector();
             }

@@ -2,33 +2,52 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using static TABSAT.MainWindow;
 using static TABSAT.SaveReader;
 
 namespace TABSAT
 {
-    public partial class MapViewer : Form
+    public partial class MapViewerControl : UserControl
     {
         private const int BASE_PIXELS_PER_CELL = 2;
+        //private const float X_TRANSFORM = 3 / 4;
+        //private const float Y_TRANSFORM = 15 / 16;
 
-        private readonly StatusWriterDelegate statusWriter;
         private MapData mapData;    // To fit diagonally, the image side would need to be Math.Sqrt( cells * cells / 2 ) * 2 ~= 362
+        private static readonly SortedDictionary<ThemeType, Color> backgroundMap;
         private static readonly SortedDictionary<MapLayers, SortedDictionary<byte, Brush>> layersBrushes;
         private static readonly Brush unknown = new SolidBrush( Color.HotPink );
         private static readonly Brush arrowBrush = new SolidBrush( Color.White );
         private static readonly Pen redPen = new Pen( Color.FromArgb( 0x7F, 0xFF, 0x00, 0x00 ) );
-        private readonly SortedDictionary<int, Image> terrainCache;
-        private readonly SortedDictionary<int, Image> fogCache;
-        private readonly SortedDictionary<int, Image> activityCache;
+        private readonly SortedDictionary<ViewLayer, SortedDictionary<int, Image>> layerCache;
         private readonly SortedDictionary<MapNavigation.Direction, Image> arrows;
-        static MapViewer()
+
+        private enum ViewLayer
         {
+            Terrain,
+            Fog,
+            Activity,
+            Navigable,
+            Distance,
+            Direction
+        }
+
+        static MapViewerControl()
+        {
+            backgroundMap = new SortedDictionary<ThemeType, Color> {
+                { ThemeType.FA, Color.FromArgb( 0xFF, 0x60, 0x60, 0x00 ) }, // 0x22, 0x6B, 0x22
+                { ThemeType.BR, Color.FromArgb( 0xFF, 0x50, 0x40, 0x10 ) }, // 0x30, 0x18, 0x0B
+                { ThemeType.TM, Color.FromArgb( 0xFF, 0x90, 0xB0, 0x90 ) },
+                { ThemeType.AL, Color.FromArgb( 0xFF, 0xF5, 0xF5, 0xFF ) }, // 0xCE, 0xF2, 0xFF
+                { ThemeType.DS, Color.FromArgb( 0xFF, 0xF0, 0xE5, 0xBC ) }, // 0xFF, 0xCB, 0x69
+                { ThemeType.VO, Color.LightSlateGray }                      // 0x23, 0x63, 0x58
+            };
+
             layersBrushes = new SortedDictionary<MapLayers, SortedDictionary<byte, Brush>>();
             Brush grass = new SolidBrush( Color.FromArgb( 0x7F, 0xAD, 0xFF, 0x2F ) );
             Brush water = new SolidBrush( Color.DeepSkyBlue );
-            Brush rock = new SolidBrush( Color.FromArgb( 0xFF, 0x80, 0x40, 0x00 ) );
+            Brush rock = new SolidBrush( Color.FromArgb( 0xFF, 0x40, 0x20, 0x00 ) );
             Brush trees = new SolidBrush( Color.DarkGreen );
-            Brush stone = new SolidBrush( Color.DarkGray );
+            Brush stone = new SolidBrush( Color.FromArgb( 0xA9, 0xA9, 0xB9, 0xA9 ) );
             Brush iron = new SolidBrush( Color.SteelBlue );
             Brush gold = new SolidBrush( Color.Yellow );
             //Brush fortress = new SolidBrush( Color.Black );
@@ -65,20 +84,18 @@ namespace TABSAT
             } );
         }
 
-        internal MapViewer( StatusWriterDelegate sW, MapData m )
+        internal MapViewerControl( MapData m )
         {
             InitializeComponent();
 
-            statusWriter = sW;
             mapData = m;
-            terrainCache = new SortedDictionary<int, Image>();
-            fogCache = new SortedDictionary<int, Image>();
-            activityCache = new SortedDictionary<int, Image>();
+            layerCache = new SortedDictionary<ViewLayer, SortedDictionary<int, Image>>();
+            foreach( ViewLayer layer in Enum.GetValues( typeof( ViewLayer ) ) )
+            {
+                layerCache[layer] = new SortedDictionary<int, Image>();
+            }
             arrows = new SortedDictionary<MapNavigation.Direction, Image>();
 
-            Text = "MapViewer - " + mapData.Name();
-
-            FormClosing += new FormClosingEventHandler( MapViewer_FormClosing );
             mapTrackBar.ValueChanged += new EventHandler( mapTrackBar_ValueChanged );
             terrainCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             fogCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
@@ -86,6 +103,9 @@ namespace TABSAT
             navigableCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             distanceCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             directionCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
+
+            gridCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
+            rotateCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
 
             updateMapImage( mapTrackBar.Value );
         }
@@ -113,58 +133,94 @@ namespace TABSAT
             Image map = new Bitmap( mapSize, mapSize );     // +1 for nicer grid, even though first pixels are cells covered in grid and last pixels are outside of cells but with grid
             using( Graphics mapGraphics = Graphics.FromImage( map ) )
             {
-                // Background, should use MapTheme for earth colour?
-                mapGraphics.Clear( Color.LightGray );
+                // Background
+                Color background;
+                if( !backgroundMap.TryGetValue( mapData.Theme(), out background ) )
+                {
+                    background = Color.LightGray;
+                }
+                mapGraphics.Clear( background );
 
                 if( terrainCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( terrainCache, cellSize, mapSize, MapLayers.Terrain, MapLayers.Objects/*, MapLayers.Fortress*/ ), 0, 0, mapSize, mapSize );
-                    // MapLayers.Roads, MapLayers.Pipes, MapLayers.Belts
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.Terrain, cellSize, mapSize ), 0, 0, mapSize, mapSize );
                 }
 
                 // MapLayers.Zombie
                 
                 if( fogCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( fogCache, cellSize, mapSize, MapLayers.Fog ), 0, 0, mapSize, mapSize );
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.Fog, cellSize, mapSize ), 0, 0, mapSize, mapSize );
                 }
                 
                 if( activityCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( activityCache, cellSize, mapSize, MapLayers.Activity ), 0, 0, mapSize, mapSize );
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.Activity, cellSize, mapSize ), 0, 0, mapSize, mapSize );
                 }
 
                 if( navigableCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( generateMapImage( mapSize, MapLayers.Navigable ), 0, 0, mapSize, mapSize );
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.Navigable, cellSize, mapSize ), 0, 0, mapSize, mapSize );
                 }
 
                 if( distanceCheckBox.Checked )
                 {
-                    drawDistance( cells, mapSize, mapGraphics );
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.Distance, cellSize, mapSize ), 0, 0, mapSize, mapSize );
                 }
 
                 if( directionCheckBox.Checked )
                 {
-                    drawDirection( cells, mapSize, mapGraphics );
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.Direction, cellSize, mapSize ), 0, 0, mapSize, mapSize );
                 }
 
-                // Grid
-                //drawGrid( cellSize, cells, mapGraphics );
+                if( gridCheckBox.Checked )
+                {
+                    // Grid
+                    drawGrid( cellSize, cells, mapGraphics );
+                }
 
-                // Transform to gaming view
-                //rotateImage( mapSize, mapGraphics, map );
+                if( rotateCheckBox.Checked )
+                {
+                    // Transform to gaming view
+                    rotateImage( mapSize, map, mapGraphics );
+                }
             }
 
             mapPictureBox.Image = map;
+            //mapPictureBox.Size = new Size( (int) ( mapSize * X_TRANSFORM ), (int) ( mapSize * Y_TRANSFORM ) );
         }
 
-        private Image getCachedImage( SortedDictionary<int, Image> cache, int cellSize, int mapSize, params MapLayers[] layers )
+        private Image getCachedImage( ViewLayer layer, int cellSize, int mapSize )
         {
+            SortedDictionary<int, Image> cache = layerCache[layer];
             Image map;
             if( !cache.TryGetValue( cellSize, out map ) )
             {
-                map = generateMapImage( mapSize, layers );
+                switch( layer )
+                {
+                    case ViewLayer.Terrain:
+                        map = generateMapImage( mapSize, MapLayers.Terrain, MapLayers.Objects/*, MapLayers.Fortress*/ );
+                        // MapLayers.Roads, MapLayers.Pipes, MapLayers.Belts
+                        break;
+                    case ViewLayer.Fog:
+                        map = generateMapImage( mapSize, MapLayers.Fog );
+                        break;
+                    case ViewLayer.Activity:
+                        map = generateMapImage( mapSize, MapLayers.Activity );
+                        break;
+                    case ViewLayer.Navigable:
+                        map = generateMapImage( mapSize, MapLayers.Navigable );
+                        break;
+                    case ViewLayer.Distance:
+                        map = generateDistanceImage( mapSize );
+                        break;
+                    case ViewLayer.Direction:
+                        map = generateDirectionImage( mapSize );
+                        break;
+                    default:
+                        map = new Bitmap( mapSize, mapSize );
+                        break;
+                }
                 cache[cellSize] = map;
             }
             return map;
@@ -239,35 +295,47 @@ namespace TABSAT
             }
         }
 
-        private void drawDistance( int cells, int mapSize, Graphics mapGraphics )
+        private Image generateDistanceImage( int mapSize )
         {
-            int cellSize = mapSize / cells;
-            for( int x = 0; x < cells; x++ )
+            Image map = new Bitmap( mapSize, mapSize );
+            using( Graphics mapGraphics = Graphics.FromImage( map ) )
             {
-                for( int y = 0; y < cells; y++ )
+                int cells = mapData.CellsCount();
+                int cellSize = mapSize / cells;
+                for( int x = 0; x < cells; x++ )
                 {
-                    var distance = mapData.getDistance( new MapNavigation.Position( x, y ) );
-                    var cell = distance == int.MaxValue ? 0 : Math.Max( 255 - ( (int) (distance * 1.5) ), 4 );
-                    Brush pathing = new SolidBrush( Color.FromArgb( 0x7F, cell, cell, cell ) );
-                    mapGraphics.FillRectangle( pathing, x * cellSize, y * cellSize, cellSize, cellSize );
-                }
-            }
-        }
-
-        private void drawDirection( int cells, int mapSize, Graphics mapGraphics )
-        {
-            int cellSize = mapSize / cells;
-            for( int x = 0; x < cells; x++ )
-            {
-                for( int y = 0; y < cells; y++ )
-                {
-                    var direction = mapData.getDirection( new MapNavigation.Position( x, y ) );
-                    if( direction != null )
+                    for( int y = 0; y < cells; y++ )
                     {
-                        mapGraphics.DrawImage( getArrow( (MapNavigation.Direction) direction, cellSize ), x * cellSize, y * cellSize, cellSize, cellSize );
+                        var distance = mapData.getDistance( new MapNavigation.Position( x, y ) );
+                        var cell = distance == int.MaxValue ? 0 : Math.Max( 255 - ( (int) ( distance * 1.75 ) ), 4 );
+                        Brush pathing = new SolidBrush( Color.FromArgb( 0x7F, cell, cell, cell ) );
+                        mapGraphics.FillRectangle( pathing, x * cellSize, y * cellSize, cellSize, cellSize );
                     }
                 }
             }
+            return map;
+        }
+
+        private Image generateDirectionImage( int mapSize )
+        {
+            Image map = new Bitmap( mapSize, mapSize );
+            using( Graphics mapGraphics = Graphics.FromImage( map ) )
+            {
+                int cells = mapData.CellsCount();
+                int cellSize = mapSize / cells;
+                for( int x = 0; x < cells; x++ )
+                {
+                    for( int y = 0; y < cells; y++ )
+                    {
+                        var direction = mapData.getDirection( new MapNavigation.Position( x, y ) );
+                        if( direction != null )
+                        {
+                            mapGraphics.DrawImage( getArrow( (MapNavigation.Direction) direction, cellSize ), x * cellSize, y * cellSize, cellSize, cellSize );
+                        }
+                    }
+                }
+            }
+            return map;
         }
 
         private Image getArrow( MapNavigation.Direction direction, int cellSize )
@@ -278,6 +346,8 @@ namespace TABSAT
                 arrow = new Bitmap( cellSize, cellSize );
                 using( Graphics arrowGraphics = Graphics.FromImage( arrow ) )
                 {
+                    arrowGraphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
                     Point[] points;
                     var quarter = cellSize / 4;
                     var half = cellSize / 2;
@@ -324,46 +394,49 @@ namespace TABSAT
 
         private void drawGrid( int cellSize, int cells, Graphics mapGraphics )
         {
-            //int mapSize = cells * cellSize;
             Pen pen = new Pen( Brushes.White );
-            for( int x = 0; x < cells; x++ )
+            for( int x = 1; x < cells; x++ )
             {
                 mapGraphics.DrawLine( pen, x * cellSize, 0, x * cellSize, cells * cellSize );
             }
-            for( int y = 0; y < cells; y++ )
+            for( int y = 1; y < cells; y++ )
             {
                 mapGraphics.DrawLine( pen, 0, y * cellSize, cells * cellSize, y * cellSize );
             }
         }
 
-        private void rotateImage( int mapSize, Graphics mapGraphics, Image map )
+        private void rotateImage( int mapSize, Image map, Graphics outputGraphics )
         {
-            // Rotate the image about the center
-            int center = mapSize / 2;
-            mapGraphics.TranslateTransform( center, center );
-            mapGraphics.RotateTransform( 45 );
-            mapGraphics.TranslateTransform( -center, -center );
-            mapGraphics.DrawImage( map, 0, 0 );
-            mapGraphics.ResetTransform();
+            Image rotatedMap = new Bitmap( mapSize, mapSize/*mapSize * 3 / 4, mapSize * 15 / 16*/ );
+            using( Graphics newGraphics = Graphics.FromImage( rotatedMap ) )
+            {
+                newGraphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+
+                newGraphics.Clear( Color.Black );
+                // Rotate the image about the center
+                int center = mapSize / 2;
+                newGraphics.TranslateTransform( center, center );
+                newGraphics.RotateTransform( 45 );
+                newGraphics.TranslateTransform( -center, -center );
+                newGraphics.DrawImage( map, 0, 0/*-mapSize / 24, mapSize / 16*/ );
+                newGraphics.ResetTransform();
+
+                //outputGraphics.Clear( Color.Black );
+                outputGraphics.DrawImage( rotatedMap, 0, 0/*-mapSize / 8, -mapSize / 11*/ );
+            }
         }
 
-        private void MapViewer_FormClosing( object sender, FormClosingEventArgs e )
+        internal void clearCache()
         {
-            foreach( var map in terrainCache.Values )
+            foreach( ViewLayer layer in Enum.GetValues( typeof( ViewLayer ) ) )
             {
-                map.Dispose();
+                var cache = layerCache[layer];
+                foreach( var map in cache.Values )
+                {
+                    map.Dispose();
+                }
+                cache.Clear();
             }
-            terrainCache.Clear();
-            foreach( var map in fogCache.Values )
-            {
-                map.Dispose();
-            }
-            fogCache.Clear();
-            foreach( var map in activityCache.Values )
-            {
-                map.Dispose();
-            }
-            activityCache.Clear();
         }
     }
 }

@@ -137,10 +137,9 @@ namespace TABSAT
             public MapPosition( XElement i, MapData cc )
             {
                 ID = (UInt64) i.Element( "Simple" ).Attribute( "value" );
-                string xy = (string) getFirstSimplePropertyNamed( i.Element( "Complex" ), "Position" ).Attribute( "value" );
-                string[] xySplit = xy.Split( ';' );
-                float x = float.Parse( xySplit[0] );
-                float y = float.Parse( xySplit[1] );
+                float x;
+                float y;
+                extractCoordinates( getFirstSimplePropertyNamed( i.Element( "Complex" ), "Position" ), out x, out y );
 
                 if( x <= cc.CCX() )
                 {
@@ -168,14 +167,12 @@ namespace TABSAT
         }
         private static readonly IComparer<MapPosition> mapPositionDistanceComparer = new DistanceComparer();
 
-        private readonly LevelEntities entities;
         private readonly MiniMapIcons icons;
         private UInt64 nextNewID;
 
 
         public SaveEditor( string filesPath ) : base( filesPath )
         {
-            entities = new LevelEntities( levelComplex );
             icons = new MiniMapIcons( levelComplex );
 
             nextNewID = 0;
@@ -217,7 +214,7 @@ namespace TABSAT
             }
 
             //uniqueIDs.UnionWith( entities.getIDs() );
-            uniqueIDs = entities.getIDs();
+            uniqueIDs = entities.getAllIDs();
             //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
 
             /*
@@ -250,8 +247,7 @@ namespace TABSAT
                               <Properties>
                                 <Simple name="ID" value="
              */
-            XElement extrasItems = getFirstPropertyOfTypeNamed( getMapDrawer(), "Collection", "ExtraEntities" ).Element( "Items" );
-            var extrasIDs = from c in extrasItems.Elements( "Complex" )
+            var extrasIDs = from c in getExtraEntities().Elements( "Complex" )
                             select getFirstSimplePropertyNamed( c, "ID" ).Attribute( "value" ).Value;
             //Console.WriteLine( "extrasIDs: " + extrasIDs.Count() );
             addIDs( extrasIDs );
@@ -316,7 +312,7 @@ namespace TABSAT
               * This only really works for relatively few, higher impact use-cases of 'new' IDs.
               */
         }
-        
+
         internal void scalePopulation( decimal scale )
         {
             if( scale < 0.0M )
@@ -329,18 +325,19 @@ namespace TABSAT
                 return;     // Nothing needs be done
             }
 
-            SortedDictionary<ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<ScalableZombieTypes, decimal>();
-            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWeakA, scale );
-            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWeakB, scale );
-            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWeakC, scale );
-            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWorkerA, scale );
-            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWorkerB, scale );
-            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieMediumA, scale );
-            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieMediumB, scale );
-            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieDressedA, scale );
-            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieStrongA, scale );
-            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieVenom, scale );
-            scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieHarpy, scale );
+            SortedDictionary<ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<ScalableZombieTypes, decimal> {
+                { ScalableZombieTypes.ZombieWeakA, scale },
+                { ScalableZombieTypes.ZombieWeakB, scale },
+                { ScalableZombieTypes.ZombieWeakC, scale },
+                { ScalableZombieTypes.ZombieWorkerA, scale },
+                { ScalableZombieTypes.ZombieWorkerB, scale },
+                { ScalableZombieTypes.ZombieMediumA, scale },
+                { ScalableZombieTypes.ZombieMediumB, scale },
+                { ScalableZombieTypes.ZombieDressedA, scale },
+                { ScalableZombieTypes.ZombieStrongA, scale },
+                { ScalableZombieTypes.ZombieVenom, scale },
+                { ScalableZombieTypes.ZombieHarpy, scale }
+            };
             scalePopulation( scalableZombieTypeFactors );
         }
 
@@ -462,6 +459,8 @@ namespace TABSAT
                 //Console.WriteLine( "multiples: " + multiples + ", chance: " + chance );
 
                 var col = t.Element( "Collection" );
+                var cap = getCapacity( col );
+                //Console.WriteLine( zombieType + ": " + cap.Value );
 
                 if( scale < 1.0M )
                 {
@@ -473,7 +472,7 @@ namespace TABSAT
                         // No need to iterate and count
                         col.Element( "Items" ).RemoveNodes();
 
-                        getCapacity( col ).SetValue( 0 );
+                        cap.SetValue( 0 );
                     }
                     else
                     {
@@ -494,7 +493,6 @@ namespace TABSAT
                         }
 
                         // Update capacity count
-                        var cap = getCapacity( col );
                         UInt64 newCap = (UInt64) ( Convert.ToInt32( cap.Value ) - selectedZombies.Count );  // Assume actual UInt64 Capacity value is positive Int32 size and no less than Count removed
                         cap.SetValue( newCap );
                         //Console.WriteLine( "newCap: " + newCap );
@@ -526,7 +524,6 @@ namespace TABSAT
                     }
 
                     // Update capacity count
-                    var cap = getCapacity( col );
                     UInt64 newCap = Convert.ToUInt64( cap.Value ) + (UInt64) selectedZombies.Count;
                     cap.SetValue( newCap );
                     //Console.WriteLine( "newCap: " + newCap );
@@ -543,7 +540,7 @@ namespace TABSAT
                 return;     // Nothing needs be done
             }
 
-            var selectedZombies = entities.scaleEntities( giantsNotMutants ? LevelEntities.GIANT_TYPE : LevelEntities.MUTANT_TYPE, scale, this );
+            var selectedZombies = entities.scaleEntities( giantsNotMutants ? LevelEntities.GIANT_ID_TEMPLATE : LevelEntities.MUTANT_ID_TEMPLATE, scale, this );
 
             if( scale < 1.0M )
             {
@@ -565,13 +562,13 @@ namespace TABSAT
         
         internal void replaceHugeZombies( bool toGiantNotMutant )
         {
-            var mutants = entities.getIDs( LevelEntities.MUTANT_TYPE );
+            var mutants = entities.getIDs( LevelEntities.MUTANT_ID_TEMPLATE );
             if( toGiantNotMutant && !mutants.Any() )
             {
                 //Console.WriteLine( "No Mutants to replace." );
                 return;
             }
-            var giants = entities.getIDs( LevelEntities.GIANT_TYPE );
+            var giants = entities.getIDs( LevelEntities.GIANT_ID_TEMPLATE );
             if( !toGiantNotMutant && !giants.Any() )
             {
                 //Console.WriteLine( "No Giants to replace." );
@@ -596,13 +593,13 @@ namespace TABSAT
         
         internal void relocateMutants( bool toGiantNotMutant, bool perDirection )
         {
-            var mutants = entities.getPositions( LevelEntities.MUTANT_TYPE, this );
+            var mutants = entities.getPositions( LevelEntities.MUTANT_ID_TEMPLATE, this );
             if( !mutants.Any() )
             {
                 //Console.WriteLine( "No Mutants to relocate." );
                 return;
             }
-            var giants = entities.getPositions( LevelEntities.GIANT_TYPE, this );
+            var giants = entities.getPositions( LevelEntities.GIANT_ID_TEMPLATE, this );
 
             void relocateMutants( ICollection<MapPosition> movingMutants, MapPosition farthest )
             {
@@ -719,7 +716,7 @@ namespace TABSAT
                     farthest = globalFarthestMutant;
                 }
 
-                var movingMutants = new List<MapPosition>( entities.getIDs( LevelEntities.MUTANT_TYPE ).Count );
+                var movingMutants = new List<MapPosition>( entities.getIDs( LevelEntities.MUTANT_ID_TEMPLATE ).Count );
                 foreach( var m in mutantsPerDirection.Values )
                 {
                     movingMutants.AddRange( m );
@@ -743,22 +740,22 @@ namespace TABSAT
                 return;     // Nothing needs be done
             }
 
-            string vodType;
+            UInt64 vodTemplate;
             switch( size )
             {
                 default:
                 case VodSizes.SMALL:
-                    vodType = LevelEntities.VOD_SMALL_TYPE;
+                    vodTemplate = LevelEntities.VOD_SMALL_ID_TEMPLATE;
                     break;
                 case VodSizes.MEDIUM:
-                    vodType = LevelEntities.VOD_MEDIUM_TYPE;
+                    vodTemplate = LevelEntities.VOD_MEDIUM_ID_TEMPLATE;
                     break;
                 case VodSizes.LARGE:
-                    vodType = LevelEntities.VOD_LARGE_TYPE;
+                    vodTemplate = LevelEntities.VOD_LARGE_ID_TEMPLATE;
                     break;
             }
 
-            entities.scaleVODs( vodType, scale, this );
+            entities.scaleVODs( vodTemplate, scale, this );
         }
 
         internal void removeFog( uint radius = 0 )
@@ -967,7 +964,7 @@ namespace TABSAT
              * (1+ WareHouse count) * 50 for non-gold resources doesn't account for mayors that increase CC storage, but should only be an underestimate and safe to set to at least this much.
              */
 
-            int storesCapacity = (1 + entities.getIDs( LevelEntities.WAREHOUSE_TYPE ).Count ) * RESOURCE_STORE_CAPACITY;   // "1+" assumes base CC storage, no mayor +25/+50 upgrades
+            int storesCapacity = (1 + entities.getIDs( (UInt64) GiftableTypes.WareHouse ).Count ) * RESOURCE_STORE_CAPACITY;   // "1+" assumes base CC storage, no mayor +25/+50 upgrades
 
             // Update CC stored values, per resource
             if( gold )

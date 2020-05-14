@@ -1,6 +1,6 @@
 ﻿namespace TABSAT
 {
-    partial class MapViewer
+    partial class MapViewerControl
     {
         /// <summary>
         /// Required designer variable.
@@ -38,11 +38,15 @@
             this.fogCheckBox = new System.Windows.Forms.CheckBox();
             this.terrainCheckBox = new System.Windows.Forms.CheckBox();
             this.distanceCheckBox = new System.Windows.Forms.CheckBox();
+            this.gridCheckBox = new System.Windows.Forms.CheckBox();
             this.zoomLabel = new System.Windows.Forms.Label();
+            this.rotateCheckBox = new System.Windows.Forms.CheckBox();
+            this.optionsGroupBox = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.mapTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).BeginInit();
             this.mapPanel.SuspendLayout();
             this.layersGroupBox.SuspendLayout();
+            this.optionsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // mapTrackBar
@@ -50,12 +54,12 @@
             this.mapTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mapTrackBar.LargeChange = 2;
-            this.mapTrackBar.Location = new System.Drawing.Point(1045, 175);
+            this.mapTrackBar.Location = new System.Drawing.Point(1045, 247);
             this.mapTrackBar.Maximum = 8;
             this.mapTrackBar.Minimum = 1;
             this.mapTrackBar.Name = "mapTrackBar";
             this.mapTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.mapTrackBar.Size = new System.Drawing.Size(45, 864);
+            this.mapTrackBar.Size = new System.Drawing.Size(45, 792);
             this.mapTrackBar.TabIndex = 1;
             this.mapTrackBar.Value = 2;
             // 
@@ -92,7 +96,7 @@
             this.layersGroupBox.Controls.Add(this.distanceCheckBox);
             this.layersGroupBox.Location = new System.Drawing.Point(1045, 12);
             this.layersGroupBox.Name = "layersGroupBox";
-            this.layersGroupBox.Size = new System.Drawing.Size(89, 157);
+            this.layersGroupBox.Size = new System.Drawing.Size(89, 158);
             this.layersGroupBox.TabIndex = 3;
             this.layersGroupBox.TabStop = false;
             this.layersGroupBox.Text = "Show Layers";
@@ -130,8 +134,6 @@
             // fogCheckBox
             // 
             this.fogCheckBox.AutoSize = true;
-            this.fogCheckBox.Checked = true;
-            this.fogCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.fogCheckBox.Location = new System.Drawing.Point(6, 42);
             this.fogCheckBox.Name = "fogCheckBox";
             this.fogCheckBox.Size = new System.Drawing.Size(44, 17);
@@ -161,6 +163,16 @@
             this.distanceCheckBox.Text = "Distance";
             this.distanceCheckBox.UseVisualStyleBackColor = true;
             // 
+            // gridCheckBox
+            // 
+            this.gridCheckBox.AutoSize = true;
+            this.gridCheckBox.Location = new System.Drawing.Point(6, 19);
+            this.gridCheckBox.Name = "gridCheckBox";
+            this.gridCheckBox.Size = new System.Drawing.Size(75, 17);
+            this.gridCheckBox.TabIndex = 8;
+            this.gridCheckBox.Text = "Show Grid";
+            this.gridCheckBox.UseVisualStyleBackColor = true;
+            // 
             // zoomLabel
             // 
             this.zoomLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
@@ -171,11 +183,34 @@
             this.zoomLabel.TabIndex = 4;
             this.zoomLabel.Text = "Zoom";
             // 
+            // rotateCheckBox
+            // 
+            this.rotateCheckBox.AutoSize = true;
+            this.rotateCheckBox.Location = new System.Drawing.Point(6, 42);
+            this.rotateCheckBox.Name = "rotateCheckBox";
+            this.rotateCheckBox.Size = new System.Drawing.Size(58, 17);
+            this.rotateCheckBox.TabIndex = 9;
+            this.rotateCheckBox.Text = "Rotate";
+            this.rotateCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // optionsGroupBox
+            // 
+            this.optionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.optionsGroupBox.Controls.Add(this.rotateCheckBox);
+            this.optionsGroupBox.Controls.Add(this.gridCheckBox);
+            this.optionsGroupBox.Location = new System.Drawing.Point(1045, 176);
+            this.optionsGroupBox.Name = "optionsGroupBox";
+            this.optionsGroupBox.Size = new System.Drawing.Size(89, 65);
+            this.optionsGroupBox.TabIndex = 5;
+            this.optionsGroupBox.TabStop = false;
+            this.optionsGroupBox.Text = "Options";
+            // 
             // MapViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1146, 1048);
+            this.Controls.Add(this.optionsGroupBox);
             this.Controls.Add(this.layersGroupBox);
             this.Controls.Add(this.zoomLabel);
             this.Controls.Add(this.mapTrackBar);
@@ -188,6 +223,8 @@
             this.mapPanel.PerformLayout();
             this.layersGroupBox.ResumeLayout(false);
             this.layersGroupBox.PerformLayout();
+            this.optionsGroupBox.ResumeLayout(false);
+            this.optionsGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -205,5 +242,8 @@
         private System.Windows.Forms.CheckBox navigableCheckBox;
         private System.Windows.Forms.CheckBox distanceCheckBox;
         private System.Windows.Forms.CheckBox directionCheckBox;
+        private System.Windows.Forms.CheckBox gridCheckBox;
+        private System.Windows.Forms.CheckBox rotateCheckBox;
+        private System.Windows.Forms.GroupBox optionsGroupBox;
     }
 }
