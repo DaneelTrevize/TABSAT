@@ -17,6 +17,7 @@ namespace TABSAT
         SaveReader.LayerData getLayerData( SaveReader.MapLayers layer );
         int getDistance( MapNavigation.Position position );
         MapNavigation.Direction? getDirection( MapNavigation.Position position );
+        int getNavigableCount( int x, int y, int res );
     }
 
     class SaveReader : MapData
@@ -139,7 +140,7 @@ namespace TABSAT
             VENOM,
             HARPY
         }
-        private static readonly Dictionary<ScalableZombieGroups, SortedSet<ScalableZombieTypes>> scalableZombieTypeGroups;
+        protected static readonly Dictionary<ScalableZombieGroups, SortedSet<ScalableZombieTypes>> scalableZombieTypeGroups;
 
         protected readonly struct SwarmTimings
         {
@@ -349,6 +350,7 @@ namespace TABSAT
         private XElement extrasItems;
         private readonly SortedDictionary<MapLayers, LayerData> layerDataCache;
         private readonly MapNavigation.FlowGraph flowGraph;
+        private readonly MapNavigation.NavQuadTree navQuadTree;
 
         internal static XElement getFirstPropertyOfTypeNamed( XElement c, string type, string name )    // 5 Collections, 3 Dictionaries
         {
@@ -419,9 +421,28 @@ namespace TABSAT
 
             layerDataRegex = new Regex( @"(?:\d+\|){2}(?<data>.+)", RegexOptions.Compiled );    //value="256|256|AAAA..."
             layerDataCache = new SortedDictionary<MapLayers, LayerData>();
+
             flowGraph = new MapNavigation.FlowGraph( cellsCount, getLayerData( MapLayers.Navigable ).values );
             flowGraph.floodFromCC( commandCenterX, commandCenterY );    // Should be constructor?
+
+            navQuadTree = new MapNavigation.NavQuadTree( 0, 0, cellsCount );
+            populateNavQuadTree();
         }
+
+        private void populateNavQuadTree()
+        {
+            for( int x = 0; x < cellsCount; x++ )
+            {
+                for( int y = 0; y < cellsCount; y++ )
+                {
+                    if( getDistance( new MapNavigation.Position( x, y ) ) != MapNavigation.UNNAVIGABLE )
+                    {
+                        navQuadTree.addNavigable( x, y );
+                    }
+                }
+            }
+        }
+
 
         public string Name()
         {
@@ -706,6 +727,11 @@ namespace TABSAT
         public MapNavigation.Direction? getDirection( MapNavigation.Position position )
         {
             return flowGraph.getDirection( position );
+        }
+
+        public int getNavigableCount( int x, int y, int res )
+        {
+            return navQuadTree.getCount( x, y, res );
         }
     }
 }

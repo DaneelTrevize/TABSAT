@@ -28,7 +28,8 @@ namespace TABSAT
             Activity,
             Navigable,
             Distance,
-            Direction
+            Direction,
+            NavQuads
         }
 
         static MapViewerControl()
@@ -96,29 +97,46 @@ namespace TABSAT
             }
             arrows = new SortedDictionary<MapNavigation.Direction, Image>();
 
-            mapTrackBar.ValueChanged += new EventHandler( mapTrackBar_ValueChanged );
+            zoomTrackBar.ValueChanged += new EventHandler( zoomTrackBar_ValueChanged );
             terrainCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             fogCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             activityCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             navigableCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             distanceCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             directionCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
+            navQuadsCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
+            navQuadsTrackBar.ValueChanged += new EventHandler( navQuadsTrackBar_ValueChanged );
 
             gridCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             rotateCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
 
-            updateMapImage( mapTrackBar.Value );
+            updateMapImage( zoomTrackBar.Value );
         }
 
-        private void mapTrackBar_ValueChanged( object sender, EventArgs e )
+        private void zoomTrackBar_ValueChanged( object sender, EventArgs e )
         {
-            //statusWriter( "MapViewer zoom now: " + mapTrackBar.Value );
-            updateMapImage( mapTrackBar.Value );
+            //statusWriter( "MapViewer zoom now: " + zoomTrackBar.Value );
+            updateMapImage( zoomTrackBar.Value );
         }
-        
+
         private void layersCheckBox_CheckedChanged( object sender, EventArgs e )
         {
-            updateMapImage( mapTrackBar.Value );  // Regenerate for current image settings
+            updateMapImage( zoomTrackBar.Value );  // Regenerate for current image settings
+        }
+
+        private void navQuadsTrackBar_ValueChanged( object sender, EventArgs e )
+        {
+            var cache = layerCache[ViewLayer.NavQuads];
+            foreach( var map in cache.Values )
+            {
+                map.Dispose();
+            }
+            cache.Clear();
+
+            if( navQuadsCheckBox.Checked )
+            {
+                updateMapImage( zoomTrackBar.Value );
+            }
         }
 
         private void updateMapImage( int zoom )
@@ -173,6 +191,11 @@ namespace TABSAT
                     mapGraphics.DrawImage( getCachedImage( ViewLayer.Direction, cellSize, mapSize ), 0, 0, mapSize, mapSize );
                 }
 
+                if( navQuadsCheckBox.Checked )
+                {
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.NavQuads, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                }
+
                 if( gridCheckBox.Checked )
                 {
                     // Grid
@@ -216,6 +239,9 @@ namespace TABSAT
                         break;
                     case ViewLayer.Direction:
                         map = generateDirectionImage( mapSize );
+                        break;
+                    case ViewLayer.NavQuads:
+                        map = generateNavQuadsImage( mapSize );
                         break;
                     default:
                         map = new Bitmap( mapSize, mapSize );
@@ -307,7 +333,7 @@ namespace TABSAT
                     for( int y = 0; y < cells; y++ )
                     {
                         var distance = mapData.getDistance( new MapNavigation.Position( x, y ) );
-                        var cell = distance == int.MaxValue ? 0 : Math.Max( 255 - ( (int) ( distance * 1.75 ) ), 4 );
+                        var cell = distance == MapNavigation.UNNAVIGABLE ? 0 : Math.Max( 255 - ( (int) ( distance * 1.75 ) ), 4 );
                         Brush pathing = new SolidBrush( Color.FromArgb( 0x7F, cell, cell, cell ) );
                         mapGraphics.FillRectangle( pathing, x * cellSize, y * cellSize, cellSize, cellSize );
                     }
@@ -332,6 +358,30 @@ namespace TABSAT
                         {
                             mapGraphics.DrawImage( getArrow( (MapNavigation.Direction) direction, cellSize ), x * cellSize, y * cellSize, cellSize, cellSize );
                         }
+                    }
+                }
+            }
+            return map;
+        }
+
+        private Image generateNavQuadsImage( int mapSize )
+        {
+            Image map = new Bitmap( mapSize, mapSize );
+            using( Graphics mapGraphics = Graphics.FromImage( map ) )
+            {
+                int cells = mapData.CellsCount();
+                int cellSize = mapSize / cells;
+                int quadRes = (int) Math.Pow( 2, navQuadsTrackBar.Value );
+                int maxPerQuad = quadRes * quadRes;
+                int quadSize = quadRes * cellSize;
+                for( int x = 0; x < cells; x += quadRes )
+                {
+                    for( int y = 0; y < cells; y += quadRes )
+                    {
+                        var navCount = mapData.getNavigableCount( x, y, quadRes );
+                        var density = navCount * 255 / maxPerQuad;
+                        Brush densityBrush = new SolidBrush( Color.FromArgb( 0x7F, density, density, density ) );
+                        mapGraphics.FillRectangle( densityBrush, x * cellSize, y * cellSize, quadSize, quadSize );
                     }
                 }
             }

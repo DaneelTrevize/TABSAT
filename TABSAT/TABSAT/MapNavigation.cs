@@ -23,6 +23,7 @@ namespace TABSAT
         //private const Direction ORDINALS = Direction.NORTHEAST | Direction.SOUTHEAST | Direction.SOUTHWEST | Direction.NORTHWEST;
         private static readonly SortedSet<Direction> CARDINALS = new SortedSet<Direction> { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
         private static readonly SortedSet<Direction> ORDINALS = new SortedSet<Direction> { Direction.NORTHEAST, Direction.SOUTHEAST, Direction.SOUTHWEST, Direction.NORTHWEST };
+        internal const int UNNAVIGABLE = int.MaxValue;
 
         private static Direction Reverse( Direction d )
         {
@@ -169,7 +170,7 @@ namespace TABSAT
                 aroundCC.Add( new Position( CCX + 3, CCY ), Direction.NORTHWEST );
                 aroundCC.Add( new Position( CCX, CCY + 3 ), Direction.NORTHEAST );
 
-                flood( aroundCC, 1, int.MaxValue );
+                flood( aroundCC, 1, UNNAVIGABLE );
 
                 favourFlow( ORDINALS );
             }
@@ -344,7 +345,7 @@ namespace TABSAT
                 int distance;
                 if( !ccDistances.TryGetValue( position, out distance ) )
                 {
-                    distance = int.MaxValue;
+                    distance = UNNAVIGABLE;
                 }
                 return distance;
             }
@@ -357,6 +358,142 @@ namespace TABSAT
                     return null;
                 }
                 return direction;
+            }
+        }
+
+        internal class NavQuadTree
+        {
+            private const int RES_LIMIT = 2;
+
+            private readonly int CornerX;       // North (W/S) corner of covered coords
+            private readonly int CornerY;       // North (W/S) corner of covered coords
+            private readonly int Resolution;    // Length of sides of covered square. Power of 2.
+
+            private int count;
+            private NavQuadTree northQuad;
+            private NavQuadTree eastQuad;
+            private NavQuadTree southQuad;
+            private NavQuadTree westQuad;
+
+            internal NavQuadTree( int x, int y, int res )
+            {
+                if( x < 0 || y < 0 )
+                {
+                    throw new ArgumentOutOfRangeException( "x and y coordinates must not be negative." );
+                }
+                if( res == 0 || ( res & (res - 1)) != 0 )
+                {
+                    throw new ArgumentOutOfRangeException( "res must be a positive power of 2." );
+                }
+                CornerX = x;
+                CornerY = y;
+                Resolution = res;
+
+                count = 0;
+                northQuad = null;
+                eastQuad = null;
+                southQuad = null;
+                westQuad = null;
+            }
+
+            internal int getCount( int x, int y, int res )
+            {
+                if( !IsWithinQuad( x, y ) )
+                {
+                    throw new ArgumentOutOfRangeException( "x or y not within quad." );
+                }
+
+                // Are we deep enough?
+                if( Resolution == res )
+                {
+                    return count;
+                }
+                else
+                {
+                    // Can we skip going deeper?
+                    if( count == 0 )
+                    {
+                        return 0;
+                    }
+                    // Find the corresponding quad and recurse
+                    NavQuadTree tree = SubTree( getDir( x, y ) );
+                    return tree == null ? 0 : tree.getCount( x, y, res );
+                }
+            }
+
+            private bool IsWithinQuad( int x, int y )
+            {
+                if( x < CornerX || x >= CornerX + Resolution )
+                {
+                    return false;
+                }
+                if( y < CornerY || y >= CornerY + Resolution )
+                {
+                    return false;
+                }
+                return true;
+            }
+
+            private SaveReader.CompassDirection getDir( int x, int y )
+            {
+                if( x - CornerX < Resolution / 2 )
+                {
+                    // N or W
+                    return ( y - CornerY < Resolution / 2 ) ? SaveReader.CompassDirection.North : SaveReader.CompassDirection.West;
+                }
+                else
+                {
+                    // E or S
+                    return ( y - CornerY < Resolution / 2 ) ? SaveReader.CompassDirection.East : SaveReader.CompassDirection.South;
+                }
+            }
+
+            private ref NavQuadTree SubTree( SaveReader.CompassDirection dir )
+            {
+                ref NavQuadTree tree = ref southQuad;
+                switch( dir )
+                {
+                    case SaveReader.CompassDirection.North:
+                        tree = ref northQuad;
+                        break;
+                    case SaveReader.CompassDirection.East:
+                        tree = ref eastQuad;
+                        break;
+                    case SaveReader.CompassDirection.South:
+                        tree = ref southQuad;
+                        break;
+                    case SaveReader.CompassDirection.West:
+                        tree = ref westQuad;
+                        break;
+                }
+                return ref tree;
+            }
+
+            internal void addNavigable( int x, int y )
+            {
+                if( !IsWithinQuad( x, y ) )
+                {
+                    throw new ArgumentOutOfRangeException( "x or y not within quad." );
+                }
+
+                count += 1;
+
+                // Should we expand the tree?
+                if( Resolution > RES_LIMIT )
+                {
+                    SaveReader.CompassDirection dir = getDir( x, y );
+                    ref NavQuadTree tree = ref SubTree( dir );
+
+                    if( tree == null )
+                    {
+                        int newRes = Resolution / 2;
+                        int newX = dir == SaveReader.CompassDirection.North || dir == SaveReader.CompassDirection.West ? CornerX : CornerX + newRes;
+                        int newY = dir == SaveReader.CompassDirection.North || dir == SaveReader.CompassDirection.East ? CornerY : CornerY + newRes;
+                        tree = new NavQuadTree( newX, newY, newRes );
+                    }
+
+                    tree.addNavigable( x, y );
+                }
             }
         }
     }

@@ -28,10 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.mapTrackBar = new System.Windows.Forms.TrackBar();
+            this.zoomTrackBar = new System.Windows.Forms.TrackBar();
             this.mapPictureBox = new System.Windows.Forms.PictureBox();
             this.mapPanel = new System.Windows.Forms.Panel();
             this.layersGroupBox = new System.Windows.Forms.GroupBox();
+            this.navQuadLabel = new System.Windows.Forms.Label();
+            this.navQuadsTrackBar = new System.Windows.Forms.TrackBar();
+            this.navQuadsCheckBox = new System.Windows.Forms.CheckBox();
             this.directionCheckBox = new System.Windows.Forms.CheckBox();
             this.navigableCheckBox = new System.Windows.Forms.CheckBox();
             this.activityCheckBox = new System.Windows.Forms.CheckBox();
@@ -42,26 +45,27 @@
             this.zoomLabel = new System.Windows.Forms.Label();
             this.rotateCheckBox = new System.Windows.Forms.CheckBox();
             this.optionsGroupBox = new System.Windows.Forms.GroupBox();
-            ((System.ComponentModel.ISupportInitialize)(this.mapTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).BeginInit();
             this.mapPanel.SuspendLayout();
             this.layersGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.navQuadsTrackBar)).BeginInit();
             this.optionsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
-            // mapTrackBar
+            // zoomTrackBar
             // 
-            this.mapTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.zoomTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.mapTrackBar.LargeChange = 2;
-            this.mapTrackBar.Location = new System.Drawing.Point(1045, 247);
-            this.mapTrackBar.Maximum = 8;
-            this.mapTrackBar.Minimum = 1;
-            this.mapTrackBar.Name = "mapTrackBar";
-            this.mapTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.mapTrackBar.Size = new System.Drawing.Size(45, 792);
-            this.mapTrackBar.TabIndex = 1;
-            this.mapTrackBar.Value = 2;
+            this.zoomTrackBar.LargeChange = 2;
+            this.zoomTrackBar.Location = new System.Drawing.Point(1045, 410);
+            this.zoomTrackBar.Maximum = 8;
+            this.zoomTrackBar.Minimum = 1;
+            this.zoomTrackBar.Name = "zoomTrackBar";
+            this.zoomTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.zoomTrackBar.Size = new System.Drawing.Size(45, 629);
+            this.zoomTrackBar.TabIndex = 1;
+            this.zoomTrackBar.Value = 2;
             // 
             // mapPictureBox
             // 
@@ -88,6 +92,9 @@
             // layersGroupBox
             // 
             this.layersGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.layersGroupBox.Controls.Add(this.navQuadLabel);
+            this.layersGroupBox.Controls.Add(this.navQuadsTrackBar);
+            this.layersGroupBox.Controls.Add(this.navQuadsCheckBox);
             this.layersGroupBox.Controls.Add(this.directionCheckBox);
             this.layersGroupBox.Controls.Add(this.navigableCheckBox);
             this.layersGroupBox.Controls.Add(this.activityCheckBox);
@@ -96,10 +103,41 @@
             this.layersGroupBox.Controls.Add(this.distanceCheckBox);
             this.layersGroupBox.Location = new System.Drawing.Point(1045, 12);
             this.layersGroupBox.Name = "layersGroupBox";
-            this.layersGroupBox.Size = new System.Drawing.Size(89, 158);
+            this.layersGroupBox.Size = new System.Drawing.Size(89, 321);
             this.layersGroupBox.TabIndex = 3;
             this.layersGroupBox.TabStop = false;
             this.layersGroupBox.Text = "Show Layers";
+            // 
+            // navQuadLabel
+            // 
+            this.navQuadLabel.AutoSize = true;
+            this.navQuadLabel.Location = new System.Drawing.Point(54, 234);
+            this.navQuadLabel.Name = "navQuadLabel";
+            this.navQuadLabel.Size = new System.Drawing.Size(34, 26);
+            this.navQuadLabel.TabIndex = 9;
+            this.navQuadLabel.Text = "Quad\r\nZoom";
+            // 
+            // navQuadsTrackBar
+            // 
+            this.navQuadsTrackBar.LargeChange = 2;
+            this.navQuadsTrackBar.Location = new System.Drawing.Point(6, 180);
+            this.navQuadsTrackBar.Maximum = 7;
+            this.navQuadsTrackBar.Minimum = 1;
+            this.navQuadsTrackBar.Name = "navQuadsTrackBar";
+            this.navQuadsTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.navQuadsTrackBar.Size = new System.Drawing.Size(45, 135);
+            this.navQuadsTrackBar.TabIndex = 6;
+            this.navQuadsTrackBar.Value = 4;
+            // 
+            // navQuadsCheckBox
+            // 
+            this.navQuadsCheckBox.AutoSize = true;
+            this.navQuadsCheckBox.Location = new System.Drawing.Point(6, 157);
+            this.navQuadsCheckBox.Name = "navQuadsCheckBox";
+            this.navQuadsCheckBox.Size = new System.Drawing.Size(77, 17);
+            this.navQuadsCheckBox.TabIndex = 8;
+            this.navQuadsCheckBox.Text = "NavQuads";
+            this.navQuadsCheckBox.UseVisualStyleBackColor = true;
             // 
             // directionCheckBox
             // 
@@ -177,11 +215,11 @@
             // 
             this.zoomLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.zoomLabel.AutoSize = true;
-            this.zoomLabel.Location = new System.Drawing.Point(1096, 555);
+            this.zoomLabel.Location = new System.Drawing.Point(1096, 711);
             this.zoomLabel.Name = "zoomLabel";
-            this.zoomLabel.Size = new System.Drawing.Size(34, 13);
+            this.zoomLabel.Size = new System.Drawing.Size(34, 26);
             this.zoomLabel.TabIndex = 4;
-            this.zoomLabel.Text = "Zoom";
+            this.zoomLabel.Text = "Map\r\nZoom";
             // 
             // rotateCheckBox
             // 
@@ -198,31 +236,31 @@
             this.optionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsGroupBox.Controls.Add(this.rotateCheckBox);
             this.optionsGroupBox.Controls.Add(this.gridCheckBox);
-            this.optionsGroupBox.Location = new System.Drawing.Point(1045, 176);
+            this.optionsGroupBox.Location = new System.Drawing.Point(1045, 339);
             this.optionsGroupBox.Name = "optionsGroupBox";
             this.optionsGroupBox.Size = new System.Drawing.Size(89, 65);
             this.optionsGroupBox.TabIndex = 5;
             this.optionsGroupBox.TabStop = false;
             this.optionsGroupBox.Text = "Options";
             // 
-            // MapViewer
+            // MapViewerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1146, 1048);
             this.Controls.Add(this.optionsGroupBox);
             this.Controls.Add(this.layersGroupBox);
             this.Controls.Add(this.zoomLabel);
-            this.Controls.Add(this.mapTrackBar);
+            this.Controls.Add(this.zoomTrackBar);
             this.Controls.Add(this.mapPanel);
-            this.Name = "MapViewer";
-            this.Text = "MapViewer";
-            ((System.ComponentModel.ISupportInitialize)(this.mapTrackBar)).EndInit();
+            this.Name = "MapViewerControl";
+            this.Size = new System.Drawing.Size(1146, 1048);
+            ((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).EndInit();
             this.mapPanel.ResumeLayout(false);
             this.mapPanel.PerformLayout();
             this.layersGroupBox.ResumeLayout(false);
             this.layersGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.navQuadsTrackBar)).EndInit();
             this.optionsGroupBox.ResumeLayout(false);
             this.optionsGroupBox.PerformLayout();
             this.ResumeLayout(false);
@@ -231,7 +269,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.TrackBar mapTrackBar;
+        private System.Windows.Forms.TrackBar zoomTrackBar;
         private System.Windows.Forms.PictureBox mapPictureBox;
         private System.Windows.Forms.Panel mapPanel;
         private System.Windows.Forms.GroupBox layersGroupBox;
@@ -245,5 +283,8 @@
         private System.Windows.Forms.CheckBox gridCheckBox;
         private System.Windows.Forms.CheckBox rotateCheckBox;
         private System.Windows.Forms.GroupBox optionsGroupBox;
+        private System.Windows.Forms.CheckBox navQuadsCheckBox;
+        private System.Windows.Forms.TrackBar navQuadsTrackBar;
+        private System.Windows.Forms.Label navQuadLabel;
     }
 }

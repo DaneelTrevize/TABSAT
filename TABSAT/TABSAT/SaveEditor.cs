@@ -358,33 +358,12 @@ namespace TABSAT
                     continue;     // Nothing needs be done
                 }
 
-                switch( k_v.Key )
+                if( scalableZombieTypeGroups.TryGetValue( k_v.Key, out SortedSet<ScalableZombieTypes> groupTypes ) )
                 {
-                    case ScalableZombieGroups.WEAK:
-                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWeakA, scale );
-                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWeakB, scale );
-                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWeakC, scale );
-                        break;
-                    case ScalableZombieGroups.MEDIUM:
-                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWorkerA, scale );
-                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieWorkerB, scale );
-                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieMediumA, scale );
-                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieMediumB, scale );
-                        break;
-                    case ScalableZombieGroups.DRESSED:
-                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieDressedA, scale );
-                        break;
-                    case ScalableZombieGroups.STRONG:
-                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieStrongA, scale );
-                        break;
-                    case ScalableZombieGroups.VENOM:
-                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieVenom, scale );
-                        break;
-                    case ScalableZombieGroups.HARPY:
-                        scalableZombieTypeFactors.Add( ScalableZombieTypes.ZombieHarpy, scale );
-                        break;
-                    default:
-                        break;
+                    foreach( var t in groupTypes )
+                    {
+                        scalableZombieTypeFactors.Add( t, scale );
+                    }
                 }
             }
 
