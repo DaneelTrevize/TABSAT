@@ -431,10 +431,32 @@ namespace TABSAT
 
         private void populateNavQuadTree()
         {
+            //            <Simple name="PlayableArea" value="54;54;148;148" />
             for( int x = 0; x < cellsCount; x++ )
             {
                 for( int y = 0; y < cellsCount; y++ )
                 {
+                    // North (-West)
+                    if( y + 148 < cellsCount - x )
+                    {
+                        continue;
+                    }
+                    // South (-East)
+                    if( y - 148 > cellsCount - x )
+                    {
+                        continue;
+                    }
+                    //
+                    if( x > y + 108 )
+                    {
+                        continue;
+                    }
+                    //
+                    if( x <= y - 108 )
+                    {
+                        continue;
+                    }
+
                     if( getDistance( new MapNavigation.Position( x, y ) ) != MapNavigation.UNNAVIGABLE )
                     {
                         navQuadTree.addNavigable( x, y );
