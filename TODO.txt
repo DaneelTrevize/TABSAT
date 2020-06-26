@@ -1,5 +1,4 @@
 
-Check fog circle coordinates.
 Skip NavTree central circle when iterating over map?
 Refactor PlayableArea iteration into a generator?
 Rename Navigable to Traversable?

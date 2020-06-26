@@ -111,11 +111,11 @@
             // navQuadLabel
             // 
             this.navQuadLabel.AutoSize = true;
-            this.navQuadLabel.Location = new System.Drawing.Point(54, 234);
+            this.navQuadLabel.Location = new System.Drawing.Point(54, 228);
             this.navQuadLabel.Name = "navQuadLabel";
-            this.navQuadLabel.Size = new System.Drawing.Size(34, 26);
+            this.navQuadLabel.Size = new System.Drawing.Size(34, 39);
             this.navQuadLabel.TabIndex = 9;
-            this.navQuadLabel.Text = "Quad\r\nZoom";
+            this.navQuadLabel.Text = "Nav\r\nQuad\r\nZoom";
             // 
             // navQuadsTrackBar
             // 

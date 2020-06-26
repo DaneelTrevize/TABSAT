@@ -752,7 +752,7 @@ namespace TABSAT
 
             void setFog( int s, byte[] f, int x, int y )
             {
-                int wordIndex = ( ( y * s ) + x ) * 4;  // This indexing is backwards, because fog is reversed in some manner...
+                int wordIndex = ( ( y * s ) + x ) * 4;  // This indexing is backwards, because fog is oddly reversed, as well as in the opposite byte of the word
                 f[wordIndex + 3] = 0xFF;
             }
 
@@ -775,12 +775,12 @@ namespace TABSAT
             // Quick fill in "thirds" of before, adjacent, after (CC +- radius)
             for( int x = 0; x < size; x++ )
             {
-                // 1/3 before
+                // 1/3 before, NorthEast
                 for( int y = 0; y < beforeCCy; y++ )
                 {
                     setFog( size, clearFog, x, y );
                 }
-                // 1/3 after
+                // 1/3 after, SouthWest
                 for( int y = afterCCy; y < size; y++ )
                 {
                     setFog( size, clearFog, x, y );
@@ -789,12 +789,12 @@ namespace TABSAT
 
             for( int y = beforeCCy; y < afterCCy; y++ )
             {
-                // 1/9 adjacent before
+                // 1/9 adjacent before, NorthWest
                 for( int x = 0; x < beforeCCx; x++ )
                 {
                     setFog( size, clearFog, x, y );
                 }
-                // 1/9 adjacent after
+                // 1/9 adjacent after, SouthEast
                 for( int x = afterCCx; x < size; x++ )
                 {
                     setFog( size, clearFog, x, y );
@@ -815,16 +815,16 @@ namespace TABSAT
             {
                 xFromCC = Convert.ToInt32( Math.Sqrt( radiusSquared - (yFromCC * yFromCC) ) );
 
-                // E to SE to S
+                // SE to S to SW
                 setFogLine( size, clearFog, commandCenterX + xFromCC, commandCenterY + yFromCC, radiusAfterCommandCenterX );
 
-                // W to SW to S
+                // SW to W to NW
                 setFogLine( size, clearFog, radiusBeforeCommandCenterX, commandCenterY + yFromCC, commandCenterX - xFromCC );
 
-                // W to NW to N
+                // NW to N to NE
                 setFogLine( size, clearFog, radiusBeforeCommandCenterX, commandCenterY - yFromCC, commandCenterX - xFromCC );
 
-                // E to NE to N
+                // NE to E to SE
                 setFogLine( size, clearFog, commandCenterX + xFromCC, commandCenterY - yFromCC, radiusAfterCommandCenterX );
 
                 yFromCC += 1;
