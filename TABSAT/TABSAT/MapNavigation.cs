@@ -361,7 +361,7 @@ namespace TABSAT
             }
         }
 
-        internal class NavQuadTree
+        internal class IntQuadTree
         {
             private const int RES_LIMIT = 2;
 
@@ -370,12 +370,12 @@ namespace TABSAT
             private readonly int Resolution;    // Length of sides of covered square. Power of 2.
 
             private int count;
-            private NavQuadTree northQuad;
-            private NavQuadTree eastQuad;
-            private NavQuadTree southQuad;
-            private NavQuadTree westQuad;
+            private IntQuadTree northQuad;
+            private IntQuadTree eastQuad;
+            private IntQuadTree southQuad;
+            private IntQuadTree westQuad;
 
-            internal NavQuadTree( int x, int y, int res )
+            internal IntQuadTree( int x, int y, int res )
             {
                 if( x < 0 || y < 0 )
                 {
@@ -416,7 +416,7 @@ namespace TABSAT
                         return 0;
                     }
                     // Find the corresponding quad and recurse
-                    NavQuadTree tree = SubTree( getDir( x, y ) );
+                    IntQuadTree tree = SubTree( getDir( x, y ) );
                     return tree == null ? 0 : tree.getCount( x, y, res );
                 }
             }
@@ -448,9 +448,9 @@ namespace TABSAT
                 }
             }
 
-            private ref NavQuadTree SubTree( SaveReader.CompassDirection dir )
+            private ref IntQuadTree SubTree( SaveReader.CompassDirection dir )
             {
-                ref NavQuadTree tree = ref southQuad;
+                ref IntQuadTree tree = ref southQuad;
                 switch( dir )
                 {
                     case SaveReader.CompassDirection.North:
@@ -469,7 +469,7 @@ namespace TABSAT
                 return ref tree;
             }
 
-            internal void addNavigable( int x, int y )
+            internal void Add( int x, int y )
             {
                 if( !IsWithinQuad( x, y ) )
                 {
@@ -482,17 +482,17 @@ namespace TABSAT
                 if( Resolution > RES_LIMIT )
                 {
                     SaveReader.CompassDirection dir = getDir( x, y );
-                    ref NavQuadTree tree = ref SubTree( dir );
+                    ref IntQuadTree tree = ref SubTree( dir );
 
                     if( tree == null )
                     {
                         int newRes = Resolution / 2;
                         int newX = dir == SaveReader.CompassDirection.North || dir == SaveReader.CompassDirection.West ? CornerX : CornerX + newRes;
                         int newY = dir == SaveReader.CompassDirection.North || dir == SaveReader.CompassDirection.East ? CornerY : CornerY + newRes;
-                        tree = new NavQuadTree( newX, newY, newRes );
+                        tree = new IntQuadTree( newX, newY, newRes );
                     }
 
-                    tree.addNavigable( x, y );
+                    tree.Add( x, y );
                 }
             }
         }

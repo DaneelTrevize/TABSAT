@@ -350,7 +350,8 @@ namespace TABSAT
         private XElement extrasItems;
         private readonly SortedDictionary<MapLayers, LayerData> layerDataCache;
         private readonly MapNavigation.FlowGraph flowGraph;
-        private readonly MapNavigation.NavQuadTree navQuadTree;
+        private readonly MapNavigation.IntQuadTree navQuadTree;
+        private readonly SortedDictionary<ScalableZombieTypes, MapNavigation.IntQuadTree> popQuadTrees;
 
         internal static XElement getFirstPropertyOfTypeNamed( XElement c, string type, string name )    // 5 Collections, 3 Dictionaries
         {
@@ -425,8 +426,11 @@ namespace TABSAT
             flowGraph = new MapNavigation.FlowGraph( cellsCount, getLayerData( MapLayers.Navigable ).values );
             flowGraph.floodFromCC( commandCenterX, commandCenterY );    // Should be constructor?
 
-            navQuadTree = new MapNavigation.NavQuadTree( 0, 0, cellsCount );
+            navQuadTree = new MapNavigation.IntQuadTree( 0, 0, cellsCount );
             populateNavQuadTree();
+
+            popQuadTrees = new SortedDictionary<ScalableZombieTypes, MapNavigation.IntQuadTree>();
+            populatePopQuadTree();
         }
 
         private void populateNavQuadTree()
@@ -459,12 +463,41 @@ namespace TABSAT
 
                     if( getDistance( new MapNavigation.Position( x, y ) ) != MapNavigation.UNNAVIGABLE )
                     {
-                        navQuadTree.addNavigable( x, y );
+                        navQuadTree.Add( x, y );
                     }
                 }
             }
         }
 
+        private void populatePopQuadTree()
+        {
+            var zombieTypes = getLevelZombieTypesItems();
+
+            foreach( var t in zombieTypes )
+            {
+                UInt64 zombieTypeInt = Convert.ToUInt64( t.Element( "Simple" ).Attribute( "value" ).Value );
+                //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
+                if( !Enum.IsDefined( typeof( ScalableZombieTypes ), zombieTypeInt ) )
+                {
+                    continue;   // Can't scale this type
+                }
+                ScalableZombieTypes zombieType = (ScalableZombieTypes) zombieTypeInt;
+
+                var popQuadTree = new MapNavigation.IntQuadTree( 0, 0, cellsCount );
+                popQuadTrees.Add( zombieType, popQuadTree );
+
+                var col = t.Element( "Collection" );
+                foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
+                {
+                    // Get zombie coordinates, convert to ints/position, add to quadtree...
+                    float p_x;
+                    float p_y;
+                    extractCoordinates( getFirstSimplePropertyNamed( com, "B" ), out p_x, out p_y );
+
+                    popQuadTree.Add( (int) p_x, (int) p_y );
+                }
+            }
+        }
 
         public string Name()
         {
@@ -527,6 +560,18 @@ namespace TABSAT
                 mapDrawer = getFirstComplexPropertyNamed( getDataExtension(), "MapDrawer" );
             }
             return mapDrawer;
+        }
+
+        protected IEnumerable<XElement> getLevelZombieTypesItems()
+        {
+            /*
+             *        <Dictionary name="LevelFastSerializedEntities" >
+             *          <Items>
+             *            <Item>
+             *              <Simple />
+             *              <Collection >
+             */
+            return getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelFastSerializedEntities" ).Element( "Items" ).Elements( "Item" );
         }
 
         protected XElement getExtraEntities()

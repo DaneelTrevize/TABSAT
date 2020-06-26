@@ -1,4 +1,10 @@
 
+Check fog circle coordinates.
+Skip NavTree central circle when iterating over map?
+Refactor PlayableArea iteration into a generator?
+Rename Navigable to Traversable?
+
+
 Add an option to delete Backup file sets.
 
 Add a cap to population scaling, to keep it below the ~65k soft TAB limit?

@@ -184,17 +184,6 @@ namespace TABSAT
             data.Save( dataFile );
         }
 
-        private IEnumerable<XElement> getLevelZombieTypesItems()
-        {
-            /*
-             *        <Dictionary name="LevelFastSerializedEntities" >
-             *          <Items>
-             *            <Item>
-             *              <Simple />
-             *              <Collection >
-             */
-            return getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelFastSerializedEntities" ).Element( "Items" ).Elements( "Item" );
-        }
 
         private UInt64 getHighestID()
         {
