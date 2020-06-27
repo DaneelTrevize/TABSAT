@@ -29,7 +29,8 @@ namespace TABSAT
             Navigable,
             Distance,
             Direction,
-            NavQuads
+            NavQuads,
+            ZombieQuads
         }
 
         static MapViewerControl()
@@ -106,6 +107,8 @@ namespace TABSAT
             directionCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             navQuadsCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             navQuadsTrackBar.ValueChanged += new EventHandler( navQuadsTrackBar_ValueChanged );
+            zombieCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
+            zombieTrackBar.ValueChanged += new EventHandler( zombieTrackBar_ValueChanged );
 
             gridCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             rotateCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
@@ -134,6 +137,21 @@ namespace TABSAT
             cache.Clear();
 
             if( navQuadsCheckBox.Checked )
+            {
+                updateMapImage( zoomTrackBar.Value );
+            }
+        }
+
+        private void zombieTrackBar_ValueChanged( object sender, EventArgs e )
+        {
+            var cache = layerCache[ViewLayer.ZombieQuads];
+            foreach( var map in cache.Values )
+            {
+                map.Dispose();
+            }
+            cache.Clear();
+
+            if( zombieCheckBox.Checked )
             {
                 updateMapImage( zoomTrackBar.Value );
             }
@@ -196,6 +214,11 @@ namespace TABSAT
                     mapGraphics.DrawImage( getCachedImage( ViewLayer.NavQuads, cellSize, mapSize ), 0, 0, mapSize, mapSize );
                 }
 
+                if( zombieCheckBox.Checked )
+                {
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.ZombieQuads, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                }
+
                 if( gridCheckBox.Checked )
                 {
                     // Grid
@@ -242,6 +265,9 @@ namespace TABSAT
                         break;
                     case ViewLayer.NavQuads:
                         map = generateNavQuadsImage( mapSize );
+                        break;
+                    case ViewLayer.ZombieQuads:
+                        map = generateZombieQuadsImage( mapSize );
                         break;
                     default:
                         map = new Bitmap( mapSize, mapSize );
@@ -381,6 +407,29 @@ namespace TABSAT
                         var navCount = mapData.getNavigableCount( x, y, quadRes );
                         var density = navCount * 255 / maxPerQuad;
                         Brush densityBrush = new SolidBrush( Color.FromArgb( 0x7F, density, density, density ) );
+                        mapGraphics.FillRectangle( densityBrush, x * cellSize, y * cellSize, quadSize, quadSize );
+                    }
+                }
+            }
+            return map;
+        }
+        private Image generateZombieQuadsImage( int mapSize )
+        {
+            Image map = new Bitmap( mapSize, mapSize );
+            using( Graphics mapGraphics = Graphics.FromImage( map ) )
+            {
+                int cells = mapData.CellsCount();
+                int cellSize = mapSize / cells;
+                int quadRes = (int) Math.Pow( 2, zombieTrackBar.Value );
+                int maxPerQuad = quadRes * quadRes * 2; // 2 zombies per cell?
+                int quadSize = quadRes * cellSize;
+                for( int x = 0; x < cells; x += quadRes )
+                {
+                    for( int y = 0; y < cells; y += quadRes )
+                    {
+                        var zCount = mapData.getZombieCount( x, y, quadRes );
+                        var density = Math.Min( zCount * 255 / maxPerQuad, 255);
+                        Brush densityBrush = new SolidBrush( Color.FromArgb( 0x7F, density, 0x00, 0x00 ) );
                         mapGraphics.FillRectangle( densityBrush, x * cellSize, y * cellSize, quadSize, quadSize );
                     }
                 }

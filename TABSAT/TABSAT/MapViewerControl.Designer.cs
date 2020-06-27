@@ -45,12 +45,16 @@
             this.zoomLabel = new System.Windows.Forms.Label();
             this.rotateCheckBox = new System.Windows.Forms.CheckBox();
             this.optionsGroupBox = new System.Windows.Forms.GroupBox();
+            this.zombieTrackBar = new System.Windows.Forms.TrackBar();
+            this.zombieCheckBox = new System.Windows.Forms.CheckBox();
+            this.zombieLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).BeginInit();
             this.mapPanel.SuspendLayout();
             this.layersGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.navQuadsTrackBar)).BeginInit();
             this.optionsGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // zoomTrackBar
@@ -58,12 +62,12 @@
             this.zoomTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.zoomTrackBar.LargeChange = 2;
-            this.zoomTrackBar.Location = new System.Drawing.Point(1045, 410);
+            this.zoomTrackBar.Location = new System.Drawing.Point(1045, 588);
             this.zoomTrackBar.Maximum = 8;
             this.zoomTrackBar.Minimum = 1;
             this.zoomTrackBar.Name = "zoomTrackBar";
             this.zoomTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.zoomTrackBar.Size = new System.Drawing.Size(45, 629);
+            this.zoomTrackBar.Size = new System.Drawing.Size(45, 451);
             this.zoomTrackBar.TabIndex = 1;
             this.zoomTrackBar.Value = 2;
             // 
@@ -92,6 +96,9 @@
             // layersGroupBox
             // 
             this.layersGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.layersGroupBox.Controls.Add(this.zombieLabel);
+            this.layersGroupBox.Controls.Add(this.zombieCheckBox);
+            this.layersGroupBox.Controls.Add(this.zombieTrackBar);
             this.layersGroupBox.Controls.Add(this.navQuadLabel);
             this.layersGroupBox.Controls.Add(this.navQuadsTrackBar);
             this.layersGroupBox.Controls.Add(this.navQuadsCheckBox);
@@ -103,7 +110,7 @@
             this.layersGroupBox.Controls.Add(this.distanceCheckBox);
             this.layersGroupBox.Location = new System.Drawing.Point(1045, 12);
             this.layersGroupBox.Name = "layersGroupBox";
-            this.layersGroupBox.Size = new System.Drawing.Size(89, 321);
+            this.layersGroupBox.Size = new System.Drawing.Size(89, 499);
             this.layersGroupBox.TabIndex = 3;
             this.layersGroupBox.TabStop = false;
             this.layersGroupBox.Text = "Show Layers";
@@ -111,7 +118,7 @@
             // navQuadLabel
             // 
             this.navQuadLabel.AutoSize = true;
-            this.navQuadLabel.Location = new System.Drawing.Point(54, 228);
+            this.navQuadLabel.Location = new System.Drawing.Point(46, 228);
             this.navQuadLabel.Name = "navQuadLabel";
             this.navQuadLabel.Size = new System.Drawing.Size(34, 39);
             this.navQuadLabel.TabIndex = 9;
@@ -215,7 +222,7 @@
             // 
             this.zoomLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.zoomLabel.AutoSize = true;
-            this.zoomLabel.Location = new System.Drawing.Point(1096, 711);
+            this.zoomLabel.Location = new System.Drawing.Point(1091, 800);
             this.zoomLabel.Name = "zoomLabel";
             this.zoomLabel.Size = new System.Drawing.Size(34, 26);
             this.zoomLabel.TabIndex = 4;
@@ -236,12 +243,44 @@
             this.optionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsGroupBox.Controls.Add(this.rotateCheckBox);
             this.optionsGroupBox.Controls.Add(this.gridCheckBox);
-            this.optionsGroupBox.Location = new System.Drawing.Point(1045, 339);
+            this.optionsGroupBox.Location = new System.Drawing.Point(1045, 517);
             this.optionsGroupBox.Name = "optionsGroupBox";
             this.optionsGroupBox.Size = new System.Drawing.Size(89, 65);
             this.optionsGroupBox.TabIndex = 5;
             this.optionsGroupBox.TabStop = false;
             this.optionsGroupBox.Text = "Options";
+            // 
+            // zombieTrackBar
+            // 
+            this.zombieTrackBar.LargeChange = 2;
+            this.zombieTrackBar.Location = new System.Drawing.Point(6, 354);
+            this.zombieTrackBar.Maximum = 7;
+            this.zombieTrackBar.Minimum = 1;
+            this.zombieTrackBar.Name = "zombieTrackBar";
+            this.zombieTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.zombieTrackBar.Size = new System.Drawing.Size(45, 135);
+            this.zombieTrackBar.SmallChange = 6;
+            this.zombieTrackBar.TabIndex = 10;
+            this.zombieTrackBar.Value = 4;
+            // 
+            // zombieCheckBox
+            // 
+            this.zombieCheckBox.AutoSize = true;
+            this.zombieCheckBox.Location = new System.Drawing.Point(6, 331);
+            this.zombieCheckBox.Name = "zombieCheckBox";
+            this.zombieCheckBox.Size = new System.Drawing.Size(66, 17);
+            this.zombieCheckBox.TabIndex = 11;
+            this.zombieCheckBox.Text = "Zombies";
+            this.zombieCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // zombieLabel
+            // 
+            this.zombieLabel.AutoSize = true;
+            this.zombieLabel.Location = new System.Drawing.Point(46, 402);
+            this.zombieLabel.Name = "zombieLabel";
+            this.zombieLabel.Size = new System.Drawing.Size(42, 39);
+            this.zombieLabel.TabIndex = 12;
+            this.zombieLabel.Text = "Zombie\r\nQuad\r\nZoom";
             // 
             // MapViewerControl
             // 
@@ -263,6 +302,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.navQuadsTrackBar)).EndInit();
             this.optionsGroupBox.ResumeLayout(false);
             this.optionsGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.zombieTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -286,5 +326,8 @@
         private System.Windows.Forms.CheckBox navQuadsCheckBox;
         private System.Windows.Forms.TrackBar navQuadsTrackBar;
         private System.Windows.Forms.Label navQuadLabel;
+        private System.Windows.Forms.Label zombieLabel;
+        private System.Windows.Forms.CheckBox zombieCheckBox;
+        private System.Windows.Forms.TrackBar zombieTrackBar;
     }
 }
