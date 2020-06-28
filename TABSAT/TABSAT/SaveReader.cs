@@ -18,7 +18,7 @@ namespace TABSAT
         int getDistance( MapNavigation.Position position );
         MapNavigation.Direction? getDirection( MapNavigation.Position position );
         int getNavigableCount( int x, int y, int res );
-        int getZombieCount( int x, int y, int res );
+        int getZombieCount( int x, int y, int res, SortedSet<SaveReader.ScalableZombieGroups> groups );
     }
 
     class SaveReader : MapData
@@ -802,12 +802,16 @@ namespace TABSAT
             return navQuadTree.getCount( x, y, res );
         }
 
-        public int getZombieCount( int x, int y, int res )  // Should take ScalableZombieTypes Set..?
+        public int getZombieCount( int x, int y, int res, SortedSet<ScalableZombieGroups> groups )
         {
             int count = 0;
-            foreach( var k_v in popQuadTrees )
+            foreach( var g in groups )
             {
-                count += k_v.Value.getCount( x, y, res );
+                foreach( ScalableZombieTypes t in scalableZombieTypeGroups[g] )
+                {
+                    var tree = popQuadTrees[t];
+                    count += tree.getCount( x, y, res );
+                }
             }
             return count;
         }

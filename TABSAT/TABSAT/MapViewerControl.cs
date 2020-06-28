@@ -107,6 +107,11 @@ namespace TABSAT
             directionCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             navQuadsCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             navQuadsTrackBar.ValueChanged += new EventHandler( navQuadsTrackBar_ValueChanged );
+
+            zombieComboBox.DataSource = Enum.GetValues( typeof( ScalableZombieGroups ) );
+            zombieComboBox.SelectedIndex = 0;
+            zombieComboBox.SelectedIndexChanged += new EventHandler( zombieComboBox_SelectedIndexChanged );
+
             zombieCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             zombieTrackBar.ValueChanged += new EventHandler( zombieTrackBar_ValueChanged );
 
@@ -129,12 +134,7 @@ namespace TABSAT
 
         private void navQuadsTrackBar_ValueChanged( object sender, EventArgs e )
         {
-            var cache = layerCache[ViewLayer.NavQuads];
-            foreach( var map in cache.Values )
-            {
-                map.Dispose();
-            }
-            cache.Clear();
+            clearCache( ViewLayer.NavQuads );
 
             if( navQuadsCheckBox.Checked )
             {
@@ -142,14 +142,16 @@ namespace TABSAT
             }
         }
 
+        private void zombieComboBox_SelectedIndexChanged( object sender, EventArgs e )
+        {
+            clearCache( ViewLayer.ZombieQuads );
+
+            updateMapImage( zoomTrackBar.Value );
+        }
+
         private void zombieTrackBar_ValueChanged( object sender, EventArgs e )
         {
-            var cache = layerCache[ViewLayer.ZombieQuads];
-            foreach( var map in cache.Values )
-            {
-                map.Dispose();
-            }
-            cache.Clear();
+            clearCache( ViewLayer.ZombieQuads );
 
             if( zombieCheckBox.Checked )
             {
@@ -413,11 +415,15 @@ namespace TABSAT
             }
             return map;
         }
+
         private Image generateZombieQuadsImage( int mapSize )
         {
             Image map = new Bitmap( mapSize, mapSize );
             using( Graphics mapGraphics = Graphics.FromImage( map ) )
             {
+                Enum.TryParse<ScalableZombieGroups>( zombieComboBox.SelectedValue.ToString(), out ScalableZombieGroups group );
+                var groups = new SortedSet<ScalableZombieGroups>() { group };
+
                 int cells = mapData.CellsCount();
                 int cellSize = mapSize / cells;
                 int quadRes = (int) Math.Pow( 2, zombieTrackBar.Value );
@@ -427,7 +433,7 @@ namespace TABSAT
                 {
                     for( int y = 0; y < cells; y += quadRes )
                     {
-                        var zCount = mapData.getZombieCount( x, y, quadRes );
+                        var zCount = mapData.getZombieCount( x, y, quadRes, groups );
                         var density = Math.Min( zCount * 255 / maxPerQuad, 255);
                         Brush densityBrush = new SolidBrush( Color.FromArgb( 0x7F, density, 0x00, 0x00 ) );
                         mapGraphics.FillRectangle( densityBrush, x * cellSize, y * cellSize, quadSize, quadSize );
@@ -529,13 +535,18 @@ namespace TABSAT
         {
             foreach( ViewLayer layer in Enum.GetValues( typeof( ViewLayer ) ) )
             {
-                var cache = layerCache[layer];
-                foreach( var map in cache.Values )
-                {
-                    map.Dispose();
-                }
-                cache.Clear();
+                clearCache( layer );
             }
+        }
+
+        private void clearCache( ViewLayer layer )
+        {
+            var cache = layerCache[layer];
+            foreach( var map in cache.Values )
+            {
+                map.Dispose();
+            }
+            cache.Clear();
         }
     }
 }
