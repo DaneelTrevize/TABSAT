@@ -472,9 +472,13 @@ namespace TABSAT
 
         private void populatePopQuadTree()
         {
-            var zombieTypes = getLevelZombieTypesItems();
+            foreach( ScalableZombieTypes zombieType in Enum.GetValues( typeof( ScalableZombieTypes ) ) )
+            {
+                var popQuadTree = new MapNavigation.IntQuadTree( 0, 0, cellsCount );
+                popQuadTrees.Add( zombieType, popQuadTree );
+            }
 
-            foreach( var t in zombieTypes )
+            foreach( var t in getLevelZombieTypesItems() )
             {
                 UInt64 zombieTypeInt = Convert.ToUInt64( t.Element( "Simple" ).Attribute( "value" ).Value );
                 //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
@@ -484,9 +488,6 @@ namespace TABSAT
                 }
                 ScalableZombieTypes zombieType = (ScalableZombieTypes) zombieTypeInt;
 
-                var popQuadTree = new MapNavigation.IntQuadTree( 0, 0, cellsCount );
-                popQuadTrees.Add( zombieType, popQuadTree );
-
                 var col = t.Element( "Collection" );
                 foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
                 {
@@ -495,7 +496,7 @@ namespace TABSAT
                     float p_y;
                     extractCoordinates( getFirstSimplePropertyNamed( com, "B" ), out p_x, out p_y );
 
-                    popQuadTree.Add( (int) p_x, (int) p_y );
+                    popQuadTrees[zombieType].Add( (int) p_x, (int) p_y );
                 }
             }
         }

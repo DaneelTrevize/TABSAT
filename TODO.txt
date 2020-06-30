@@ -93,6 +93,7 @@ Mostly for Caustic generator: Try to detect if entire ~halves (N/S/E/W) are unpo
 --
 Make games easier:
 
+Remove Fog over zombies, either all or only certain type(s)? And/or over VOD buildings?
 Remove Fog in a random pattern, would result in a spray effect? Or a non-uniform version based on CC distance?
 Remove Fog in a geometric pattern, such as radiating narrow arcs like lighthouse beams, or a spiral?
 

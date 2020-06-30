@@ -434,9 +434,13 @@ namespace TABSAT
                     for( int y = 0; y < cells; y += quadRes )
                     {
                         var zCount = mapData.getZombieCount( x, y, quadRes, groups );
-                        var density = Math.Min( zCount * 255 / maxPerQuad, 255);
-                        Brush densityBrush = new SolidBrush( Color.FromArgb( 0x7F, density, 0x00, 0x00 ) );
-                        mapGraphics.FillRectangle( densityBrush, x * cellSize, y * cellSize, quadSize, quadSize );
+                        var density = Math.Min( zCount * 255 / maxPerQuad, 0xDF );  // 0xDF so always some transparency, mostly for distance to show through
+                        if( density > 0 )
+                        {
+                            Brush densityBrush = new SolidBrush( Color.FromArgb( density, 0xFF, 0x00, 0x00 ) );
+                            mapGraphics.FillRectangle( densityBrush, x * cellSize, y * cellSize, quadSize, quadSize );
+                            mapGraphics.DrawRectangle( redPen, x * cellSize, y * cellSize, quadSize - 1, quadSize - 1 );
+                        }
                     }
                 }
             }
@@ -499,7 +503,7 @@ namespace TABSAT
 
         private void drawGrid( int cellSize, int cells, Graphics mapGraphics )
         {
-            Pen pen = new Pen( Brushes.White );
+            Pen pen = new Pen( new SolidBrush( Color.FromArgb( 0x77, 0xFF, 0xFF, 0xFF ) ) );
             for( int x = 1; x < cells; x++ )
             {
                 mapGraphics.DrawLine( pen, x * cellSize, 0, x * cellSize, cells * cellSize );
