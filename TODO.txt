@@ -4,6 +4,12 @@ Refactor PlayableArea iteration into a generator?
 Rename Navigable to Traversable?
 
 
+Theme change should replace pickable debris mats, and remove volcanos for non-Caustic themes?
+
+
+Consider map generation modifier, of removing 2x2 edge of all rocks (and any 1x1 cracks/small water areas?). Could extend flood fill to generate the set of rock edge top-left-of-2x2 tiles.
+
+
 Add an option to delete Backup file sets.
 
 Add a cap to population scaling, to keep it below the ~65k soft TAB limit?
