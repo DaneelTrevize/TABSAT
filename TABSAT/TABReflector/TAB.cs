@@ -17,9 +17,12 @@ namespace TABSAT
 
         private static readonly string STEAM_DEFAULT_32BIT_PATH = Environment.ExpandEnvironmentVariables( @"%ProgramFiles(x86)%\Steam" );   // Default config and library path all in one
         private static readonly string STEAM_DEFAULT_64BIT_PATH = Environment.ExpandEnvironmentVariables( @"%ProgramFiles%\Steam" );        // Fully 64bit Steam isn't currently a thing, but we're possibly futureproofing by having this
-        private const string STEAM_VDF_SUBPATH = @"config\config.vdf";              // Perhaps we should instead use \steamapps\libraryfolders.vdf ?
+        private const string STEAM_LIBRARYFOLDERS_VDF_SUBPATH = @"config\libraryfolders.vdf";   // Ignore the copy in \steamapps\libraryfolders.vdf?
+        private const string STEAM_CONFIG_VDF_SUBPATH = @"config\config.vdf";                   // Has been depreciated as a listing of libraries?
+        //example string                                    		"path"		"E:\\SteamLibrary"
+        private const string STEAM_LIBRARYFOLDERS_LIBRARY_PATTERN = @"^\s+""path""\s+""(?<path>.+)""$";
         //example string libraryLine =               @"    ""BaseInstallFolder_1""		         ""K:\\SteamLibrary""";
-        private const string STEAM_LIBRARY_PATTERN = @"^\s+""BaseInstallFolder_(?<count>\d+)""\s+""(?<path>.+)""$";
+        private const string STEAM_CONFIG_LIBRARY_PATTERN = @"^\s+""BaseInstallFolder_(?<count>\d+)""\s+""(?<path>.+)""$";
         private const string STEAM_TAB_SUBPATH = @"\steamapps\common\They Are Billions\";
 
         public static readonly string DEFAULT_SAVES_DIRECTORY = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\My Games\They Are Billions\Saves\" );
@@ -31,14 +34,29 @@ namespace TABSAT
             {
                 LinkedList<string> steamLibraries = new LinkedList<string>();
 
-                string steamConfigPath = Path.Combine( steamPath, STEAM_VDF_SUBPATH );
-                if( File.Exists( steamConfigPath ) )
+                string steamLibraryFoldersPath = Path.Combine(steamPath, STEAM_LIBRARYFOLDERS_VDF_SUBPATH);
+                if( File.Exists(steamLibraryFoldersPath) )
                 {
-                    //Console.WriteLine( "Steam Libraries listed within: " + steamConfigPath );
-                    GetSteamLibraries( steamConfigPath, steamLibraries );
+                    //Console.WriteLine( "Steam Libraries listed within: " + steamLibraryFoldersPath );
+                    Regex libraryRegex = new Regex( STEAM_LIBRARYFOLDERS_LIBRARY_PATTERN, RegexOptions.Compiled );
+                    GetSteamLibraries( steamLibraryFoldersPath, steamLibraries, libraryRegex );
                 }
 
-                steamLibraries.AddLast( steamPath );
+                if( steamLibraries.Count == 0 )
+                {
+                    string steamConfigPath = Path.Combine(steamPath, STEAM_CONFIG_VDF_SUBPATH);
+                    if( File.Exists(steamConfigPath) )
+                    {
+                        //Console.WriteLine( "Steam Libraries listed within: " + steamConfigPath );
+                        Regex libraryRegex = new Regex( STEAM_CONFIG_LIBRARY_PATTERN, RegexOptions.Compiled );
+                        GetSteamLibraries( steamConfigPath, steamLibraries, libraryRegex );
+                    }
+                }
+
+                if( steamLibraries.Count == 0 )
+                {
+                    steamLibraries.AddLast(steamPath);
+                }
 
                 foreach( string library in steamLibraries )
                 {
@@ -87,10 +105,8 @@ namespace TABSAT
             return null;
         }
 
-        private static void GetSteamLibraries( string steamConfigPath, LinkedList<string> steamLibraries )
+        private static void GetSteamLibraries( string steamConfigPath, LinkedList<string> steamLibraries, Regex libraryRegex )
         {
-            Regex libraryRegex = new Regex( STEAM_LIBRARY_PATTERN, RegexOptions.Compiled );
-
             using( StreamReader config = new StreamReader( steamConfigPath ) )
             {
                 string line;
