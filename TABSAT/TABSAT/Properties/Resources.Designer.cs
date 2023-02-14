@@ -92,19 +92,9 @@ namespace TABSAT.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap TAB_updates_menu_bottom {
+        internal static System.Drawing.Bitmap TAB_Steam_Cloud {
             get {
-                object obj = ResourceManager.GetObject("TAB_updates_menu_bottom", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap TAB_updates_menu_top {
-            get {
-                object obj = ResourceManager.GetObject("TAB_updates_menu_top", resourceCulture);
+                object obj = ResourceManager.GetObject("TAB Steam Cloud", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

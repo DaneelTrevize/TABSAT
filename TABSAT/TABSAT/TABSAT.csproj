@@ -186,10 +186,7 @@
     <None Include="Resources\masterTag.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\TAB_updates_menu_top.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TAB_updates_menu_bottom.png" />
+    <None Include="Resources\TAB Steam Cloud.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
