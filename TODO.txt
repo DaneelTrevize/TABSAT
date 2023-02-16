@@ -10,6 +10,9 @@ Windows Defender still seems to flag up the github version check feature, so may
 
 Improve UI by alternating background colouring of save modification options?
 
+Summarise whether maps are worth continuing, without showing the layout.
+Count total pathable land, food, zombies? Chart them at each radius from CC? Summary in a starting radius?
+
 ----
 
 Skip NavTree central circle when iterating over map?
