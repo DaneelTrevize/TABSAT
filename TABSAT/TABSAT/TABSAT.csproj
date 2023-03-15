@@ -106,6 +106,12 @@
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="MapNavigation.cs" />
+    <Compile Include="MapSelectorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MapSelectorControl.Designer.cs">
+      <DependentUpon>MapSelectorControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="MapViewerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -140,6 +146,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MapSelectorControl.resx">
+      <DependentUpon>MapSelectorControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MapViewerControl.resx">
       <DependentUpon>MapViewerControl.cs</DependentUpon>
