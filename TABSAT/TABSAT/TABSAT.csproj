@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>TABSAT</RootNamespace>
     <AssemblyName>TABSAT</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -106,11 +106,17 @@
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="MapNavigation.cs" />
-    <Compile Include="MapViewer.cs">
-      <SubType>Form</SubType>
+    <Compile Include="MapSelectorControl.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MapViewer.Designer.cs">
-      <DependentUpon>MapViewer.cs</DependentUpon>
+    <Compile Include="MapSelectorControl.Designer.cs">
+      <DependentUpon>MapSelectorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MapViewerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MapViewerControl.Designer.cs">
+      <DependentUpon>MapViewerControl.cs</DependentUpon>
     </Compile>
     <Compile Include="ModifyManagerControls.cs">
       <SubType>UserControl</SubType>
@@ -141,8 +147,11 @@
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MapViewer.resx">
-      <DependentUpon>MapViewer.cs</DependentUpon>
+    <EmbeddedResource Include="MapSelectorControl.resx">
+      <DependentUpon>MapSelectorControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MapViewerControl.resx">
+      <DependentUpon>MapViewerControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ModifyManagerControls.resx">
       <DependentUpon>ModifyManagerControls.cs</DependentUpon>
@@ -186,10 +195,7 @@
     <None Include="Resources\masterTag.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\TAB_updates_menu_top.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TAB_updates_menu_bottom.png" />
+    <None Include="Resources\TAB Steam Cloud.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

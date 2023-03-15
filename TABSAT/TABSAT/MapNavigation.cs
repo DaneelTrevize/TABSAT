@@ -19,9 +19,11 @@ namespace TABSAT
             NORTHWEST = 0b_1000_0000
         }
 
-        private const Direction CARDINALS = Direction.NORTH | Direction.EAST | Direction.SOUTH | Direction.WEST;
-        private const Direction ORDINALS = Direction.NORTHEAST | Direction.SOUTHEAST | Direction.SOUTHWEST | Direction.NORTHWEST;
-        //private Direction ALL = Direction.NORTH | Direction.NORTHEAST | Direction.EAST | Direction.SOUTHEAST | Direction.SOUTH | Direction.SOUTHWEST | Direction.WEST | Direction.NORTHWEST;
+        //private const Direction CARDINALS = Direction.NORTH | Direction.EAST | Direction.SOUTH | Direction.WEST;
+        //private const Direction ORDINALS = Direction.NORTHEAST | Direction.SOUTHEAST | Direction.SOUTHWEST | Direction.NORTHWEST;
+        private static readonly SortedSet<Direction> CARDINALS = new SortedSet<Direction> { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
+        private static readonly SortedSet<Direction> ORDINALS = new SortedSet<Direction> { Direction.NORTHEAST, Direction.SOUTHEAST, Direction.SOUTHWEST, Direction.NORTHWEST };
+        internal const int UNNAVIGABLE = int.MaxValue;
 
         private static Direction Reverse( Direction d )
         {
@@ -57,7 +59,7 @@ namespace TABSAT
             {
                 if( x < 0 || y < 0 )
                 {
-                    throw new ArgumentException( "x and y should be positive." );
+                    throw new ArgumentException( "x or y should not be negative." );
                 }
                 this.x = x;
                 this.y = y;
@@ -131,13 +133,13 @@ namespace TABSAT
                 }
             }
         }
-
+        /*
         private static void indexToAxes( int index, int res, out int x, out int y )
         {
             x = index / res;
             y = index % res;
         }
-
+        */
         internal static int axesToIndex( int res, int x, int y )
         {
             return ( x * res ) + y;
@@ -145,14 +147,14 @@ namespace TABSAT
 
         internal class FlowGraph
         {
-            private readonly int res;
+            private readonly int resolution;    // Cells per axis
             private readonly byte[] navigable;
             private readonly SortedDictionary<Position, int> ccDistances;
             private readonly SortedDictionary<Position, Direction> ccDirections;
 
             internal FlowGraph( int r, byte[] n )
             {
-                res = r;
+                resolution = r;
                 navigable = n;
                 ccDistances = new SortedDictionary<Position, int>();
                 ccDirections = new SortedDictionary<Position, Direction>();
@@ -168,45 +170,54 @@ namespace TABSAT
                 aroundCC.Add( new Position( CCX + 3, CCY ), Direction.NORTHWEST );
                 aroundCC.Add( new Position( CCX, CCY + 3 ), Direction.NORTHEAST );
 
-                flood( aroundCC, 1, int.MaxValue );
+                flood( aroundCC, 1, UNNAVIGABLE );
 
                 favourFlow( ORDINALS );
             }
 
-            private void flood( SortedDictionary<Position, Direction> toVisit, int range, int limit )
+            private void flood( SortedDictionary<Position, Direction> toVisit, int distance, int limit )
             {
+                foreach( var k_v in toVisit )
+                {
+                    recordFlood( k_v.Key, distance, k_v.Value );
+                }
+
+                // Are we done flood filling the map?
+                if( distance + 1 > limit )
+                {
+                    return;
+                }
+
                 var nextToVisit = new SortedDictionary<Position, Direction>();
 
                 foreach( var k_v in toVisit )
                 {
                     var position = k_v.Key;
-                    var fromDir = k_v.Value;
-                    recordPosition( position, range, fromDir );
+                    var reversedFromDir = k_v.Value;    // Used for not flooding back the way we came. No 2 extra Reverse()s needed
 
-                    foreach( Direction forwardDir in Enum.GetValues( typeof( Direction ) ) )
+                    foreach( Direction floodDir in CARDINALS )
                     {
-                        if( ( CARDINALS & forwardDir ) == forwardDir )
+                        if( floodDir != reversedFromDir )
                         {
-                            considerFlood( position, forwardDir, true, range, nextToVisit );
+                            considerFlood( position, floodDir, true, distance, nextToVisit );
                         }
                     }
-                    foreach( Direction forwardDir in Enum.GetValues( typeof( Direction ) ) )
+                    foreach( Direction floodDir in ORDINALS )
                     {
-                        if( ( ORDINALS & forwardDir ) == forwardDir )
+                        if( floodDir != reversedFromDir )
                         {
-                            considerFlood( position, forwardDir, false, range, nextToVisit );
+                            considerFlood( position, floodDir, false, distance, nextToVisit );
                         }
                     }
                 }
 
-                // Are we done flood filling the map?
-                if( range + 1 <= limit && nextToVisit.Any() )
+                if( nextToVisit.Any() )
                 {
-                    flood( nextToVisit, range + 1, limit );
+                    flood( nextToVisit, distance + 1, limit );
                 }
             }
 
-            private void recordPosition( Position position, int distance, Direction direction )
+            private void recordFlood( Position position, int distance, Direction direction )
             {
                 int existing;
                 if( ccDistances.TryGetValue( position, out existing ) )
@@ -220,9 +231,9 @@ namespace TABSAT
                 ccDirections.Add( position, direction );
             }
 
-            private void considerFlood( Position position, Direction forwardDir, bool checkAdjacent, int range, SortedDictionary<Position, Direction>  nextToVisit )
+            private void considerFlood( Position position, Direction floodDir, bool checkAdjacent, int range, SortedDictionary<Position, Direction> nextToVisit )
             {
-                var candidatePos = TryMove( position, forwardDir );
+                var candidatePos = TryMove( position, floodDir );
                 if( candidatePos == null )
                 {
                     return;
@@ -237,6 +248,12 @@ namespace TABSAT
                     }
                 }
 
+                // Test we don't already have a new candidate route to this position before we look up any known distance
+                if( nextToVisit.ContainsKey( candidatePos ) )
+                {
+                    return;
+                }
+
                 // Might the current position be a shorter path to an adjacent navigable?
                 if( ccDistances.TryGetValue( candidatePos, out int distance ) )
                 {
@@ -245,18 +262,15 @@ namespace TABSAT
                         return;
                     }
                 }
-                
-                if( !nextToVisit.ContainsKey( candidatePos ) )
-                {
-                    nextToVisit.Add( candidatePos, Reverse( forwardDir ) );
-                }
-                //nextToVisit[candidatePos] = Reverse( forwardDir );
+
+                nextToVisit.Add( candidatePos, Reverse( floodDir ) );
+                //nextToVisit[candidatePos] = Reverse( floodDir );
             }
 
             private Position TryMove( Position fromPosition, Direction direction )
             {
                 var candidatePos = fromPosition.TryMoveDirection( direction );
-                if( candidatePos == null )  // Unimplemented direction
+                if( candidatePos == null )  // Unimplemented direction or negative coordinate
                 {
                     return null;
                 }
@@ -278,16 +292,16 @@ namespace TABSAT
 
             private bool IsWithinMap( Position p )
             {
-                return p.x >= 0 && p.y >= 0 && p.x < res && p.y < res;
+                return /*p.x >= 0 && p.y >= 0 &&*/ p.x < resolution && p.y < resolution;
             }
 
             private bool IsNavigable( int x, int y )
             {
-                int i = axesToIndex( res, x, y );
+                int i = axesToIndex( resolution, x, y );
                 return navigable[i] == 0x00;  // != SaveReader.NAVIGABLE_BLOCKED
             }
 
-            private void favourFlow( Direction favoured )
+            private void favourFlow( SortedSet<Direction> favoured )
             {
                 var changesToApply = new SortedDictionary<Position, Direction>();
 
@@ -295,14 +309,14 @@ namespace TABSAT
                 {
                     var position = k_v.Key;
                     var direction = k_v.Value;
-                    if( ( favoured & direction ) == direction )
+                    if( favoured.Contains( direction ) )
                     {
                         continue;           // Already favoured, test another position
                     }
 
                     foreach( Direction candidateDirection in Enum.GetValues( typeof( Direction ) ) )
                     {
-                        if( ( favoured & candidateDirection ) == candidateDirection )   // An actual candidate favoured direction
+                        if( favoured.Contains( candidateDirection ) )   // An actual candidate favoured direction
                         {
                             var resultingPosition = TryMove( position, candidateDirection );
                             if( resultingPosition == null )
@@ -331,7 +345,7 @@ namespace TABSAT
                 int distance;
                 if( !ccDistances.TryGetValue( position, out distance ) )
                 {
-                    distance = int.MaxValue;
+                    distance = UNNAVIGABLE;
                 }
                 return distance;
             }
@@ -344,6 +358,142 @@ namespace TABSAT
                     return null;
                 }
                 return direction;
+            }
+        }
+
+        internal class IntQuadTree
+        {
+            private const int RES_LIMIT = 2;
+
+            private readonly int CornerX;       // North (W/S) corner of covered coords
+            private readonly int CornerY;       // North (W/S) corner of covered coords
+            private readonly int Resolution;    // Length of sides of covered square. Power of 2.
+
+            private int count;
+            private IntQuadTree northQuad;
+            private IntQuadTree eastQuad;
+            private IntQuadTree southQuad;
+            private IntQuadTree westQuad;
+
+            internal IntQuadTree( int x, int y, int res )
+            {
+                if( x < 0 || y < 0 )
+                {
+                    throw new ArgumentOutOfRangeException( "x and y coordinates must not be negative." );
+                }
+                if( res == 0 || ( res & (res - 1)) != 0 )
+                {
+                    throw new ArgumentOutOfRangeException( "res must be a positive power of 2." );
+                }
+                CornerX = x;
+                CornerY = y;
+                Resolution = res;
+
+                count = 0;
+                northQuad = null;
+                eastQuad = null;
+                southQuad = null;
+                westQuad = null;
+            }
+
+            internal int getCount( int x, int y, int res )
+            {
+                if( !IsWithinQuad( x, y ) )
+                {
+                    throw new ArgumentOutOfRangeException( "x or y not within quad." );
+                }
+
+                // Are we deep enough?
+                if( Resolution == res )
+                {
+                    return count;
+                }
+                else
+                {
+                    // Can we skip going deeper?
+                    if( count == 0 )
+                    {
+                        return 0;
+                    }
+                    // Find the corresponding quad and recurse
+                    IntQuadTree tree = SubTree( getDir( x, y ) );
+                    return tree == null ? 0 : tree.getCount( x, y, res );
+                }
+            }
+
+            private bool IsWithinQuad( int x, int y )
+            {
+                if( x < CornerX || x >= CornerX + Resolution )
+                {
+                    return false;
+                }
+                if( y < CornerY || y >= CornerY + Resolution )
+                {
+                    return false;
+                }
+                return true;
+            }
+
+            private SaveReader.CompassDirection getDir( int x, int y )
+            {
+                if( x - CornerX < Resolution / 2 )
+                {
+                    // N or W
+                    return ( y - CornerY < Resolution / 2 ) ? SaveReader.CompassDirection.North : SaveReader.CompassDirection.West;
+                }
+                else
+                {
+                    // E or S
+                    return ( y - CornerY < Resolution / 2 ) ? SaveReader.CompassDirection.East : SaveReader.CompassDirection.South;
+                }
+            }
+
+            private ref IntQuadTree SubTree( SaveReader.CompassDirection dir )
+            {
+                ref IntQuadTree tree = ref southQuad;
+                switch( dir )
+                {
+                    case SaveReader.CompassDirection.North:
+                        tree = ref northQuad;
+                        break;
+                    case SaveReader.CompassDirection.East:
+                        tree = ref eastQuad;
+                        break;
+                    case SaveReader.CompassDirection.South:
+                        tree = ref southQuad;
+                        break;
+                    case SaveReader.CompassDirection.West:
+                        tree = ref westQuad;
+                        break;
+                }
+                return ref tree;
+            }
+
+            internal void Add( int x, int y )
+            {
+                if( !IsWithinQuad( x, y ) )
+                {
+                    throw new ArgumentOutOfRangeException( "x or y not within quad." );
+                }
+
+                count += 1;
+
+                // Should we expand the tree?
+                if( Resolution > RES_LIMIT )
+                {
+                    SaveReader.CompassDirection dir = getDir( x, y );
+                    ref IntQuadTree tree = ref SubTree( dir );
+
+                    if( tree == null )
+                    {
+                        int newRes = Resolution / 2;
+                        int newX = dir == SaveReader.CompassDirection.North || dir == SaveReader.CompassDirection.West ? CornerX : CornerX + newRes;
+                        int newY = dir == SaveReader.CompassDirection.North || dir == SaveReader.CompassDirection.East ? CornerY : CornerY + newRes;
+                        tree = new IntQuadTree( newX, newY, newRes );
+                    }
+
+                    tree.Add( x, y );
+                }
             }
         }
     }

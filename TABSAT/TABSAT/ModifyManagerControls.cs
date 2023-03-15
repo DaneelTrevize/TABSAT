@@ -11,7 +11,6 @@ namespace TABSAT
         private readonly ModifyManager modifyManager;
         private readonly StatusWriterDelegate statusWriter;
         private readonly ModifySaveControls modifySaveControls;
-        private MapViewer mapViewer;
 
         public ModifyManagerControls( ModifyManager m, StatusWriterDelegate sW, string savesDirectory )
         {
@@ -98,24 +97,6 @@ namespace TABSAT
             modifyManager.setSaveFile( saveFile );
 
             reassessExtractionOption();
-
-            tempViewMap( saveFile );
-        }
-
-        private void tempViewMap( string saveFile )
-        {
-            var extractedSave = System.IO.Path.Combine( ModifyManager.DEFAULT_EDITS_DIRECTORY, System.IO.Path.GetFileNameWithoutExtension( saveFile ) );
-            if( System.IO.Directory.Exists( extractedSave ) )
-            {
-                /*
-                BeginInvoke(    // Assume all calls to this containing method are from off-UI-thread workers?
-                    new Action( () => {
-
-                    } )
-                );*/
-                mapViewer = new MapViewer( statusWriter, new SaveReader( extractedSave ) );
-                mapViewer.Show();
-            }
         }
 
         private void reassessExtractionOption()     // Refactor around state & event?
@@ -233,7 +214,7 @@ namespace TABSAT
                 saveFileGroupBox.Enabled = true;            // For skipping
             }
 
-            determineReflectorResponsibility();
+            determineReflectorResponsibility( false );
         }
 
         private void reflectorStopRepackCheckBox_CheckedChanged( object sender, EventArgs e )
@@ -298,9 +279,9 @@ namespace TABSAT
             statusWriter( "New Save File created:\t" + newSaveFile );
         }
 
-        private void determineReflectorResponsibility()
+        private void determineReflectorResponsibility( bool wereRepacking = true )  // Should instead test modifyManager.getState()?
         {
-            if( reflectorStopRepackCheckBox.Checked )
+            if( wereRepacking ? reflectorStopRepackCheckBox.Checked : reflectorStopExtractCheckBox.Checked )
             {
                 modifyManager.stopReflector();
             }

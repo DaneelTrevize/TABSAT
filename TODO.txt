@@ -1,4 +1,30 @@
 
+2023 interests:
+
+Steam seems to have migrated library location listings to config/libraryfolders.vdf, with a copy made to steamapps/libraryfolders.vdf
+Steam has also changed the UI for the sync-with-cloud property for a game, which we present a screenshot of in our GUI.
+
+VS2022 wants .Net to target 4.8, not 4.0 or 4.5.
+
+Windows Defender still seems to flag up the github version check feature, so maybe just remove it and the Octokit package?
+
+Improve UI by alternating background colouring of save modification options?
+
+Summarise whether maps are worth continuing, without showing the layout.
+Count total pathable land, food, zombies? Chart them at each radius from CC? Summary in a starting radius?
+
+----
+
+Skip NavTree central circle when iterating over map?
+Refactor PlayableArea iteration into a generator?
+Rename Navigable to Traversable?
+
+
+Theme change should replace pickable debris mats, and remove volcanos for non-Caustic themes?
+
+
+Consider map generation modifier, of removing 2x2 edge of all rocks (and any 1x1 cracks/small water areas?). Could extend flood fill to generate the set of rock edge top-left-of-2x2 tiles.
+
 Add an option to delete Backup file sets.
 
 Add a cap to population scaling, to keep it below the ~65k soft TAB limit?
@@ -88,6 +114,7 @@ Mostly for Caustic generator: Try to detect if entire ~halves (N/S/E/W) are unpo
 --
 Make games easier:
 
+Remove Fog over zombies, either all or only certain type(s)? And/or over VOD buildings?
 Remove Fog in a random pattern, would result in a spray effect? Or a non-uniform version based on CC distance?
 Remove Fog in a geometric pattern, such as radiating narrow arcs like lighthouse beams, or a spiral?
 

@@ -19,7 +19,7 @@ namespace TABSAT.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -61,7 +61,7 @@ namespace TABSAT.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1.0.
+        ///   Looks up a localized string similar to 1.3.0.
         /// </summary>
         internal static string masterTag {
             get {
@@ -92,19 +92,9 @@ namespace TABSAT.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap TAB_updates_menu_bottom {
+        internal static System.Drawing.Bitmap TAB_Steam_Cloud {
             get {
-                object obj = ResourceManager.GetObject("TAB_updates_menu_bottom", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap TAB_updates_menu_top {
-            get {
-                object obj = ResourceManager.GetObject("TAB_updates_menu_top", resourceCulture);
+                object obj = ResourceManager.GetObject("TAB Steam Cloud", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

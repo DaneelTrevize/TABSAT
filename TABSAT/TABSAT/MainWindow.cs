@@ -10,6 +10,7 @@ namespace TABSAT
 
         private ModifyManagerControls modifySaveC;
         private AutoBackupControls autoBackupC;
+        private MapSelectorControl mapSelectorC;
         private UpdatesManager updatesM;
 
         public delegate void StatusWriterDelegate( string status );
@@ -49,6 +50,8 @@ namespace TABSAT
             initModifySaveControl( TABdirectory, savesDirectory );
 
             initAutoBackupControl( savesDirectory );
+
+            initMapSelectorControl();
 
             tabControl1.SelectedIndexChanged += tabControl_SelectedIndexChanged;
 
@@ -123,6 +126,25 @@ namespace TABSAT
             autoBackupC.Dock = DockStyle.Fill;
             autoBackupC.Name = "autoBackupC";
             autoBackupTabPage.Controls.Add( autoBackupC );
+        }
+
+        private void initMapSelectorControl()
+        {
+            try
+            {
+                mapSelectorC = new MapSelectorControl( ModifyManager.DEFAULT_EDITS_DIRECTORY, statusWriter );
+            }
+            catch( Exception e )
+            {
+                statusWriter( "Unable to initialise Map Selector control." );
+                statusWriter( e.Message );
+
+                mapSelectorC = null;
+                return;
+            }
+            mapSelectorC.Dock = DockStyle.Fill;
+            mapSelectorC.Name = "mapSelectorC";
+            mapSelectorTabPage.Controls.Add( mapSelectorC );
         }
 
         private void tabControl_SelectedIndexChanged( object sender, EventArgs e )

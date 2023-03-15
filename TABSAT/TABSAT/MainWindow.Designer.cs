@@ -31,8 +31,7 @@ namespace TABSAT
         private void InitializeComponent()
         {
             this.cloudGroupBox = new System.Windows.Forms.GroupBox();
-            this.updatesBottomPictureBox = new System.Windows.Forms.PictureBox();
-            this.updatesTopPictureBox = new System.Windows.Forms.PictureBox();
+            this.generalPictureBox = new System.Windows.Forms.PictureBox();
             this.propertiesPictureBox = new System.Windows.Forms.PictureBox();
             this.cloudDisableLabel = new System.Windows.Forms.Label();
             this.updatesLabel = new System.Windows.Forms.Label();
@@ -46,12 +45,12 @@ namespace TABSAT
             this.logResizeLabel = new System.Windows.Forms.Label();
             this.saveEditorTabPage = new System.Windows.Forms.TabPage();
             this.autoBackupTabPage = new System.Windows.Forms.TabPage();
+            this.mapSelectorTabPage = new System.Windows.Forms.TabPage();
             this.statusTextBox = new System.Windows.Forms.TextBox();
             this.tabsLogSplitContainer = new System.Windows.Forms.SplitContainer();
             this.horizontalDiviverLabel = new System.Windows.Forms.Label();
             this.cloudGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.updatesBottomPictureBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.updatesTopPictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.generalPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.propertiesPictureBox)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.beforeUsingTabPage.SuspendLayout();
@@ -67,45 +66,34 @@ namespace TABSAT
             // cloudGroupBox
             // 
             this.cloudGroupBox.BackColor = System.Drawing.Color.Transparent;
-            this.cloudGroupBox.Controls.Add(this.updatesBottomPictureBox);
-            this.cloudGroupBox.Controls.Add(this.updatesTopPictureBox);
+            this.cloudGroupBox.Controls.Add(this.generalPictureBox);
             this.cloudGroupBox.Controls.Add(this.propertiesPictureBox);
             this.cloudGroupBox.Controls.Add(this.cloudDisableLabel);
             this.cloudGroupBox.Controls.Add(this.updatesLabel);
             this.cloudGroupBox.Controls.Add(this.propertiesLabel);
             this.noticesFlowLayoutPanel.SetFlowBreak(this.cloudGroupBox, true);
-            this.cloudGroupBox.Location = new System.Drawing.Point(3, 184);
+            this.cloudGroupBox.Location = new System.Drawing.Point(3, 229);
             this.cloudGroupBox.Name = "cloudGroupBox";
-            this.cloudGroupBox.Size = new System.Drawing.Size(570, 510);
+            this.cloudGroupBox.Size = new System.Drawing.Size(570, 484);
             this.cloudGroupBox.TabIndex = 0;
             this.cloudGroupBox.TabStop = false;
             this.cloudGroupBox.Text = "Disable Steam Cloud Synchonization";
             // 
-            // updatesBottomPictureBox
+            // generalPictureBox
             // 
-            this.updatesBottomPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.updatesBottomPictureBox.Image = global::TABSAT.Properties.Resources.TAB_updates_menu_bottom;
-            this.updatesBottomPictureBox.Location = new System.Drawing.Point(65, 316);
-            this.updatesBottomPictureBox.Name = "updatesBottomPictureBox";
-            this.updatesBottomPictureBox.Size = new System.Drawing.Size(499, 188);
-            this.updatesBottomPictureBox.TabIndex = 4;
-            this.updatesBottomPictureBox.TabStop = false;
-            // 
-            // updatesTopPictureBox
-            // 
-            this.updatesTopPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.updatesTopPictureBox.Image = global::TABSAT.Properties.Resources.TAB_updates_menu_top;
-            this.updatesTopPictureBox.Location = new System.Drawing.Point(65, 240);
-            this.updatesTopPictureBox.Name = "updatesTopPictureBox";
-            this.updatesTopPictureBox.Size = new System.Drawing.Size(499, 70);
-            this.updatesTopPictureBox.TabIndex = 3;
-            this.updatesTopPictureBox.TabStop = false;
+            this.generalPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.generalPictureBox.Image = global::TABSAT.Properties.Resources.TAB_Steam_Cloud;
+            this.generalPictureBox.Location = new System.Drawing.Point(6, 362);
+            this.generalPictureBox.Name = "generalPictureBox";
+            this.generalPictureBox.Size = new System.Drawing.Size(558, 112);
+            this.generalPictureBox.TabIndex = 3;
+            this.generalPictureBox.TabStop = false;
             // 
             // propertiesPictureBox
             // 
             this.propertiesPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.propertiesPictureBox.Image = global::TABSAT.Properties.Resources.TAB_properties_menu;
-            this.propertiesPictureBox.Location = new System.Drawing.Point(310, 19);
+            this.propertiesPictureBox.Location = new System.Drawing.Point(161, 109);
             this.propertiesPictureBox.Name = "propertiesPictureBox";
             this.propertiesPictureBox.Size = new System.Drawing.Size(254, 201);
             this.propertiesPictureBox.TabIndex = 0;
@@ -114,7 +102,7 @@ namespace TABSAT
             // cloudDisableLabel
             // 
             this.cloudDisableLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.cloudDisableLabel.Location = new System.Drawing.Point(6, 19);
+            this.cloudDisableLabel.Location = new System.Drawing.Point(156, 16);
             this.cloudDisableLabel.Name = "cloudDisableLabel";
             this.cloudDisableLabel.Size = new System.Drawing.Size(265, 49);
             this.cloudDisableLabel.TabIndex = 2;
@@ -125,26 +113,27 @@ namespace TABSAT
             // updatesLabel
             // 
             this.updatesLabel.AutoSize = true;
-            this.updatesLabel.Location = new System.Drawing.Point(3, 205);
+            this.updatesLabel.Location = new System.Drawing.Point(6, 337);
             this.updatesLabel.Name = "updatesLabel";
-            this.updatesLabel.Size = new System.Drawing.Size(224, 26);
+            this.updatesLabel.Size = new System.Drawing.Size(335, 13);
             this.updatesLabel.TabIndex = 1;
-            this.updatesLabel.Text = "2) On the Updates tab,\r\nuncheck Steam Cloud synchonization for TAB";
+            this.updatesLabel.Text = "2) On the General tab, uncheck Steam Cloud synchonization for TAB:";
             // 
             // propertiesLabel
             // 
             this.propertiesLabel.AutoSize = true;
-            this.propertiesLabel.Location = new System.Drawing.Point(3, 130);
+            this.propertiesLabel.Location = new System.Drawing.Point(6, 83);
             this.propertiesLabel.Name = "propertiesLabel";
-            this.propertiesLabel.Size = new System.Drawing.Size(285, 13);
+            this.propertiesLabel.Size = new System.Drawing.Size(288, 13);
             this.propertiesLabel.TabIndex = 0;
-            this.propertiesLabel.Text = "1) Right-click TAB in your Steam Library, choose Properties";
+            this.propertiesLabel.Text = "1) Right-click TAB in your Steam Library, choose Properties:";
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.beforeUsingTabPage);
             this.tabControl1.Controls.Add(this.saveEditorTabPage);
             this.tabControl1.Controls.Add(this.autoBackupTabPage);
+            this.tabControl1.Controls.Add(this.mapSelectorTabPage);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -182,7 +171,7 @@ namespace TABSAT
             this.corruptionGroupBox.Controls.Add(this.popupPictureBox);
             this.corruptionGroupBox.Location = new System.Drawing.Point(3, 3);
             this.corruptionGroupBox.Name = "corruptionGroupBox";
-            this.corruptionGroupBox.Size = new System.Drawing.Size(570, 175);
+            this.corruptionGroupBox.Size = new System.Drawing.Size(570, 220);
             this.corruptionGroupBox.TabIndex = 1;
             this.corruptionGroupBox.TabStop = false;
             this.corruptionGroupBox.Text = "Save Modification Popup Notice";
@@ -190,19 +179,19 @@ namespace TABSAT
             // popupLabel
             // 
             this.popupLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.popupLabel.Location = new System.Drawing.Point(6, 45);
+            this.popupLabel.Location = new System.Drawing.Point(104, 16);
             this.popupLabel.Name = "popupLabel";
-            this.popupLabel.Size = new System.Drawing.Size(166, 83);
+            this.popupLabel.Size = new System.Drawing.Size(369, 40);
             this.popupLabel.TabIndex = 0;
-            this.popupLabel.Text = "During normal Save modification,\r\na \'Data Files Corrupted\' popup\r\nwill appear.\r\nP" +
-    "lease do not interact with it.";
+            this.popupLabel.Text = "During normal Save modification, a \'Data Files Corrupted\' popup will appear.\r\nPle" +
+    "ase do not interact with it.";
             this.popupLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // popupPictureBox
             // 
             this.popupPictureBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.popupPictureBox.Image = global::TABSAT.Properties.Resources.TAB_ignore_popup;
-            this.popupPictureBox.Location = new System.Drawing.Point(178, 15);
+            this.popupPictureBox.Location = new System.Drawing.Point(95, 63);
             this.popupPictureBox.Name = "popupPictureBox";
             this.popupPictureBox.Size = new System.Drawing.Size(386, 147);
             this.popupPictureBox.TabIndex = 2;
@@ -211,7 +200,7 @@ namespace TABSAT
             // logResizeLabel
             // 
             this.logResizeLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.logResizeLabel.Location = new System.Drawing.Point(3, 697);
+            this.logResizeLabel.Location = new System.Drawing.Point(3, 716);
             this.logResizeLabel.MinimumSize = new System.Drawing.Size(210, 23);
             this.logResizeLabel.Name = "logResizeLabel";
             this.logResizeLabel.Size = new System.Drawing.Size(570, 45);
@@ -226,7 +215,7 @@ namespace TABSAT
             this.saveEditorTabPage.Location = new System.Drawing.Point(4, 22);
             this.saveEditorTabPage.Name = "saveEditorTabPage";
             this.saveEditorTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.saveEditorTabPage.Size = new System.Drawing.Size(582, 765);
+            this.saveEditorTabPage.Size = new System.Drawing.Size(582, 768);
             this.saveEditorTabPage.TabIndex = 1;
             this.saveEditorTabPage.Text = " Modify Save Files ";
             this.saveEditorTabPage.UseVisualStyleBackColor = true;
@@ -235,10 +224,20 @@ namespace TABSAT
             // 
             this.autoBackupTabPage.Location = new System.Drawing.Point(4, 22);
             this.autoBackupTabPage.Name = "autoBackupTabPage";
-            this.autoBackupTabPage.Size = new System.Drawing.Size(582, 765);
+            this.autoBackupTabPage.Size = new System.Drawing.Size(582, 768);
             this.autoBackupTabPage.TabIndex = 2;
             this.autoBackupTabPage.Text = "Automatically Backup Save Files";
             this.autoBackupTabPage.UseVisualStyleBackColor = true;
+            // 
+            // mapSelectorTabPage
+            // 
+            this.mapSelectorTabPage.Location = new System.Drawing.Point(4, 22);
+            this.mapSelectorTabPage.Name = "mapSelectorTabPage";
+            this.mapSelectorTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.mapSelectorTabPage.Size = new System.Drawing.Size(582, 768);
+            this.mapSelectorTabPage.TabIndex = 3;
+            this.mapSelectorTabPage.Text = "Map Viewer (Beta)";
+            this.mapSelectorTabPage.UseVisualStyleBackColor = true;
             // 
             // statusTextBox
             // 
@@ -302,8 +301,7 @@ namespace TABSAT
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
             this.cloudGroupBox.ResumeLayout(false);
             this.cloudGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.updatesBottomPictureBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.updatesTopPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.generalPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.propertiesPictureBox)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.beforeUsingTabPage.ResumeLayout(false);
@@ -337,9 +335,9 @@ namespace TABSAT
         private System.Windows.Forms.Label popupLabel;
         private System.Windows.Forms.PictureBox popupPictureBox;
         private System.Windows.Forms.FlowLayoutPanel noticesFlowLayoutPanel;
-        private System.Windows.Forms.PictureBox updatesBottomPictureBox;
-        private System.Windows.Forms.PictureBox updatesTopPictureBox;
+        private System.Windows.Forms.PictureBox generalPictureBox;
         private System.Windows.Forms.Label horizontalDiviverLabel;
+        private System.Windows.Forms.TabPage mapSelectorTabPage;
     }
 }
 
