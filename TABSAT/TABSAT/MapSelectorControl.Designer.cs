@@ -28,53 +28,75 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.mapFileTextBox = new System.Windows.Forms.TextBox();
-            this.mapFileChooseButton = new System.Windows.Forms.Button();
-            this.mapOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.extractedSaveTextBox = new System.Windows.Forms.TextBox();
+            this.extractedSaveChooseButton = new System.Windows.Forms.Button();
+            this.mapFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.mapSelectorGroupBox = new System.Windows.Forms.GroupBox();
+            this.mapSelectorGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
-            // mapFileTextBox
+            // extractedSaveTextBox
             // 
-            this.mapFileTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.mapFileTextBox.Location = new System.Drawing.Point(20, 38);
-            this.mapFileTextBox.Name = "mapFileTextBox";
-            this.mapFileTextBox.ReadOnly = true;
-            this.mapFileTextBox.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.mapFileTextBox.Size = new System.Drawing.Size(211, 20);
-            this.mapFileTextBox.TabIndex = 1;
-            this.mapFileTextBox.TabStop = false;
-            this.mapFileTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.mapFileTextBox.WordWrap = false;
+            this.extractedSaveTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.extractedSaveTextBox.Location = new System.Drawing.Point(6, 19);
+            this.extractedSaveTextBox.Name = "extractedSaveTextBox";
+            this.extractedSaveTextBox.ReadOnly = true;
+            this.extractedSaveTextBox.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.extractedSaveTextBox.Size = new System.Drawing.Size(374, 20);
+            this.extractedSaveTextBox.TabIndex = 1;
+            this.extractedSaveTextBox.TabStop = false;
+            this.extractedSaveTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.extractedSaveTextBox.WordWrap = false;
             // 
-            // mapFileChooseButton
+            // extractedSaveChooseButton
             // 
-            this.mapFileChooseButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.mapFileChooseButton.Location = new System.Drawing.Point(237, 32);
-            this.mapFileChooseButton.Name = "mapFileChooseButton";
-            this.mapFileChooseButton.Size = new System.Drawing.Size(195, 30);
-            this.mapFileChooseButton.TabIndex = 2;
-            this.mapFileChooseButton.Text = "Choose an extracted Save Data File...";
-            this.mapFileChooseButton.UseVisualStyleBackColor = true;
-            this.mapFileChooseButton.Click += new System.EventHandler(this.mapFileChooseButton_Click);
+            this.extractedSaveChooseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.extractedSaveChooseButton.AutoSize = true;
+            this.extractedSaveChooseButton.Location = new System.Drawing.Point(386, 17);
+            this.extractedSaveChooseButton.Name = "extractedSaveChooseButton";
+            this.extractedSaveChooseButton.Size = new System.Drawing.Size(152, 23);
+            this.extractedSaveChooseButton.TabIndex = 2;
+            this.extractedSaveChooseButton.Text = "Choose an extracted Save...";
+            this.extractedSaveChooseButton.UseVisualStyleBackColor = true;
+            this.extractedSaveChooseButton.Click += new System.EventHandler(this.extractedSaveChooseButton_Click);
+            // 
+            // mapFolderBrowserDialog
+            // 
+            this.mapFolderBrowserDialog.Description = "Select an extracter Save folder.";
+            this.mapFolderBrowserDialog.ShowNewFolderButton = false;
+            // 
+            // mapSelectorGroupBox
+            // 
+            this.mapSelectorGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.mapSelectorGroupBox.Controls.Add(this.extractedSaveTextBox);
+            this.mapSelectorGroupBox.Controls.Add(this.extractedSaveChooseButton);
+            this.mapSelectorGroupBox.Location = new System.Drawing.Point(3, 3);
+            this.mapSelectorGroupBox.Name = "mapSelectorGroupBox";
+            this.mapSelectorGroupBox.Size = new System.Drawing.Size(544, 50);
+            this.mapSelectorGroupBox.TabIndex = 3;
+            this.mapSelectorGroupBox.TabStop = false;
+            this.mapSelectorGroupBox.Text = "Selected Save to View";
             // 
             // MapSelectorControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.mapFileTextBox);
-            this.Controls.Add(this.mapFileChooseButton);
-            this.MinimumSize = new System.Drawing.Size(580, 290);
+            this.Controls.Add(this.mapSelectorGroupBox);
             this.Name = "MapSelectorControl";
-            this.Size = new System.Drawing.Size(580, 290);
+            this.Size = new System.Drawing.Size(550, 65);
+            this.mapSelectorGroupBox.ResumeLayout(false);
+            this.mapSelectorGroupBox.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.TextBox mapFileTextBox;
-        private System.Windows.Forms.Button mapFileChooseButton;
-        private System.Windows.Forms.OpenFileDialog mapOpenFileDialog;
+        private System.Windows.Forms.TextBox extractedSaveTextBox;
+        private System.Windows.Forms.Button extractedSaveChooseButton;
+        private System.Windows.Forms.FolderBrowserDialog mapFolderBrowserDialog;
+        private System.Windows.Forms.GroupBox mapSelectorGroupBox;
     }
 }

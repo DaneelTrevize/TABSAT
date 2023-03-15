@@ -32,6 +32,7 @@
             this.mapPictureBox = new System.Windows.Forms.PictureBox();
             this.mapPanel = new System.Windows.Forms.Panel();
             this.layersGroupBox = new System.Windows.Forms.GroupBox();
+            this.zombieComboBox = new System.Windows.Forms.ComboBox();
             this.zombieLabel = new System.Windows.Forms.Label();
             this.zombieCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieTrackBar = new System.Windows.Forms.TrackBar();
@@ -48,7 +49,6 @@
             this.zoomLabel = new System.Windows.Forms.Label();
             this.rotateCheckBox = new System.Windows.Forms.CheckBox();
             this.optionsGroupBox = new System.Windows.Forms.GroupBox();
-            this.zombieComboBox = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).BeginInit();
             this.mapPanel.SuspendLayout();
@@ -117,6 +117,16 @@
             this.layersGroupBox.TabStop = false;
             this.layersGroupBox.Text = "Show Layers";
             // 
+            // zombieComboBox
+            // 
+            this.zombieComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.zombieComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.zombieComboBox.FormattingEnabled = true;
+            this.zombieComboBox.Location = new System.Drawing.Point(6, 344);
+            this.zombieComboBox.Name = "zombieComboBox";
+            this.zombieComboBox.Size = new System.Drawing.Size(82, 21);
+            this.zombieComboBox.TabIndex = 13;
+            // 
             // zombieLabel
             // 
             this.zombieLabel.AutoSize = true;
@@ -147,7 +157,7 @@
             this.zombieTrackBar.Size = new System.Drawing.Size(45, 135);
             this.zombieTrackBar.SmallChange = 6;
             this.zombieTrackBar.TabIndex = 10;
-            this.zombieTrackBar.Value = 4;
+            this.zombieTrackBar.Value = 2;
             // 
             // navQuadLabel
             // 
@@ -235,6 +245,8 @@
             // distanceCheckBox
             // 
             this.distanceCheckBox.AutoSize = true;
+            this.distanceCheckBox.Checked = true;
+            this.distanceCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.distanceCheckBox.Location = new System.Drawing.Point(6, 111);
             this.distanceCheckBox.Name = "distanceCheckBox";
             this.distanceCheckBox.Size = new System.Drawing.Size(68, 17);
@@ -265,6 +277,8 @@
             // rotateCheckBox
             // 
             this.rotateCheckBox.AutoSize = true;
+            this.rotateCheckBox.Checked = true;
+            this.rotateCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.rotateCheckBox.Location = new System.Drawing.Point(6, 42);
             this.rotateCheckBox.Name = "rotateCheckBox";
             this.rotateCheckBox.Size = new System.Drawing.Size(58, 17);
@@ -283,16 +297,6 @@
             this.optionsGroupBox.TabIndex = 5;
             this.optionsGroupBox.TabStop = false;
             this.optionsGroupBox.Text = "Options";
-            // 
-            // zombieComboBox
-            // 
-            this.zombieComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.zombieComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.zombieComboBox.FormattingEnabled = true;
-            this.zombieComboBox.Location = new System.Drawing.Point(6, 344);
-            this.zombieComboBox.Name = "zombieComboBox";
-            this.zombieComboBox.Size = new System.Drawing.Size(82, 21);
-            this.zombieComboBox.TabIndex = 13;
             // 
             // MapViewerControl
             // 

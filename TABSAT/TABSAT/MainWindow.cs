@@ -51,7 +51,7 @@ namespace TABSAT
 
             initAutoBackupControl( savesDirectory );
 
-            initMapSelectorControl( savesDirectory );
+            initMapSelectorControl();
 
             tabControl1.SelectedIndexChanged += tabControl_SelectedIndexChanged;
 
@@ -128,11 +128,11 @@ namespace TABSAT
             autoBackupTabPage.Controls.Add( autoBackupC );
         }
 
-        private void initMapSelectorControl( string savesDirectory )
+        private void initMapSelectorControl()
         {
             try
             {
-                mapSelectorC = new MapSelectorControl( savesDirectory, statusWriter );
+                mapSelectorC = new MapSelectorControl( ModifyManager.DEFAULT_EDITS_DIRECTORY, statusWriter );
             }
             catch( Exception e )
             {
