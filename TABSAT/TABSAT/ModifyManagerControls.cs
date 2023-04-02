@@ -136,14 +136,16 @@ namespace TABSAT
 
             modifySaveBackgroundWorker = new BackgroundWorker();
             modifySaveBackgroundWorker.DoWork += new DoWorkEventHandler( modifySave_DoWork );
+            modifySaveBackgroundWorker.RunWorkerCompleted += modifySave_RunWorkerCompleted;
             modifySaveBackgroundWorker.RunWorkerAsync();
         }
 
         private void modifySave_DoWork( object sender, DoWorkEventArgs e )
         {
-
             // Firstly extract the save
-            if( extractSave() )
+            var extracted = extractSave();
+            e.Result = extracted;
+            if( extracted )
             {
                 // Make modifications
                 if( modifyExtractedSave() )
@@ -159,6 +161,15 @@ namespace TABSAT
                     statusWriter( "Removed extracted files." );
                 }
             }
+        }
+
+        private void modifySave_RunWorkerCompleted( object sender, RunWorkerCompletedEventArgs e )
+        {
+            if( e.Error != null )
+            {
+                statusWriter( "Error while extracting or modifying the save: " + e.Error.ToString() );
+            }
+            // else, we should use e.Result now? But we don't care to use the worker reference to report progress or make the task cancellable.
 
             determineReflectorResponsibility();
 
@@ -178,6 +189,7 @@ namespace TABSAT
 
                     modifySaveBackgroundWorker = new BackgroundWorker();
                     modifySaveBackgroundWorker.DoWork += new DoWorkEventHandler( extractSave_DoWork );
+                    modifySaveBackgroundWorker.RunWorkerCompleted += extractSave_RunWorkerCompleted;
                     modifySaveBackgroundWorker.RunWorkerAsync();
 
                     break;
@@ -201,20 +213,36 @@ namespace TABSAT
 
         private void extractSave_DoWork( object sender, DoWorkEventArgs e )
         {
-            if( !extractSave() )
-            {
-                resetSaveFileChoice();
-            }
-            else
+            var extracted = extractSave();
+            e.Result = extracted;
+            if( extracted )
             {
                 modifyExtractedSave();  // Unchecked
-
-                extractRepackSaveButton.Text = "Repack the Save File";
-                extractRepackSaveButton.Enabled = true;     // For repacking
-                saveFileGroupBox.Enabled = true;            // For skipping
             }
+        }
 
-            determineReflectorResponsibility( false );
+        private void extractSave_RunWorkerCompleted( object sender, RunWorkerCompletedEventArgs e )
+        {
+            if( e.Error != null )
+            {
+                statusWriter( "Error while extracting the save: " + e.Error.ToString() );
+            }
+            // else, we should use e.Result now? But we don't care to use the worker reference to report progress or make the task cancellable.
+            else
+            {
+                if( (bool) e.Result )
+                {
+                    extractRepackSaveButton.Text = "Repack the Save File";
+                    extractRepackSaveButton.Enabled = true;     // For repacking
+                    saveFileGroupBox.Enabled = true;            // For skipping
+                }
+                else
+                {
+                    resetSaveFileChoice();
+                }
+
+                determineReflectorResponsibility( false );
+            }
         }
 
         private void reflectorStopRepackCheckBox_CheckedChanged( object sender, EventArgs e )
@@ -259,7 +287,7 @@ namespace TABSAT
             return modifySaveControls.modifySave( dataEditor );
         }
 
-            private void backupAndRepackSave()
+        private void backupAndRepackSave()
         {
             if( backupCheckBox.Checked )
             {

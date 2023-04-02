@@ -107,7 +107,7 @@ namespace TABSAT
                 {
                     return new Position( newX, newY );
                 }
-                catch
+                catch( Exception e )
                 {
                     return null;
                 }

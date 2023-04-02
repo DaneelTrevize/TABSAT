@@ -62,7 +62,7 @@ namespace TABSAT
             {
                 File.Move( saveFile, backupFile );
             }
-            catch
+            catch( Exception e )
             {
                 Console.Error.WriteLine( "Unable to backup: " + saveFile + " to: " + backupFile );
                 return null;
@@ -89,7 +89,7 @@ namespace TABSAT
                         {
                             File.Move( checkFile, backupCheckFile );
                         }
-                        catch
+                        catch( Exception e )
                         {
                             Console.Error.WriteLine( "Unable to backup: " + checkFile + " to: " + backupCheckFile );
                         }
