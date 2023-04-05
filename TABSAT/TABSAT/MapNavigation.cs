@@ -183,7 +183,7 @@ namespace TABSAT
                 }
 
                 // Are we done flood filling the map?
-                if( distance + 1 > limit )
+                if( distance >= limit )
                 {
                     return;
                 }
@@ -257,7 +257,7 @@ namespace TABSAT
                 // Might the current position be a shorter path to an adjacent navigable?
                 if( ccDistances.TryGetValue( candidatePos, out int distance ) )
                 {
-                    if( distance < range + 1 )
+                    if( distance <= range )
                     {
                         return;
                     }

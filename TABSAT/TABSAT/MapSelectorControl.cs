@@ -67,7 +67,17 @@ namespace TABSAT
 
                 } )
             );*/
-            var mapData = new SaveReader( extractedSave );
+            SaveReader mapData;
+            try
+            {
+                mapData = new SaveReader( extractedSave );
+            }
+            catch( Exception e )
+            {
+                Console.Error.WriteLine( "Problem opening extracted save file: " + e.Message + Environment.NewLine + e.StackTrace );
+                statusWriter( "Unable to read extracted save file." );
+                return;
+            }
             var mapViewer = new MapViewerControl( mapData );
             Form f = new Form();
             f.Text = mapData.Name() + " - MapViewer";

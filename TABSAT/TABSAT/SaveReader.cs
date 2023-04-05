@@ -697,26 +697,26 @@ namespace TABSAT
             {
                 int wordIndex = i * BYTES_PER_WORD;
                 int byteOffset = layer == MapLayers.Fog ? 3 : 0;    // Fog is in the byte at the other end of the word
-                for( int b = 0; b < BYTES_PER_WORD; b++ )
+                /*for( int b = 0; b < BYTES_PER_WORD; b++ )
                 {
                     byte value = fullData[wordIndex + b];
                     if( b == byteOffset )
                     {
                         trimmedData[i] = value;
-                    }/*
+                    }
                     else if( value != 0x00 && !unknownBytesFirstIndex.ContainsKey( value ) )
                     {
                         unknownBytesFirstIndex.Add( value, wordIndex + b );
-                    }*/
-                }
-
+                    }
+                }*/
+                trimmedData[i] = fullData[wordIndex + byteOffset];
             }
             /*
             foreach( var k_v in unknownBytesFirstIndex )
             {
                 Console.Error.WriteLine( "layerData " + layer + ", index:" + k_v.Value + " unknown value: " + k_v.Key );
-            }*/
-
+            }
+            */
             return trimmedData;
         }
 

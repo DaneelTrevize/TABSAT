@@ -217,7 +217,10 @@ namespace TABSAT
             e.Result = extracted;
             if( extracted )
             {
-                modifyExtractedSave();  // Unchecked
+                if( !modifyExtractedSave() )
+                {
+                    statusWriter( "Unable to modify extracted save file." );
+                }
             }
         }
 
@@ -283,7 +286,10 @@ namespace TABSAT
             }
 
             SaveEditor dataEditor = modifyManager.getSaveEditor();
-
+            if( dataEditor == null )
+            {
+                return false;
+            }
             return modifySaveControls.modifySave( dataEditor );
         }
 

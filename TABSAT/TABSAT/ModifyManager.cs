@@ -252,7 +252,15 @@ namespace TABSAT
             {
                 throw new InvalidOperationException( "Save File has not been extracted." );
             }
-            return new SaveEditor( currentDecryptDir );
+            try
+            {
+                return new SaveEditor( currentDecryptDir );
+            }
+            catch ( Exception e )
+            {
+                Console.Error.WriteLine( "Problem opening extracted save file: " + e.Message + Environment.NewLine + e.StackTrace );
+                return null;
+            }
         }
 
         internal string backupSave()
