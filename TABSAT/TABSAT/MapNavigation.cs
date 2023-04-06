@@ -103,14 +103,11 @@ namespace TABSAT
                         throw new ArgumentException( "Unimplemented Direction: " + d );
                 }
 
-                try
-                {
-                    return new Position( newX, newY );
-                }
-                catch( Exception e )
+                if( newX < 0 || newY < 0 )
                 {
                     return null;
                 }
+                return new Position( newX, newY );
             }
 
             public int CompareTo( object obj )

@@ -140,17 +140,17 @@ namespace TABSAT
         }
 
 
-        public ModifyManager( string TABdirectory, ReflectorManager r, string e )
+        public ModifyManager( string TABdirectory, ReflectorManager refM, string edits )
         {
             Assembly.LoadFile( Path.Combine( TABdirectory, @"Ionic.Zip.dll" ) );
 
-            if( r == null )
+            if( refM == null )
             {
                 throw new ArgumentNullException( "ReflectorManager should not be null." );
             }
 
-            reflectorManager = r;
-            editsDir = e;
+            reflectorManager = refM;
+            editsDir = edits;
 
             if( !Directory.Exists( editsDir ) )
             {
@@ -158,9 +158,9 @@ namespace TABSAT
                 {
                     Directory.CreateDirectory( editsDir );
                 }
-                catch( Exception ex )
+                catch( Exception e )
                 {
-                    throw new ArgumentException( "The edits backup directory does not exist amd could not be created.", ex );
+                    throw new ArgumentException( "The edits backup directory does not exist and could not be created.", e );
                 }
             }
 
