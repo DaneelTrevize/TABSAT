@@ -24,8 +24,12 @@ namespace TABSAT
             statusWriter = sW;
 
             mapFolderBrowserDialog.SelectedPath = editsDirectory;
+        }
 
+        internal void refreshSaveFileChoice()
+        {
             // Try to find the most recently extracted save's edit directory.
+            var editsDirectory = mapFolderBrowserDialog.SelectedPath;
             if( !Directory.Exists( editsDirectory ) )
             {
                 statusWriter( "The provided edits directory does not exist." );
@@ -44,7 +48,6 @@ namespace TABSAT
 
             extractedSaveTextBox.Text = mapFolderBrowserDialog.SelectedPath;
         }
-
 
         private void extractedSaveChooseButton_Click( object sender, EventArgs e )
         {

@@ -48,7 +48,7 @@ namespace TABSAT
             this.mapSelectorTabPage = new System.Windows.Forms.TabPage();
             this.statusTextBox = new System.Windows.Forms.TextBox();
             this.tabsLogSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.horizontalDiviverLabel = new System.Windows.Forms.Label();
+            this.horizontalDividerLabel = new System.Windows.Forms.Label();
             this.cloudGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.generalPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.propertiesPictureBox)).BeginInit();
@@ -272,22 +272,22 @@ namespace TABSAT
             // 
             // tabsLogSplitContainer.Panel2
             // 
-            this.tabsLogSplitContainer.Panel2.Controls.Add(this.horizontalDiviverLabel);
+            this.tabsLogSplitContainer.Panel2.Controls.Add(this.horizontalDividerLabel);
             this.tabsLogSplitContainer.Panel2.Controls.Add(this.statusTextBox);
             this.tabsLogSplitContainer.Panel2MinSize = 34;
             this.tabsLogSplitContainer.Size = new System.Drawing.Size(590, 832);
             this.tabsLogSplitContainer.SplitterDistance = 794;
             this.tabsLogSplitContainer.TabIndex = 2;
             // 
-            // horizontalDiviverLabel
+            // horizontalDividerLabel
             // 
-            this.horizontalDiviverLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.horizontalDividerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.horizontalDiviverLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.horizontalDiviverLabel.Location = new System.Drawing.Point(0, 0);
-            this.horizontalDiviverLabel.Name = "horizontalDiviverLabel";
-            this.horizontalDiviverLabel.Size = new System.Drawing.Size(590, 2);
-            this.horizontalDiviverLabel.TabIndex = 3;
+            this.horizontalDividerLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.horizontalDividerLabel.Location = new System.Drawing.Point(0, 0);
+            this.horizontalDividerLabel.Name = "horizontalDividerLabel";
+            this.horizontalDividerLabel.Size = new System.Drawing.Size(590, 2);
+            this.horizontalDividerLabel.TabIndex = 3;
             // 
             // MainWindow
             // 
@@ -336,7 +336,7 @@ namespace TABSAT
         private System.Windows.Forms.PictureBox popupPictureBox;
         private System.Windows.Forms.FlowLayoutPanel noticesFlowLayoutPanel;
         private System.Windows.Forms.PictureBox generalPictureBox;
-        private System.Windows.Forms.Label horizontalDiviverLabel;
+        private System.Windows.Forms.Label horizontalDividerLabel;
         private System.Windows.Forms.TabPage mapSelectorTabPage;
     }
 }

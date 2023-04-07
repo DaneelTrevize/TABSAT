@@ -34,7 +34,7 @@
             this.saveFileTextBox = new System.Windows.Forms.TextBox();
             this.saveFileChooseButton = new System.Windows.Forms.Button();
             this.backupCheckBox = new System.Windows.Forms.CheckBox();
-            this.quickModifySaveButton = new System.Windows.Forms.Button();
+            this.quickSkipSaveButton = new System.Windows.Forms.Button();
             this.reflectorStopExtractCheckBox = new System.Windows.Forms.CheckBox();
             this.reflectorStopRepackCheckBox = new System.Windows.Forms.CheckBox();
             this.reflectorStopButton = new System.Windows.Forms.Button();
@@ -141,15 +141,16 @@
             this.backupCheckBox.Text = "Backup Original";
             this.backupCheckBox.UseVisualStyleBackColor = true;
             // 
-            // quickModifySaveButton
+            // quickSkipSaveButton
             // 
-            this.quickModifySaveButton.Location = new System.Drawing.Point(269, 19);
-            this.quickModifySaveButton.Name = "quickModifySaveButton";
-            this.quickModifySaveButton.Size = new System.Drawing.Size(120, 30);
-            this.quickModifySaveButton.TabIndex = 0;
-            this.quickModifySaveButton.Text = "Quick Modify";
-            this.quickModifySaveButton.UseVisualStyleBackColor = true;
-            this.quickModifySaveButton.Click += new System.EventHandler(this.modifySaveButton_Click);
+            this.quickSkipSaveButton.Enabled = false;
+            this.quickSkipSaveButton.Location = new System.Drawing.Point(269, 19);
+            this.quickSkipSaveButton.Name = "quickSkipSaveButton";
+            this.quickSkipSaveButton.Size = new System.Drawing.Size(120, 30);
+            this.quickSkipSaveButton.TabIndex = 0;
+            this.quickSkipSaveButton.Text = "Quick Modify";
+            this.quickSkipSaveButton.UseVisualStyleBackColor = true;
+            this.quickSkipSaveButton.Click += new System.EventHandler(this.quickSkipSaveButton_Click);
             // 
             // reflectorStopExtractCheckBox
             // 
@@ -239,7 +240,7 @@
             this.modifyGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.modifyGroupBox.Controls.Add(this.extractRepackSaveButton);
-            this.modifyGroupBox.Controls.Add(this.quickModifySaveButton);
+            this.modifyGroupBox.Controls.Add(this.quickSkipSaveButton);
             this.modifyGroupBox.Controls.Add(this.extractLeaveCheckBox);
             this.modifyGroupBox.Location = new System.Drawing.Point(7, 3);
             this.modifyGroupBox.MaximumSize = new System.Drawing.Size(395, 0);
@@ -388,7 +389,7 @@
         private System.Windows.Forms.GroupBox reflectorOutputGroupBox;
         private System.Windows.Forms.TextBox reflectorTextBox;
         private System.Windows.Forms.Button extractRepackSaveButton;
-        private System.Windows.Forms.Button quickModifySaveButton;
+        private System.Windows.Forms.Button quickSkipSaveButton;
         private System.Windows.Forms.Label modifyHintLabel;
         private System.Windows.Forms.OpenFileDialog saveOpenFileDialog;
         private System.ComponentModel.BackgroundWorker modifySaveBackgroundWorker;

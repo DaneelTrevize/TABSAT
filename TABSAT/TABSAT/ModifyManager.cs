@@ -65,6 +65,7 @@ namespace TABSAT
             catch( Exception e )
             {
                 Console.Error.WriteLine( "Unable to backup: " + saveFile + " to: " + backupFile );
+                Console.Error.WriteLine( e.Message );
                 return null;
             }
 
@@ -92,6 +93,7 @@ namespace TABSAT
                         catch( Exception e )
                         {
                             Console.Error.WriteLine( "Unable to backup: " + checkFile + " to: " + backupCheckFile );
+                            Console.Error.WriteLine( e.Message );
                         }
                     }
                 }
@@ -182,7 +184,7 @@ namespace TABSAT
             }
             currentDecryptDir = null;
         }
-
+        /*
         internal SaveState getState()  // Refactor into event SaveFileSet?
         {
             return state;
@@ -192,7 +194,7 @@ namespace TABSAT
         {
             return state == ModifyManager.SaveState.SET;
         }
-
+        */
         internal string extractSave( bool useTempDir )
         {
             if( state != SaveState.SET )
@@ -312,12 +314,17 @@ namespace TABSAT
                 Console.Error.WriteLine( e.Message );
             }
 
-            //setSaveFile( currentSaveFile ); To reset currentDecryptDir and state?
+            setSaveFile( currentSaveFile ); // To reset currentDecryptDir and state
+        }
+
+        internal bool reflectorReadyToStop()
+        {
+            return reflectorManager.getState() == ReflectorManager.ReflectorState.STARTED;
         }
 
         internal void stopReflector()
         {
-            if( reflectorManager.getState() == ReflectorManager.ReflectorState.STARTED )
+            if( reflectorReadyToStop() )
             {
                 reflectorManager.stopReflector();
             }

@@ -156,6 +156,13 @@ namespace TABSAT
                     modifySaveC.refreshSaveFileChoice();
                 }
             }
+            if( tabControl1.SelectedIndex == 3 )    // Assumes Viewer tab page is 4th
+            {
+                if( mapSelectorC != null )
+                {
+                    mapSelectorC.refreshSaveFileChoice();
+                }
+            }
         }
 
         private void MainWindow_FormClosing( object sender, FormClosingEventArgs e )
