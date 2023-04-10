@@ -12,12 +12,12 @@ using static TABSAT.MainWindow;
 
 namespace TABSAT
 {
-    public partial class MapSelectorControl : UserControl
+    public partial class SaveSelectorControl : UserControl
     {
 
         private readonly StatusWriterDelegate statusWriter;
 
-        public MapSelectorControl( string editsDirectory, StatusWriterDelegate sW )
+        public SaveSelectorControl( string editsDirectory, StatusWriterDelegate sW )
         {
             InitializeComponent();
 
@@ -43,6 +43,7 @@ namespace TABSAT
                     IOrderedEnumerable<DirectoryInfo> sortedEditsInfo = editsInfo.OrderByDescending( s => s.LastWriteTimeUtc );
                     DirectoryInfo newestEdit = sortedEditsInfo.First();
                     mapFolderBrowserDialog.SelectedPath = newestEdit.FullName;
+                    viewMapButton.Enabled = true;
                 }
             }
 
@@ -54,12 +55,19 @@ namespace TABSAT
             if( mapFolderBrowserDialog.ShowDialog() == DialogResult.OK )
             {
                 extractedSaveTextBox.Text = mapFolderBrowserDialog.SelectedPath;
-                viewMap( mapFolderBrowserDialog.SelectedPath );
+                viewMapButton.Enabled = true;
             }
             else
             {
+                viewMapButton.Enabled = false;
                 extractedSaveTextBox.Text = "";
             }
+        }
+
+        private void viewMapButton_Click( object sender, EventArgs e )
+        {
+            viewMapButton.Enabled = false;
+            viewMap( mapFolderBrowserDialog.SelectedPath );
         }
 
         private void viewMap( string extractedSave )

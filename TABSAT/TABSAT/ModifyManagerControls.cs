@@ -24,6 +24,8 @@ namespace TABSAT
 
         private readonly ModifyManager modifyManager;
         private readonly StatusWriterDelegate statusWriter;
+        private delegate bool ModifySaveDelegate();
+        private ModifySaveDelegate modifySaveDelegate;
         private readonly ModifySaveControls modifySaveControls;
         private EditingState editingState;
 
@@ -33,6 +35,8 @@ namespace TABSAT
 
             modifyManager = m;
             statusWriter = sW;
+
+            modifySaveDelegate = new ModifySaveDelegate( modifyExtractedSave );
 
             modifySaveControls = new ModifySaveControls( statusWriter );
             modifySaveControls.Location = new System.Drawing.Point( 3, 0 );
@@ -63,9 +67,9 @@ namespace TABSAT
 
         private void setEditingState( EditingState newState )
         {
-            if( saveFileTextBox.InvokeRequired )
+            if( this.InvokeRequired )
             {
-                saveFileTextBox.BeginInvoke( new Action( () => setEditingState( newState ) ) );
+                this.BeginInvoke( new Action( () => setEditingState( newState ) ) );
             }
             else
             {
@@ -422,24 +426,31 @@ namespace TABSAT
 
         private bool modifyExtractedSave()
         {
-            if( !modifySaveControls.anyModificationChosen() )
+            if( modifySaveControls.InvokeRequired )
             {
-                statusWriter( "No modifications chosen." );
+                return (bool) modifySaveControls.Invoke( modifySaveDelegate );
+            }
+            else
+            {
+                if( !modifySaveControls.anyModificationChosen() )
+                {
+                    statusWriter( "No modifications chosen." );
+                    return true;
+                }
+
+                SaveEditor dataEditor = modifyManager.getSaveEditor();
+                if( dataEditor == null )
+                {
+                    statusWriter( "Unable to read extracted save file." );
+                    return false;
+                }
+                if( !modifySaveControls.modifySave( dataEditor ) )
+                {
+                    statusWriter( "Unable to modify extracted save file." );
+                    return false;
+                }
                 return true;
             }
-
-            SaveEditor dataEditor = modifyManager.getSaveEditor();
-            if( dataEditor == null )
-            {
-                statusWriter( "Unable to read extracted save file." );
-                return false;
-            }
-            if( !modifySaveControls.modifySave( dataEditor ) )
-            {
-                statusWriter( "Unable to modify extracted save file." );
-                return false;
-            }
-            return true;
         }
 
         private bool backupAndRepackSave( bool backupSave )

@@ -10,7 +10,7 @@ namespace TABSAT
 
         private ModifyManagerControls modifySaveC;
         private AutoBackupControls autoBackupC;
-        private MapSelectorControl mapSelectorC;
+        private SaveSelectorControl saveSelectorC;
         private UpdatesManager updatesM;
 
         public delegate void StatusWriterDelegate( string status );
@@ -51,7 +51,7 @@ namespace TABSAT
 
             initAutoBackupControl( savesDirectory );
 
-            initMapSelectorControl();
+            initSaveSelectorControl();
 
             tabControl1.SelectedIndexChanged += tabControl_SelectedIndexChanged;
 
@@ -128,23 +128,23 @@ namespace TABSAT
             autoBackupTabPage.Controls.Add( autoBackupC );
         }
 
-        private void initMapSelectorControl()
+        private void initSaveSelectorControl()
         {
             try
             {
-                mapSelectorC = new MapSelectorControl( ModifyManager.DEFAULT_EDITS_DIRECTORY, statusWriter );
+                saveSelectorC = new SaveSelectorControl( ModifyManager.DEFAULT_EDITS_DIRECTORY, statusWriter );
             }
             catch( Exception e )
             {
-                statusWriter( "Unable to initialise Map Selector control." );
+                statusWriter( "Unable to initialise Save Selector control." );
                 statusWriter( e.Message );
 
-                mapSelectorC = null;
+                saveSelectorC = null;
                 return;
             }
-            mapSelectorC.Dock = DockStyle.Fill;
-            mapSelectorC.Name = "mapSelectorC";
-            mapSelectorTabPage.Controls.Add( mapSelectorC );
+            saveSelectorC.Dock = DockStyle.Fill;
+            saveSelectorC.Name = "saveSelectorC";
+            saveSelectorTabPage.Controls.Add( saveSelectorC );
         }
 
         private void tabControl_SelectedIndexChanged( object sender, EventArgs e )
@@ -158,9 +158,9 @@ namespace TABSAT
             }
             if( tabControl1.SelectedIndex == 3 )    // Assumes Viewer tab page is 4th
             {
-                if( mapSelectorC != null )
+                if( saveSelectorC != null )
                 {
-                    mapSelectorC.refreshSaveFileChoice();
+                    saveSelectorC.refreshSaveFileChoice();
                 }
             }
         }
