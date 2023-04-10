@@ -25,7 +25,7 @@ namespace TABSAT
         private readonly ModifyManager modifyManager;
         private readonly StatusWriterDelegate statusWriter;
         private delegate bool ModifySaveDelegate();
-        private ModifySaveDelegate modifySaveDelegate;
+        private readonly ModifySaveDelegate modifySaveDelegate;
         private readonly ModifySaveControls modifySaveControls;
         private EditingState editingState;
 
@@ -69,7 +69,7 @@ namespace TABSAT
         {
             if( this.InvokeRequired )
             {
-                this.BeginInvoke( new Action( () => setEditingState( newState ) ) );
+                this.Invoke( new Action( () => setEditingState( newState ) ) );
             }
             else
             {
