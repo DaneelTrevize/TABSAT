@@ -1,31 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static TABSAT.MainWindow;
 
 namespace TABSAT
 {
-    public partial class MapSelectorControl : UserControl
+    public partial class SaveSelectorControl : UserControl
     {
 
         private readonly StatusWriterDelegate statusWriter;
 
-        public MapSelectorControl( string editsDirectory, StatusWriterDelegate sW )
+        public SaveSelectorControl( string editsDirectory, StatusWriterDelegate sW )
         {
             InitializeComponent();
 
             statusWriter = sW;
 
             mapFolderBrowserDialog.SelectedPath = editsDirectory;
+        }
 
+        internal void refreshSaveFileChoice()
+        {
             // Try to find the most recently extracted save's edit directory.
+            var editsDirectory = mapFolderBrowserDialog.SelectedPath;
             if( !Directory.Exists( editsDirectory ) )
             {
                 statusWriter( "The provided edits directory does not exist." );
@@ -39,24 +38,31 @@ namespace TABSAT
                     IOrderedEnumerable<DirectoryInfo> sortedEditsInfo = editsInfo.OrderByDescending( s => s.LastWriteTimeUtc );
                     DirectoryInfo newestEdit = sortedEditsInfo.First();
                     mapFolderBrowserDialog.SelectedPath = newestEdit.FullName;
+                    viewMapButton.Enabled = true;
                 }
             }
 
             extractedSaveTextBox.Text = mapFolderBrowserDialog.SelectedPath;
         }
 
-
         private void extractedSaveChooseButton_Click( object sender, EventArgs e )
         {
             if( mapFolderBrowserDialog.ShowDialog() == DialogResult.OK )
             {
                 extractedSaveTextBox.Text = mapFolderBrowserDialog.SelectedPath;
-                viewMap( mapFolderBrowserDialog.SelectedPath );
+                viewMapButton.Enabled = true;
             }
             else
             {
+                viewMapButton.Enabled = false;
                 extractedSaveTextBox.Text = "";
             }
+        }
+
+        private void viewMapButton_Click( object sender, EventArgs e )
+        {
+            viewMapButton.Enabled = false;
+            viewMap( mapFolderBrowserDialog.SelectedPath );
         }
 
         private void viewMap( string extractedSave )
@@ -79,13 +85,15 @@ namespace TABSAT
                 return;
             }
             var mapViewer = new MapViewerControl( mapData );
-            Form f = new Form();
-            f.Text = mapData.Name() + " - MapViewer";
-            f.Width = mapViewer.Width + 20;
-            f.Height = mapViewer.Height + 40;
+            Form f = new Form
+            {
+                Text = mapData.Name() + " - MapViewer",
+                Width = mapViewer.Width + 20,
+                Height = mapViewer.Height + 40
+            };
             mapViewer.Dock = DockStyle.Fill;
             f.Controls.Add( mapViewer );
-            f.FormClosing += ( object sender, FormClosingEventArgs e ) => { mapViewer.clearCache(); };
+            f.FormClosing += ( object sender, FormClosingEventArgs e ) => { mapViewer.ClearCache(); };
             f.Show();
         }
     }

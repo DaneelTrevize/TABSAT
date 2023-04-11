@@ -1,17 +1,12 @@
 
 2023 interests:
 
-Steam seems to have migrated library location listings to config/libraryfolders.vdf, with a copy made to steamapps/libraryfolders.vdf
-Steam has also changed the UI for the sync-with-cloud property for a game, which we present a screenshot of in our GUI.
-
-VS2022 wants .Net to target 4.8, not 4.0 or 4.5.
-
-Windows Defender still seems to flag up the github version check feature, so maybe just remove it and the Octokit package?
-
 Improve UI by alternating background colouring of save modification options?
 
 Summarise whether maps are worth continuing, without showing the layout.
 Count total pathable land, food, zombies? Chart them at each radius from CC? Summary in a starting radius?
+
+Is swarm skull location explicit in saves, or derived from associated zombie positions?
 
 ----
 

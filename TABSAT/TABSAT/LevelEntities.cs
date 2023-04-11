@@ -158,8 +158,7 @@ namespace TABSAT
 
             var template = getTemplate( i );
 
-            SortedSet<UInt64> typeIDs;
-            if( !templatesToIDs.TryGetValue( template, out typeIDs ) )
+            if( !templatesToIDs.TryGetValue( template, out SortedSet<ulong> typeIDs ) )
             {
                 typeIDs = new SortedSet<UInt64>();
                 templatesToIDs.Add( template, typeIDs );
@@ -175,13 +174,11 @@ namespace TABSAT
 
         private void Remove( UInt64 id )
         {
-            XElement entity;
-            if( entityItems.TryGetValue( id, out entity ) )
+            if( entityItems.TryGetValue( id, out XElement entity ) )
             {
                 var template = getTemplate( entity );
 
-                SortedSet<UInt64> typeIDs;
-                if( templatesToIDs.TryGetValue( template, out typeIDs ) )
+                if( templatesToIDs.TryGetValue( template, out SortedSet<UInt64> typeIDs ) )
                 {
                     typeIDs.Remove( id );
                     // Is OK to leave an empty set of IDs for this type in typesToIDs
@@ -205,8 +202,7 @@ namespace TABSAT
             LinkedList<XElement> subset = new LinkedList<XElement>();
             foreach( var template in templates )
             {
-                SortedSet<UInt64> typeIDs;
-                if( templatesToIDs.TryGetValue( template, out typeIDs ) )
+                if( templatesToIDs.TryGetValue( template, out SortedSet<UInt64> typeIDs ) )
                 {
                     foreach( var id in typeIDs )
                     {
@@ -219,8 +215,7 @@ namespace TABSAT
 
         internal SortedSet<UInt64> getIDs( UInt64 template )
         {
-            SortedSet<UInt64> typeIDs;
-            if( !templatesToIDs.TryGetValue( template, out typeIDs ) )
+            if( !templatesToIDs.TryGetValue( template, out SortedSet<UInt64> typeIDs ) )
             {
                 return new SortedSet<UInt64>();
             }
@@ -230,8 +225,7 @@ namespace TABSAT
         internal LinkedList<SaveEditor.MapPosition> getPositions( UInt64 template, MapData cc )
         {
             var positions = new LinkedList<SaveEditor.MapPosition>();
-            SortedSet<UInt64> typeIDs;
-            if( templatesToIDs.TryGetValue( template, out typeIDs ) )
+            if( templatesToIDs.TryGetValue( template, out SortedSet<UInt64> typeIDs ) )
             {
                 foreach( var id in typeIDs )
                 {
@@ -322,14 +316,12 @@ namespace TABSAT
                 return;
             }
 
-            XElement originEntity;
-            if( !entityItems.TryGetValue( origin, out originEntity ) )
+            if( !entityItems.TryGetValue( origin, out XElement originEntity ) )
             {
                 Console.Error.WriteLine( "Could not relocate LevelEntity: " + origin );
                 return;
             }
-            XElement destinationEntity;
-            if( !entityItems.TryGetValue( destination, out destinationEntity ) )
+            if( !entityItems.TryGetValue( destination, out XElement destinationEntity ) )
             {
                 Console.Error.WriteLine( "Could not relocate LevelEntity: " + origin + " to: " + destination );
                 return;
@@ -348,24 +340,14 @@ namespace TABSAT
 
             getPosition( originEntity ).SetValue( farthestPositionString );
             SaveReader.getFirstSimplePropertyNamed( originEntity.Element( "Complex" ), "LastPosition" ).SetAttributeValue( "value", farthestPositionString );
-            if( currentBehaviourTargetPosition != null )
-            {
-                currentBehaviourTargetPosition.SetAttributeValue( "value", farthestPositionString );
-            }
-            if( currentMovableTargetPosition != null )
-            {
-                currentMovableTargetPosition.SetAttributeValue( "value", farthestPositionString );
-            }
-            if( currentLastDestinyProcessed != null )
-            {
-                currentLastDestinyProcessed.SetAttributeValue( "value", farthestPositionString );
-            }
+            currentBehaviourTargetPosition?.SetAttributeValue( "value", farthestPositionString );
+            currentMovableTargetPosition?.SetAttributeValue( "value", farthestPositionString );
+            currentLastDestinyProcessed?.SetAttributeValue( "value", farthestPositionString );
         }
 
         internal void swapZombieType( UInt64 id )
         {
-            XElement entity;
-            if( !entityItems.TryGetValue( id, out entity ) )
+            if( !entityItems.TryGetValue( id, out XElement entity ) )
             {
                 Console.Error.WriteLine( "Could not type-swap LevelEntity: " + id );
                 return;
@@ -418,10 +400,7 @@ namespace TABSAT
                 size = GIANT_SIZE;
 
                 XElement cInflamable = getComplexItemOfType( components, CINFLAMABLE, false );
-                if( cInflamable != null )
-                {
-                    cInflamable.Remove();
-                }
+                cInflamable?.Remove();
             }
             else
             {

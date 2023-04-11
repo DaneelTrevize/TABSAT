@@ -106,11 +106,12 @@
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="MapNavigation.cs" />
-    <Compile Include="MapSelectorControl.cs">
+    <Compile Include="ModifyChoices.cs" />
+    <Compile Include="SaveSelectorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MapSelectorControl.Designer.cs">
-      <DependentUpon>MapSelectorControl.cs</DependentUpon>
+    <Compile Include="SaveSelectorControl.Designer.cs">
+      <DependentUpon>SaveSelectorControl.cs</DependentUpon>
     </Compile>
     <Compile Include="MapViewerControl.cs">
       <SubType>UserControl</SubType>
@@ -147,8 +148,8 @@
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MapSelectorControl.resx">
-      <DependentUpon>MapSelectorControl.cs</DependentUpon>
+    <EmbeddedResource Include="SaveSelectorControl.resx">
+      <DependentUpon>SaveSelectorControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MapViewerControl.resx">
       <DependentUpon>MapViewerControl.cs</DependentUpon>

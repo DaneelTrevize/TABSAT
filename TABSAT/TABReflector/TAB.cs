@@ -141,7 +141,7 @@ namespace TABSAT
             return null;
         }
 
-        public static string getCheckFile( string saveFile )
+        public static string GetCheckFile( string saveFile )
         {
             return Path.ChangeExtension( saveFile, CHECK_EXTENSION );
         }

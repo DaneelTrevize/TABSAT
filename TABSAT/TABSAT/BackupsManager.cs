@@ -191,12 +191,14 @@ namespace TABSAT
 
         private void setupWatcher()
         {
-            savesFolderWatcher = new FileSystemWatcher();
-            savesFolderWatcher.InternalBufferSize = 64 * 1024;              // Max, 64KB
-            savesFolderWatcher.Filter = TAB.CHECKS_FILTER;
-            savesFolderWatcher.Path = activeSavesDirInfo.FullName;
-            savesFolderWatcher.NotifyFilter = NotifyFilters.FileName        // For Created/Renamed/Deleted events
-                                            | NotifyFilters.LastWrite;      // For Changed events
+            savesFolderWatcher = new FileSystemWatcher
+            {
+                InternalBufferSize = 64 * 1024,             // Max, 64KB
+                Filter = TAB.CHECKS_FILTER,
+                Path = activeSavesDirInfo.FullName,
+                NotifyFilter = NotifyFilters.FileName       // For Created/Renamed/Deleted events
+                             | NotifyFilters.LastWrite      // For Changed events
+            };
             savesFolderWatcher.Created += savesFolderWatcher_OnChanged;
             savesFolderWatcher.Changed += savesFolderWatcher_OnChanged;
             savesFolderWatcher.Deleted += savesFolderWatcher_OnChanged;
@@ -320,8 +322,7 @@ namespace TABSAT
                 TreeNode baseNode = new TreeNode( baseName ) { Name = baseName };
                 e.Backups[i++] = baseNode;
 
-                SortedSet<string> timeDirs;
-                backupsTree.TryGetValue( baseName, out timeDirs );  // Not checking concurrency issues, but then again the nested SortedSets aren't thread-safe anyway...
+                backupsTree.TryGetValue( baseName, out SortedSet<string> timeDirs );  // Not checking concurrency issues, but then again the nested SortedSets aren't thread-safe anyway...
                 foreach( string time in timeDirs.Reverse() )
                 {
                     baseNode.Nodes.Add( time );
@@ -437,8 +438,7 @@ namespace TABSAT
                 string baseName = Path.GetFileNameWithoutExtension( newSaveInfo.Name );
                 if( activeSaves.ContainsKey( baseName ) )
                 {
-                    SaveFile oldSave;
-                    if( !activeSaves.TryGetValue( baseName, out oldSave ) )
+                    if( !activeSaves.TryGetValue( baseName, out SaveFile oldSave ) )
                     {
                         statusWriter( "Conflict attempting to compare an existing Active Save record for: " + baseName );
                         // It already just got deleted? So don't try add it now?
@@ -498,8 +498,7 @@ namespace TABSAT
 
         internal CheckState backupActiveSave( string baseName )
         {
-            SaveFile save;
-            if( !activeSaves.TryGetValue( baseName, out save ) )
+            if( !activeSaves.TryGetValue( baseName, out SaveFile save ) )
             {
                 throw new ArgumentException( "Invalid active save file name." );
             }

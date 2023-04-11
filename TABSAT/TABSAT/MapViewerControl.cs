@@ -12,7 +12,7 @@ namespace TABSAT
         //private const float X_TRANSFORM = 3 / 4;
         //private const float Y_TRANSFORM = 15 / 16;
 
-        private MapData mapData;    // To fit diagonally, the image side would need to be Math.Sqrt( cells * cells / 2 ) * 2 ~= 362
+        private readonly MapData mapData;    // To fit diagonally, the image side would need to be Math.Sqrt( cells * cells / 2 ) * 2 ~= 362
         private static readonly SortedDictionary<ThemeType, Color> backgroundMap;
         private static readonly SortedDictionary<MapLayers, SortedDictionary<byte, Brush>> layersBrushes;
         private static readonly Brush unknown = new SolidBrush( Color.HotPink );
@@ -172,8 +172,7 @@ namespace TABSAT
             using( Graphics mapGraphics = Graphics.FromImage( map ) )
             {
                 // Background
-                Color background;
-                if( !backgroundMap.TryGetValue( mapData.Theme(), out background ) )
+                if( !backgroundMap.TryGetValue( mapData.Theme(), out Color background ) )
                 {
                     background = Color.LightGray;
                 }
@@ -241,8 +240,7 @@ namespace TABSAT
         private Image getCachedImage( ViewLayer layer, int cellSize, int mapSize )
         {
             SortedDictionary<int, Image> cache = layerCache[layer];
-            Image map;
-            if( !cache.TryGetValue( cellSize, out map ) )
+            if( !cache.TryGetValue( cellSize, out Image map ) )
             {
                 switch( layer )
                 {
@@ -308,8 +306,7 @@ namespace TABSAT
             LayerData layerData = mapData.getLayerData( layer );
             int cellSize = mapSize / layerData.res;
 
-            SortedDictionary<byte, Brush> layerBrushes;
-            if( !layersBrushes.TryGetValue( layer, out layerBrushes ) )
+            if( !layersBrushes.TryGetValue( layer, out SortedDictionary<byte, Brush> layerBrushes ) )
             {
                 layerBrushes = null;
             }
@@ -338,8 +335,7 @@ namespace TABSAT
                     }
                     else
                     {
-                        Brush brush;
-                        if( layerBrushes == null || !layerBrushes.TryGetValue( cell, out brush ) )
+                        if( layerBrushes == null || !layerBrushes.TryGetValue( cell, out Brush brush ) )
                         {
                             brush = unknown;
                         }
@@ -449,8 +445,7 @@ namespace TABSAT
 
         private Image getArrow( MapNavigation.Direction direction, int cellSize )
         {
-            Image arrow;
-            if( !arrows.TryGetValue( direction, out arrow ) )
+            if( !arrows.TryGetValue( direction, out Image arrow ) )
             {
                 arrow = new Bitmap( cellSize, cellSize );
                 using( Graphics arrowGraphics = Graphics.FromImage( arrow ) )
@@ -535,7 +530,7 @@ namespace TABSAT
             }
         }
 
-        internal void clearCache()
+        internal void ClearCache()
         {
             foreach( ViewLayer layer in Enum.GetValues( typeof( ViewLayer ) ) )
             {

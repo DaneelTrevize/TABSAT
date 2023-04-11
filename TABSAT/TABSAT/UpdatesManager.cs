@@ -1,6 +1,5 @@
 ﻿using Octokit;
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using static TABSAT.MainWindow;
 
