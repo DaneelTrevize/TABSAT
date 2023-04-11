@@ -492,9 +492,7 @@ namespace TABSAT
                 foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
                 {
                     // Get zombie coordinates, convert to ints/position, add to quadtree...
-                    float p_x;
-                    float p_y;
-                    extractCoordinates( getFirstSimplePropertyNamed( com, "B" ), out p_x, out p_y );
+                    extractCoordinates( getFirstSimplePropertyNamed( com, "B" ), out float p_x, out float p_y );
 
                     popQuadTrees[zombieType].Add( (int) p_x, (int) p_y );
                 }
@@ -601,8 +599,7 @@ namespace TABSAT
 
         public LayerData getLayerData( MapLayers layer )
         {
-            LayerData data;
-            if( !layerDataCache.TryGetValue( layer, out data ) )
+            if( !layerDataCache.TryGetValue( layer, out LayerData data ) )
             {
                 int res = cellsCount;
 
@@ -757,12 +754,8 @@ namespace TABSAT
                               select c;
             foreach( var c in impassibles )
             {
-                float p_x;
-                float p_y;
-                extractCoordinates( getFirstSimplePropertyNamed( c, "Position" ), out p_x, out p_y );
-                int s_x;
-                int s_y;
-                extractCoordinates( getFirstSimplePropertyNamed( c, "Size" ), out s_x, out s_y );
+                extractCoordinates( getFirstSimplePropertyNamed( c, "Position" ), out float p_x, out float p_y );
+                extractCoordinates( getFirstSimplePropertyNamed( c, "Size" ), out int s_x, out int s_y );
                 int corner_x = (int) p_x - ( s_x / 2 );
                 int corner_y = (int) p_y - ( s_y / 2 );
                 for( int x = 0; x < s_x; x++ )

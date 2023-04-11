@@ -45,8 +45,7 @@ namespace TABSAT
 
         internal void Remove( UInt64 id )
         {
-            XElement icon;
-            if( iconsItems.TryGetValue( id, out icon ) )
+            if( iconsItems.TryGetValue( id, out XElement icon ) )
             {
                 iconsItems.Remove( id );
                 icon.Remove();
@@ -59,8 +58,7 @@ namespace TABSAT
 
         internal void Duplicate( UInt64 oldID, UInt64 newID )
         {
-            XElement icon;
-            if( iconsItems.TryGetValue( oldID, out icon ) )
+            if( iconsItems.TryGetValue( oldID, out XElement icon ) )
             {
                 XElement copy = new XElement( icon );
                 getID( icon ).SetValue( newID );
@@ -75,8 +73,7 @@ namespace TABSAT
         internal void swapZombieType( UInt64 id )
         {
             // replace the <Complex type="ZX.ZXMiniMapIndicatorInfo...><Properties> minimap icon's <Simple name="IDProjectImage" value=> and <Simple name="Title" value=> & "Text"
-            XElement icon;
-            if( iconsItems.TryGetValue( id, out icon ) )
+            if( iconsItems.TryGetValue( id, out XElement icon ) )
             {
                 //<Simple name="IDProjectImage">
                 XAttribute image = SaveReader.getFirstSimplePropertyNamed( icon, "IDProjectImage" ).Attribute( "value" );
@@ -110,11 +107,9 @@ namespace TABSAT
                 return;
             }
 
-            XElement toIcon;
-            if( iconsItems.TryGetValue( toID, out toIcon ) )
+            if( iconsItems.TryGetValue( toID, out XElement toIcon ) )
             {
-                XElement fromIcon;
-                if( iconsItems.TryGetValue( fromID, out fromIcon ) )
+                if( iconsItems.TryGetValue( fromID, out XElement fromIcon ) )
                 {
                     getCell( fromIcon ).SetValue( getCell( toIcon ).Value );
 
@@ -137,9 +132,7 @@ namespace TABSAT
             public MapPosition( XElement i, MapData cc )
             {
                 ID = (UInt64) i.Element( "Simple" ).Attribute( "value" );
-                float x;
-                float y;
-                extractCoordinates( getFirstSimplePropertyNamed( i.Element( "Complex" ), "Position" ), out x, out y );
+                extractCoordinates( getFirstSimplePropertyNamed( i.Element( "Complex" ), "Position" ), out float x, out float y );
 
                 if( x <= cc.CCX() )
                 {
@@ -842,8 +835,7 @@ namespace TABSAT
         {
             bool addValue( XElement extra, uint add )
             {
-                int value = 0;
-                if( !Int32.TryParse( extra.Attribute( "value" ).Value, out value ) )
+                if( !Int32.TryParse( extra.Attribute( "value" ).Value, out int value ) )
                 {
                     return false;
                 }
@@ -895,8 +887,7 @@ namespace TABSAT
                     if( simples.First().Attribute( "value" ).Value == giftableID )    // Template/TypeID matches
                     {
                         XAttribute secondSimpleValue = simples.Skip( 1 ).First().Attribute( "value" );
-                        int existing;
-                        if( !Int32.TryParse( secondSimpleValue.Value, out existing ) )
+                        if( !Int32.TryParse( secondSimpleValue.Value, out int existing ) )
                         {
                             Console.Error.WriteLine( "Unable to find the number of gifted entities of type: " + giftable );
                         }

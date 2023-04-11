@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 using static TABSAT.MainWindow;
+using static TABSAT.SaveReader;
 
 namespace TABSAT
 {
@@ -24,8 +26,6 @@ namespace TABSAT
 
         private readonly ModifyManager modifyManager;
         private readonly StatusWriterDelegate statusWriter;
-        private delegate bool ModifySaveDelegate();
-        private readonly ModifySaveDelegate modifySaveDelegate;
         private readonly ModifySaveControls modifySaveControls;
         private EditingState editingState;
 
@@ -36,12 +36,12 @@ namespace TABSAT
             modifyManager = m;
             statusWriter = sW;
 
-            modifySaveDelegate = new ModifySaveDelegate( modifyExtractedSave );
-
-            modifySaveControls = new ModifySaveControls( statusWriter );
-            modifySaveControls.Location = new System.Drawing.Point( 3, 0 );
-            modifySaveControls.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
-            modifySaveControls.Name = "modifySaveControls";
+            modifySaveControls = new ModifySaveControls
+            {
+                Location = new System.Drawing.Point( 3, 0 ),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
+                Name = "modifySaveControls"
+            };
             optionsSplitContainer.Panel1.Controls.Add( modifySaveControls );
 
             editingState = EditingState.CHOOSING_SAVE;
@@ -275,7 +275,8 @@ namespace TABSAT
                     modifySaveBackgroundWorker = new BackgroundWorker();
                     modifySaveBackgroundWorker.DoWork += new DoWorkEventHandler( quickModify_DoWork );
                     modifySaveBackgroundWorker.RunWorkerCompleted += repackingWork_RunWorkerCompleted;
-                    modifySaveBackgroundWorker.RunWorkerAsync( ( !extractLeaveCheckBox.Checked, backupCheckBox.Checked ) );
+                    bool anyMods = modifySaveControls.anyModificationChosen();
+                    modifySaveBackgroundWorker.RunWorkerAsync( ( !extractLeaveCheckBox.Checked, backupCheckBox.Checked, anyMods, anyMods ? modifySaveControls.getChoices() : null ) );
 
                     break;
                 case EditingState.MANUAL_EXTRACTED:
@@ -292,26 +293,26 @@ namespace TABSAT
 
         private void quickModify_DoWork( object sender, DoWorkEventArgs e )
         {
-            (bool useTempDir, bool backupSave) useTempAndBackup = ((bool, bool)) e.Argument;
+            (bool useTempDir, bool backupSave, bool anyMods, ModifyChoices choices) = ((bool, bool, bool, ModifyChoices)) e.Argument;
 
             // Firstly extract the save
-            bool result = extractSave( useTempAndBackup.useTempDir );
+            bool result = extractSave( useTempDir );
             if( result )
             {
                 setEditingState( EditingState.QUICK_EXTRACTED );
 
                 // Make modifications
-                result = modifyExtractedSave();
+                result = modifyExtractedSave( anyMods, choices );
                 if( result )
                 {
                     // No modified state to set, moving on...
 
                     // Backup & Repack the save
                     setEditingState( EditingState.QUICK_REPACKING );
-                    result = backupAndRepackSave( useTempAndBackup.backupSave );
+                    result = backupAndRepackSave( backupSave );
                 }
 
-                if( useTempAndBackup.useTempDir )
+                if( useTempDir )
                 {
                     // Remove the extracted files
                     modifyManager.removeDecryptedDir();
@@ -356,7 +357,8 @@ namespace TABSAT
                     modifySaveBackgroundWorker = new BackgroundWorker();
                     modifySaveBackgroundWorker.DoWork += new DoWorkEventHandler( manualExtractSave_DoWork );
                     modifySaveBackgroundWorker.RunWorkerCompleted += manualExtractSave_RunWorkerCompleted;
-                    modifySaveBackgroundWorker.RunWorkerAsync( !extractLeaveCheckBox.Checked );
+                    bool anyMods = modifySaveControls.anyModificationChosen();
+                    modifySaveBackgroundWorker.RunWorkerAsync( ( !extractLeaveCheckBox.Checked, anyMods, anyMods ? modifySaveControls.getChoices() : null ) );
 
                     break;
                 case EditingState.MANUAL_EXTRACTED:
@@ -378,12 +380,12 @@ namespace TABSAT
 
         private void manualExtractSave_DoWork( object sender, DoWorkEventArgs e )
         {
-            bool useTempDir = (bool) e.Argument;
+            (bool useTempDir, bool anyMods, ModifyChoices choices) = ((bool, bool, ModifyChoices)) e.Argument;
             bool result = extractSave( useTempDir );
             if( result )
             {
                 setEditingState( EditingState.MANUAL_EXTRACTED );
-                result = modifyExtractedSave();
+                result = modifyExtractedSave( anyMods, choices );
                 // No modified state to set, moving on...
             }
 
@@ -424,33 +426,203 @@ namespace TABSAT
             }
         }
 
-        private bool modifyExtractedSave()
+        private bool modifyExtractedSave( in bool anyMods, in ModifyChoices choices )
         {
-            if( modifySaveControls.InvokeRequired )
+            if( !anyMods )
             {
-                return (bool) modifySaveControls.Invoke( modifySaveDelegate );
-            }
-            else
-            {
-                if( !modifySaveControls.anyModificationChosen() )
-                {
-                    statusWriter( "No modifications chosen." );
-                    return true;
-                }
-
-                SaveEditor dataEditor = modifyManager.getSaveEditor();
-                if( dataEditor == null )
-                {
-                    statusWriter( "Unable to read extracted save file." );
-                    return false;
-                }
-                if( !modifySaveControls.modifySave( dataEditor ) )
-                {
-                    statusWriter( "Unable to modify extracted save file." );
-                    return false;
-                }
+                statusWriter( "No modifications chosen." );
                 return true;
             }
+
+            SaveEditor dataEditor = modifyManager.getSaveEditor();
+            if( dataEditor == null )
+            {
+                statusWriter( "Unable to read extracted save file." );
+                return false;
+            }
+            if( choices != null && !modifySave( choices, dataEditor ) )
+            {
+                statusWriter( "Unable to modify extracted save file." );
+                return false;
+            }
+            return true;
+        }
+
+        private bool modifySave( in ModifyChoices choices, SaveEditor dataEditor )
+        {
+            try
+            {
+                // Zombie Population Scaling
+                if( choices.PopulationScale != 1 )
+                {
+                    statusWriter( "Scaling Zombie population x" + choices.PopulationScale + '.' );
+                    dataEditor.scalePopulation( choices.PopulationScale );
+                }
+                else
+                {
+                    if( choices.ScalableZombieGroupFactors.Any() )
+                    {
+                        statusWriter( "Scaling Zombie population per type." );
+                        dataEditor.scalePopulation( choices.ScalableZombieGroupFactors );
+                    }
+                }
+                if( choices.GiantScale != 1 )
+                {
+                    statusWriter( "Scaling Giant population x" + choices.GiantScale + '.' );
+                    dataEditor.scaleHugePopulation( true, choices.GiantScale );
+                }
+                if( choices.MutantScale != 1 )
+                {
+                    statusWriter( "Scaling Mutant population x" + choices.MutantScale + '.' );
+                    dataEditor.scaleHugePopulation( false, choices.MutantScale );
+                }
+
+                // Mutants
+                switch( choices.Mutants )
+                {
+                    case ModifyChoices.MutantChoices.None:
+                        break;
+                    case ModifyChoices.MutantChoices.ReplaceWithGiants:
+                        statusWriter( "Replacing all Mutants with Giants." );
+                        dataEditor.replaceHugeZombies( true );
+                        break;
+                    case ModifyChoices.MutantChoices.ReplaceWithMutants:
+                        statusWriter( "Replacing all Giants with Mutants." );
+                        dataEditor.replaceHugeZombies( false );
+                        break;
+                    case ModifyChoices.MutantChoices.MoveToGiants:
+                        statusWriter( "Relocating Mutants to farthest Giant on the map." );
+                        dataEditor.relocateMutants( true, false );
+                        break;
+                    case ModifyChoices.MutantChoices.MoveToMutants:
+                        statusWriter( "Relocating Mutants to farthest Mutant on the map." );
+                        dataEditor.relocateMutants( false, false );
+                        break;
+                    case ModifyChoices.MutantChoices.MoveToGiantsPerQuadrant:
+                        statusWriter( "Relocating Mutants to farthest Giant per Compass quadrant if possible." );
+                        dataEditor.relocateMutants( true, true );
+                        break;
+                    case ModifyChoices.MutantChoices.MoveToMutantsPerQuadrant:
+                        statusWriter( "Relocating Mutants to farthest Mutant per Compass quadrant if possible." );
+                        dataEditor.relocateMutants( false, true );
+                        break;
+                    default:
+                        throw new ArgumentException( "Unimplemented choice: " + choices.Mutants );
+                }
+                
+                // VODs
+                if( choices.ResizeVODs )
+                {
+                    statusWriter( "Replacing all VOD buildings with " + vodSizesNames[choices.VodSize] + '.' );
+                    dataEditor.resizeVODs( choices.VodSize );
+                }
+                else
+                {
+                    if( choices.SmallScale != 1 )
+                    {
+                        statusWriter( "Scaling Dwellings count x" + choices.SmallScale + '.' );
+                        dataEditor.stackVODbuildings( VodSizes.SMALL, choices.SmallScale );
+                    }
+                    if( choices.MediumScale != 1 )
+                    {
+                        statusWriter( "Scaling Taverns count x" + choices.MediumScale + '.' );
+                        dataEditor.stackVODbuildings( VodSizes.MEDIUM, choices.MediumScale );
+                    }
+                    if( choices.LargeScale != 1 )
+                    {
+                        statusWriter( "Scaling City Halls count x" + choices.LargeScale + '.' );
+                        dataEditor.stackVODbuildings( VodSizes.LARGE, choices.LargeScale );
+                    }
+                }
+
+                // Fog of War
+                switch ( choices.Fog )
+                {
+                    case ModifyChoices.FogChoices.None:
+                        break;
+                    case ModifyChoices.FogChoices.All:
+                        statusWriter( "Removing all the fog." );
+                        dataEditor.removeFog();
+                        break;
+                    case ModifyChoices.FogChoices.Radius:
+                        statusWriter( "Removing the fog with cell range: " + choices.FogRadius );
+                        dataEditor.removeFog( choices.FogRadius );
+                        break;
+                    case ModifyChoices.FogChoices.Full:
+                        statusWriter( "Revealing the map." );
+                        dataEditor.showFullMap();
+                        break;
+                    default:
+                        throw new ArgumentException( "Unimplemented choice: " + choices.Fog );
+                }
+
+                // Command Center Extras
+                if( choices.Food != 0 || choices.Energy != 0 || choices.Workers != 0 )
+                {
+                    statusWriter( "Adding Command Center extra supplies,"
+                        + ( choices.Food > 0 ? " Food: +" + choices.Food : "" )
+                        + ( choices.Energy > 0 ? " Energy: +" + choices.Energy : "" )
+                        + ( choices.Workers > 0 ? " Workers: +" + choices.Workers : "" )
+                        + '.' );
+                    dataEditor.addExtraSupplies( choices.Food, choices.Energy, choices.Workers );
+                }
+
+                if( choices.GiftCount != 0 )
+                {
+                    statusWriter( "Gifting " + choices.GiftCount + "x " + giftableTypeNames[choices.Gift] + "." );
+                    dataEditor.giftEntities( choices.Gift, choices.GiftCount );
+                }
+
+                // Fill Resource Storage
+                if( choices.FillGold || choices.FillWood || choices.FillStone || choices.FillIron || choices.FillOil )
+                {
+                    statusWriter( "Filling storage for specified resources:"
+                        + ( choices.FillGold ? " Gold;" : "" )
+                        + ( choices.FillWood ? " Wood;" : "" )
+                        + ( choices.FillStone ? " Stone;" : "" )
+                        + ( choices.FillIron ? " Iron;" : "" )
+                        + ( choices.FillOil ? " Oil;" : "" ) );
+                    dataEditor.fillStorage( choices.FillGold, choices.FillWood, choices.FillStone, choices.FillIron, choices.FillOil );
+                }
+
+                // Swarms
+                if( choices.FasterSwarms )
+                {
+                    statusWriter( "Setting swarms to 50 Days Challenge timings." );
+                    dataEditor.fasterSwarms();
+                }
+                if( choices.ChangeEasy )
+                {
+                    statusWriter( "Setting earlier swarm directions to " + SwarmDirectionsNames[choices.EasySwarms] + '.' );
+                    dataEditor.setSwarms( true, choices.EasySwarms );
+                }
+                if( choices.ChangeHard )
+                {
+                    statusWriter( "Setting later swarm directions to " + SwarmDirectionsNames[choices.HardSwarms] + '.' );
+                    dataEditor.setSwarms( false, choices.HardSwarms );
+                }
+
+                // General Rules
+                if( choices.ChangeTheme )
+                {
+                    statusWriter( "Changing Theme to " + themeTypeNames[choices.Theme] + '.' );
+                    dataEditor.changeTheme( choices.Theme );
+                }
+                if( choices.DisableMayors )
+                {
+                    statusWriter( "Disabling Mayors." );
+                    dataEditor.disableMayors();
+                }
+
+                dataEditor.save();
+            }
+            catch( Exception e )
+            {
+                Console.Error.WriteLine( "Problem modifying save file: " + e.Message + Environment.NewLine + e.StackTrace );
+                statusWriter( "Problem modifying save file: " + e.Message );
+                return false;
+            }
+            return true;
         }
 
         private bool backupAndRepackSave( bool backupSave )

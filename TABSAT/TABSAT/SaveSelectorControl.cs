@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static TABSAT.MainWindow;
 
@@ -90,13 +85,15 @@ namespace TABSAT
                 return;
             }
             var mapViewer = new MapViewerControl( mapData );
-            Form f = new Form();
-            f.Text = mapData.Name() + " - MapViewer";
-            f.Width = mapViewer.Width + 20;
-            f.Height = mapViewer.Height + 40;
+            Form f = new Form
+            {
+                Text = mapData.Name() + " - MapViewer",
+                Width = mapViewer.Width + 20,
+                Height = mapViewer.Height + 40
+            };
             mapViewer.Dock = DockStyle.Fill;
             f.Controls.Add( mapViewer );
-            f.FormClosing += ( object sender, FormClosingEventArgs e ) => { mapViewer.clearCache(); };
+            f.FormClosing += ( object sender, FormClosingEventArgs e ) => { mapViewer.ClearCache(); };
             f.Show();
         }
     }

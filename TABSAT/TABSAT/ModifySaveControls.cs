@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
-using static TABSAT.MainWindow;
+using static TABSAT.SaveReader;
 
 namespace TABSAT
 {
     public partial class ModifySaveControls : UserControl
     {
-        private readonly StatusWriterDelegate statusWriter;
         private bool automatedStateSetting;
         private readonly List<CheckBox> zombieScalingCheckBoxes;
         private readonly List<CheckBox> vodCheckBoxes;
@@ -29,63 +27,73 @@ namespace TABSAT
             return false;
         }
 
-        public ModifySaveControls( StatusWriterDelegate sW )
+        public ModifySaveControls()
         {
             InitializeComponent();
 
-            statusWriter = sW;
-
             automatedStateSetting = false;
 
-            zombieScalingCheckBoxes = new List<CheckBox>( 9 );
-            zombieScalingCheckBoxes.Add( zombieScaleWeakCheckBox );
-            zombieScalingCheckBoxes.Add( zombieScaleMediumCheckBox );
-            zombieScalingCheckBoxes.Add( zombieScaleDressedCheckBox );
-            zombieScalingCheckBoxes.Add( zombieScaleStrongCheckBox );
-            zombieScalingCheckBoxes.Add( zombieScaleVenomCheckBox );
-            zombieScalingCheckBoxes.Add( zombieScaleHarpyCheckBox );
-            zombieScalingCheckBoxes.Add( zombieScaleCheckBox );
-            zombieScalingCheckBoxes.Add( zombieScaleGiantCheckBox );
-            zombieScalingCheckBoxes.Add( zombieScaleMutantCheckBox );
-            vodCheckBoxes = new List<CheckBox>( 4 );
-            vodCheckBoxes.Add( vodReplaceCheckBox );
-            vodCheckBoxes.Add( vodStackDwellingCheckBox );
-            vodCheckBoxes.Add( vodStackTavernsCheckBox );
-            vodCheckBoxes.Add( vodStackCityHallsCheckBox );
-            ccExtrasCheckBoxes = new List<CheckBox>( 3 );
-            ccExtrasCheckBoxes.Add( ccExtraFoodCheckBox );
-            ccExtrasCheckBoxes.Add( ccExtraEnergyCheckBox );
-            ccExtrasCheckBoxes.Add( ccExtraWorkersCheckBox );
-            warehousesFillCheckBoxes = new List<CheckBox>( 5 );
-            warehousesFillCheckBoxes.Add( warehousesFillWoodCheckBox );
-            warehousesFillCheckBoxes.Add( warehousesFillStoneCheckBox );
-            warehousesFillCheckBoxes.Add( warehousesFillIronCheckBox );
-            warehousesFillCheckBoxes.Add( warehousesFillOilCheckBox );
-            warehousesFillCheckBoxes.Add( warehousesFillGoldCheckBox );
-            swarmsCheckBoxes = new List<CheckBox>( 3 );
-            swarmsCheckBoxes.Add( swarmsFasterCheckBox );
-            swarmsCheckBoxes.Add( swarmsEasyCheckBox );
-            swarmsCheckBoxes.Add( swarmsHardCheckBox );
-            generalCheckBoxes = new List<CheckBox>( 2 );
-            generalCheckBoxes.Add( themeCheckBox );
-            generalCheckBoxes.Add( disableMayorsCheckBox );
+            zombieScalingCheckBoxes = new List<CheckBox>( 9 )
+            {
+                zombieScaleWeakCheckBox,
+                zombieScaleMediumCheckBox,
+                zombieScaleDressedCheckBox,
+                zombieScaleStrongCheckBox,
+                zombieScaleVenomCheckBox,
+                zombieScaleHarpyCheckBox,
+                zombieScaleCheckBox,
+                zombieScaleGiantCheckBox,
+                zombieScaleMutantCheckBox
+            };
+            vodCheckBoxes = new List<CheckBox>( 4 )
+            {
+                vodReplaceCheckBox,
+                vodStackDwellingCheckBox,
+                vodStackTavernsCheckBox,
+                vodStackCityHallsCheckBox
+            };
+            ccExtrasCheckBoxes = new List<CheckBox>( 3 )
+            {
+                ccExtraFoodCheckBox,
+                ccExtraEnergyCheckBox,
+                ccExtraWorkersCheckBox
+            };
+            warehousesFillCheckBoxes = new List<CheckBox>( 5 )
+            {
+                warehousesFillWoodCheckBox,
+                warehousesFillStoneCheckBox,
+                warehousesFillIronCheckBox,
+                warehousesFillOilCheckBox,
+                warehousesFillGoldCheckBox
+            };
+            swarmsCheckBoxes = new List<CheckBox>( 3 )
+            {
+                swarmsFasterCheckBox,
+                swarmsEasyCheckBox,
+                swarmsHardCheckBox
+            };
+            generalCheckBoxes = new List<CheckBox>( 2 )
+            {
+                themeCheckBox,
+                disableMayorsCheckBox
+            };
 
-            vodReplaceComboBox.DataSource = new BindingSource( SaveEditor.vodSizesNames, null );
+            vodReplaceComboBox.DataSource = new BindingSource( vodSizesNames, null );
             vodReplaceComboBox.DisplayMember = "Value";
             vodReplaceComboBox.ValueMember = "Key";
 
-            giftComboBox.DataSource = new BindingSource( SaveEditor.giftableTypeNames, null );
+            giftComboBox.DataSource = new BindingSource( giftableTypeNames, null );
             giftComboBox.DisplayMember = "Value";
             giftComboBox.ValueMember = "Key";
 
-            swarmEasyComboBox.DataSource = new BindingSource( SaveEditor.SwarmDirectionsNames, null );
+            swarmEasyComboBox.DataSource = new BindingSource( SwarmDirectionsNames, null );
             swarmEasyComboBox.DisplayMember = "Value";
             swarmEasyComboBox.ValueMember = "Key";
-            swarmHardComboBox.DataSource = new BindingSource( SaveEditor.SwarmDirectionsNames, null );
+            swarmHardComboBox.DataSource = new BindingSource( SwarmDirectionsNames, null );
             swarmHardComboBox.DisplayMember = "Value";
             swarmHardComboBox.ValueMember = "Key";
 
-            themeComboBox.DataSource = new BindingSource( SaveEditor.themeTypeNames, null );
+            themeComboBox.DataSource = new BindingSource( themeTypeNames, null );
             themeComboBox.DisplayMember = "Value";
             themeComboBox.ValueMember = "Key";
 
@@ -320,201 +328,147 @@ namespace TABSAT
                 || anyChecked( ccExtrasCheckBoxes ) || ccGiftCheckBox.Checked || anyChecked( warehousesFillCheckBoxes ) || anyChecked( swarmsCheckBoxes ) || anyChecked( generalCheckBoxes );
         }
 
-        internal bool modifySave( SaveEditor dataEditor )
+        internal ModifyChoices getChoices()
         {
-            try
+            // Zombie Population Scaling
+            SortedDictionary<ScalableZombieGroups, decimal> scalableZombieGroupFactors = new SortedDictionary<ScalableZombieGroups, decimal>();
+            if( zombieScaleWeakCheckBox.Checked )
             {
-                // Zombie Population Scaling
-                if( zombieScaleCheckBox.Checked )
+                scalableZombieGroupFactors.Add( ScalableZombieGroups.WEAK, zombieScaleWeakNumericUpDown.Value );
+            }
+            if( zombieScaleMediumCheckBox.Checked )
+            {
+                scalableZombieGroupFactors.Add( ScalableZombieGroups.MEDIUM, zombieScaleMediumNumericUpDown.Value );
+            }
+            if( zombieScaleDressedCheckBox.Checked )
+            {
+                scalableZombieGroupFactors.Add( ScalableZombieGroups.DRESSED, zombieScaleDressedNumericUpDown.Value );
+            }
+            if( zombieScaleStrongCheckBox.Checked )
+            {
+                scalableZombieGroupFactors.Add( ScalableZombieGroups.STRONG, zombieScaleStrongNumericUpDown.Value );
+            }
+            if( zombieScaleVenomCheckBox.Checked )
+            {
+                scalableZombieGroupFactors.Add( ScalableZombieGroups.VENOM, zombieScaleVenomNumericUpDown.Value );
+            }
+            if( zombieScaleHarpyCheckBox.Checked )
+            {
+                scalableZombieGroupFactors.Add( ScalableZombieGroups.HARPY, zombieScaleHarpyNumericUpDown.Value );
+            }
+
+            // Mutants
+            ModifyChoices.MutantChoices mutants = ModifyChoices.MutantChoices.None;
+            if( mutantReplaceAllRadio.Checked )
+            {
+                bool toGiantNotMutant = mutantReplaceAllComboBox.SelectedIndex == 0;
+                mutants = toGiantNotMutant ? ModifyChoices.MutantChoices.ReplaceWithGiants : ModifyChoices.MutantChoices.ReplaceWithMutants;
+            }
+            else if( mutantsMoveRadio.Checked )
+            {
+                bool toGiantNotMutant = mutantMoveWhatComboBox.SelectedIndex == 0;
+                bool perDirection = mutantMoveGlobalComboBox.SelectedIndex == 1;
+                if( perDirection )
                 {
-                    decimal scale = zombieScaleNumericUpDown.Value;
-                    statusWriter( "Scaling Zombie population x" + scale + '.' );
-                    dataEditor.scalePopulation( scale );
+                    mutants = toGiantNotMutant ? ModifyChoices.MutantChoices.MoveToGiantsPerQuadrant : ModifyChoices.MutantChoices.MoveToMutantsPerQuadrant;
                 }
                 else
                 {
-                    SortedDictionary<SaveEditor.ScalableZombieGroups, decimal> scalableZombieGroupFactors = new SortedDictionary<SaveEditor.ScalableZombieGroups, decimal>();
-                    if( zombieScaleWeakCheckBox.Checked )
-                    {
-                        scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.WEAK, zombieScaleWeakNumericUpDown.Value );
-                    }
-                    if( zombieScaleMediumCheckBox.Checked )
-                    {
-                        scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.MEDIUM, zombieScaleMediumNumericUpDown.Value );
-                    }
-                    if( zombieScaleDressedCheckBox.Checked )
-                    {
-                        scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.DRESSED, zombieScaleDressedNumericUpDown.Value );
-                    }
-                    if( zombieScaleStrongCheckBox.Checked )
-                    {
-                        scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.STRONG, zombieScaleStrongNumericUpDown.Value );
-                    }
-                    if( zombieScaleVenomCheckBox.Checked )
-                    {
-                        scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.VENOM, zombieScaleVenomNumericUpDown.Value );
-                    }
-                    if( zombieScaleHarpyCheckBox.Checked )
-                    {
-                        scalableZombieGroupFactors.Add( SaveEditor.ScalableZombieGroups.HARPY, zombieScaleHarpyNumericUpDown.Value );
-                    }
-
-                    if( scalableZombieGroupFactors.Any() )
-                    {
-                        statusWriter( "Scaling Zombie population per type." );
-                        dataEditor.scalePopulation( scalableZombieGroupFactors );
-                    }
+                    mutants = toGiantNotMutant ? ModifyChoices.MutantChoices.MoveToGiants : ModifyChoices.MutantChoices.MoveToMutants;
                 }
-                if( zombieScaleGiantCheckBox.Checked )
-                {
-                    decimal scale = zombieScaleGiantNumericUpDown.Value;
-                    statusWriter( "Scaling Giant population x" + scale + '.' );
-                    dataEditor.scaleHugePopulation( true, scale );
-                }
-                if( zombieScaleMutantCheckBox.Checked )
-                {
-                    decimal scale = zombieScaleMutantNumericUpDown.Value;
-                    statusWriter( "Scaling Mutant population x" + scale + '.' );
-                    dataEditor.scaleHugePopulation( false, scale );
-                }
-
-                // Mutants
-                if( mutantReplaceAllRadio.Checked )
-                {
-                    bool toGiantNotMutant = mutantReplaceAllComboBox.SelectedIndex == 0;
-                    statusWriter( "Replacing all " + ( toGiantNotMutant ? "Mutants with Giants." : "Giants with Mutants." ) );
-                    dataEditor.replaceHugeZombies( toGiantNotMutant );
-                }
-                else if( mutantsMoveRadio.Checked )
-                {
-                    bool toGiantNotMutant = mutantMoveWhatComboBox.SelectedIndex == 0;
-                    bool perDirection = mutantMoveGlobalComboBox.SelectedIndex == 1;
-                    statusWriter( "Relocating Mutants to farthest " + ( toGiantNotMutant ? "Giant" : "Mutant" ) + ( perDirection ? " per Compass quadrant if possible." : " on the map." ) );
-                    dataEditor.relocateMutants( toGiantNotMutant, perDirection );
-                }
-
-                // VODs
-                if( vodReplaceCheckBox.Checked )
-                {
-                    KeyValuePair<SaveEditor.VodSizes, string> kv = (KeyValuePair<SaveEditor.VodSizes, string>) vodReplaceComboBox.SelectedItem;
-                    statusWriter( "Replacing all VOD buildings with " + kv.Value + '.' );
-                    dataEditor.resizeVODs( kv.Key );
-                }
-                else
-                {
-                    if( vodStackDwellingCheckBox.Checked )
-                    {
-                        decimal scale = vodStackDwellingsNumericUpDown.Value;
-                        statusWriter( "Scaling Dwellings count x" + scale + '.' );
-                        dataEditor.stackVODbuildings( SaveEditor.VodSizes.SMALL, scale );
-                    }
-                    if( vodStackTavernsCheckBox.Checked )
-                    {
-                        decimal scale = vodStackTavernsNumericUpDown.Value;
-                        statusWriter( "Scaling Taverns count x" + scale + '.' );
-                        dataEditor.stackVODbuildings( SaveEditor.VodSizes.MEDIUM, scale );
-                    }
-                    if( vodStackCityHallsCheckBox.Checked )
-                    {
-                        decimal scale = vodStackCityHallsNumericUpDown.Value;
-                        statusWriter( "Scaling City Halls count x" + scale + '.' );
-                        dataEditor.stackVODbuildings( SaveEditor.VodSizes.LARGE, scale );
-                    }
-                }
-
-                // Fog of War
-                if( fogRemoveRadioButton.Checked )
-                {
-                    statusWriter( "Removing all the fog." );
-                    dataEditor.removeFog();
-                }
-                else if( fogClearRadioButton.Checked )
-                {
-                    uint radius = Convert.ToUInt32( fogNumericUpDown.Value );
-                    statusWriter( "Removing the fog with cell range: " + radius );
-                    dataEditor.removeFog( radius );
-                }
-                else if( fogShowFullRadioButton.Checked )
-                {
-                    statusWriter( "Revealing the map." );
-                    dataEditor.showFullMap();
-                }
-
-                // Command Center Extras
-                if( anyChecked( ccExtrasCheckBoxes ) )
-                {
-                    uint food = ccExtraFoodCheckBox.Checked ? Convert.ToUInt32( ccFoodNumericUpDown.Value ) : 0;
-                    uint energy = ccExtraEnergyCheckBox.Checked ? Convert.ToUInt32( ccEnergyNumericUpDown.Value ) : 0;
-                    uint workers = ccExtraWorkersCheckBox.Checked ? Convert.ToUInt32( ccWorkersNumericUpDown.Value ) : 0;
-                    statusWriter( "Adding Command Center extra supplies,"
-                        + ( food > 0 ? " Food: +" + food : "" )
-                        + ( energy > 0 ? " Energy: +" + energy : "" )
-                        + ( workers > 0 ? " Workers: +" + workers : "" )
-                        + '.' );
-                    dataEditor.addExtraSupplies( food, energy, workers );
-                }
-
-                if( ccGiftCheckBox.Checked )
-                {
-                    KeyValuePair<SaveEditor.GiftableTypes, string> kv = (KeyValuePair<SaveEditor.GiftableTypes, string>) giftComboBox.SelectedItem;
-                    uint typeID = Convert.ToUInt32( giftNumericUpDown.Value );
-                    statusWriter( "Gifting " + typeID + "x " + kv.Value + "." );
-                    dataEditor.giftEntities( kv.Key, typeID );
-                }
-
-                // Fill Resource Storage
-                if( anyChecked( warehousesFillCheckBoxes ) )
-                {
-                    statusWriter( "Filling storage for specified resources:"
-                        + ( warehousesFillGoldCheckBox.Checked ? " Gold;" : "" )
-                        + ( warehousesFillWoodCheckBox.Checked ? " Wood;" : "" )
-                        + ( warehousesFillStoneCheckBox.Checked ? " Stone;" : "" )
-                        + ( warehousesFillIronCheckBox.Checked ? " Iron;" : "" )
-                        + ( warehousesFillOilCheckBox.Checked ? " Oil;" : "" ) );
-                    dataEditor.fillStorage( warehousesFillGoldCheckBox.Checked, warehousesFillWoodCheckBox.Checked, warehousesFillStoneCheckBox.Checked, warehousesFillIronCheckBox.Checked, warehousesFillOilCheckBox.Checked );
-                }
-
-                // Swarms
-                if( swarmsFasterCheckBox.Checked )
-                {
-                    statusWriter( "Setting swarms to 50 Days Challenge timings." );
-                    dataEditor.fasterSwarms();
-                }
-                if( swarmsEasyCheckBox.Checked )
-                {
-                    KeyValuePair<SaveEditor.SwarmDirections, string> kv = (KeyValuePair<SaveEditor.SwarmDirections, string>) swarmEasyComboBox.SelectedItem;
-                    statusWriter( "Setting earlier swarm directions to " + kv.Value + '.' );
-                    dataEditor.setSwarms( true, kv.Key );
-                }
-                if( swarmsHardCheckBox.Checked )
-                {
-                    KeyValuePair<SaveEditor.SwarmDirections, string> kv = (KeyValuePair<SaveEditor.SwarmDirections, string>) swarmHardComboBox.SelectedItem;
-                    statusWriter( "Setting later swarm directions to " + kv.Value + '.' );
-                    dataEditor.setSwarms( false, kv.Key );
-                }
-
-                // General Rules
-                if( themeCheckBox.Checked )
-                {
-                    KeyValuePair<SaveEditor.ThemeType, string> kv = (KeyValuePair<SaveEditor.ThemeType, string>) themeComboBox.SelectedItem;
-                    statusWriter( "Changing Theme to " + kv.Value + '.' );
-                    dataEditor.changeTheme( kv.Key );
-                }
-                if( disableMayorsCheckBox.Checked )
-                {
-                    statusWriter( "Disabling Mayors." );
-                    dataEditor.disableMayors();
-                }
-
-                dataEditor.save();
             }
-            catch( Exception e )
+
+            // VODs
+            VodSizes vodSize = VodSizes.SMALL;
+            if( vodReplaceCheckBox.Checked )
             {
-                Console.Error.WriteLine( "Problem modifying save file: " + e.Message + Environment.NewLine + e.StackTrace );
-                statusWriter( "Problem modifying save file: " + e.Message );
-                return false;
+                KeyValuePair<VodSizes, string> kv = (KeyValuePair<VodSizes, string>) vodReplaceComboBox.SelectedItem;
+                vodSize = kv.Key;
             }
-            return true;
+
+            // Fog of War
+            ModifyChoices.FogChoices fog = ModifyChoices.FogChoices.None;
+            uint fogRadius = 0;
+            if( fogRemoveRadioButton.Checked )
+            {
+                fog = ModifyChoices.FogChoices.All;
+            }
+            else if( fogClearRadioButton.Checked )
+            {
+                fogRadius = Convert.ToUInt32( fogNumericUpDown.Value );
+                fog = ModifyChoices.FogChoices.Radius;
+            }
+            else if( fogShowFullRadioButton.Checked )
+            {
+                fog = ModifyChoices.FogChoices.Full;
+            }
+
+            // Command Center Extras
+            uint giftCount = 0;
+            GiftableTypes gift = GiftableTypes.SoldierRegular;
+            if( ccGiftCheckBox.Checked )
+            {
+                giftCount = Convert.ToUInt32( giftNumericUpDown.Value );
+                KeyValuePair<GiftableTypes, string> kv = (KeyValuePair<GiftableTypes, string>) giftComboBox.SelectedItem;
+                gift = kv.Key;
+            }
+
+            // Fill Resource Storage
+
+            // Swarms
+            SwarmDirections easy = SwarmDirections.ONE;
+            SwarmDirections hard = SwarmDirections.ONE;
+            if( swarmsEasyCheckBox.Checked )
+            {
+                KeyValuePair<SwarmDirections, string> kv = (KeyValuePair<SwarmDirections, string>) swarmEasyComboBox.SelectedItem;
+                easy = kv.Key;
+            }
+            if( swarmsHardCheckBox.Checked )
+            {
+                KeyValuePair<SwarmDirections, string> kv = (KeyValuePair<SwarmDirections, string>) swarmHardComboBox.SelectedItem;
+                hard = kv.Key;
+            }
+
+            // General Rules
+            ThemeType theme = ThemeType.FA;
+            if( themeCheckBox.Checked )
+            {
+                KeyValuePair<ThemeType, string> kv = (KeyValuePair<ThemeType, string>) themeComboBox.SelectedItem;
+                theme = kv.Key;
+            }
+
+            return new ModifyChoices(
+                zombieScaleCheckBox.Checked ? zombieScaleNumericUpDown.Value : 1,
+                scalableZombieGroupFactors,
+                zombieScaleGiantCheckBox.Checked ? zombieScaleGiantNumericUpDown.Value : 1,
+                zombieScaleMutantCheckBox.Checked ? zombieScaleMutantNumericUpDown.Value : 1,
+                mutants,
+                vodReplaceCheckBox.Checked,
+                vodSize,
+                vodStackDwellingCheckBox.Checked ? vodStackDwellingsNumericUpDown.Value : 1,
+                vodStackTavernsCheckBox.Checked ? vodStackTavernsNumericUpDown.Value : 1,
+                vodStackCityHallsCheckBox.Checked ? vodStackCityHallsNumericUpDown.Value : 1,
+                fog,
+                fogRadius,
+                ccExtraFoodCheckBox.Checked ? Convert.ToUInt32( ccFoodNumericUpDown.Value ) : 0,
+                ccExtraEnergyCheckBox.Checked ? Convert.ToUInt32( ccEnergyNumericUpDown.Value ) : 0,
+                ccExtraWorkersCheckBox.Checked ? Convert.ToUInt32( ccWorkersNumericUpDown.Value ) : 0,
+                giftCount,
+                gift,
+                warehousesFillGoldCheckBox.Checked,
+                warehousesFillWoodCheckBox.Checked,
+                warehousesFillStoneCheckBox.Checked,
+                warehousesFillIronCheckBox.Checked,
+                warehousesFillOilCheckBox.Checked,
+                swarmsFasterCheckBox.Checked,
+                swarmsEasyCheckBox.Checked,
+                easy,
+                swarmsHardCheckBox.Checked,
+                hard,
+                themeCheckBox.Checked,
+                theme,
+                disableMayorsCheckBox.Checked
+            );
         }
 
         internal void resetChoices()

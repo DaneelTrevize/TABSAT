@@ -21,7 +21,7 @@ namespace TABSAT
         private const string REFLECTOR_RESOURCE_NAME = @"costura.tabreflector.exe.compressed";
         private const string pipeName = "reflectorpipe";
 
-        private string reflectorDeploymentPath;
+        private readonly string reflectorDeploymentPath;
 
         private Process reflector;
         private NamedPipeServerStream reflectorPipe;
@@ -241,7 +241,7 @@ namespace TABSAT
             writePipe( saveFile );
             string signature = readPipe();
 
-            string checkFile = TAB.getCheckFile( saveFile );
+            string checkFile = TAB.GetCheckFile( saveFile );
 
             // Could first check if the existing contents are the same, and if so not overwrite. Unless something is expecting/needing LastModified to change?
             File.WriteAllText( checkFile, signature );
@@ -257,7 +257,7 @@ namespace TABSAT
                 throw new InvalidOperationException( "Reflector is not awaiting processing." );
             }
 
-            string checkFile = TAB.getCheckFile( saveFile );
+            string checkFile = TAB.GetCheckFile( saveFile );
             if( !File.Exists( checkFile ) )
             {
                 // Generate checksum file first?

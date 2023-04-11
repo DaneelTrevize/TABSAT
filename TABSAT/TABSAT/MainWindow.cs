@@ -11,7 +11,7 @@ namespace TABSAT
         private ModifyManagerControls modifySaveC;
         private AutoBackupControls autoBackupC;
         private SaveSelectorControl saveSelectorC;
-        private UpdatesManager updatesM;
+        private readonly UpdatesManager updatesM;
 
         public delegate void StatusWriterDelegate( string status );
 
@@ -151,30 +151,18 @@ namespace TABSAT
         {
             if( tabControl1.SelectedIndex == 1 )    // Assumes Modify tab page is 2nd
             {
-                if( modifySaveC != null )
-                {
-                    modifySaveC.refreshSaveFileChoice();
-                }
+                modifySaveC?.refreshSaveFileChoice();
             }
             if( tabControl1.SelectedIndex == 3 )    // Assumes Viewer tab page is 4th
             {
-                if( saveSelectorC != null )
-                {
-                    saveSelectorC.refreshSaveFileChoice();
-                }
+                saveSelectorC?.refreshSaveFileChoice();
             }
         }
 
         private void MainWindow_FormClosing( object sender, FormClosingEventArgs e )
         {
-            if( modifySaveC != null )
-            {
-                modifySaveC.removeReflector();
-            }
-            if( autoBackupC != null )
-            {
-                autoBackupC.stopWatcher();
-            }
+            modifySaveC?.removeReflector();
+            autoBackupC?.stopWatcher();
         }
     }
 }

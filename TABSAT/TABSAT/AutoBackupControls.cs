@@ -31,7 +31,7 @@ namespace TABSAT
          */
 
         private readonly StatusWriterDelegate statusWriter;
-        private BackupsManager backupsManager;
+        private readonly BackupsManager backupsManager;
 
         public AutoBackupControls( string savesDirectory, StatusWriterDelegate sW )
         {

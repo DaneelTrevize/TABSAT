@@ -114,8 +114,7 @@ namespace TABSAT
             {
                 if( obj == null ) return 1;
 
-                Position other = obj as Position;
-                if( other == null )
+                if( !( obj is Position other ) )
                 {
                     throw new ArgumentException( "Object is not a Position." );
                 }
@@ -159,13 +158,14 @@ namespace TABSAT
 
             internal void floodFromCC( int CCX, int CCY)
             {
-                SortedDictionary<Position, Direction> aroundCC = new SortedDictionary<Position, Direction>();
-
-                // 5 cells per side, Corners +/-2 from center co-ords.
-                aroundCC.Add( new Position( CCX - 3, CCY ), Direction.SOUTHEAST );
-                aroundCC.Add( new Position( CCX, CCY - 3 ), Direction.SOUTHWEST );
-                aroundCC.Add( new Position( CCX + 3, CCY ), Direction.NORTHWEST );
-                aroundCC.Add( new Position( CCX, CCY + 3 ), Direction.NORTHEAST );
+                SortedDictionary<Position, Direction> aroundCC = new SortedDictionary<Position, Direction>
+                {
+                    // 5 cells per side, Corners +/-2 from center co-ords.
+                    { new Position( CCX - 3, CCY ), Direction.SOUTHEAST },
+                    { new Position( CCX, CCY - 3 ), Direction.SOUTHWEST },
+                    { new Position( CCX + 3, CCY ), Direction.NORTHWEST },
+                    { new Position( CCX, CCY + 3 ), Direction.NORTHEAST }
+                };
 
                 flood( aroundCC, 1, UNNAVIGABLE );
 
@@ -216,8 +216,7 @@ namespace TABSAT
 
             private void recordFlood( Position position, int distance, Direction direction )
             {
-                int existing;
-                if( ccDistances.TryGetValue( position, out existing ) )
+                if( ccDistances.TryGetValue( position, out int existing ) )
                 {
                     if( existing <= distance )
                     {
@@ -339,8 +338,7 @@ namespace TABSAT
 
             internal int getDistance( Position position )
             {
-                int distance;
-                if( !ccDistances.TryGetValue( position, out distance ) )
+                if( !ccDistances.TryGetValue( position, out int distance ) )
                 {
                     distance = UNNAVIGABLE;
                 }
@@ -349,8 +347,7 @@ namespace TABSAT
 
             internal Direction? getDirection( Position position )
             {
-                Direction direction;
-                if( !ccDirections.TryGetValue( position, out direction ) )
+                if( !ccDirections.TryGetValue( position, out Direction direction ) )
                 {
                     return null;
                 }

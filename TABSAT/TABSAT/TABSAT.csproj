@@ -106,6 +106,7 @@
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="MapNavigation.cs" />
+    <Compile Include="ModifyChoices.cs" />
     <Compile Include="SaveSelectorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

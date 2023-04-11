@@ -35,9 +35,9 @@ namespace TABSAT
         private static MethodInfo flagMethod;
         private static MethodInfo generatorMethod;
 
-        private NamedPipeClientStream pipe;
-        private StreamReader pipeReader;
-        private StreamWriter pipeWriter;
+        private readonly NamedPipeClientStream pipe;
+        private readonly StreamReader pipeReader;
+        private readonly StreamWriter pipeWriter;
 
         [DllImport( "user32.dll" )]
         [return: MarshalAs( UnmanagedType.Bool )]
