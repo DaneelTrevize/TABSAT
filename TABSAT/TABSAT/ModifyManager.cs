@@ -28,7 +28,7 @@ namespace TABSAT
             EXTRACTED
         };
 
-        internal static readonly string DEFAULT_EDITS_DIRECTORY = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\TABSAT\edits\" );
+        internal static readonly string DEFAULT_EDITS_DIRECTORY = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments ) + @"\TABSAT\edits";
 
         private readonly ReflectorManager reflectorManager;
         private readonly string editsDir;

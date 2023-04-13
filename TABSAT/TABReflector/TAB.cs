@@ -15,8 +15,8 @@ namespace TABSAT
         public const string SAVES_FILTER = "*" + SAVE_EXTENSION;
         public const string CHECKS_FILTER = "*" + CHECK_EXTENSION;
 
-        private static readonly string STEAM_DEFAULT_32BIT_PATH = Environment.ExpandEnvironmentVariables( @"%ProgramFiles(x86)%\Steam" );   // Default config and library path all in one
-        private static readonly string STEAM_DEFAULT_64BIT_PATH = Environment.ExpandEnvironmentVariables( @"%ProgramFiles%\Steam" );        // Fully 64bit Steam isn't currently a thing, but we're possibly futureproofing by having this
+        private static readonly string STEAM_DEFAULT_32BIT_PATH = Environment.GetFolderPath( Environment.SpecialFolder.ProgramFilesX86 ) + @"\Steam";   // Default config and library path all in one
+        private static readonly string STEAM_DEFAULT_64BIT_PATH = Environment.GetFolderPath( Environment.SpecialFolder.ProgramFiles ) + @"\Steam";      // Fully 64bit Steam isn't currently a thing, but we're possibly futureproofing by having this
         private const string STEAM_LIBRARYFOLDERS_VDF_SUBPATH = @"config\libraryfolders.vdf";   // Ignore the copy in \steamapps\libraryfolders.vdf?
         private const string STEAM_CONFIG_VDF_SUBPATH = @"config\config.vdf";                   // Has been depreciated as a listing of libraries?
         //example string                                    		"path"		"E:\\SteamLibrary"
@@ -25,7 +25,7 @@ namespace TABSAT
         private const string STEAM_CONFIG_LIBRARY_PATTERN = @"^\s+""BaseInstallFolder_(?<count>\d+)""\s+""(?<path>.+)""$";
         private const string STEAM_TAB_SUBPATH = @"\steamapps\common\They Are Billions\";
 
-        public static readonly string DEFAULT_SAVES_DIRECTORY = Environment.ExpandEnvironmentVariables( @"%USERPROFILE%\Documents\My Games\They Are Billions\Saves\" );
+        public static readonly string DEFAULT_SAVES_DIRECTORY = Environment.GetFolderPath( Environment.SpecialFolder.MyDocuments ) + @"\My Games\They Are Billions\Saves";
 
         public static string GetExeDirectory()
         {
