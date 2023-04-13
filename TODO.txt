@@ -6,7 +6,10 @@ Improve UI by alternating background colouring of save modification options?
 Summarise whether maps are worth continuing, without showing the layout.
 Count total pathable land, food, zombies? Chart them at each radius from CC? Summary in a starting radius?
 
-Is swarm skull location explicit in saves, or derived from associated zombie positions?
+Map Viewer:
+  Is swarm skull location explicit in saves, or derived from associated zombie positions?
+  Show friendly units & buildings, pickables, damaged entities?
+  Differentiate types by colour?
 
 ----
 
@@ -34,7 +37,7 @@ Also update Info file, just to be consistent with Data file?
 
 Consider approaches to keeping Backups TreeView sorted by baseName, then lastWriteUtc. Either via custom sorter, or careful insertion of single backups when generated.
 
-Use state Enums, FSM and change listeners for GUI/TABSAT when modifying file, and ReflectorManager?
+-Use state Enums, FSM and change listeners for GUI/TABSAT when modifying file, and ReflectorManager?
 
 
 Provide an option to leave the Reflector deployed, and verify whether it is during ReflectorManager initialisation? Including file checksum?

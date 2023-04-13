@@ -123,43 +123,6 @@ namespace TABSAT
     {
         private const UInt64 FIRST_NEW_ID = 0x8000000000000000;
 
-        internal class MapPosition
-        {
-            public readonly UInt64 ID;
-            public readonly CompassDirection Direction;
-            public readonly float distanceSquared;
-
-            public MapPosition( XElement i, MapData cc )
-            {
-                ID = (UInt64) i.Element( "Simple" ).Attribute( "value" );
-                extractCoordinates( getFirstSimplePropertyNamed( i.Element( "Complex" ), "Position" ), out float x, out float y );
-
-                if( x <= cc.CCX() )
-                {
-                    // North or West
-                    Direction = y <= cc.CCY() ? CompassDirection.North : CompassDirection.West;
-                }
-                else
-                {
-                    // East or South
-                    Direction = y <= cc.CCY() ? CompassDirection.East : CompassDirection.South;
-                }
-
-                distanceSquared = ( x - cc.CCX() ) * ( x - cc.CCX() ) + ( y - cc.CCY() ) * ( y - cc.CCY() );
-
-                //Console.WriteLine( "id: " + id + "\tPosition: " + x + ", " + y + "\tis: " + dir + ",\tdistanceSquared: " + distanceSquared );
-            }
-        }
-
-        private class DistanceComparer : IComparer<MapPosition>
-        {
-            public int Compare( MapPosition a, MapPosition b )
-            {
-                return b.distanceSquared.CompareTo( a.distanceSquared );    // b.CompareTo( a ) for reversed order
-            }
-        }
-        private static readonly IComparer<MapPosition> mapPositionDistanceComparer = new DistanceComparer();
-
         private readonly MiniMapIcons icons;
         private UInt64 nextNewID;
 
@@ -307,25 +270,25 @@ namespace TABSAT
                 return;     // Nothing needs be done
             }
 
-            SortedDictionary<ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<ScalableZombieTypes, decimal> {
-                { ScalableZombieTypes.ZombieWeakA, scale },
-                { ScalableZombieTypes.ZombieWeakB, scale },
-                { ScalableZombieTypes.ZombieWeakC, scale },
-                { ScalableZombieTypes.ZombieWorkerA, scale },
-                { ScalableZombieTypes.ZombieWorkerB, scale },
-                { ScalableZombieTypes.ZombieMediumA, scale },
-                { ScalableZombieTypes.ZombieMediumB, scale },
-                { ScalableZombieTypes.ZombieDressedA, scale },
-                { ScalableZombieTypes.ZombieStrongA, scale },
-                { ScalableZombieTypes.ZombieVenom, scale },
-                { ScalableZombieTypes.ZombieHarpy, scale }
+            SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> {
+                { LevelEntities.ScalableZombieTypes.ZombieWeakA, scale },
+                { LevelEntities.ScalableZombieTypes.ZombieWeakB, scale },
+                { LevelEntities.ScalableZombieTypes.ZombieWeakC, scale },
+                { LevelEntities.ScalableZombieTypes.ZombieWorkerA, scale },
+                { LevelEntities.ScalableZombieTypes.ZombieWorkerB, scale },
+                { LevelEntities.ScalableZombieTypes.ZombieMediumA, scale },
+                { LevelEntities.ScalableZombieTypes.ZombieMediumB, scale },
+                { LevelEntities.ScalableZombieTypes.ZombieDressedA, scale },
+                { LevelEntities.ScalableZombieTypes.ZombieStrongA, scale },
+                { LevelEntities.ScalableZombieTypes.ZombieVenom, scale },
+                { LevelEntities.ScalableZombieTypes.ZombieHarpy, scale }
             };
             scalePopulation( scalableZombieTypeFactors );
         }
 
-        internal void scalePopulation( SortedDictionary<ScalableZombieGroups, decimal> scalableZombieGroupFactors )
+        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors )
         {
-            SortedDictionary<ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<ScalableZombieTypes, decimal>();
+            SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<LevelEntities.ScalableZombieTypes, decimal>();
 
             foreach( var k_v in scalableZombieGroupFactors )
             {
@@ -340,7 +303,7 @@ namespace TABSAT
                     continue;     // Nothing needs be done
                 }
 
-                if( scalableZombieTypeGroups.TryGetValue( k_v.Key, out SortedSet<ScalableZombieTypes> groupTypes ) )
+                if( LevelEntities.scalableZombieTypeGroups.TryGetValue( k_v.Key, out SortedSet<LevelEntities.ScalableZombieTypes> groupTypes ) )
                 {
                     foreach( var t in groupTypes )
                     {
@@ -352,7 +315,7 @@ namespace TABSAT
             scalePopulation( scalableZombieTypeFactors );
         }
 
-        private void scalePopulation( SortedDictionary<ScalableZombieTypes, decimal> scalableZombieTypeFactors )
+        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors )
         {
             // Aggro'd zombies (also?) occur in LevelEntities, won't be removed just by removing from LevelFastSerializedEntities
 
@@ -403,12 +366,12 @@ namespace TABSAT
             {
                 UInt64 zombieTypeInt = Convert.ToUInt64( t.Element( "Simple" ).Attribute( "value" ).Value );
                 //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
-                if( !Enum.IsDefined( typeof( ScalableZombieTypes ), zombieTypeInt ) )
+                if( !Enum.IsDefined( typeof( LevelEntities.ScalableZombieTypes ), zombieTypeInt ) )
                 {
                     continue;   // Can't scale this type
                 }
 
-                ScalableZombieTypes zombieType = (ScalableZombieTypes) zombieTypeInt;
+                LevelEntities.ScalableZombieTypes zombieType = (LevelEntities.ScalableZombieTypes) zombieTypeInt;
                 if( !scalableZombieTypeFactors.ContainsKey( zombieType ) )
                 {
                     continue;   // Won't be scaling this type
@@ -501,7 +464,7 @@ namespace TABSAT
                 return;     // Nothing needs be done
             }
 
-            var selectedZombies = entities.scaleEntities( giantsNotMutants ? LevelEntities.GIANT_ID_TEMPLATE : LevelEntities.MUTANT_ID_TEMPLATE, scale, this );
+            var selectedZombies = entities.scaleEntities( (UInt64) (giantsNotMutants ? LevelEntities.HugeTypes.Giant : LevelEntities.HugeTypes.Mutant), scale, this );
 
             if( scale < 1.0M )
             {
@@ -523,13 +486,13 @@ namespace TABSAT
         
         internal void replaceHugeZombies( bool toGiantNotMutant )
         {
-            var mutants = entities.getIDs( LevelEntities.MUTANT_ID_TEMPLATE );
+            var mutants = entities.getIDs( (UInt64) LevelEntities.HugeTypes.Mutant );
             if( toGiantNotMutant && !mutants.Any() )
             {
                 //Console.WriteLine( "No Mutants to replace." );
                 return;
             }
-            var giants = entities.getIDs( LevelEntities.GIANT_ID_TEMPLATE );
+            var giants = entities.getIDs( (UInt64) LevelEntities.HugeTypes.Giant );
             if( !toGiantNotMutant && !giants.Any() )
             {
                 //Console.WriteLine( "No Giants to replace." );
@@ -554,19 +517,19 @@ namespace TABSAT
         
         internal void relocateMutants( bool toGiantNotMutant, bool perDirection )
         {
-            var mutants = entities.getPositions( LevelEntities.MUTANT_ID_TEMPLATE, this );
-            if( !mutants.Any() )
+            var mutantPositions = entities.getPositions( (UInt64) LevelEntities.HugeTypes.Mutant, this );
+            if( !mutantPositions.Any() )
             {
                 //Console.WriteLine( "No Mutants to relocate." );
                 return;
             }
-            var giants = entities.getPositions( LevelEntities.GIANT_ID_TEMPLATE, this );
+            var giantPositions = entities.getPositions( (UInt64) LevelEntities.HugeTypes.Giant, this );
 
-            void relocateMutants( ICollection<MapPosition> movingMutants, MapPosition farthest )
+            void relocateMutants( ICollection<RelativePosition> movingMutants, RelativePosition farthest )
             {
-                foreach( MapPosition z in movingMutants )
+                foreach( RelativePosition z in movingMutants )
                 {
-                    entities.relocate( z.ID, farthest.ID );
+                    entities.relocateHuge( z.ID, farthest.ID );
 
                     // Also see if both HugeZombies have had icons generated, for 1 to be repositioned to the other
                     icons.relocate( z.ID, farthest.ID );
@@ -575,26 +538,26 @@ namespace TABSAT
 
             // Globally, or per direction, we'll have a list of huge zombie to find the farthest of, and a list of mutants to relocate, as well as their corresponding icons?
 
-            var mutantsPerDirection = new SortedDictionary<CompassDirection,List<MapPosition>>();
+            var mutantsPerDirection = new SortedDictionary<CompassDirection,List<RelativePosition>>();
             foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
             {
-                mutantsPerDirection.Add( d, new List<MapPosition>( mutants.Count ) );
+                mutantsPerDirection.Add( d, new List<RelativePosition>( mutantPositions.Count ) );
             }
-            var giantsPerDirection = new SortedDictionary<CompassDirection,List<MapPosition>>();
+            var giantsPerDirection = new SortedDictionary<CompassDirection,List<RelativePosition>>();
             foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
             {
-                giantsPerDirection.Add( d, new List<MapPosition>( giants.Count ) );
+                giantsPerDirection.Add( d, new List<RelativePosition>( giantPositions.Count ) );
             }
-            var farthestMutantShortlist = new List<MapPosition>();
-            var farthestGiantShortlist = new List<MapPosition>();
+            var farthestMutantShortlist = new List<RelativePosition>();
+            var farthestGiantShortlist = new List<RelativePosition>();
 
 
             // Split huge zombies by direction
-            foreach( var mutant in mutants )
+            foreach( var mutant in mutantPositions )
             {
                 mutantsPerDirection[mutant.Direction].Add( mutant );
             }
-            foreach( var giant in giants )
+            foreach( var giant in giantPositions )
             {
                 giantsPerDirection[giant.Direction].Add( giant );
             }
@@ -605,7 +568,7 @@ namespace TABSAT
                 var mutantsInDirection = mutantsPerDirection[d];
                 if( mutantsInDirection.Count > 0 )
                 {
-                    mutantsInDirection.Sort( mapPositionDistanceComparer );
+                    mutantsInDirection.Sort( relativePositionDistanceComparer );
                     farthestMutantShortlist.Add( mutantsInDirection.First() );
                 }
             }
@@ -614,15 +577,15 @@ namespace TABSAT
                 var giantsInDirection = giantsPerDirection[d];
                 if( giantsInDirection.Count > 0 )
                 {
-                    giantsInDirection.Sort( mapPositionDistanceComparer );
+                    giantsInDirection.Sort( relativePositionDistanceComparer );
                     farthestGiantShortlist.Add( giantsInDirection.First() );
                 }
             }
 
-            farthestMutantShortlist.Sort( mapPositionDistanceComparer );
-            farthestGiantShortlist.Sort( mapPositionDistanceComparer );
-            MapPosition globalFarthestMutant = farthestMutantShortlist.FirstOrDefault();
-            MapPosition globalFarthestGiant = farthestGiantShortlist.FirstOrDefault();
+            farthestMutantShortlist.Sort( relativePositionDistanceComparer );
+            farthestGiantShortlist.Sort( relativePositionDistanceComparer );
+            RelativePosition globalFarthestMutant = farthestMutantShortlist.FirstOrDefault();
+            RelativePosition globalFarthestGiant = farthestGiantShortlist.FirstOrDefault();
             
 
             if( perDirection )
@@ -638,7 +601,7 @@ namespace TABSAT
                     {
                         // There are mutants in this direction to relocation
 
-                        MapPosition relocateTo;
+                        RelativePosition relocateTo;
                         // Should and could we use a Giant?
                         if( toGiantNotMutant )
                         {
@@ -670,14 +633,14 @@ namespace TABSAT
             else
             {
                 // Should and could we use a Giant?
-                MapPosition farthest = toGiantNotMutant ? globalFarthestGiant : globalFarthestMutant;
+                RelativePosition farthest = toGiantNotMutant ? globalFarthestGiant : globalFarthestMutant;
                 if( farthest == null )
                 {
                     //Console.WriteLine( "No Giants to relocate Mutants onto, using farthest Mutant." );
                     farthest = globalFarthestMutant;
                 }
 
-                var movingMutants = new List<MapPosition>( entities.getIDs( LevelEntities.MUTANT_ID_TEMPLATE ).Count );
+                var movingMutants = new List<RelativePosition>( entities.getIDs( (UInt64) LevelEntities.HugeTypes.Mutant ).Count );
                 foreach( var m in mutantsPerDirection.Values )
                 {
                     movingMutants.AddRange( m );
@@ -687,12 +650,12 @@ namespace TABSAT
 
         }
         
-        internal void resizeVODs( VodSizes vodSize )
+        internal void resizeVODs( LevelEntities.VODTypes vodType )
         {
-            entities.resizeVODs( vodSize );
+            entities.resizeVODs( vodType );
         }
 
-        internal void stackVODbuildings( VodSizes size, decimal scale )
+        internal void stackVODbuildings( LevelEntities.VODTypes size, decimal scale )
         {
             // Could use some add/remove entity delegates, to refactor this and zombie type scaling? Except zombie type collections can be RemoveNodes()'d per type, while level entities are all mixed in 1 collection.
 
@@ -701,22 +664,7 @@ namespace TABSAT
                 return;     // Nothing needs be done
             }
 
-            UInt64 vodTemplate;
-            switch( size )
-            {
-                default:
-                case VodSizes.SMALL:
-                    vodTemplate = LevelEntities.VOD_SMALL_ID_TEMPLATE;
-                    break;
-                case VodSizes.MEDIUM:
-                    vodTemplate = LevelEntities.VOD_MEDIUM_ID_TEMPLATE;
-                    break;
-                case VodSizes.LARGE:
-                    vodTemplate = LevelEntities.VOD_LARGE_ID_TEMPLATE;
-                    break;
-            }
-
-            entities.scaleVODs( vodTemplate, scale, this );
+            entities.scaleVODs( size, scale, this );
         }
 
         internal void removeFog( uint radius = 0 )
@@ -868,7 +816,7 @@ namespace TABSAT
             }
         }
 
-        internal void giftEntities( GiftableTypes giftable, uint count )
+        internal void giftEntities( LevelEntities.GiftableTypes giftable, uint count )
         {
             string giftableID = giftable.ToString( "D" );
             XElement templates = getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "BonusEntityTemplates" );
@@ -923,7 +871,7 @@ namespace TABSAT
              * (1+ WareHouse count) * 50 for non-gold resources doesn't account for mayors that increase CC storage, but should only be an underestimate and safe to set to at least this much.
              */
 
-            int storesCapacity = (1 + entities.getIDs( (UInt64) GiftableTypes.WareHouse ).Count ) * RESOURCE_STORE_CAPACITY;   // "1+" assumes base CC storage, no mayor +25/+50 upgrades
+            int storesCapacity = (1 + entities.getIDs( (UInt64) LevelEntities.GiftableTypes.WareHouse ).Count ) * RESOURCE_STORE_CAPACITY;   // "1+" assumes base CC storage, no mayor +25/+50 upgrades
 
             // Update CC stored values, per resource
             if( gold )

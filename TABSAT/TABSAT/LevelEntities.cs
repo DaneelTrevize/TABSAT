@@ -40,27 +40,22 @@ namespace TABSAT
         private const string GIANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombieGiant, TheyAreBillions";
         private const string MUTANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombie, TheyAreBillions";
 
-        internal const UInt64 GIANT_ID_TEMPLATE = 6179780658058987152;
-        internal const UInt64 MUTANT_ID_TEMPLATE = 4885015758634569309;
-        internal const UInt64 VOD_LARGE_ID_TEMPLATE = 3441286325348372349;
-        internal const UInt64 VOD_MEDIUM_ID_TEMPLATE = 293812117068830615;
-        internal const UInt64 VOD_SMALL_ID_TEMPLATE = 8702552346733362645;
-        internal const UInt64 OILPOOL_ID_TEMPLATE = 14597207313853823957;
+        internal const UInt64 OilSourceType = 14597207313853823957;
 
-        internal const UInt64 TruckA_ID_TEMPLATE = 1130949242559706282;
-        internal const UInt64 FortressBarLeft_ID_TEMPLATE = 1858993070642015232;
-        internal const UInt64 FortressBarRight_ID_TEMPLATE = 5955209075099213047;
-        private const string RuinTreasureA_BR_ID_TEMPLATE = @"5985530356264170826";
-        private const string RuinTreasureA_TM_ID_TEMPLATE = @"257584999789546783";
-        private const string RuinTreasureA_AL_ID_TEMPLATE = @"8971922455791567927";
-        private const string RuinTreasureA_DS_ID_TEMPLATE = @"3137634406804904509";
-        private const string RuinTreasureA_VO_ID_TEMPLATE = @"807600697508101881";
-        private const string TensionTowerMediumFlip_ID_TEMPLATE = @"2617794739528169237";
-        private const string TensionTowerMedium_ID_TEMPLATE = @"4533866769353242870";
-        private const string TensionTowerHighFlip_ID_TEMPLATE = @"2342596987766548617";
-        private const string TensionTowerHigh_ID_TEMPLATE = @"3359149191582161849";
-        private const string VOLCANO_ID_TEMPLATE = @"5660774435759652919";      // Multiple sizes?
-        //private const string _ID_TEMPLATE = @"";
+        internal const UInt64 TruckAType = 1130949242559706282;
+        internal const UInt64 FortressBarLeftType = 1858993070642015232;
+        internal const UInt64 FortressBarRightType = 5955209075099213047;
+        /*private const string RuinTreasureA_BR_Type = @"5985530356264170826";
+        private const string RuinTreasureA_TM_Type = @"257584999789546783";
+        private const string RuinTreasureA_AL_Type = @"8971922455791567927";
+        private const string RuinTreasureA_DS_Type = @"3137634406804904509";
+        private const string RuinTreasureA_VO_Type = @"807600697508101881";
+        private const string TensionTowerMediumFlip_Type = @"2617794739528169237";
+        private const string TensionTowerMedium_Type = @"4533866769353242870";
+        private const string TensionTowerHighFlip_Type = @"2342596987766548617";
+        private const string TensionTowerHigh_Type = @"3359149191582161849";
+        private const string VOLCANO_Type = @"5660774435759652919";      // Multiple sizes?*/
+        //private const string _Type = @"";
 
         private const string GIANT_LIFE = @"10000";
         private const string MUTANT_LIFE = @"4000";
@@ -74,6 +69,175 @@ namespace TABSAT
         private const string VOD_MEDIUM_SIZE = @"3;3";
         private const string VOD_SMALL_SIZE = @"2;2";
 
+        internal enum HugeTypes : UInt64
+        {
+            Giant = 6179780658058987152,
+            Mutant = 4885015758634569309
+        }
+
+        internal enum GiftableTypes : UInt64
+        {
+            Ranger = 11462509610414451330,
+            SoldierRegular = 8122295062332983407,
+            Sniper = 6536008488763521408,
+            Lucifer = 16241120227094315491,
+            Thanatos = 13687916016325214957,
+            Titan = 15625692077980454078,
+            Mutant = 4795230226196477375,
+            EnergyWoodTower = 3581872206503330117,      // Tesla tower
+            MillWood = 869623577388046954,
+            MillIron = 12238914991741132226,
+            PowerPlant = 12703689153551509267,
+            Sawmill = 6484699889268923215,
+            Quarry = 4012164333689948063,
+            AdvancedQuarry = 6574833960938744452,
+            OilPlatform = 15110117066074335339,
+            HunterCottage = 706050193872584208,
+            FishermanCottage = 13910727858942983852,
+            Farm = 7709119203238641805,
+            AdvancedFarm = 877281890077159856,
+            WareHouse = 13640414733981798546,
+            Market = 5507471650351043258,
+            //WinterMarket = 5749655342014653624,
+            Bank = 5036892806562984913,
+            TentHouse = 17301104073651661026,
+            CottageHouse = 1886362466923065378,
+            StoneHouse = 17389931916361639317,
+            WallWood = 16980392503923994773,
+            WallStone = 7684920400170855714,
+            GateWood = 8865737575894196495,
+            GateStone = 18390252716895796075,
+            WatchTowerWood = 11206202837167900273,
+            WatchTowerStone = 16597317129181541225,
+            TrapStakes = 14605210100319949981,          // Stakes Traps
+            TrapBlades = 2562764233779101744,           // Wire Fence Traps
+            TrapMine = 3791255408779778776,             // Land Mine
+            WoodWorkshop = 2943963846200136989,
+            StoneWorkshop = 11153810025740407576,
+            Foundry = 14944401376001533849,
+            SoldiersCenter = 17945382406851792953,
+            AdvancedUnitCenter = 8857617519118038933,
+            LookoutTower = 9352245195514814739,
+            RadarTower = 10083572309367106690,
+            Ballista = 1621013738552581284,
+            MachineGun = 1918604527945708480,           // Wasp
+            ShockingTower = 7671446590444700196,
+            Executor = 782017986530656774,
+            TheInn = 5797915750707445077,
+            TheCrystalPalace = 7936948209186953569,
+            // TheGreatTelescope = ,                    // The Silent Beholder
+            TheSpire = 6908380734610266301,
+            TheTransmutator = 5872990212787919747,
+            TheAcademy = 8274629648718325688,
+            TheVictorious = 6953739609864588774
+        }
+        internal static readonly Dictionary<GiftableTypes, string> giftableTypeNames;
+
+        internal enum ScalableZombieTypes : UInt64
+        {
+            ZombieWeakA = 13102967879573781082,
+            ZombieWeakB = 11373321006229815036,
+            ZombieWeakC = 4497312170973781002,
+            ZombieWorkerA = 17464596434855839240,
+            ZombieWorkerB = 10676594063526581,
+            ZombieMediumA = 3569719832138441992,
+            ZombieMediumB = 12882220683103625178,
+            ZombieDressedA = 8945324363763426993,
+            ZombieStrongA = 6498716987293858679,
+            ZombieHarpy = 1214272082232025268,
+            ZombieVenom = 12658363830661735733
+        }
+        internal enum ScalableZombieGroups
+        {
+            WEAK,
+            MEDIUM,
+            DRESSED,
+            STRONG,
+            VENOM,
+            HARPY
+        }
+        internal static readonly Dictionary<ScalableZombieGroups, SortedSet<ScalableZombieTypes>> scalableZombieTypeGroups;
+
+        internal enum VODTypes : UInt64
+        {
+            DoomBuildingSmall = 8702552346733362645,
+            DoomBuildingMedium = 293812117068830615,
+            DoomBuildingLarge = 3441286325348372349
+        }
+        internal static readonly Dictionary<VODTypes, string> vodSizesNames;
+
+        static LevelEntities()
+        {
+            giftableTypeNames = new Dictionary<GiftableTypes, string> {
+                { GiftableTypes.Ranger, "Ranger" },
+                { GiftableTypes.SoldierRegular, "Soldier" },
+                { GiftableTypes.Sniper, "Sniper" },
+                { GiftableTypes.Lucifer, "Lucifer" },
+                { GiftableTypes.Thanatos, "Thanatos" },
+                { GiftableTypes.Titan, "Titan" },
+                { GiftableTypes.Mutant, "Mutant" },
+                { GiftableTypes.EnergyWoodTower, "Tesla Tower" },
+                { GiftableTypes.MillWood, "Mill" },
+                { GiftableTypes.MillIron, "Advanced Mill" },
+                { GiftableTypes.PowerPlant, "PowerPlant" },
+                { GiftableTypes.Sawmill, "Sawmill" },
+                { GiftableTypes.Quarry, "Quarry" },
+                { GiftableTypes.AdvancedQuarry, "Advanced Quarry" },
+                { GiftableTypes.OilPlatform, "Oil Platform" },
+                { GiftableTypes.HunterCottage, "Hunter Cottage" },
+                { GiftableTypes.FishermanCottage, "Fisherman Cottage" },
+                { GiftableTypes.Farm, "Farm" },
+                { GiftableTypes.AdvancedFarm, "Advanced Farm" },
+                { GiftableTypes.WareHouse, "Warehouse" },
+                { GiftableTypes.Market, "Market" },
+                { GiftableTypes.Bank, "Bank" },
+                { GiftableTypes.TentHouse, "Tent" },
+                { GiftableTypes.CottageHouse, "Cottage" },
+                { GiftableTypes.StoneHouse, "Stone House" },
+                { GiftableTypes.WallWood, "Wood Wall" },
+                { GiftableTypes.WallStone, "Stone Wall" },
+                { GiftableTypes.GateWood, "Wood Gate" },
+                { GiftableTypes.GateStone, "Stone Gate" },
+                { GiftableTypes.WatchTowerWood, "Wood Tower" },
+                { GiftableTypes.WatchTowerStone, "Stone Tower" },
+                { GiftableTypes.TrapStakes, "Stakes Trap" },
+                { GiftableTypes.TrapBlades, "Wire Fence Trap" },
+                { GiftableTypes.TrapMine, "Land Mine" },
+                { GiftableTypes.WoodWorkshop, "Wood Workshop" },
+                { GiftableTypes.StoneWorkshop, "Stone Workshop" },
+                { GiftableTypes.Foundry, "Foundry" },
+                { GiftableTypes.SoldiersCenter, "Soldiers' Center" },
+                { GiftableTypes.AdvancedUnitCenter, "Engineering Center" },
+                { GiftableTypes.LookoutTower, "Lookout Tower" },
+                { GiftableTypes.RadarTower, "Radar Tower" },
+                { GiftableTypes.Ballista, "Ballista" },
+                { GiftableTypes.MachineGun, "Wasp" },
+                { GiftableTypes.ShockingTower, "Shocking Tower" },
+                { GiftableTypes.Executor, "Executor" },
+                { GiftableTypes.TheInn, "The Inn" },
+                { GiftableTypes.TheCrystalPalace, "The Crystal Palace" },
+                { GiftableTypes.TheSpire, "The Lightning Spire" },
+                { GiftableTypes.TheAcademy, "The Academy of Immortals" },
+                { GiftableTypes.TheVictorious, "The Victorious" },
+                { GiftableTypes.TheTransmutator, "The Atlas Transmutator" }
+            };
+
+            scalableZombieTypeGroups = new Dictionary<ScalableZombieGroups, SortedSet<ScalableZombieTypes>> {
+                { ScalableZombieGroups.WEAK, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieWeakA, ScalableZombieTypes.ZombieWeakB, ScalableZombieTypes.ZombieWeakC } },
+                { ScalableZombieGroups.MEDIUM, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieWorkerA, ScalableZombieTypes.ZombieWorkerB, ScalableZombieTypes.ZombieMediumA, ScalableZombieTypes.ZombieMediumB } },
+                { ScalableZombieGroups.DRESSED, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieDressedA } },
+                { ScalableZombieGroups.STRONG, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieStrongA } },
+                { ScalableZombieGroups.VENOM, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieVenom } },
+                { ScalableZombieGroups.HARPY, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieHarpy } }
+            };
+
+            vodSizesNames = new Dictionary<VODTypes, string> {
+                { VODTypes.DoomBuildingSmall, "Dwellings" },
+                { VODTypes.DoomBuildingMedium, "Taverns" },
+                { VODTypes.DoomBuildingLarge, "City Halls" }
+            };
+        }
+
         internal readonly struct ScaledEntity
         {
             internal ScaledEntity( UInt64 b, UInt64? a = null )
@@ -86,8 +250,8 @@ namespace TABSAT
         }
 
         private readonly XElement levelEntitiesItems;
-        private readonly SortedDictionary<UInt64, XElement> entityItems;
-        private readonly SortedDictionary<UInt64, SortedSet<UInt64>> templatesToIDs;
+        private readonly SortedDictionary<UInt64, XElement> IDsToItems;
+        private readonly SortedDictionary<UInt64, SortedSet<UInt64>> itemTypesToIDs;
 
         private static XElement getComponents( XElement complex )
         {
@@ -121,7 +285,7 @@ namespace TABSAT
             return assumeExists ? i.Single() : i.SingleOrDefault();
         }
 
-        private static UInt64 getTemplate( XElement entity )
+        private static UInt64 getItemType( XElement entity )
         {
             return (UInt64) SaveReader.getFirstSimplePropertyNamed( entity.Element( "Complex" ), "IDTemplate" ).Attribute( "value" );
         }
@@ -131,8 +295,8 @@ namespace TABSAT
         {
             levelEntitiesItems = SaveReader.getFirstPropertyOfTypeNamed( levelComplex, "Dictionary", "LevelEntities" ).Element( "Items" );
 
-            entityItems = new SortedDictionary<UInt64, XElement>();
-            templatesToIDs = new SortedDictionary<UInt64, SortedSet<UInt64>>();
+            IDsToItems = new SortedDictionary<UInt64, XElement>();
+            itemTypesToIDs = new SortedDictionary<UInt64, SortedSet<UInt64>>();
 
             //Console.Write( "Starting parsing level entities..." );
             // Lazy parse these later, on first use?
@@ -141,8 +305,8 @@ namespace TABSAT
                 trackEntity( i );
             }
             //Console.WriteLine( " Finished." );
-            /*Console.WriteLine( "Level entity templates count: " + templatesToIDs.Count );
-            foreach( var k_v in templatesToIDs )
+            /*Console.WriteLine( "Level entity types count: " + itemTypesToIDs.Count );
+            foreach( var k_v in itemTypesToIDs )
             {
                 Console.WriteLine( "key: " + k_v.Key + "\tcount: " + k_v.Value.Count ); ;
             }*/
@@ -152,16 +316,16 @@ namespace TABSAT
         private void trackEntity( XElement i )
         {
             var id = (UInt64) i.Element( "Simple" ).Attribute( "value" );
-            entityItems.Add( id, i );
+            IDsToItems.Add( id, i );
 
             // At least CUnitGenerator entities lack a type attribute & value
 
-            var template = getTemplate( i );
+            var itemType = getItemType( i );
 
-            if( !templatesToIDs.TryGetValue( template, out SortedSet<ulong> typeIDs ) )
+            if( !itemTypesToIDs.TryGetValue( itemType, out SortedSet<ulong> typeIDs ) )
             {
                 typeIDs = new SortedSet<UInt64>();
-                templatesToIDs.Add( template, typeIDs );
+                itemTypesToIDs.Add( itemType, typeIDs );
             }
             typeIDs.Add( id );
         }
@@ -174,11 +338,11 @@ namespace TABSAT
 
         private void Remove( UInt64 id )
         {
-            if( entityItems.TryGetValue( id, out XElement entity ) )
+            if( IDsToItems.TryGetValue( id, out XElement entity ) )
             {
-                var template = getTemplate( entity );
+                var entityType = getItemType( entity );
 
-                if( templatesToIDs.TryGetValue( template, out SortedSet<UInt64> typeIDs ) )
+                if( itemTypesToIDs.TryGetValue( entityType, out SortedSet<UInt64> typeIDs ) )
                 {
                     typeIDs.Remove( id );
                     // Is OK to leave an empty set of IDs for this type in typesToIDs
@@ -187,7 +351,7 @@ namespace TABSAT
                 {
                     Console.Error.WriteLine( "Could not remove LevelEntity by type: " + id );
                 }
-                entityItems.Remove( id );
+                IDsToItems.Remove( id );
 
                 entity.Remove();
             }
@@ -197,39 +361,39 @@ namespace TABSAT
             }
         }
 
-        internal IEnumerable<XElement> getEntitiesOfTemplates( params UInt64[] templates )
+        internal IEnumerable<XElement> getEntitiesOfTypes( params UInt64[] entityTypes )
         {
             LinkedList<XElement> subset = new LinkedList<XElement>();
-            foreach( var template in templates )
+            foreach( var entityType in entityTypes )
             {
-                if( templatesToIDs.TryGetValue( template, out SortedSet<UInt64> typeIDs ) )
+                if( itemTypesToIDs.TryGetValue( entityType, out SortedSet<UInt64> typeIDs ) )
                 {
                     foreach( var id in typeIDs )
                     {
-                        subset.AddLast( entityItems[id] );
+                        subset.AddLast( IDsToItems[id] );
                     }
                 }
             }
             return subset;
         }
 
-        internal SortedSet<UInt64> getIDs( UInt64 template )
+        internal SortedSet<UInt64> getIDs( UInt64 itemType )
         {
-            if( !templatesToIDs.TryGetValue( template, out SortedSet<UInt64> typeIDs ) )
+            if( !itemTypesToIDs.TryGetValue( itemType, out SortedSet<UInt64> typeIDs ) )
             {
                 return new SortedSet<UInt64>();
             }
             return new SortedSet<UInt64>( typeIDs );
         }
 
-        internal LinkedList<SaveEditor.MapPosition> getPositions( UInt64 template, MapData cc )
+        internal LinkedList<SaveReader.RelativePosition> getPositions( UInt64 itemType, MapData cc )
         {
-            var positions = new LinkedList<SaveEditor.MapPosition>();
-            if( templatesToIDs.TryGetValue( template, out SortedSet<UInt64> typeIDs ) )
+            var positions = new LinkedList<SaveReader.RelativePosition>();
+            if( itemTypesToIDs.TryGetValue( itemType, out SortedSet<UInt64> typeIDs ) )
             {
                 foreach( var id in typeIDs )
                 {
-                    positions.AddLast( new SaveEditor.MapPosition( entityItems[id], cc ) );
+                    positions.AddLast( new SaveReader.RelativePosition( IDsToItems[id], cc ) );
                 }
             }
             return positions;
@@ -238,14 +402,14 @@ namespace TABSAT
         internal SortedSet<UInt64> getAllIDs()
         {
             SortedSet<UInt64> keys = new SortedSet<UInt64>();
-            foreach( var k in entityItems.Keys )
+            foreach( var k in IDsToItems.Keys )
             {
                 keys.Add( k );
             }
             return keys;
         }
 
-        internal LinkedList<ScaledEntity> scaleEntities( UInt64 entityTemplate, decimal scale, IDGenerator editor )
+        internal LinkedList<ScaledEntity> scaleEntities( UInt64 entityType, decimal scale, IDGenerator editor )
         {
             if( scale < 0.0M )
             {
@@ -276,7 +440,7 @@ namespace TABSAT
                 // selectedEntities will be those removed
 
                 // 0 >= scale < 1
-                foreach( var i in getEntitiesOfTemplates( entityTemplate ) )
+                foreach( var i in getEntitiesOfTypes( entityType ) )
                 {
                     if( scale == 0.0M || chance < rand.NextDouble() )
                     {
@@ -290,7 +454,7 @@ namespace TABSAT
             else
             {
 
-                foreach( var i in getEntitiesOfTemplates( entityTemplate ) )
+                foreach( var i in getEntitiesOfTypes( entityType ) )
                 {
                     // First the certain duplications
                     for( uint m = 1; m < multiples; m++ )
@@ -309,19 +473,19 @@ namespace TABSAT
             return selectedEntities;
         }
 
-        internal void relocate( UInt64 origin, UInt64 destination )
+        internal void relocateHuge( UInt64 origin, UInt64 destination )
         {
             if( origin == destination )
             {
                 return;
             }
 
-            if( !entityItems.TryGetValue( origin, out XElement originEntity ) )
+            if( !IDsToItems.TryGetValue( origin, out XElement originEntity ) )
             {
                 Console.Error.WriteLine( "Could not relocate LevelEntity: " + origin );
                 return;
             }
-            if( !entityItems.TryGetValue( destination, out XElement destinationEntity ) )
+            if( !IDsToItems.TryGetValue( destination, out XElement destinationEntity ) )
             {
                 Console.Error.WriteLine( "Could not relocate LevelEntity: " + origin + " to: " + destination );
                 return;
@@ -347,7 +511,7 @@ namespace TABSAT
 
         internal void swapZombieType( UInt64 id )
         {
-            if( !entityItems.TryGetValue( id, out XElement entity ) )
+            if( !IDsToItems.TryGetValue( id, out XElement entity ) )
             {
                 Console.Error.WriteLine( "Could not type-swap LevelEntity: " + id );
                 return;
@@ -382,18 +546,18 @@ namespace TABSAT
                                 select c ).SingleOrDefault();*/
             XElement path = SaveReader.getFirstPropertyOfTypeNamed( getMovable( entity ), "Collection", "Path" );
 
-            string type;
+            string typeString;
             string flags;
-            UInt64 template;
+            UInt64 typeID;
             string life;
             string behaviour;
             string pathCapacity;
             string size;
             if( (string) complex.Attribute( "type" ) == MUTANT_TYPE )
             {
-                type = GIANT_TYPE;
+                typeString = GIANT_TYPE;
                 flags = "None";
-                template = GIANT_ID_TEMPLATE;
+                typeID = (UInt64) LevelEntities.HugeTypes.Giant;
                 life = GIANT_LIFE;
                 behaviour = GIANT_BEHAVIOUR_TYPE;
                 pathCapacity = "4";
@@ -404,9 +568,9 @@ namespace TABSAT
             }
             else
             {
-                type = MUTANT_TYPE;
+                typeString = MUTANT_TYPE;
                 flags = "IsOneCellSize";
-                template = MUTANT_ID_TEMPLATE;
+                typeID = (UInt64) LevelEntities.HugeTypes.Mutant;
                 life = MUTANT_LIFE;
                 behaviour = MUTANT_BEHAVIOUR_TYPE;
                 pathCapacity = "0";
@@ -428,39 +592,35 @@ namespace TABSAT
                 components.Element( "Items" ).Add( inflamable );
             }
 
-            complex.Attribute( "type" ).SetValue( type );
+            complex.Attribute( "type" ).SetValue( typeString );
             SaveReader.getFirstSimplePropertyNamed( complex, "Flags" ).Attribute( "value" ).SetValue( flags );
-            SaveReader.getFirstSimplePropertyNamed( complex, "IDTemplate" ).Attribute( "value" ).SetValue( template );
+            SaveReader.getFirstSimplePropertyNamed( complex, "IDTemplate" ).Attribute( "value" ).SetValue( typeID );
             SaveReader.getFirstSimplePropertyNamed( cLife, "Life" ).Attribute( "value" ).SetValue( life );
             getBehaviour( entity ).Attribute( "type" ).SetValue( behaviour );
             SaveReader.getFirstSimplePropertyNamed( path, "Capacity" ).Attribute( "value" ).SetValue( pathCapacity );
             SaveReader.getFirstSimplePropertyNamed( complex, "Size" ).Attribute( "value" ).SetValue( size );
         }
 
-        internal void resizeVODs( SaveReader.VodSizes vodSize )
+        internal void resizeVODs( VODTypes vodTemplate )
         {
             string newType;
-            UInt64 newIDTemplate;
             string newLife;
             string newSize;
-            switch( vodSize )
+            switch( vodTemplate )
             {
                 default:
-                case SaveReader.VodSizes.SMALL:
+                case VODTypes.DoomBuildingSmall:
                     newType = VOD_SMALL_TYPE;
-                    newIDTemplate = VOD_SMALL_ID_TEMPLATE;
                     newLife = VOD_SMALL_LIFE;
                     newSize = VOD_SMALL_SIZE;
                     break;
-                case SaveReader.VodSizes.MEDIUM:
+                case VODTypes.DoomBuildingMedium:
                     newType = VOD_MEDIUM_TYPE;
-                    newIDTemplate = VOD_MEDIUM_ID_TEMPLATE;
                     newLife = VOD_MEDIUM_LIFE;
                     newSize = VOD_MEDIUM_SIZE;
                     break;
-                case SaveReader.VodSizes.LARGE:
+                case VODTypes.DoomBuildingLarge:
                     newType = VOD_LARGE_TYPE;
-                    newIDTemplate = VOD_LARGE_ID_TEMPLATE;
                     newLife = VOD_LARGE_LIFE;
                     newSize = VOD_LARGE_SIZE;
                     break;
@@ -484,22 +644,22 @@ namespace TABSAT
                                   <Simple name="CheckHiddingUnits" value="False" />
              */
 
-            IEnumerable<XElement> vodItems = getEntitiesOfTemplates( VOD_SMALL_ID_TEMPLATE, VOD_MEDIUM_ID_TEMPLATE, VOD_LARGE_ID_TEMPLATE );
+            IEnumerable<XElement> vodItems = getEntitiesOfTypes( Enum.GetValues( typeof(VODTypes) ).Cast<UInt64>().ToArray() );
             //Console.WriteLine( "vodItems: " + vodItems.Count() );
 
             foreach( XElement v in vodItems.ToList() )  // no ToList() leads to only removing 1 <item> per save modify cycle?!
             {
                 XElement complex = v.Element( "Complex" );
                 complex.SetAttributeValue( "type", newType );
-                SaveReader.getFirstSimplePropertyNamed( complex, "IDTemplate" ).SetAttributeValue( "value", newIDTemplate );
+                SaveReader.getFirstSimplePropertyNamed( complex, "IDTemplate" ).SetAttributeValue( "value", (UInt64) vodTemplate );
                 SaveReader.getFirstSimplePropertyNamed( getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ), "Life" ).SetAttributeValue( "value", newLife );
                 SaveReader.getFirstSimplePropertyNamed( complex, "Size" ).SetAttributeValue( "value", newSize );
             }
         }
 
-        internal void scaleVODs( UInt64 vodTemplate, decimal scale, IDGenerator editor )
+        internal void scaleVODs( VODTypes vodTemplate, decimal scale, IDGenerator editor )
         {
-            scaleEntities( vodTemplate, scale, editor );
+            scaleEntities( (UInt64) vodTemplate, scale, editor );
         }
     }
 }

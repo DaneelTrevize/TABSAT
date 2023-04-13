@@ -88,6 +88,7 @@ namespace TABSAT
                         {
                             // Skipping repacking
                             updateButtonsAfterManualRepacking();
+                            considerStoppingReflector( reflectorStopRepackCheckBox.Checked );
                         }
                         editingState = newState;
 
@@ -513,7 +514,7 @@ namespace TABSAT
                 // VODs
                 if( choices.ResizeVODs )
                 {
-                    statusWriter( "Replacing all VOD buildings with " + vodSizesNames[choices.VodSize] + '.' );
+                    statusWriter( "Replacing all VOD buildings with " + LevelEntities.vodSizesNames[choices.VodSize] + '.' );
                     dataEditor.resizeVODs( choices.VodSize );
                 }
                 else
@@ -521,17 +522,17 @@ namespace TABSAT
                     if( choices.SmallScale != 1 )
                     {
                         statusWriter( "Scaling Dwellings count x" + choices.SmallScale + '.' );
-                        dataEditor.stackVODbuildings( VodSizes.SMALL, choices.SmallScale );
+                        dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingSmall, choices.SmallScale );
                     }
                     if( choices.MediumScale != 1 )
                     {
                         statusWriter( "Scaling Taverns count x" + choices.MediumScale + '.' );
-                        dataEditor.stackVODbuildings( VodSizes.MEDIUM, choices.MediumScale );
+                        dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingMedium, choices.MediumScale );
                     }
                     if( choices.LargeScale != 1 )
                     {
                         statusWriter( "Scaling City Halls count x" + choices.LargeScale + '.' );
-                        dataEditor.stackVODbuildings( VodSizes.LARGE, choices.LargeScale );
+                        dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingLarge, choices.LargeScale );
                     }
                 }
 
@@ -569,7 +570,7 @@ namespace TABSAT
 
                 if( choices.GiftCount != 0 )
                 {
-                    statusWriter( "Gifting " + choices.GiftCount + "x " + giftableTypeNames[choices.Gift] + "." );
+                    statusWriter( "Gifting " + choices.GiftCount + "x " + LevelEntities.giftableTypeNames[choices.Gift] + "." );
                     dataEditor.giftEntities( choices.Gift, choices.GiftCount );
                 }
 

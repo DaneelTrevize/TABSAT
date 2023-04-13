@@ -1,6 +1,5 @@
 ﻿
 using System.Collections.Generic;
-using static TABSAT.SaveReader;
 
 namespace TABSAT
 {
@@ -26,12 +25,12 @@ namespace TABSAT
         }
 
         internal readonly decimal PopulationScale;
-        internal readonly SortedDictionary<ScalableZombieGroups, decimal> ScalableZombieGroupFactors;
+        internal readonly SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> ScalableZombieGroupFactors;
         internal readonly decimal GiantScale;
         internal readonly decimal MutantScale;
         internal readonly MutantChoices Mutants;
         internal readonly bool ResizeVODs;
-        internal readonly VodSizes VodSize;
+        internal readonly LevelEntities.VODTypes VodSize;
         internal readonly decimal SmallScale;
         internal readonly decimal MediumScale;
         internal readonly decimal LargeScale;
@@ -41,7 +40,7 @@ namespace TABSAT
         internal readonly uint Energy;
         internal readonly uint Workers;
         internal readonly uint GiftCount;
-        internal readonly GiftableTypes Gift;
+        internal readonly LevelEntities.GiftableTypes Gift;
         internal readonly bool FillGold;
         internal readonly bool FillWood;
         internal readonly bool FillStone;
@@ -49,21 +48,21 @@ namespace TABSAT
         internal readonly bool FillOil;
         internal readonly bool FasterSwarms;
         internal readonly bool ChangeEasy;
-        internal readonly SwarmDirections EasySwarms;
+        internal readonly SaveReader.SwarmDirections EasySwarms;
         internal readonly bool ChangeHard;
-        internal readonly SwarmDirections HardSwarms;
+        internal readonly SaveReader.SwarmDirections HardSwarms;
         internal readonly bool ChangeTheme;
-        internal readonly ThemeType Theme;
+        internal readonly SaveReader.ThemeType Theme;
         internal readonly bool DisableMayors;
 
         internal ModifyChoices(
             in decimal pS,
-            in SortedDictionary<ScalableZombieGroups, decimal> szgF,
+            in SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> szgF,
             in decimal gS,
             in decimal mS,
             in MutantChoices m,
             in bool rV,
-            in VodSizes vS,
+            in LevelEntities.VODTypes vS,
             in decimal sV,
             in decimal mV,
             in decimal lV,
@@ -73,7 +72,7 @@ namespace TABSAT
             in uint e,
             in uint w,
             in uint gC,
-            in GiftableTypes g,
+            in LevelEntities.GiftableTypes g,
             in bool fG,
             in bool fW,
             in bool fS,
@@ -81,11 +80,11 @@ namespace TABSAT
             in bool fO,
             in bool fast,
             in bool cE,
-            in SwarmDirections eS,
+            in SaveReader.SwarmDirections eS,
             in bool cH,
-            in SwarmDirections hS,
+            in SaveReader.SwarmDirections hS,
             in bool cT,
-            in ThemeType t,
+            in SaveReader.ThemeType t,
             in bool dM
             )
         {

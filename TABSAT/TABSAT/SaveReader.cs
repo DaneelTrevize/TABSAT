@@ -18,7 +18,9 @@ namespace TABSAT
         int getDistance( MapNavigation.Position position );
         MapNavigation.Direction? getDirection( MapNavigation.Position position );
         int getNavigableCount( int x, int y, int res );
-        int getZombieCount( int x, int y, int res, SortedSet<SaveReader.ScalableZombieGroups> groups );
+        int getZombieCount( int x, int y, int res, SortedSet<LevelEntities.ScalableZombieGroups> groups );
+        LinkedList<MapNavigation.Position> getVodPositions( LevelEntities.VODTypes vodType );
+        LinkedList<MapNavigation.Position> getHugePositions( LevelEntities.HugeTypes vodType );
     }
 
     class SaveReader : MapData
@@ -31,14 +33,6 @@ namespace TABSAT
         internal const int OBJECTS_STONE = 0x04;
         internal const int OBJECTS_IRON = 0x05;
         internal const int NAVIGABLE_BLOCKED = 0x01;
-
-        internal enum VodSizes
-        {
-            SMALL,
-            MEDIUM,
-            LARGE
-        }
-        internal static readonly Dictionary<VodSizes, string> vodSizesNames;
 
         internal enum ThemeType
         {
@@ -59,89 +53,6 @@ namespace TABSAT
             ALL
         }
         internal static readonly Dictionary<SwarmDirections, string> SwarmDirectionsNames;
-
-        internal enum GiftableTypes : UInt64
-        {
-            Ranger = 11462509610414451330,
-            SoldierRegular = 8122295062332983407,
-            Sniper = 6536008488763521408,
-            Lucifer = 16241120227094315491,
-            Thanatos = 13687916016325214957,
-            Titan = 15625692077980454078,
-            Mutant = 4795230226196477375,
-            EnergyWoodTower = 3581872206503330117,      // Tesla tower
-            MillWood = 869623577388046954,
-            MillIron = 12238914991741132226,
-            PowerPlant = 12703689153551509267,
-            Sawmill = 6484699889268923215,
-            Quarry = 4012164333689948063,
-            AdvancedQuarry = 6574833960938744452,
-            OilPlatform = 15110117066074335339,
-            HunterCottage = 706050193872584208,
-            FishermanCottage = 13910727858942983852,
-            Farm = 7709119203238641805,
-            AdvancedFarm = 877281890077159856,
-            WareHouse = 13640414733981798546,
-            Market = 5507471650351043258,
-            //WinterMarket = 5749655342014653624,
-            Bank = 5036892806562984913,
-            TentHouse = 17301104073651661026,
-            CottageHouse = 1886362466923065378,
-            StoneHouse = 17389931916361639317,
-            WallWood = 16980392503923994773,
-            WallStone = 7684920400170855714,
-            GateWood = 8865737575894196495,
-            GateStone = 18390252716895796075,
-            WatchTowerWood = 11206202837167900273,
-            WatchTowerStone = 16597317129181541225,
-            TrapStakes = 14605210100319949981,          // Stakes Traps
-            TrapBlades = 2562764233779101744,           // Wire Fence Traps
-            TrapMine = 3791255408779778776,             // Land Mine
-            WoodWorkshop = 2943963846200136989,
-            StoneWorkshop = 11153810025740407576,
-            Foundry = 14944401376001533849,
-            SoldiersCenter = 17945382406851792953,
-            AdvancedUnitCenter = 8857617519118038933,
-            LookoutTower = 9352245195514814739,
-            RadarTower = 10083572309367106690,
-            Ballista = 1621013738552581284,
-            MachineGun = 1918604527945708480,           // Wasp
-            ShockingTower = 7671446590444700196,
-            Executor = 782017986530656774,
-            TheInn = 5797915750707445077,
-            TheCrystalPalace = 7936948209186953569,
-            // TheGreatTelescope = ,                    // The Silent Beholder
-            TheSpire = 6908380734610266301,
-            TheTransmutator = 5872990212787919747,
-            TheAcademy = 8274629648718325688,
-            TheVictorious = 6953739609864588774
-        }
-        internal static readonly Dictionary<GiftableTypes, string> giftableTypeNames;
-
-        protected enum ScalableZombieTypes : UInt64
-        {
-            ZombieWeakA = 13102967879573781082,
-            ZombieWeakB = 11373321006229815036,
-            ZombieWeakC = 4497312170973781002,
-            ZombieWorkerA = 17464596434855839240,
-            ZombieWorkerB = 10676594063526581,
-            ZombieMediumA = 3569719832138441992,
-            ZombieMediumB = 12882220683103625178,
-            ZombieDressedA = 8945324363763426993,
-            ZombieStrongA = 6498716987293858679,
-            ZombieHarpy = 1214272082232025268,
-            ZombieVenom = 12658363830661735733
-        }
-        internal enum ScalableZombieGroups
-        {
-            WEAK,
-            MEDIUM,
-            DRESSED,
-            STRONG,
-            VENOM,
-            HARPY
-        }
-        protected static readonly Dictionary<ScalableZombieGroups, SortedSet<ScalableZombieTypes>> scalableZombieTypeGroups;
 
         protected readonly struct SwarmTimings
         {
@@ -201,12 +112,6 @@ namespace TABSAT
 
         static SaveReader()
         {
-            vodSizesNames = new Dictionary<VodSizes, string> {
-                { VodSizes.SMALL, "Dwellings" },
-                { VodSizes.MEDIUM, "Taverns" },
-                { VodSizes.LARGE, "City Halls" }
-            };
-
             themeTypeNames = new Dictionary<ThemeType, string> {
                 { ThemeType.FA, "Deep Forest" },
                 { ThemeType.BR, "Dark Moorland" },
@@ -221,69 +126,6 @@ namespace TABSAT
                 { SwarmDirections.TWO, "Any 2" },
                 { SwarmDirections.ALL_BUT_ONE, "All but 1" },
                 { SwarmDirections.ALL, "All" }
-            };
-
-            giftableTypeNames = new Dictionary<GiftableTypes, string> {
-                { GiftableTypes.Ranger, "Ranger" },
-                { GiftableTypes.SoldierRegular, "Soldier" },
-                { GiftableTypes.Sniper, "Sniper" },
-                { GiftableTypes.Lucifer, "Lucifer" },
-                { GiftableTypes.Thanatos, "Thanatos" },
-                { GiftableTypes.Titan, "Titan" },
-                { GiftableTypes.Mutant, "Mutant" },
-                { GiftableTypes.EnergyWoodTower, "Tesla Tower" },
-                { GiftableTypes.MillWood, "Mill" },
-                { GiftableTypes.MillIron, "Advanced Mill" },
-                { GiftableTypes.PowerPlant, "PowerPlant" },
-                { GiftableTypes.Sawmill, "Sawmill" },
-                { GiftableTypes.Quarry, "Quarry" },
-                { GiftableTypes.AdvancedQuarry, "Advanced Quarry" },
-                { GiftableTypes.OilPlatform, "Oil Platform" },
-                { GiftableTypes.HunterCottage, "Hunter Cottage" },
-                { GiftableTypes.FishermanCottage, "Fisherman Cottage" },
-                { GiftableTypes.Farm, "Farm" },
-                { GiftableTypes.AdvancedFarm, "Advanced Farm" },
-                { GiftableTypes.WareHouse, "Warehouse" },
-                { GiftableTypes.Market, "Market" },
-                { GiftableTypes.Bank, "Bank" },
-                { GiftableTypes.TentHouse, "Tent" },
-                { GiftableTypes.CottageHouse, "Cottage" },
-                { GiftableTypes.StoneHouse, "Stone House" },
-                { GiftableTypes.WallWood, "Wood Wall" },
-                { GiftableTypes.WallStone, "Stone Wall" },
-                { GiftableTypes.GateWood, "Wood Gate" },
-                { GiftableTypes.GateStone, "Stone Gate" },
-                { GiftableTypes.WatchTowerWood, "Wood Tower" },
-                { GiftableTypes.WatchTowerStone, "Stone Tower" },
-                { GiftableTypes.TrapStakes, "Stakes Trap" },
-                { GiftableTypes.TrapBlades, "Wire Fence Trap" },
-                { GiftableTypes.TrapMine, "Land Mine" },
-                { GiftableTypes.WoodWorkshop, "Wood Workshop" },
-                { GiftableTypes.StoneWorkshop, "Stone Workshop" },
-                { GiftableTypes.Foundry, "Foundry" },
-                { GiftableTypes.SoldiersCenter, "Soldiers' Center" },
-                { GiftableTypes.AdvancedUnitCenter, "Engineering Center" },
-                { GiftableTypes.LookoutTower, "Lookout Tower" },
-                { GiftableTypes.RadarTower, "Radar Tower" },
-                { GiftableTypes.Ballista, "Ballista" },
-                { GiftableTypes.MachineGun, "Wasp" },
-                { GiftableTypes.ShockingTower, "Shocking Tower" },
-                { GiftableTypes.Executor, "Executor" },
-                { GiftableTypes.TheInn, "The Inn" },
-                { GiftableTypes.TheCrystalPalace, "The Crystal Palace" },
-                { GiftableTypes.TheSpire, "The Lightning Spire" },
-                { GiftableTypes.TheAcademy, "The Academy of Immortals" },
-                { GiftableTypes.TheVictorious, "The Victorious" },
-                { GiftableTypes.TheTransmutator, "The Atlas Transmutator" }
-            };
-
-            scalableZombieTypeGroups = new Dictionary<ScalableZombieGroups, SortedSet<ScalableZombieTypes>> {
-                { ScalableZombieGroups.WEAK, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieWeakA, ScalableZombieTypes.ZombieWeakB, ScalableZombieTypes.ZombieWeakC } },
-                { ScalableZombieGroups.MEDIUM, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieWorkerA, ScalableZombieTypes.ZombieWorkerB, ScalableZombieTypes.ZombieMediumA, ScalableZombieTypes.ZombieMediumB } },
-                { ScalableZombieGroups.DRESSED, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieDressedA } },
-                { ScalableZombieGroups.STRONG, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieStrongA } },
-                { ScalableZombieGroups.VENOM, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieVenom } },
-                { ScalableZombieGroups.HARPY, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieHarpy } }
             };
 
             swarmTimings = new SortedDictionary<GameFinish, SwarmTimingSet> {
@@ -320,6 +162,46 @@ namespace TABSAT
             West
         }
 
+        internal class RelativePosition
+        {
+            public readonly UInt64 ID;
+            public readonly CompassDirection Direction;
+            public readonly float distanceSquared;
+
+            public RelativePosition( XElement i, MapData cc )
+            {
+                // Not just useful for & best relocated into LevelEntities? EntityDescriptors under UnitsGenerationPack under LevelEvents under LevelState also have ID and Position.
+                // LevelEvents is also duplicated under Extension under Data under CurrentGeneratedLevel also under LevelState.
+
+                ID = (UInt64) i.Element( "Simple" ).Attribute( "value" );
+                extractCoordinates( getFirstSimplePropertyNamed( i.Element( "Complex" ), "Position" ), out float x, out float y );
+
+                if( x <= cc.CCX() )
+                {
+                    // North or West
+                    Direction = y <= cc.CCY() ? CompassDirection.North : CompassDirection.West;
+                }
+                else
+                {
+                    // East or South
+                    Direction = y <= cc.CCY() ? CompassDirection.East : CompassDirection.South;
+                }
+
+                distanceSquared = ( x - cc.CCX() ) * ( x - cc.CCX() ) + ( y - cc.CCY() ) * ( y - cc.CCY() );
+
+                //Console.WriteLine( "id: " + id + "\tPosition: " + x + ", " + y + "\tis: " + dir + ",\tdistanceSquared: " + distanceSquared );
+            }
+        }
+
+        private class DistanceComparer : IComparer<RelativePosition>
+        {
+            public int Compare( RelativePosition a, RelativePosition b )
+            {
+                return b.distanceSquared.CompareTo( a.distanceSquared );    // b.CompareTo( a ) for reversed order
+            }
+        }
+        protected static readonly IComparer<RelativePosition> relativePositionDistanceComparer = new DistanceComparer();
+
         protected const string LEVEL_EVENT_GAME_WON_NAME = @"Game Won";
         protected const string SWARM_FINAL_NAME = @"Final Swarm";
         protected const string SWARM_EASY_NAME = @"Swarm Easy";
@@ -350,9 +232,11 @@ namespace TABSAT
         private XElement mapDrawer;
         private XElement extrasItems;
         private readonly SortedDictionary<MapLayers, LayerData> layerDataCache;
-        private readonly MapNavigation.FlowGraph flowGraph;
-        private readonly MapNavigation.IntQuadTree navQuadTree;
-        private readonly SortedDictionary<ScalableZombieTypes, MapNavigation.IntQuadTree> popQuadTrees;
+        private MapNavigation.FlowGraph flowGraph;
+        private MapNavigation.IntQuadTree navQuadTree;
+        private SortedDictionary<LevelEntities.ScalableZombieTypes, MapNavigation.IntQuadTree> popQuadTrees;
+        private SortedDictionary<LevelEntities.VODTypes, LinkedList<MapNavigation.Position>> vodPositions;
+        private SortedDictionary<LevelEntities.HugeTypes, LinkedList<MapNavigation.Position>> hugePositions;
 
         internal static XElement getFirstPropertyOfTypeNamed( XElement c, string type, string name )    // 5 Collections, 3 Dictionaries
         {
@@ -424,79 +308,10 @@ namespace TABSAT
             layerDataRegex = new Regex( @"(?:\d+\|){2}(?<data>.+)", RegexOptions.Compiled );    //value="256|256|AAAA..."
             layerDataCache = new SortedDictionary<MapLayers, LayerData>();
 
-            flowGraph = new MapNavigation.FlowGraph( cellsCount, getLayerData( MapLayers.Navigable ).values );
-            flowGraph.floodFromCC( commandCenterX, commandCenterY );    // Should be constructor?
-
-            navQuadTree = new MapNavigation.IntQuadTree( 0, 0, cellsCount );
-            populateNavQuadTree();
-
-            popQuadTrees = new SortedDictionary<ScalableZombieTypes, MapNavigation.IntQuadTree>();
-            populatePopQuadTree();
-        }
-
-        private void populateNavQuadTree()
-        {
-            //            <Simple name="PlayableArea" value="54;54;148;148" />
-            for( int x = 0; x < cellsCount; x++ )
-            {
-                for( int y = 0; y < cellsCount; y++ )
-                {
-                    // North (-West)
-                    if( y + 148 < cellsCount - x )
-                    {
-                        continue;
-                    }
-                    // South (-East)
-                    if( y - 148 > cellsCount - x )
-                    {
-                        continue;
-                    }
-                    //
-                    if( x > y + 108 )
-                    {
-                        continue;
-                    }
-                    //
-                    if( x <= y - 108 )
-                    {
-                        continue;
-                    }
-
-                    if( getDistance( new MapNavigation.Position( x, y ) ) != MapNavigation.UNNAVIGABLE )
-                    {
-                        navQuadTree.Add( x, y );
-                    }
-                }
-            }
-        }
-
-        private void populatePopQuadTree()
-        {
-            foreach( ScalableZombieTypes zombieType in Enum.GetValues( typeof( ScalableZombieTypes ) ) )
-            {
-                var popQuadTree = new MapNavigation.IntQuadTree( 0, 0, cellsCount );
-                popQuadTrees.Add( zombieType, popQuadTree );
-            }
-
-            foreach( var t in getLevelZombieTypesItems() )
-            {
-                UInt64 zombieTypeInt = Convert.ToUInt64( t.Element( "Simple" ).Attribute( "value" ).Value );
-                //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
-                if( !Enum.IsDefined( typeof( ScalableZombieTypes ), zombieTypeInt ) )
-                {
-                    continue;   // Can't scale this type
-                }
-                ScalableZombieTypes zombieType = (ScalableZombieTypes) zombieTypeInt;
-
-                var col = t.Element( "Collection" );
-                foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
-                {
-                    // Get zombie coordinates, convert to ints/position, add to quadtree...
-                    extractCoordinates( getFirstSimplePropertyNamed( com, "B" ), out float p_x, out float p_y );
-
-                    popQuadTrees[zombieType].Add( (int) p_x, (int) p_y );
-                }
-            }
+            flowGraph = null;
+            navQuadTree = null;
+            popQuadTrees = null;
+            vodPositions = null;
         }
 
         public string Name()
@@ -564,6 +379,7 @@ namespace TABSAT
 
         protected IEnumerable<XElement> getLevelZombieTypesItems()
         {
+            // This does not list all zombie entities, possibly only initial-spawn-state ones. Activity-activated and edge-generated ones seem to only appear in the main entity dictionary...
             /*
              *        <Dictionary name="LevelFastSerializedEntities" >
              *          <Items>
@@ -748,9 +564,9 @@ namespace TABSAT
                 }
             }
 
-            var impassibleTemplates = new[] { LevelEntities.OILPOOL_ID_TEMPLATE, LevelEntities.FortressBarLeft_ID_TEMPLATE, LevelEntities.FortressBarRight_ID_TEMPLATE, LevelEntities.TruckA_ID_TEMPLATE };
+            var impassibleTypes = new[] { LevelEntities.OilSourceType, LevelEntities.FortressBarLeftType, LevelEntities.FortressBarRightType, LevelEntities.TruckAType };
             var impassibles = from c in getExtraEntities().Elements( "Complex" )
-                              where impassibleTemplates.Contains( (UInt64) getFirstSimplePropertyNamed( c, "IDTemplate" ).Attribute( "value" ) )
+                              where impassibleTypes.Contains( (UInt64) getFirstSimplePropertyNamed( c, "IDTemplate" ).Attribute( "value" ) )
                               select c;
             foreach( var c in impassibles )
             {
@@ -783,31 +599,187 @@ namespace TABSAT
 
         public int getDistance( MapNavigation.Position position )
         {
-            return flowGraph.getDistance( position );
+            return getFlowGraph().getDistance( position );
         }
 
         public MapNavigation.Direction? getDirection( MapNavigation.Position position )
         {
-            return flowGraph.getDirection( position );
+            return getFlowGraph().getDirection( position );
         }
 
         public int getNavigableCount( int x, int y, int res )
         {
-            return navQuadTree.getCount( x, y, res );
+            return getNavQuadTree().getCount( x, y, res );
         }
 
-        public int getZombieCount( int x, int y, int res, SortedSet<ScalableZombieGroups> groups )
+        public int getZombieCount( int x, int y, int res, SortedSet<LevelEntities.ScalableZombieGroups> groups )
         {
             int count = 0;
             foreach( var g in groups )
             {
-                foreach( ScalableZombieTypes t in scalableZombieTypeGroups[g] )
+                foreach( LevelEntities.ScalableZombieTypes t in LevelEntities.scalableZombieTypeGroups[g] )
                 {
-                    var tree = popQuadTrees[t];
+                    var tree = getPopQuadTrees()[t];
                     count += tree.getCount( x, y, res );
                 }
             }
             return count;
         }
+
+        public LinkedList<MapNavigation.Position> getVodPositions( LevelEntities.VODTypes vodType )
+        {
+            if( vodPositions == null )
+            {
+                vodPositions = new SortedDictionary<LevelEntities.VODTypes, LinkedList<MapNavigation.Position>>();
+                populateVodPositions();
+            }
+            if( vodPositions.TryGetValue( vodType, out LinkedList<MapNavigation.Position> positions ) )
+            {
+                return positions;
+            }
+            return new LinkedList<MapNavigation.Position>();
+        }
+
+        public LinkedList<MapNavigation.Position> getHugePositions( LevelEntities.HugeTypes hugeType )
+        {
+            if( hugePositions == null )
+            {
+                hugePositions = new SortedDictionary<LevelEntities.HugeTypes, LinkedList<MapNavigation.Position>>();
+                populateHugePositions();
+            }
+            if( hugePositions.TryGetValue( hugeType, out LinkedList<MapNavigation.Position> positions ) )
+            {
+                return positions;
+            }
+            return new LinkedList<MapNavigation.Position>();
+        }
+
+        private MapNavigation.FlowGraph getFlowGraph()
+        {
+            if( flowGraph == null )
+            {
+                flowGraph = new MapNavigation.FlowGraph( cellsCount, getLayerData( MapLayers.Navigable ).values );
+                flowGraph.floodFromCC( commandCenterX, commandCenterY );    // Should be constructor?
+            }
+            return flowGraph;
+        }
+
+        private MapNavigation.IntQuadTree getNavQuadTree()
+        {
+            if( navQuadTree == null )
+            {
+                navQuadTree = new MapNavigation.IntQuadTree( 0, 0, cellsCount );
+                populateNavQuadTree();
+            }
+            return navQuadTree;
+        }
+
+        private SortedDictionary<LevelEntities.ScalableZombieTypes, MapNavigation.IntQuadTree> getPopQuadTrees()
+        {
+            if( popQuadTrees == null )
+            {
+                popQuadTrees = new SortedDictionary<LevelEntities.ScalableZombieTypes, MapNavigation.IntQuadTree>();
+                populatePopQuadTree();
+            }
+            return popQuadTrees;
+        }
+
+        private void populateNavQuadTree()
+        {
+            //            <Simple name="PlayableArea" value="54;54;148;148" />
+            for( int x = 0; x < cellsCount; x++ )
+            {
+                for( int y = 0; y < cellsCount; y++ )
+                {
+                    // North (-West)
+                    if( y + 148 < cellsCount - x )
+                    {
+                        continue;
+                    }
+                    // South (-East)
+                    if( y - 148 > cellsCount - x )
+                    {
+                        continue;
+                    }
+                    //
+                    if( x > y + 108 )
+                    {
+                        continue;
+                    }
+                    //
+                    if( x <= y - 108 )
+                    {
+                        continue;
+                    }
+
+                    if( getDistance( new MapNavigation.Position( x, y ) ) != MapNavigation.UNNAVIGABLE )
+                    {
+                        navQuadTree.Add( x, y );
+                    }
+                }
+            }
+        }
+
+        private void populatePopQuadTree()
+        {
+            foreach( LevelEntities.ScalableZombieTypes zombieType in Enum.GetValues( typeof( LevelEntities.ScalableZombieTypes ) ) )
+            {
+                var popQuadTree = new MapNavigation.IntQuadTree( 0, 0, cellsCount );
+                popQuadTrees.Add( zombieType, popQuadTree );
+            }
+
+            foreach( var t in getLevelZombieTypesItems() )
+            {
+                UInt64 zombieTypeInt = Convert.ToUInt64( t.Element( "Simple" ).Attribute( "value" ).Value );
+                //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
+                if( !Enum.IsDefined( typeof( LevelEntities.ScalableZombieTypes ), zombieTypeInt ) )
+                {
+                    continue;   // Can't scale this type
+                }
+                LevelEntities.ScalableZombieTypes zombieType = (LevelEntities.ScalableZombieTypes) zombieTypeInt;
+
+                var col = t.Element( "Collection" );
+                foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
+                {
+                    // Get zombie coordinates, convert to ints/position, add to quadtree...
+                    extractCoordinates( getFirstSimplePropertyNamed( com, "B" ), out float p_x, out float p_y );
+
+                    popQuadTrees[zombieType].Add( (int) p_x, (int) p_y );
+                }
+            }
+        }
+
+        private void populateVodPositions()
+        {
+            foreach( LevelEntities.VODTypes vodType in Enum.GetValues( typeof( LevelEntities.VODTypes ) ) )
+            {
+                var positions = new LinkedList<MapNavigation.Position>();
+                IEnumerable<XElement> vodItems = entities.getEntitiesOfTypes( (UInt64) vodType );
+                foreach( var vod in vodItems )
+                {
+                    extractCoordinates( getFirstSimplePropertyNamed( vod.Element( "Complex" ), "Position" ), out float x, out float y );
+                    positions.AddLast( new MapNavigation.Position( (int) x, (int) y ) );
+                }
+                vodPositions.Add( vodType, positions );
+            }
+        }
+
+        private void populateHugePositions()
+        {
+            // Refactor along with populateVodPositions() into generic version for all entity item types..?
+
+            foreach( LevelEntities.HugeTypes hugeType in Enum.GetValues( typeof( LevelEntities.HugeTypes ) ) )
+            {
+                var positions = new LinkedList<MapNavigation.Position>();
+                IEnumerable<XElement> vodItems = entities.getEntitiesOfTypes( (UInt64) hugeType );
+                foreach( var vod in vodItems )
+                {
+                    extractCoordinates( getFirstSimplePropertyNamed( vod.Element( "Complex" ), "Position" ), out float x, out float y );
+                    positions.AddLast( new MapNavigation.Position( (int) x, (int) y ) );
+                }
+                hugePositions.Add( hugeType, positions );
+            }
+        }
+
     }
 }

@@ -78,11 +78,11 @@ namespace TABSAT
                 disableMayorsCheckBox
             };
 
-            vodReplaceComboBox.DataSource = new BindingSource( vodSizesNames, null );
+            vodReplaceComboBox.DataSource = new BindingSource( LevelEntities.vodSizesNames, null );
             vodReplaceComboBox.DisplayMember = "Value";
             vodReplaceComboBox.ValueMember = "Key";
 
-            giftComboBox.DataSource = new BindingSource( giftableTypeNames, null );
+            giftComboBox.DataSource = new BindingSource( LevelEntities.giftableTypeNames, null );
             giftComboBox.DisplayMember = "Value";
             giftComboBox.ValueMember = "Key";
 
@@ -331,30 +331,30 @@ namespace TABSAT
         internal ModifyChoices getChoices()
         {
             // Zombie Population Scaling
-            SortedDictionary<ScalableZombieGroups, decimal> scalableZombieGroupFactors = new SortedDictionary<ScalableZombieGroups, decimal>();
+            SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors = new SortedDictionary<LevelEntities.ScalableZombieGroups, decimal>();
             if( zombieScaleWeakCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( ScalableZombieGroups.WEAK, zombieScaleWeakNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.WEAK, zombieScaleWeakNumericUpDown.Value );
             }
             if( zombieScaleMediumCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( ScalableZombieGroups.MEDIUM, zombieScaleMediumNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.MEDIUM, zombieScaleMediumNumericUpDown.Value );
             }
             if( zombieScaleDressedCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( ScalableZombieGroups.DRESSED, zombieScaleDressedNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.DRESSED, zombieScaleDressedNumericUpDown.Value );
             }
             if( zombieScaleStrongCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( ScalableZombieGroups.STRONG, zombieScaleStrongNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.STRONG, zombieScaleStrongNumericUpDown.Value );
             }
             if( zombieScaleVenomCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( ScalableZombieGroups.VENOM, zombieScaleVenomNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.VENOM, zombieScaleVenomNumericUpDown.Value );
             }
             if( zombieScaleHarpyCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( ScalableZombieGroups.HARPY, zombieScaleHarpyNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.HARPY, zombieScaleHarpyNumericUpDown.Value );
             }
 
             // Mutants
@@ -379,10 +379,10 @@ namespace TABSAT
             }
 
             // VODs
-            VodSizes vodSize = VodSizes.SMALL;
+            LevelEntities.VODTypes vodSize = LevelEntities.VODTypes.DoomBuildingSmall;
             if( vodReplaceCheckBox.Checked )
             {
-                KeyValuePair<VodSizes, string> kv = (KeyValuePair<VodSizes, string>) vodReplaceComboBox.SelectedItem;
+                KeyValuePair<LevelEntities.VODTypes, string> kv = (KeyValuePair<LevelEntities.VODTypes, string>) vodReplaceComboBox.SelectedItem;
                 vodSize = kv.Key;
             }
 
@@ -405,11 +405,11 @@ namespace TABSAT
 
             // Command Center Extras
             uint giftCount = 0;
-            GiftableTypes gift = GiftableTypes.SoldierRegular;
+            LevelEntities.GiftableTypes gift = LevelEntities.GiftableTypes.SoldierRegular;
             if( ccGiftCheckBox.Checked )
             {
                 giftCount = Convert.ToUInt32( giftNumericUpDown.Value );
-                KeyValuePair<GiftableTypes, string> kv = (KeyValuePair<GiftableTypes, string>) giftComboBox.SelectedItem;
+                KeyValuePair<LevelEntities.GiftableTypes, string> kv = (KeyValuePair<LevelEntities.GiftableTypes, string>) giftComboBox.SelectedItem;
                 gift = kv.Key;
             }
 
