@@ -469,29 +469,44 @@ namespace TABSAT
             int cellSize = mapSize / cells;
             foreach( LevelEntities.VODTypes vodType in Enum.GetValues( typeof( LevelEntities.VODTypes ) ) )
             {
-                int vodSize;
-                int offset;
-                switch( vodType )
-                {
-                    default:
-                    case LevelEntities.VODTypes.DoomBuildingSmall:
-                        vodSize = cellSize * 2;
-                        offset = 0;
-                        break;
-                    case LevelEntities.VODTypes.DoomBuildingMedium:
-                        vodSize = cellSize * 3;
-                        offset = 1;
-                        break;
-                    case LevelEntities.VODTypes.DoomBuildingLarge:
-                        vodSize = cellSize * 4;
-                        offset = 1;
-                        break;
-                }
                 var positions = mapData.getVodPositions( vodType );
                 foreach( var p in positions )
                 {
+                    Point[] corners;
+                    switch( vodType )
+                    {
+                        default:
+                        case LevelEntities.VODTypes.DoomBuildingSmall:
+                            corners = new Point[]{
+                                new Point( (p.x + 0) * cellSize, (p.y + 0) * cellSize ),
+                                new Point( (p.x + 2) * cellSize, (p.y + 0) * cellSize ),
+                                new Point( (p.x + 2) * cellSize, (p.y + 1) * cellSize ),
+                                new Point( (p.x + 1) * cellSize, (p.y + 2) * cellSize ),
+                                new Point( (p.x + 0) * cellSize, (p.y + 2) * cellSize )
+                            };
+                            break;
+                        case LevelEntities.VODTypes.DoomBuildingMedium:
+                            corners = new Point[]{
+                                new Point( (p.x - 1) * cellSize, (p.y - 1) * cellSize ),
+                                new Point( (p.x + 2) * cellSize, (p.y - 1) * cellSize ),
+                                new Point( (p.x + 2) * cellSize, (p.y + 1) * cellSize ),
+                                new Point( (p.x + 1) * cellSize, (p.y + 2) * cellSize ),
+                                new Point( (p.x - 1) * cellSize, (p.y + 2) * cellSize )
+                            };
+                            break;
+                        case LevelEntities.VODTypes.DoomBuildingLarge:
+                            corners = new Point[]{
+                                new Point( (p.x - 1) * cellSize, (p.y - 1) * cellSize ),
+                                new Point( (p.x + 2) * cellSize, (p.y - 1) * cellSize ),
+                                new Point( (p.x + 3) * cellSize, (p.y + 1) * cellSize ),
+                                new Point( (p.x + 1) * cellSize, (p.y + 3) * cellSize ),
+                                new Point( (p.x - 1) * cellSize, (p.y + 2) * cellSize )
+                            };
+                            break;
+                    }
+
                     var vodColor = Color.FromArgb( 0xBF, 0xFF, 0x7F, 0x00 );
-                    mapGraphics.FillRectangle( new SolidBrush( vodColor ), (p.x - offset) * cellSize, (p.y - offset) * cellSize, vodSize, vodSize );
+                    mapGraphics.FillPolygon( new SolidBrush( vodColor ), corners );
                 }
             }
         }
