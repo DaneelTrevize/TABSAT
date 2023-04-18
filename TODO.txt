@@ -8,7 +8,7 @@ Count total pathable land, food, zombies? Chart them at each radius from CC? Sum
 
 Map Viewer:
   Is swarm skull location explicit in saves, or derived from associated zombie positions?
-  Show friendly units & buildings, pickables, damaged entities?
+  Show friendly units & buildings, -pickables, damaged entities?
   Differentiate types by colour?
 
 ----

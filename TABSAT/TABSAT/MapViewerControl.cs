@@ -17,6 +17,10 @@ namespace TABSAT
         private static readonly SortedDictionary<MapLayers, SortedDictionary<byte, Brush>> layersBrushes;
         private static readonly Brush unknown = new SolidBrush( Color.HotPink );
         private static readonly Brush arrowBrush = new SolidBrush( Color.White );
+        private static readonly Brush vodBrush = new SolidBrush( Color.FromArgb( 0xBF, 0xFF, 0x7F, 0x00 ) );
+        private static readonly Brush mutantBrush = new SolidBrush( Color.FromArgb( 0xFF, 0xBF, 0x00, 0xFF ) );
+        private static readonly Brush giantBrush = new SolidBrush( Color.FromArgb( 0xFF, 0x3F, 0xBF, 0x9F ) );
+        private static readonly Brush pickableBrush = new SolidBrush( Color.FromArgb( 0xBF, 0x00, 0xFF, 0x00 ) );
         private static readonly Pen redPen = new Pen( Color.FromArgb( 0x7F, 0xFF, 0x00, 0x00 ) );
         private readonly SortedDictionary<ViewLayer, SortedDictionary<int, Image>> layerCache;
         private readonly SortedDictionary<MapNavigation.Direction, Image> arrows;
@@ -53,7 +57,7 @@ namespace TABSAT
             Brush iron = new SolidBrush( Color.SteelBlue );
             Brush gold = new SolidBrush( Color.Yellow );
             //Brush fortress = new SolidBrush( Color.Black );
-            Brush fog = new SolidBrush( Color.FromArgb( 0x3F, 0x00, 0x00, 0x00 ) );
+            Brush fog = new SolidBrush( Color.FromArgb( 0xDF, 0x00, 0x00, 0x00 ) );
 
             layersBrushes.Add( MapLayers.Terrain, new SortedDictionary<byte, Brush>
             {
@@ -117,6 +121,7 @@ namespace TABSAT
 
             vodsCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             hugeCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
+            pickablesCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
 
             gridCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             rotateCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
@@ -232,6 +237,11 @@ namespace TABSAT
                 if( hugeCheckBox.Checked )
                 {
                     drawHuge( mapGraphics, mapSize );
+                }
+
+                if( pickablesCheckBox.Checked )
+                {
+                    drawPickables( mapGraphics, mapSize );
                 }
 
                 if( gridCheckBox.Checked )
@@ -376,7 +386,7 @@ namespace TABSAT
                     for( int y = 0; y < cells; y++ )
                     {
                         var distance = mapData.getDistance( new MapNavigation.Position( x, y ) );
-                        var brightness = distance == MapNavigation.UNNAVIGABLE ? 0 : Math.Max( 255 - ( (int) ( distance * 1.75 ) ), 4 );
+                        var brightness = distance == MapNavigation.UNNAVIGABLE ? 0 : Math.Max( 255 - ( (int) (distance * 2.5) ), 4 );
                         Brush pathing = new SolidBrush( Color.FromArgb( 0x9F, brightness, brightness, brightness ) );
                         mapGraphics.FillRectangle( pathing, x * cellSize, y * cellSize, cellSize, cellSize );
                     }
@@ -423,7 +433,7 @@ namespace TABSAT
                     {
                         var navCount = mapData.getNavigableCount( x, y, quadRes );
                         var density = navCount * 255 / maxPerQuad;
-                        Brush densityBrush = new SolidBrush( Color.FromArgb( 0x7F, density, density, density ) );
+                        Brush densityBrush = new SolidBrush( Color.FromArgb( 0x5F, density, density, density ) );
                         mapGraphics.FillRectangle( densityBrush, x * cellSize, y * cellSize, quadSize, quadSize );
                     }
                 }
@@ -442,20 +452,19 @@ namespace TABSAT
                 int cells = mapData.CellsCount();
                 int cellSize = mapSize / cells;
                 int quadRes = (int) Math.Pow( 2, zombieTrackBar.Value );
-                int maxPerQuad = quadRes * quadRes * 2; // 2 zombies per cell?
                 int quadSize = quadRes * cellSize;
                 for( int x = 0; x < cells; x += quadRes )
                 {
                     for( int y = 0; y < cells; y += quadRes )
                     {
                         var zCount = mapData.getZombieCount( x, y, quadRes, groups );
-                        var density = Math.Min( zCount * 255 / maxPerQuad, 0xDF );  // 0xDF so always some transparency, mostly for distance to show through
-                                                                                    // This calc is not working right, especially around zoom level 4, should also apply to NavQuads..!
-                        if( density > 0 )
+                        if( zCount > 0 )
                         {
+                            int density = Math.Max( 0x1F, (int) Math.Log( zCount * 1024 / (quadRes * quadRes) ) * 28 );     // Linear density differences are not noticable enough.
+                            density = Math.Min( density, 0xDF );                                                            // Cap it <= 0xFF. Use 0xDF so always some transparency.
                             Brush densityBrush = new SolidBrush( Color.FromArgb( density, 0xFF, 0x00, 0x00 ) );
                             mapGraphics.FillRectangle( densityBrush, x * cellSize, y * cellSize, quadSize, quadSize );
-                            mapGraphics.DrawRectangle( redPen, x * cellSize, y * cellSize, quadSize - 1, quadSize - 1 );
+                            //mapGraphics.DrawRectangle( redPen, x * cellSize, y * cellSize, quadSize - 1, quadSize - 1 );
                         }
                     }
                 }
@@ -505,8 +514,7 @@ namespace TABSAT
                             break;
                     }
 
-                    var vodColor = Color.FromArgb( 0xBF, 0xFF, 0x7F, 0x00 );
-                    mapGraphics.FillPolygon( new SolidBrush( vodColor ), corners );
+                    mapGraphics.FillPolygon( vodBrush, corners );
                 }
             }
         }
@@ -517,12 +525,36 @@ namespace TABSAT
             int cellSize = mapSize / cells;
             foreach( LevelEntities.HugeTypes hugeType in Enum.GetValues( typeof( LevelEntities.HugeTypes ) ) )
             {
-                int vodSize = cellSize * 2;     // Use hugeType to determine size/icon...
                 var positions = mapData.getHugePositions( hugeType );
                 foreach( var p in positions )
                 {
-                    var hugeColor = hugeType == LevelEntities.HugeTypes.Mutant ? Color.FromArgb( 0xFF, 0xBF, 0x00, 0xFF ) : Color.FromArgb( 0xFF, 0x3F, 0xBF, 0x9F );
-                    mapGraphics.FillRectangle( new SolidBrush( hugeColor ), p.x * cellSize, p.y * cellSize, vodSize, vodSize );
+                    if( hugeType == LevelEntities.HugeTypes.Mutant )
+                    {
+                        mapGraphics.FillEllipse( mutantBrush, p.x * cellSize, p.y * cellSize, cellSize * 2, cellSize * 2 );
+                    }
+                    else
+                    {
+                        mapGraphics.FillEllipse( giantBrush, (p.x - 1) * cellSize, (p.y - 1) * cellSize, cellSize * 3, cellSize * 3 );
+                    }
+                }
+            }
+        }
+
+        private void drawPickables( Graphics mapGraphics, int mapSize )
+        {
+            int cells = mapData.CellsCount();
+            int cellSize = mapSize / cells;
+            foreach( LevelEntities.PickableTypes pickableType in Enum.GetValues( typeof( LevelEntities.PickableTypes ) ) )
+            {
+                var positions = mapData.getPickablePositions( pickableType );
+                foreach( var p in positions )
+                {
+                    switch( pickableType )
+                    {
+                        default:
+                            mapGraphics.FillRectangle( pickableBrush, p.x * cellSize, p.y * cellSize, cellSize, cellSize );
+                            break;
+                    }
                 }
             }
         }

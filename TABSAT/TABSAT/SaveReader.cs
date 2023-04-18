@@ -10,8 +10,6 @@ namespace TABSAT
     interface MapData
     {
         string Name();
-        float CCX();
-        float CCY();
         int CellsCount();
         SaveReader.ThemeType Theme();
         SaveReader.LayerData getLayerData( SaveReader.MapLayers layer );
@@ -21,6 +19,7 @@ namespace TABSAT
         int getZombieCount( int x, int y, int res, SortedSet<LevelEntities.ScalableZombieGroups> groups );
         LinkedList<MapNavigation.Position> getVodPositions( LevelEntities.VODTypes vodType );
         LinkedList<MapNavigation.Position> getHugePositions( LevelEntities.HugeTypes vodType );
+        LinkedList<MapNavigation.Position> getPickablePositions( LevelEntities.PickableTypes pickableType );
     }
 
     class SaveReader : MapData
@@ -162,46 +161,6 @@ namespace TABSAT
             West
         }
 
-        internal class RelativePosition
-        {
-            public readonly UInt64 ID;
-            public readonly CompassDirection Direction;
-            public readonly float distanceSquared;
-
-            public RelativePosition( XElement i, MapData cc )
-            {
-                // Not just useful for & best relocated into LevelEntities? EntityDescriptors under UnitsGenerationPack under LevelEvents under LevelState also have ID and Position.
-                // LevelEvents is also duplicated under Extension under Data under CurrentGeneratedLevel also under LevelState.
-
-                ID = (UInt64) i.Element( "Simple" ).Attribute( "value" );
-                extractCoordinates( getFirstSimplePropertyNamed( i.Element( "Complex" ), "Position" ), out float x, out float y );
-
-                if( x <= cc.CCX() )
-                {
-                    // North or West
-                    Direction = y <= cc.CCY() ? CompassDirection.North : CompassDirection.West;
-                }
-                else
-                {
-                    // East or South
-                    Direction = y <= cc.CCY() ? CompassDirection.East : CompassDirection.South;
-                }
-
-                distanceSquared = ( x - cc.CCX() ) * ( x - cc.CCX() ) + ( y - cc.CCY() ) * ( y - cc.CCY() );
-
-                //Console.WriteLine( "id: " + id + "\tPosition: " + x + ", " + y + "\tis: " + dir + ",\tdistanceSquared: " + distanceSquared );
-            }
-        }
-
-        private class DistanceComparer : IComparer<RelativePosition>
-        {
-            public int Compare( RelativePosition a, RelativePosition b )
-            {
-                return b.distanceSquared.CompareTo( a.distanceSquared );    // b.CompareTo( a ) for reversed order
-            }
-        }
-        protected static readonly IComparer<RelativePosition> relativePositionDistanceComparer = new DistanceComparer();
-
         protected const string LEVEL_EVENT_GAME_WON_NAME = @"Game Won";
         protected const string SWARM_FINAL_NAME = @"Final Swarm";
         protected const string SWARM_EASY_NAME = @"Swarm Easy";
@@ -237,6 +196,7 @@ namespace TABSAT
         private SortedDictionary<LevelEntities.ScalableZombieTypes, MapNavigation.IntQuadTree> popQuadTrees;
         private SortedDictionary<LevelEntities.VODTypes, LinkedList<MapNavigation.Position>> vodPositions;
         private SortedDictionary<LevelEntities.HugeTypes, LinkedList<MapNavigation.Position>> hugePositions;
+        private SortedDictionary<LevelEntities.PickableTypes, LinkedList<MapNavigation.Position>> pickablePositions;
 
         internal static XElement getFirstPropertyOfTypeNamed( XElement c, string type, string name )    // 5 Collections, 3 Dictionaries
         {
@@ -255,7 +215,7 @@ namespace TABSAT
             return getFirstPropertyOfTypeNamed( c, "Complex", name );
         }
 
-        protected static void extractCoordinates( XElement property, out int x, out int y )
+        protected static void extractInts( XElement property, out int x, out int y )
         {
             string xy = (string) property.Attribute( "value" );
             string[] xySplit = xy.Split( ';' );
@@ -263,12 +223,22 @@ namespace TABSAT
             y = int.Parse( xySplit[1] );
         }
 
-        protected static void extractCoordinates( XElement property, out float x, out float y )
+        protected static void extractCoordinates( XElement item, out int x, out int y, in bool alreadyComplex = false, string positionPropertyName = "Position" )
         {
-            string xy = (string) property.Attribute( "value" );
+            var complex = item;
+            if( !alreadyComplex )
+            {
+                // Assume we have been passed an element from an Items collection of Item elements (i.e. under LevelEntities) each with a Complex containing a "Position" Simple Property,
+                // rather than an element from an Items collection of Complex elements each with a propertyName Simple Property.
+                complex = item.Element( "Complex" );
+            }
+            var position = getFirstSimplePropertyNamed( complex, positionPropertyName );
+            string xy = (string) position.Attribute( "value" );
             string[] xySplit = xy.Split( ';' );
-            x = float.Parse( xySplit[0] );
-            y = float.Parse( xySplit[1] );
+            var float_x = float.Parse( xySplit[0] );
+            var float_y = float.Parse( xySplit[1] );
+            x = (int) float_x;
+            y = (int) float_y;
         }
 
         internal SaveReader( string filesPath )
@@ -300,7 +270,7 @@ namespace TABSAT
             //      <Properties>
             //        <Simple name="CurrentCommandCenterCell"
             XElement currentCommandCenterCell = getFirstSimplePropertyNamed( levelComplex, "CurrentCommandCenterCell" );
-            extractCoordinates( currentCommandCenterCell, out commandCenterX, out commandCenterY );
+            extractInts( currentCommandCenterCell, out commandCenterX, out commandCenterY );
             //Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
 
             entities = new LevelEntities( levelComplex );
@@ -317,16 +287,6 @@ namespace TABSAT
         public string Name()
         {
             return Directory.GetParent( dataFile ).Name;
-        }
-
-        public float CCX()
-        {
-            return commandCenterX;
-        }
-
-        public float CCY()
-        {
-            return commandCenterY;
         }
 
         public int CellsCount()
@@ -377,9 +337,9 @@ namespace TABSAT
             return mapDrawer;
         }
 
-        protected IEnumerable<XElement> getLevelZombieTypesItems()
+        protected IEnumerable<XElement> getInactiveZombieItems()
         {
-            // This does not list all zombie entities, possibly only initial-spawn-state ones. Activity-activated and edge-generated ones seem to only appear in the main entity dictionary...
+            // This seems to list only idle map zombie entities, not player-triggered or swarm generated entities.
             /*
              *        <Dictionary name="LevelFastSerializedEntities" >
              *          <Items>
@@ -570,10 +530,10 @@ namespace TABSAT
                               select c;
             foreach( var c in impassibles )
             {
-                extractCoordinates( getFirstSimplePropertyNamed( c, "Position" ), out float p_x, out float p_y );
-                extractCoordinates( getFirstSimplePropertyNamed( c, "Size" ), out int s_x, out int s_y );
-                int corner_x = (int) p_x - ( s_x / 2 );
-                int corner_y = (int) p_y - ( s_y / 2 );
+                extractCoordinates( c, out int p_x, out int p_y, true );
+                extractInts( getFirstSimplePropertyNamed( c, "Size" ), out int s_x, out int s_y );
+                int corner_x = p_x - ( s_x / 2 );
+                int corner_y = p_y - ( s_y / 2 );
                 for( int x = 0; x < s_x; x++ )
                 {
                     for( int y = 0; y < s_y; y++ )
@@ -654,6 +614,20 @@ namespace TABSAT
             return new LinkedList<MapNavigation.Position>();
         }
 
+        public LinkedList<MapNavigation.Position> getPickablePositions( LevelEntities.PickableTypes pickableType )
+        {
+            if( pickablePositions == null )
+            {
+                pickablePositions = new SortedDictionary<LevelEntities.PickableTypes, LinkedList<MapNavigation.Position>>();
+                populatePickablePositions();
+            }
+            if( pickablePositions.TryGetValue( pickableType, out LinkedList<MapNavigation.Position> positions ) )
+            {
+                return positions;
+            }
+            return new LinkedList<MapNavigation.Position>();
+        }
+
         private MapNavigation.FlowGraph getFlowGraph()
         {
             if( flowGraph == null )
@@ -728,7 +702,7 @@ namespace TABSAT
                 popQuadTrees.Add( zombieType, popQuadTree );
             }
 
-            foreach( var t in getLevelZombieTypesItems() )
+            foreach( var t in getInactiveZombieItems() )
             {
                 UInt64 zombieTypeInt = Convert.ToUInt64( t.Element( "Simple" ).Attribute( "value" ).Value );
                 //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
@@ -741,10 +715,17 @@ namespace TABSAT
                 var col = t.Element( "Collection" );
                 foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
                 {
-                    // Get zombie coordinates, convert to ints/position, add to quadtree...
-                    extractCoordinates( getFirstSimplePropertyNamed( com, "B" ), out float p_x, out float p_y );
+                    // Get zombie coordinates, convert to ints/position, add to quadtree
+                    extractCoordinates( com, out int p_x, out int p_y, true, "B" );
+                    popQuadTrees[zombieType].Add( p_x, p_y );
+                }
 
-                    popQuadTrees[zombieType].Add( (int) p_x, (int) p_y );
+                // Now also count the active & generated zombies of this type from LevelEntities
+                IEnumerable<XElement> entityItems = entities.getEntitiesOfType( zombieTypeInt );
+                foreach( var entity in entityItems )
+                {
+                    extractCoordinates( entity, out int x, out int y );
+                    popQuadTrees[zombieType].Add( x, y );
                 }
             }
         }
@@ -754,11 +735,11 @@ namespace TABSAT
             foreach( LevelEntities.VODTypes vodType in Enum.GetValues( typeof( LevelEntities.VODTypes ) ) )
             {
                 var positions = new LinkedList<MapNavigation.Position>();
-                IEnumerable<XElement> vodItems = entities.getEntitiesOfTypes( (UInt64) vodType );
+                IEnumerable<XElement> vodItems = entities.getEntitiesOfType( (UInt64) vodType );
                 foreach( var vod in vodItems )
                 {
-                    extractCoordinates( getFirstSimplePropertyNamed( vod.Element( "Complex" ), "Position" ), out float x, out float y );
-                    positions.AddLast( new MapNavigation.Position( (int) x, (int) y ) );
+                    extractCoordinates( vod, out int x, out int y );
+                    positions.AddLast( new MapNavigation.Position( x, y ) );
                 }
                 vodPositions.Add( vodType, positions );
             }
@@ -771,13 +752,30 @@ namespace TABSAT
             foreach( LevelEntities.HugeTypes hugeType in Enum.GetValues( typeof( LevelEntities.HugeTypes ) ) )
             {
                 var positions = new LinkedList<MapNavigation.Position>();
-                IEnumerable<XElement> vodItems = entities.getEntitiesOfTypes( (UInt64) hugeType );
-                foreach( var vod in vodItems )
+                IEnumerable<XElement> hugeItems = entities.getEntitiesOfType( (UInt64) hugeType );
+                foreach( var huge in hugeItems )
                 {
-                    extractCoordinates( getFirstSimplePropertyNamed( vod.Element( "Complex" ), "Position" ), out float x, out float y );
-                    positions.AddLast( new MapNavigation.Position( (int) x, (int) y ) );
+                    extractCoordinates( huge, out int x, out int y );
+                    positions.AddLast( new MapNavigation.Position( x, y ) );
                 }
                 hugePositions.Add( hugeType, positions );
+            }
+        }
+
+        private void populatePickablePositions()
+        {
+            // Refactor along with populateVodPositions() into generic version for all entity item types..?
+
+            foreach( LevelEntities.PickableTypes pickableType in Enum.GetValues( typeof( LevelEntities.PickableTypes ) ) )
+            {
+                var positions = new LinkedList<MapNavigation.Position>();
+                IEnumerable<XElement> pickableItems = entities.getEntitiesOfType( (UInt64) pickableType );
+                foreach( var pickable in pickableItems )
+                {
+                    extractCoordinates( pickable, out int x, out int y );
+                    positions.AddLast( new MapNavigation.Position( x, y ) );
+                }
+                pickablePositions.Add( pickableType, positions );
             }
         }
 

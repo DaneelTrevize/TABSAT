@@ -51,6 +51,8 @@
             this.optionsGroupBox = new System.Windows.Forms.GroupBox();
             this.vodsCheckBox = new System.Windows.Forms.CheckBox();
             this.hugeCheckBox = new System.Windows.Forms.CheckBox();
+            this.pickablesCheckBox = new System.Windows.Forms.CheckBox();
+            this.removablesGroupBox = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).BeginInit();
             this.mapPanel.SuspendLayout();
@@ -58,6 +60,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.zombieTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.navQuadsTrackBar)).BeginInit();
             this.optionsGroupBox.SuspendLayout();
+            this.removablesGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // zoomTrackBar
@@ -65,12 +68,12 @@
             this.zoomTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.zoomTrackBar.LargeChange = 2;
-            this.zoomTrackBar.Location = new System.Drawing.Point(1045, 647);
+            this.zoomTrackBar.Location = new System.Drawing.Point(1045, 712);
             this.zoomTrackBar.Maximum = 8;
             this.zoomTrackBar.Minimum = 1;
             this.zoomTrackBar.Name = "zoomTrackBar";
             this.zoomTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.zoomTrackBar.Size = new System.Drawing.Size(45, 392);
+            this.zoomTrackBar.Size = new System.Drawing.Size(45, 327);
             this.zoomTrackBar.TabIndex = 1;
             this.zoomTrackBar.Value = 2;
             // 
@@ -141,6 +144,8 @@
             // zombieCheckBox
             // 
             this.zombieCheckBox.AutoSize = true;
+            this.zombieCheckBox.Checked = true;
+            this.zombieCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.zombieCheckBox.Location = new System.Drawing.Point(6, 321);
             this.zombieCheckBox.Name = "zombieCheckBox";
             this.zombieCheckBox.Size = new System.Drawing.Size(66, 17);
@@ -159,7 +164,7 @@
             this.zombieTrackBar.Size = new System.Drawing.Size(45, 135);
             this.zombieTrackBar.SmallChange = 6;
             this.zombieTrackBar.TabIndex = 10;
-            this.zombieTrackBar.Value = 2;
+            this.zombieTrackBar.Value = 3;
             // 
             // navQuadLabel
             // 
@@ -180,7 +185,7 @@
             this.navQuadsTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.navQuadsTrackBar.Size = new System.Drawing.Size(45, 135);
             this.navQuadsTrackBar.TabIndex = 6;
-            this.navQuadsTrackBar.Value = 4;
+            this.navQuadsTrackBar.Value = 3;
             // 
             // navQuadsCheckBox
             // 
@@ -293,7 +298,7 @@
             this.optionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsGroupBox.Controls.Add(this.rotateCheckBox);
             this.optionsGroupBox.Controls.Add(this.gridCheckBox);
-            this.optionsGroupBox.Location = new System.Drawing.Point(1045, 576);
+            this.optionsGroupBox.Location = new System.Drawing.Point(1045, 641);
             this.optionsGroupBox.Name = "optionsGroupBox";
             this.optionsGroupBox.Size = new System.Drawing.Size(89, 65);
             this.optionsGroupBox.TabIndex = 5;
@@ -302,36 +307,58 @@
             // 
             // vodsCheckBox
             // 
-            this.vodsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.vodsCheckBox.AutoSize = true;
             this.vodsCheckBox.Checked = true;
             this.vodsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.vodsCheckBox.Location = new System.Drawing.Point(1051, 530);
+            this.vodsCheckBox.Location = new System.Drawing.Point(6, 33);
             this.vodsCheckBox.Name = "vodsCheckBox";
-            this.vodsCheckBox.Size = new System.Drawing.Size(84, 17);
+            this.vodsCheckBox.Size = new System.Drawing.Size(54, 17);
             this.vodsCheckBox.TabIndex = 6;
-            this.vodsCheckBox.Text = "Show VODs";
+            this.vodsCheckBox.Text = "VODs";
             this.vodsCheckBox.UseVisualStyleBackColor = true;
             // 
             // hugeCheckBox
             // 
-            this.hugeCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.hugeCheckBox.AutoSize = true;
             this.hugeCheckBox.Checked = true;
             this.hugeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.hugeCheckBox.Location = new System.Drawing.Point(1051, 553);
+            this.hugeCheckBox.Location = new System.Drawing.Point(6, 56);
             this.hugeCheckBox.Name = "hugeCheckBox";
-            this.hugeCheckBox.Size = new System.Drawing.Size(97, 17);
+            this.hugeCheckBox.Size = new System.Drawing.Size(67, 17);
             this.hugeCheckBox.TabIndex = 7;
-            this.hugeCheckBox.Text = "Show Huge Zs";
+            this.hugeCheckBox.Text = "Huge Zs";
             this.hugeCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // pickablesCheckBox
+            // 
+            this.pickablesCheckBox.AutoSize = true;
+            this.pickablesCheckBox.Checked = true;
+            this.pickablesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.pickablesCheckBox.Location = new System.Drawing.Point(6, 79);
+            this.pickablesCheckBox.Name = "pickablesCheckBox";
+            this.pickablesCheckBox.Size = new System.Drawing.Size(72, 17);
+            this.pickablesCheckBox.TabIndex = 8;
+            this.pickablesCheckBox.Text = "Pickables";
+            this.pickablesCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // removablesGroupBox
+            // 
+            this.removablesGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.removablesGroupBox.Controls.Add(this.vodsCheckBox);
+            this.removablesGroupBox.Controls.Add(this.pickablesCheckBox);
+            this.removablesGroupBox.Controls.Add(this.hugeCheckBox);
+            this.removablesGroupBox.Location = new System.Drawing.Point(1045, 530);
+            this.removablesGroupBox.Name = "removablesGroupBox";
+            this.removablesGroupBox.Size = new System.Drawing.Size(89, 105);
+            this.removablesGroupBox.TabIndex = 9;
+            this.removablesGroupBox.TabStop = false;
+            this.removablesGroupBox.Text = "Show Removables";
             // 
             // MapViewerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.hugeCheckBox);
-            this.Controls.Add(this.vodsCheckBox);
+            this.Controls.Add(this.removablesGroupBox);
             this.Controls.Add(this.optionsGroupBox);
             this.Controls.Add(this.layersGroupBox);
             this.Controls.Add(this.zoomLabel);
@@ -349,6 +376,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.navQuadsTrackBar)).EndInit();
             this.optionsGroupBox.ResumeLayout(false);
             this.optionsGroupBox.PerformLayout();
+            this.removablesGroupBox.ResumeLayout(false);
+            this.removablesGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -378,5 +407,7 @@
         private System.Windows.Forms.ComboBox zombieComboBox;
         private System.Windows.Forms.CheckBox vodsCheckBox;
         private System.Windows.Forms.CheckBox hugeCheckBox;
+        private System.Windows.Forms.CheckBox pickablesCheckBox;
+        private System.Windows.Forms.GroupBox removablesGroupBox;
     }
 }

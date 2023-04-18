@@ -173,16 +173,16 @@ namespace TABSAT
              *                    <Properties>
              *                      <Simple name="A" value=
              */
-            var fastItems = from zombieType in getLevelZombieTypesItems()
+            var inactiveItems = from zombieType in getInactiveZombieItems()
                             select zombieType.Element( "Collection" ).Element( "Items" );
-            //Console.WriteLine( "zombieTypes: " + fastItems.Count() );
-            var fastIDs = from c in fastItems.Elements( "Complex" )
+            //Console.WriteLine( "zombieTypes: " + inactiveItems.Count() );
+            var inactiveIDs = from c in inactiveItems.Elements( "Complex" )
                           let s = c.Element( "Properties" ).Elements( "Simple" )
                           from a in s
                           where (string) a.Attribute( "name" ) == "A"
                           select (string) a.Attribute( "value" );
-            //Console.WriteLine( "fastIDs: " + fastIDs.Count() );
-            addIDs( fastIDs );
+            //Console.WriteLine( "inactiveIDs: " + inactiveIDs.Count() );
+            addIDs( inactiveIDs );
             //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
 
             /*
@@ -317,8 +317,42 @@ namespace TABSAT
 
         private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors )
         {
-            // Aggro'd zombies (also?) occur in LevelEntities, won't be removed just by removing from LevelFastSerializedEntities
+            // First handle zombies from and idle since the map was generated, found in LevelFastSerializedEntities
 
+            var zombieTypes = getInactiveZombieItems();
+            foreach( var typeItem in zombieTypes )
+            {
+                UInt64 zombieTypeInt = Convert.ToUInt64( typeItem.Element( "Simple" ).Attribute( "value" ).Value );
+                //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
+                if( !Enum.IsDefined( typeof( LevelEntities.ScalableZombieTypes ), zombieTypeInt ) )
+                {
+                    Console.Error.WriteLine( "Unexpected Serialized TypeID: " + zombieTypeInt );
+                    continue;   // Can't scale this type
+                }
+
+                LevelEntities.ScalableZombieTypes zombieType = (LevelEntities.ScalableZombieTypes) zombieTypeInt;
+                if( !scalableZombieTypeFactors.ContainsKey( zombieType ) )
+                {
+                    continue;   // Won't be scaling this type
+                }
+
+                var collection = typeItem.Element( "Collection" );
+                decimal scale = scalableZombieTypeFactors[zombieType];
+                scaleInactiveZombies( collection, scale );
+            }
+
+            // Next handle aggro'd and spawn-generated zombies, found in LevelEntities
+
+            foreach( var k_v in scalableZombieTypeFactors )
+            {
+                var zombieType = k_v.Key;
+                var scale = k_v.Value;
+                entities.scaleEntities( (UInt64) zombieType, scale, this );
+            }
+        }
+
+        private void scaleInactiveZombies( XElement collection, in decimal scale )
+        {
             /*
              *        <Dictionary name="LevelFastSerializedEntities" >
              *          <Items>
@@ -341,123 +375,95 @@ namespace TABSAT
                 copiedZombies.AddLast( zCopy );
             }
 
-            XAttribute getCapacity( XElement col )
-            {
-                // Get the capacity for each ZombieType
-                /*
-                 *             <Item>
-                 *               <Simple />
-                 *               <Collection >
-                 *                 <Properties>
-                 *                   <Simple name="Capacity" value=
-                 * 
-                 */
-                return /*( from s in col.Element( "Properties" ).Elements( "Simple" )
-                         where (string) s.Attribute( "name" ) == "Capacity"
-                         select s ).Single()*/getFirstSimplePropertyNamed( col, "Capacity" ).Attribute( "value" );
-            }
-
             Random rand = new Random();
-            var selectedZombies = new LinkedList<XElement>();
 
-            var zombieTypes = getLevelZombieTypesItems();
+            int multiples = (int) scale;                // How many duplicates to certainly make of each zombie
+            double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per zombie
+            //Console.WriteLine( "multiples: " + multiples + ", chance: " + chance );
 
-            foreach( var t in zombieTypes )
+            // Get the capacity for each ZombieType
+            /*
+             *             <Item>
+             *               <Simple />
+             *               <Collection >
+             *                 <Properties>
+             *                   <Simple name="Capacity" value=
+             * 
+             */
+            var cap = /*( from s in col.Element( "Properties" ).Elements( "Simple" )
+                         where (string) s.Attribute( "name" ) == "Capacity"
+                         select s ).Single()*/getFirstSimplePropertyNamed( collection, "Capacity" ).Attribute( "value" );
+            //Console.WriteLine( zombieType + ": " + cap.Value );
+
+            if( scale < 1.0M )
             {
-                UInt64 zombieTypeInt = Convert.ToUInt64( t.Element( "Simple" ).Attribute( "value" ).Value );
-                //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
-                if( !Enum.IsDefined( typeof( LevelEntities.ScalableZombieTypes ), zombieTypeInt ) )
+                // chance is now chance to not remove existing zombies
+
+                if( scale == 0.0M )
                 {
-                    continue;   // Can't scale this type
-                }
+                    // No need to iterate and count
+                    collection.Element( "Items" ).RemoveNodes();
 
-                LevelEntities.ScalableZombieTypes zombieType = (LevelEntities.ScalableZombieTypes) zombieTypeInt;
-                if( !scalableZombieTypeFactors.ContainsKey( zombieType ) )
-                {
-                    continue;   // Won't be scaling this type
-                }
-
-                decimal scale = scalableZombieTypeFactors[zombieType];
-                int multiples = (int) scale;                // How many duplicates to certainly make of each zombie
-                double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per zombie
-                //Console.WriteLine( "multiples: " + multiples + ", chance: " + chance );
-
-                var col = t.Element( "Collection" );
-                var cap = getCapacity( col );
-                //Console.WriteLine( zombieType + ": " + cap.Value );
-
-                if( scale < 1.0M )
-                {
-                    // chance is now chance to not remove existing zombies
-                    // selectedZombies will be those removed
-
-                    if( scale == 0.0M )
-                    {
-                        // No need to iterate and count
-                        col.Element( "Items" ).RemoveNodes();
-
-                        cap.SetValue( 0 );
-                    }
-                    else
-                    {
-                        // 0 > scale < 1
-                        foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
-                        {
-                            if( chance < rand.NextDouble() )
-                            {
-                                // Removing within foreach doen't work, without .ToList(). Might as well collect candidates so we also have an O(1) count for later too
-                                selectedZombies.AddLast( com );
-                            }
-                        }
-                        //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
-
-                        foreach( var i in selectedZombies )
-                        {
-                            i.Remove();
-                        }
-
-                        // Update capacity count
-                        UInt64 newCap = (UInt64) ( Convert.ToInt32( cap.Value ) - selectedZombies.Count );  // Assume actual UInt64 Capacity value is positive Int32 size and no less than Count removed
-                        cap.SetValue( newCap );
-                        //Console.WriteLine( "newCap: " + newCap );
-
-                        selectedZombies.Clear();
-                    }
+                    cap.SetValue( 0 );
                 }
                 else
                 {
+                    // 0 > scale < 1
+                    var removedZombies = new LinkedList<XElement>();
 
-                    foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
+                    foreach( var com in collection.Element( "Items" ).Elements( "Complex" ) )
                     {
-                        // First the certain duplications
-                        for( int m = 1; m < multiples; m++ )
+                        if( chance < rand.NextDouble() )
                         {
-                            duplicateZombie( com, selectedZombies );
-                        }
-                        // And now the chance-based duplication
-                        if( chance >= rand.NextDouble() )   // If the chance is not less than the roll
-                        {
-                            duplicateZombie( com, selectedZombies );
+                            // Removing within foreach doen't work, without .ToList(). Might as well collect candidates so we also have an O(1) count for later too
+                            removedZombies.AddLast( com );
                         }
                     }
-                    //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
+                    //Console.WriteLine( "removedZombies: " + removedZombies.Count );
 
-                    foreach( var i in selectedZombies )
+                    foreach( var i in removedZombies )
                     {
-                        col.Element( "Items" ).Add( i );
+                        i.Remove();
                     }
 
                     // Update capacity count
-                    UInt64 newCap = Convert.ToUInt64( cap.Value ) + (UInt64) selectedZombies.Count;
+                    UInt64 newCap = (UInt64) ( Convert.ToInt32( cap.Value ) - removedZombies.Count );   // Assume actual UInt64 Capacity value is positive Int32 size and no less than Count removed
                     cap.SetValue( newCap );
                     //Console.WriteLine( "newCap: " + newCap );
-
-                    selectedZombies.Clear();
                 }
+            }
+            else
+            {
+                var selectedZombies = new LinkedList<XElement>();
+
+                foreach( var com in collection.Element( "Items" ).Elements( "Complex" ) )
+                {
+                    // First the certain duplications
+                    for( int m = 1; m < multiples; m++ )
+                    {
+                        duplicateZombie( com, selectedZombies );
+                    }
+                    // And now the chance-based duplication
+                    if( chance >= rand.NextDouble() )   // If the chance is not less than the roll
+                    {
+                        duplicateZombie( com, selectedZombies );
+                    }
+                }
+                //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
+
+                foreach( var i in selectedZombies )
+                {
+                    collection.Element( "Items" ).Add( i );
+                }
+
+                // Update capacity count
+                UInt64 newCap = Convert.ToUInt64( cap.Value ) + (UInt64) selectedZombies.Count;
+                cap.SetValue( newCap );
+                //Console.WriteLine( "newCap: " + newCap );
             }
         }
 
-        internal void scaleHugePopulation( bool giantsNotMutants, decimal scale )
+        internal void scaleHugePopulation( in bool giantsNotMutants, in decimal scale )
         {
             if( scale == 1.0M )
             {
@@ -514,25 +520,63 @@ namespace TABSAT
                 icons.swapZombieType( id );
             }
         }
+
+        private class RelativePosition
+        {
+            public readonly UInt64 ID;
+            public readonly CompassDirection Direction;
+            public readonly float distanceSquared;
+
+            internal RelativePosition( XElement i, in int CCX, in int CCY )
+            {
+                // The below value extractions are best relocated into LevelEntities? EntityDescriptors under UnitsGenerationPack under LevelEvents under LevelState also have ID and Position.
+                // LevelEvents is also duplicated under Extension under Data under CurrentGeneratedLevel also under LevelState.
+                ID = (UInt64) i.Element( "Simple" ).Attribute( "value" );
+                extractCoordinates( i, out int x, out int y );
+
+                if( x <= CCX )
+                {
+                    // North or West
+                    Direction = y <= CCY ? CompassDirection.North : CompassDirection.West;
+                }
+                else
+                {
+                    // East or South
+                    Direction = y <= CCY ? CompassDirection.East : CompassDirection.South;
+                }
+
+                distanceSquared = (( x - CCX ) * ( x - CCX )) + (( y - CCY ) * ( y - CCY ));
+
+                //Console.WriteLine( "id: " + id + "\tPosition: " + x + ", " + y + "\tis: " + dir + ",\tdistanceSquared: " + distanceSquared );
+            }
+        }
+        
+        private class DistanceComparer : IComparer<RelativePosition>
+        {
+            public int Compare( RelativePosition a, RelativePosition b )
+            {
+                return b.distanceSquared.CompareTo( a.distanceSquared );    // b.CompareTo( a ) for reversed order
+            }
+        }
         
         internal void relocateMutants( bool toGiantNotMutant, bool perDirection )
         {
-            var mutantPositions = entities.getPositions( (UInt64) LevelEntities.HugeTypes.Mutant, this );
-            if( !mutantPositions.Any() )
+            var mutants = entities.getEntitiesOfType( (UInt64) LevelEntities.HugeTypes.Mutant );
+            if( !mutants.Any() )
             {
                 //Console.WriteLine( "No Mutants to relocate." );
                 return;
             }
-            var giantPositions = entities.getPositions( (UInt64) LevelEntities.HugeTypes.Giant, this );
+            var giants = entities.getEntitiesOfType( (UInt64) LevelEntities.HugeTypes.Giant );
 
-            void relocateMutants( ICollection<RelativePosition> movingMutants, RelativePosition farthest )
+            void relocateMutants( ICollection<RelativePosition> movingMutants, in UInt64 farthestID )
             {
                 foreach( RelativePosition z in movingMutants )
                 {
-                    entities.relocateHuge( z.ID, farthest.ID );
+                    entities.relocateHuge( z.ID, farthestID );
 
                     // Also see if both HugeZombies have had icons generated, for 1 to be repositioned to the other
-                    icons.relocate( z.ID, farthest.ID );
+                    icons.relocate( z.ID, farthestID );
                 }
             }
 
@@ -541,28 +585,32 @@ namespace TABSAT
             var mutantsPerDirection = new SortedDictionary<CompassDirection,List<RelativePosition>>();
             foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
             {
-                mutantsPerDirection.Add( d, new List<RelativePosition>( mutantPositions.Count ) );
+                mutantsPerDirection.Add( d, new List<RelativePosition>( mutants.Count() ) );
             }
             var giantsPerDirection = new SortedDictionary<CompassDirection,List<RelativePosition>>();
             foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
             {
-                giantsPerDirection.Add( d, new List<RelativePosition>( giantPositions.Count ) );
+                giantsPerDirection.Add( d, new List<RelativePosition>( giants.Count() ) );
             }
             var farthestMutantShortlist = new List<RelativePosition>();
             var farthestGiantShortlist = new List<RelativePosition>();
 
 
             // Split huge zombies by direction
-            foreach( var mutant in mutantPositions )
+            foreach( var mutant in mutants )
             {
-                mutantsPerDirection[mutant.Direction].Add( mutant );
+                RelativePosition p = new RelativePosition( mutant, commandCenterX, commandCenterY );
+                mutantsPerDirection[p.Direction].Add( p );
             }
-            foreach( var giant in giantPositions )
+            foreach( var giant in giants )
             {
-                giantsPerDirection[giant.Direction].Add( giant );
+                RelativePosition p = new RelativePosition( giant, commandCenterX, commandCenterY );
+                giantsPerDirection[p.Direction].Add( p );
             }
 
             // Sort each direction, take the farthest, form a new shortlist and sort that for the overall farthest
+            IComparer<RelativePosition> relativePositionDistanceComparer = new DistanceComparer();
+
             foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
             {
                 var mutantsInDirection = mutantsPerDirection[d];
@@ -601,32 +649,32 @@ namespace TABSAT
                     {
                         // There are mutants in this direction to relocation
 
-                        RelativePosition relocateTo;
+                        UInt64 relocateToID;
                         // Should and could we use a Giant?
                         if( toGiantNotMutant )
                         {
                             var giantsInDirection = giantsPerDirection[d];
                             if( giantsInDirection.Count > 0 )
                             {
-                                relocateTo = giantsInDirection.First();
+                                relocateToID = giantsInDirection.First().ID;
                             }
                             else
                             {
-                                //Console.WriteLine( "No Giants to relocate Mutants onto in direction: " + d + ", using global farthest Giant." );
-                                relocateTo = globalFarthestGiant;
-                                if( relocateTo == null )
+                                //Console.WriteLine( "No Giants to relocate Mutants onto in direction: " + d + ", using global farthest Mutant, or Giant if one exists." );
+                                relocateToID = globalFarthestMutant.ID;
+                                if( globalFarthestGiant != null )
                                 {
-                                    //Console.WriteLine( "No Giants to relocate Mutants onto, using farthest Mutant." );
-                                    relocateTo = globalFarthestMutant;
+                                    //Console.WriteLine( "Using farthest Giant." );
+                                    relocateToID = globalFarthestGiant.ID;
                                 }
                             }
                         }
                         else
                         {
-                            relocateTo = mutantsInDirection.First();
+                            relocateToID = mutantsInDirection.First().ID;
                         }
 
-                        relocateMutants( mutantsInDirection, relocateTo );
+                        relocateMutants( mutantsInDirection, relocateToID );
                     }
                 }
             }
@@ -645,7 +693,7 @@ namespace TABSAT
                 {
                     movingMutants.AddRange( m );
                 }
-                relocateMutants( movingMutants, farthest );
+                relocateMutants( movingMutants, farthest.ID );
             }
 
         }
@@ -655,7 +703,7 @@ namespace TABSAT
             entities.resizeVODs( vodType );
         }
 
-        internal void stackVODbuildings( LevelEntities.VODTypes size, decimal scale )
+        internal void stackVODbuildings( LevelEntities.VODTypes vodType, decimal scale )
         {
             // Could use some add/remove entity delegates, to refactor this and zombie type scaling? Except zombie type collections can be RemoveNodes()'d per type, while level entities are all mixed in 1 collection.
 
@@ -664,7 +712,7 @@ namespace TABSAT
                 return;     // Nothing needs be done
             }
 
-            entities.scaleVODs( size, scale, this );
+            entities.scaleVODs( vodType, scale, this );
         }
 
         internal void removeFog( uint radius = 0 )
@@ -705,8 +753,6 @@ namespace TABSAT
                 }
             }
 
-            int commandCenterX = (int) CCX();
-            int commandCenterY = (int) CCY();
             // Fill outside the circle with 00 00 00 FF, aka step 4 bytes at a time. Centered on CC
             int beforeCCx = commandCenterX - radius;
             int beforeCCy = commandCenterY - radius;

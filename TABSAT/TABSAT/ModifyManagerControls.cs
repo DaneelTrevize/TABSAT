@@ -198,7 +198,7 @@ namespace TABSAT
         {
             if( autoStop )
             {
-                modifyManager.stopReflector();
+                stopReflector();
             }
             else
             {

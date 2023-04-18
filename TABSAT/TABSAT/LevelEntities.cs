@@ -15,15 +15,8 @@ namespace TABSAT
         //private const string WAREHOUSE_TYPE = @"ZX.Entities.WareHouse, TheyAreBillions";
         //private const string OILPOOL_TYPE = @"ZX.Entities.OilSource, TheyAreBillions";
         //@"ZX.Entities.Raven, TheyAreBillions"  @"12735209386004068058"
-        //@"ZX.Entities.PickableEnergy, TheyAreBillions"  @"5768965425817495539"
-        //@"ZX.Entities.PickableFood, TheyAreBillions"  @"3195137037877540492"
         //@"ZX.Entities.CommandCenter, TheyAreBillions"  @"3153977018683405164"
         //@"ZX.Entities.ExplosiveBarrel, TheyAreBillions"  @"4963903858315893432"
-        //@"ZX.Entities.PickableGold, TheyAreBillions"  @"18025200598184898750"
-        //@"ZX.Entities.PickableWood, TheyAreBillions"  @"526554950743885365"
-        //@"ZX.Entities.PickableStone, TheyAreBillions"  @"3280721770111095074"
-        //@"ZX.Entities.PickableIron, TheyAreBillions"  @"13398426522155325346"
-        //@"ZX.Entities.PickableOil, TheyAreBillions"  @"6915758403222462548"
 
         //@"ZX.Entities.MapSign, TheyAreBillions"  @"8008600744737996051"               SignWoodSmallA
         //@"ZX.Entities.GenericInteractive, TheyAreBillions"  @"3895270953278513917"    Console
@@ -165,6 +158,17 @@ namespace TABSAT
             DoomBuildingLarge = 3441286325348372349
         }
         internal static readonly Dictionary<VODTypes, string> vodSizesNames;
+
+        internal enum PickableTypes : UInt64
+        {
+            PickableEnergy = 5768965425817495539,
+            PickableFood = 3195137037877540492,
+            PickableGold = 18025200598184898750,
+            PickableWood = 526554950743885365,
+            PickableStone = 3280721770111095074,
+            PickableIron = 13398426522155325346,
+            PickableOil = 6915758403222462548
+        }
 
         static LevelEntities()
         {
@@ -336,7 +340,7 @@ namespace TABSAT
             trackEntity( copy );
         }
 
-        private void Remove( UInt64 id )
+        private void Remove( in UInt64 id )
         {
             if( IDsToItems.TryGetValue( id, out XElement entity ) )
             {
@@ -354,6 +358,17 @@ namespace TABSAT
                 IDsToItems.Remove( id );
 
                 entity.Remove();
+
+                // What about entities assigned to group shortcuts? We don't try to remove such friendly entities.
+                /*
+                  <SingleArray name="RefEntitySelectionGroups" elementType="System.Collections.Generic.List`1[[DXVision.DXEntityRef, DXVision]], mscorlib">
+                    <Items>
+                      <Collection elementType="DXVision.DXEntityRef, DXVision">
+                        <Items>
+                          <Complex>
+                            <Properties>
+                              <Simple name="IDEntity" value="..." />
+                */
             }
             else
             {
@@ -361,42 +376,26 @@ namespace TABSAT
             }
         }
 
-        internal IEnumerable<XElement> getEntitiesOfTypes( params UInt64[] entityTypes )
+        internal IEnumerable<XElement> getEntitiesOfType( in UInt64 entityType )
         {
             LinkedList<XElement> subset = new LinkedList<XElement>();
-            foreach( var entityType in entityTypes )
+            if( itemTypesToIDs.TryGetValue( entityType, out SortedSet<UInt64> typeIDs ) )
             {
-                if( itemTypesToIDs.TryGetValue( entityType, out SortedSet<UInt64> typeIDs ) )
+                foreach( var id in typeIDs )
                 {
-                    foreach( var id in typeIDs )
-                    {
-                        subset.AddLast( IDsToItems[id] );
-                    }
+                    subset.AddLast( IDsToItems[id] );
                 }
             }
             return subset;
         }
 
-        internal SortedSet<UInt64> getIDs( UInt64 itemType )
+        internal SortedSet<UInt64> getIDs( in UInt64 itemType )
         {
             if( !itemTypesToIDs.TryGetValue( itemType, out SortedSet<UInt64> typeIDs ) )
             {
                 return new SortedSet<UInt64>();
             }
             return new SortedSet<UInt64>( typeIDs );
-        }
-
-        internal LinkedList<SaveReader.RelativePosition> getPositions( UInt64 itemType, MapData cc )
-        {
-            var positions = new LinkedList<SaveReader.RelativePosition>();
-            if( itemTypesToIDs.TryGetValue( itemType, out SortedSet<UInt64> typeIDs ) )
-            {
-                foreach( var id in typeIDs )
-                {
-                    positions.AddLast( new SaveReader.RelativePosition( IDsToItems[id], cc ) );
-                }
-            }
-            return positions;
         }
 
         internal SortedSet<UInt64> getAllIDs()
@@ -406,10 +405,24 @@ namespace TABSAT
             {
                 keys.Add( k );
             }
+
+            // What about infection nest smoke references..?
+            /*
+              <Complex type="ZX.Entities.DoomBuilding..., TheyAreBillions">
+                <Properties>
+                  <Collection name="Components" elementType="DXVision.DXComponent, DXVision">
+                    <Items>
+                      <Complex type="ZX.Components.CInfectionNest, TheyAreBillions">
+                        <Properties>
+                          <Complex name="InfectionSmokeRef">
+                            <Properties>
+                              <Simple name="IDEntity" value="..." />
+            */
+
             return keys;
         }
 
-        internal LinkedList<ScaledEntity> scaleEntities( UInt64 entityType, decimal scale, IDGenerator editor )
+        internal LinkedList<ScaledEntity> scaleEntities( in UInt64 entityType, in decimal scale, IDGenerator editor )
         {
             if( scale < 0.0M )
             {
@@ -440,7 +453,7 @@ namespace TABSAT
                 // selectedEntities will be those removed
 
                 // 0 >= scale < 1
-                foreach( var i in getEntitiesOfTypes( entityType ) )
+                foreach( var i in getEntitiesOfType( entityType ) )
                 {
                     if( scale == 0.0M || chance < rand.NextDouble() )
                     {
@@ -454,7 +467,7 @@ namespace TABSAT
             else
             {
 
-                foreach( var i in getEntitiesOfTypes( entityType ) )
+                foreach( var i in getEntitiesOfType( entityType ) )
                 {
                     // First the certain duplications
                     for( uint m = 1; m < multiples; m++ )
@@ -473,7 +486,7 @@ namespace TABSAT
             return selectedEntities;
         }
 
-        internal void relocateHuge( UInt64 origin, UInt64 destination )
+        internal void relocateHuge( in UInt64 origin, in UInt64 destination )
         {
             if( origin == destination )
             {
@@ -509,7 +522,7 @@ namespace TABSAT
             currentLastDestinyProcessed?.SetAttributeValue( "value", farthestPositionString );
         }
 
-        internal void swapZombieType( UInt64 id )
+        internal void swapZombieType( in UInt64 id )
         {
             if( !IDsToItems.TryGetValue( id, out XElement entity ) )
             {
@@ -557,7 +570,7 @@ namespace TABSAT
             {
                 typeString = GIANT_TYPE;
                 flags = "None";
-                typeID = (UInt64) LevelEntities.HugeTypes.Giant;
+                typeID = (UInt64) HugeTypes.Giant;
                 life = GIANT_LIFE;
                 behaviour = GIANT_BEHAVIOUR_TYPE;
                 pathCapacity = "4";
@@ -570,7 +583,7 @@ namespace TABSAT
             {
                 typeString = MUTANT_TYPE;
                 flags = "IsOneCellSize";
-                typeID = (UInt64) LevelEntities.HugeTypes.Mutant;
+                typeID = (UInt64) HugeTypes.Mutant;
                 life = MUTANT_LIFE;
                 behaviour = MUTANT_BEHAVIOUR_TYPE;
                 pathCapacity = "0";
@@ -601,12 +614,12 @@ namespace TABSAT
             SaveReader.getFirstSimplePropertyNamed( complex, "Size" ).Attribute( "value" ).SetValue( size );
         }
 
-        internal void resizeVODs( VODTypes vodTemplate )
+        internal void resizeVODs( in VODTypes targetVodType )
         {
             string newType;
             string newLife;
             string newSize;
-            switch( vodTemplate )
+            switch( targetVodType )
             {
                 default:
                 case VODTypes.DoomBuildingSmall:
@@ -642,24 +655,34 @@ namespace TABSAT
                                 <Properties>
                                   <Simple name="HiddingUnits" value="False" />
                                   <Simple name="CheckHiddingUnits" value="False" />
+                              <Complex type="ZX.Components.CInfectionNest, TheyAreBillions">
+                                <Properties>
+                                  <Simple name="NUnitsGenerated" value="0" />
              */
-
-            IEnumerable<XElement> vodItems = getEntitiesOfTypes( Enum.GetValues( typeof(VODTypes) ).Cast<UInt64>().ToArray() );
-            //Console.WriteLine( "vodItems: " + vodItems.Count() );
-
-            foreach( XElement v in vodItems.ToList() )  // no ToList() leads to only removing 1 <item> per save modify cycle?!
+            foreach( VODTypes vodType in Enum.GetValues( typeof( VODTypes ) ) )
             {
-                XElement complex = v.Element( "Complex" );
-                complex.SetAttributeValue( "type", newType );
-                SaveReader.getFirstSimplePropertyNamed( complex, "IDTemplate" ).SetAttributeValue( "value", (UInt64) vodTemplate );
-                SaveReader.getFirstSimplePropertyNamed( getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ), "Life" ).SetAttributeValue( "value", newLife );
-                SaveReader.getFirstSimplePropertyNamed( complex, "Size" ).SetAttributeValue( "value", newSize );
+                IEnumerable<XElement> vodItems = getEntitiesOfType( (UInt64) vodType );
+                //Console.WriteLine( "vodItems: " + vodItems.Count() );
+
+                if( vodType == targetVodType )
+                {
+                    continue;   // No need to modify these entities
+                }
+
+                foreach( XElement v in vodItems.ToList() )  // no ToList() leads to only removing 1 <item> per save modify cycle?!
+                {
+                    XElement complex = v.Element( "Complex" );
+                    complex.SetAttributeValue( "type", newType );
+                    SaveReader.getFirstSimplePropertyNamed( complex, "IDTemplate" ).SetAttributeValue( "value", (UInt64) targetVodType );
+                    SaveReader.getFirstSimplePropertyNamed( getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ), "Life" ).SetAttributeValue( "value", newLife );
+                    SaveReader.getFirstSimplePropertyNamed( complex, "Size" ).SetAttributeValue( "value", newSize );
+                }
             }
         }
 
-        internal void scaleVODs( VODTypes vodTemplate, decimal scale, IDGenerator editor )
+        internal void scaleVODs( in VODTypes vodType, in decimal scale, IDGenerator editor )
         {
-            scaleEntities( (UInt64) vodTemplate, scale, editor );
+            scaleEntities( (UInt64) vodType, scale, editor );
         }
     }
 }
