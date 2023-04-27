@@ -101,6 +101,7 @@
             this.swarmsHardCheckBox = new System.Windows.Forms.CheckBox();
             this.swarmsEasyCheckBox = new System.Windows.Forms.CheckBox();
             this.generalGroupBox = new System.Windows.Forms.GroupBox();
+            this.removeReclaimablesCheckBox = new System.Windows.Forms.CheckBox();
             this.disableMayorsCheckBox = new System.Windows.Forms.CheckBox();
             this.themeComboBox = new System.Windows.Forms.ComboBox();
             this.themeCheckBox = new System.Windows.Forms.CheckBox();
@@ -1174,15 +1175,26 @@
             // 
             // generalGroupBox
             // 
+            this.generalGroupBox.Controls.Add(this.removeReclaimablesCheckBox);
             this.generalGroupBox.Controls.Add(this.disableMayorsCheckBox);
             this.generalGroupBox.Controls.Add(this.themeComboBox);
             this.generalGroupBox.Controls.Add(this.themeCheckBox);
             this.generalGroupBox.Location = new System.Drawing.Point(229, 411);
             this.generalGroupBox.Name = "generalGroupBox";
-            this.generalGroupBox.Size = new System.Drawing.Size(220, 65);
+            this.generalGroupBox.Size = new System.Drawing.Size(220, 90);
             this.generalGroupBox.TabIndex = 7;
             this.generalGroupBox.TabStop = false;
             this.generalGroupBox.Text = "General Rules";
+            // 
+            // removeReclaimablesCheckBox
+            // 
+            this.removeReclaimablesCheckBox.AutoSize = true;
+            this.removeReclaimablesCheckBox.Location = new System.Drawing.Point(6, 65);
+            this.removeReclaimablesCheckBox.Name = "removeReclaimablesCheckBox";
+            this.removeReclaimablesCheckBox.Size = new System.Drawing.Size(210, 17);
+            this.removeReclaimablesCheckBox.TabIndex = 3;
+            this.removeReclaimablesCheckBox.Text = "Remove neutral buildings and loot piles";
+            this.removeReclaimablesCheckBox.UseVisualStyleBackColor = true;
             // 
             // disableMayorsCheckBox
             // 
@@ -1339,5 +1351,6 @@
         private System.Windows.Forms.Label zombiesScalingHorizontalDividerLabel;
         private System.Windows.Forms.ComboBox swarmHardComboBox;
         private System.Windows.Forms.ComboBox swarmEasyComboBox;
+        private System.Windows.Forms.CheckBox removeReclaimablesCheckBox;
     }
 }

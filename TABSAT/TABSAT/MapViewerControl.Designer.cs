@@ -53,6 +53,7 @@
             this.hugeCheckBox = new System.Windows.Forms.CheckBox();
             this.pickablesCheckBox = new System.Windows.Forms.CheckBox();
             this.removablesGroupBox = new System.Windows.Forms.GroupBox();
+            this.joinableCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).BeginInit();
             this.mapPanel.SuspendLayout();
@@ -68,12 +69,12 @@
             this.zoomTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.zoomTrackBar.LargeChange = 2;
-            this.zoomTrackBar.Location = new System.Drawing.Point(1045, 712);
+            this.zoomTrackBar.Location = new System.Drawing.Point(1045, 732);
             this.zoomTrackBar.Maximum = 8;
             this.zoomTrackBar.Minimum = 1;
             this.zoomTrackBar.Name = "zoomTrackBar";
             this.zoomTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.zoomTrackBar.Size = new System.Drawing.Size(45, 327);
+            this.zoomTrackBar.Size = new System.Drawing.Size(45, 307);
             this.zoomTrackBar.TabIndex = 1;
             this.zoomTrackBar.Value = 2;
             // 
@@ -298,7 +299,7 @@
             this.optionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsGroupBox.Controls.Add(this.rotateCheckBox);
             this.optionsGroupBox.Controls.Add(this.gridCheckBox);
-            this.optionsGroupBox.Location = new System.Drawing.Point(1045, 641);
+            this.optionsGroupBox.Location = new System.Drawing.Point(1045, 661);
             this.optionsGroupBox.Name = "optionsGroupBox";
             this.optionsGroupBox.Size = new System.Drawing.Size(89, 65);
             this.optionsGroupBox.TabIndex = 5;
@@ -344,15 +345,28 @@
             // removablesGroupBox
             // 
             this.removablesGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.removablesGroupBox.Controls.Add(this.joinableCheckBox);
             this.removablesGroupBox.Controls.Add(this.vodsCheckBox);
             this.removablesGroupBox.Controls.Add(this.pickablesCheckBox);
             this.removablesGroupBox.Controls.Add(this.hugeCheckBox);
             this.removablesGroupBox.Location = new System.Drawing.Point(1045, 530);
             this.removablesGroupBox.Name = "removablesGroupBox";
-            this.removablesGroupBox.Size = new System.Drawing.Size(89, 105);
+            this.removablesGroupBox.Size = new System.Drawing.Size(89, 125);
             this.removablesGroupBox.TabIndex = 9;
             this.removablesGroupBox.TabStop = false;
             this.removablesGroupBox.Text = "Show Removables";
+            // 
+            // joinableCheckBox
+            // 
+            this.joinableCheckBox.AutoSize = true;
+            this.joinableCheckBox.Checked = true;
+            this.joinableCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.joinableCheckBox.Location = new System.Drawing.Point(6, 102);
+            this.joinableCheckBox.Name = "joinableCheckBox";
+            this.joinableCheckBox.Size = new System.Drawing.Size(65, 17);
+            this.joinableCheckBox.TabIndex = 9;
+            this.joinableCheckBox.Text = "Neutrals";
+            this.joinableCheckBox.UseVisualStyleBackColor = true;
             // 
             // MapViewerControl
             // 
@@ -409,5 +423,6 @@
         private System.Windows.Forms.CheckBox hugeCheckBox;
         private System.Windows.Forms.CheckBox pickablesCheckBox;
         private System.Windows.Forms.GroupBox removablesGroupBox;
+        private System.Windows.Forms.CheckBox joinableCheckBox;
     }
 }

@@ -72,10 +72,11 @@ namespace TABSAT
                 swarmsEasyCheckBox,
                 swarmsHardCheckBox
             };
-            generalCheckBoxes = new List<CheckBox>( 2 )
+            generalCheckBoxes = new List<CheckBox>( 3 )
             {
                 themeCheckBox,
-                disableMayorsCheckBox
+                disableMayorsCheckBox,
+                removeReclaimablesCheckBox
             };
 
             vodReplaceComboBox.DataSource = new BindingSource( LevelEntities.vodSizesNames, null );
@@ -467,7 +468,8 @@ namespace TABSAT
                 hard,
                 themeCheckBox.Checked,
                 theme,
-                disableMayorsCheckBox.Checked
+                disableMayorsCheckBox.Checked,
+                removeReclaimablesCheckBox.Checked
             );
         }
 

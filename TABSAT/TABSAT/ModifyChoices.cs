@@ -54,6 +54,7 @@ namespace TABSAT
         internal readonly bool ChangeTheme;
         internal readonly SaveReader.ThemeType Theme;
         internal readonly bool DisableMayors;
+        internal readonly bool RemoveReclaimables;
 
         internal ModifyChoices(
             in decimal pS,
@@ -85,7 +86,8 @@ namespace TABSAT
             in SaveReader.SwarmDirections hS,
             in bool cT,
             in SaveReader.ThemeType t,
-            in bool dM
+            in bool dM,
+            in bool rR
             )
         {
             PopulationScale = pS;
@@ -118,6 +120,7 @@ namespace TABSAT
             ChangeTheme = cT;
             Theme = t;
             DisableMayors = dM;
+            RemoveReclaimables = rR;
         }
     }
 }

@@ -60,7 +60,7 @@
             this.extractedSaveChooseButton.Name = "extractedSaveChooseButton";
             this.extractedSaveChooseButton.Size = new System.Drawing.Size(153, 30);
             this.extractedSaveChooseButton.TabIndex = 2;
-            this.extractedSaveChooseButton.Text = "Choose an Extracted Save...";
+            this.extractedSaveChooseButton.Text = "Choose Extracted Save...";
             this.extractedSaveChooseButton.UseVisualStyleBackColor = true;
             this.extractedSaveChooseButton.Click += new System.EventHandler(this.extractedSaveChooseButton_Click);
             // 
@@ -80,7 +80,7 @@
             this.saveSelectorGroupBox.Size = new System.Drawing.Size(544, 52);
             this.saveSelectorGroupBox.TabIndex = 3;
             this.saveSelectorGroupBox.TabStop = false;
-            this.saveSelectorGroupBox.Text = "Extracted Save";
+            this.saveSelectorGroupBox.Text = "Extracted Save Folder";
             // 
             // viewMapButton
             // 

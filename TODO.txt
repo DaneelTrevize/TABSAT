@@ -73,8 +73,6 @@ Make games harder:
 
 Remove Mutants and/or Giant minimap icons?
 
-Remove all Pickable resources & reclaimable buildings (and Fortress walls)? To remove potential early Radar vision or resources chiefly accessed via kiting?
-
 Possibly add a script element (that constantly loops?) to spawns a new zombie per troop loss, with specific loss type to zombie spawned pairing. E.g. Harpy for each ranger, Spitter for each Sniper, Mutant for each Thanatos?
 Might have to have a pseudo daily/8-hourly/faster wave, that spawns unit types & numbers depending on a diff between previous and current troop counts? So quickly replaced units might not trigger snowballing?
 
@@ -109,8 +107,12 @@ Clear straight/spiral paths from the CC to the edges in cardinal directions?
 
 Mostly for Caustic generator: Try to detect if entire ~halves (N/S/E/W) are unpopulated (& unpathable). If so, mirror the terrain w.r.t the CC, and 50/50 relocate, or 100% duplicate, zombies and VODs/oil, etc.
 
+Remove Fortress walls?
+
 --
 Make games easier:
+
+Remove active (non-fast-serialized) zombies. Would remove current waves, infections, kited blobs.
 
 Remove Fog over zombies, either all or only certain type(s)? And/or over VOD buildings?
 Remove Fog in a random pattern, would result in a spray effect? Or a non-uniform version based on CC distance?

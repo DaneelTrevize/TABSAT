@@ -21,6 +21,7 @@ namespace TABSAT
         private static readonly Brush mutantBrush = new SolidBrush( Color.FromArgb( 0xFF, 0xBF, 0x00, 0xFF ) );
         private static readonly Brush giantBrush = new SolidBrush( Color.FromArgb( 0xFF, 0x3F, 0xBF, 0x9F ) );
         private static readonly Brush pickableBrush = new SolidBrush( Color.FromArgb( 0xBF, 0x00, 0xFF, 0x00 ) );
+        private static readonly Brush joinableBrush = new SolidBrush( Color.FromArgb( 0xBF, 0x00, 0xFF, 0x7F ) );
         private static readonly Pen redPen = new Pen( Color.FromArgb( 0x7F, 0xFF, 0x00, 0x00 ) );
         private readonly SortedDictionary<ViewLayer, SortedDictionary<int, Image>> layerCache;
         private readonly SortedDictionary<MapNavigation.Direction, Image> arrows;
@@ -122,6 +123,7 @@ namespace TABSAT
             vodsCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             hugeCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             pickablesCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
+            joinableCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
 
             gridCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
             rotateCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
@@ -242,6 +244,11 @@ namespace TABSAT
                 if( pickablesCheckBox.Checked )
                 {
                     drawPickables( mapGraphics, mapSize );
+                }
+
+                if( joinableCheckBox.Checked )
+                {
+                    drawJoinables( mapGraphics, mapSize );
                 }
 
                 if( gridCheckBox.Checked )
@@ -553,6 +560,28 @@ namespace TABSAT
                     {
                         default:
                             mapGraphics.FillRectangle( pickableBrush, p.x * cellSize, p.y * cellSize, cellSize, cellSize );
+                            break;
+                    }
+                }
+            }
+        }
+
+        private void drawJoinables( Graphics mapGraphics, int mapSize )
+        {
+            int cells = mapData.CellsCount();
+            int cellSize = mapSize / cells;
+            foreach( var joinableType in LevelEntities.joinableTypes )
+            {
+                var positions = mapData.getJoinablePositions( (LevelEntities.GiftableTypes) joinableType );
+                foreach( var p in positions )
+                {
+                    switch( joinableType )
+                    {
+                        case (UInt64) LevelEntities.GiftableTypes.RadarTower:
+                            mapGraphics.FillRectangle( joinableBrush, p.x * cellSize, p.y * cellSize, cellSize, cellSize );
+                            break;
+                        default:
+                            mapGraphics.FillRectangle( joinableBrush, (p.x - 1) * cellSize, (p.y - 1) * cellSize, cellSize * 2, cellSize * 2 );
                             break;
                     }
                 }

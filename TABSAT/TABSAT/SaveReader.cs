@@ -20,6 +20,7 @@ namespace TABSAT
         LinkedList<MapNavigation.Position> getVodPositions( LevelEntities.VODTypes vodType );
         LinkedList<MapNavigation.Position> getHugePositions( LevelEntities.HugeTypes vodType );
         LinkedList<MapNavigation.Position> getPickablePositions( LevelEntities.PickableTypes pickableType );
+        LinkedList<MapNavigation.Position> getJoinablePositions( LevelEntities.GiftableTypes joinableType );
     }
 
     class SaveReader : MapData
@@ -197,6 +198,7 @@ namespace TABSAT
         private SortedDictionary<LevelEntities.VODTypes, LinkedList<MapNavigation.Position>> vodPositions;
         private SortedDictionary<LevelEntities.HugeTypes, LinkedList<MapNavigation.Position>> hugePositions;
         private SortedDictionary<LevelEntities.PickableTypes, LinkedList<MapNavigation.Position>> pickablePositions;
+        private SortedDictionary<LevelEntities.GiftableTypes, LinkedList<MapNavigation.Position>> joinablePositions;
 
         internal static XElement getFirstPropertyOfTypeNamed( XElement c, string type, string name )    // 5 Collections, 3 Dictionaries
         {
@@ -208,6 +210,16 @@ namespace TABSAT
         internal static XElement getFirstSimplePropertyNamed( XElement c, string name )
         {
             return getFirstPropertyOfTypeNamed( c, "Simple", name );
+        }
+
+        internal static XAttribute getValueAttOfSimpleProp( XElement c, string name )
+        {
+            /*
+            <ComplexElement>
+              <Properties>
+                <Simple name=name value="..." />
+             */
+            return getFirstPropertyOfTypeNamed( c, "Simple", name ).Attribute( "value" );
         }
 
         internal static XElement getFirstComplexPropertyNamed( XElement c, string name )
@@ -232,8 +244,7 @@ namespace TABSAT
                 // rather than an element from an Items collection of Complex elements each with a propertyName Simple Property.
                 complex = item.Element( "Complex" );
             }
-            var position = getFirstSimplePropertyNamed( complex, positionPropertyName );
-            string xy = (string) position.Attribute( "value" );
+            string xy = (string) getValueAttOfSimpleProp( complex, positionPropertyName );
             string[] xySplit = xy.Split( ';' );
             var float_x = float.Parse( xySplit[0] );
             var float_y = float.Parse( xySplit[1] );
@@ -260,7 +271,7 @@ namespace TABSAT
             //        <Complex name = "CurrentGeneratedLevel" >
             //          <Properties>
             //            <Simple name="NCells" value="256" />
-            XAttribute nCells = getFirstSimplePropertyNamed( getGeneratedLevel(), "NCells" ).Attribute( "value" );
+            XAttribute nCells = getValueAttOfSimpleProp( getGeneratedLevel(), "NCells" );
             if( !Int32.TryParse( nCells.Value, out cellsCount ) )
             {
                 Console.Error.WriteLine( "Unable to find the number of cells in the map." );
@@ -296,7 +307,7 @@ namespace TABSAT
 
         public ThemeType Theme()
         {
-            XAttribute levelThemeType = getFirstSimplePropertyNamed( getMapDrawer(), "ThemeType" ).Attribute( "value" );
+            XAttribute levelThemeType = getValueAttOfSimpleProp( getMapDrawer(), "ThemeType" );
             ThemeType theme = (ThemeType) Enum.Parse( typeof(ThemeType), levelThemeType.Value );
             return theme;
         }
@@ -405,13 +416,13 @@ namespace TABSAT
                         values = trimData( getLayer( "LayerBelts" ), layer );
                         break;
                     case MapLayers.Fog:
-                        XElement layerFogSimple = getFirstSimplePropertyNamed( levelComplex, "LayerFog" );
-                        values = trimData( Convert.FromBase64String( (string) layerFogSimple.Attribute( "value" ) ), layer );
+                        XAttribute layerFogSimpleValue = getValueAttOfSimpleProp( levelComplex, "LayerFog" );
+                        values = trimData( Convert.FromBase64String( (string) layerFogSimpleValue ), layer );
                         break;
                     case MapLayers.Activity:
                         res = 64;
-                        XElement layerActivitySimple = getFirstSimplePropertyNamed( levelComplex, "LayerActivity" );
-                        Match match = layerDataRegex.Match( (string) layerActivitySimple.Attribute( "value" ) );
+                        XAttribute layerActivitySimpleValue = getValueAttOfSimpleProp( levelComplex, "LayerActivity" );
+                        Match match = layerDataRegex.Match( (string) layerActivitySimpleValue );
                         if( match.Success )
                         {
                             values = trimData( Convert.FromBase64String( match.Groups["data"].Value ), layer );
@@ -442,8 +453,7 @@ namespace TABSAT
         {
             byte[] fullData;
 
-            XElement layerSimple = getFirstSimplePropertyNamed( getFirstComplexPropertyNamed( getMapDrawer(), layerName ), "Cells" );
-            string encoded_value = (string) layerSimple.Attribute( "value" );
+            string encoded_value = (string) getValueAttOfSimpleProp( getFirstComplexPropertyNamed( getMapDrawer(), layerName ), "Cells" );
             Match match = layerDataRegex.Match( encoded_value );
             if( match.Success )
             {
@@ -526,7 +536,7 @@ namespace TABSAT
 
             var impassibleTypes = new[] { LevelEntities.OilSourceType, LevelEntities.FortressBarLeftType, LevelEntities.FortressBarRightType, LevelEntities.TruckAType };
             var impassibles = from c in getExtraEntities().Elements( "Complex" )
-                              where impassibleTypes.Contains( (UInt64) getFirstSimplePropertyNamed( c, "IDTemplate" ).Attribute( "value" ) )
+                              where impassibleTypes.Contains( (UInt64) getValueAttOfSimpleProp( c, "IDTemplate" ) )
                               select c;
             foreach( var c in impassibles )
             {
@@ -622,6 +632,20 @@ namespace TABSAT
                 populatePickablePositions();
             }
             if( pickablePositions.TryGetValue( pickableType, out LinkedList<MapNavigation.Position> positions ) )
+            {
+                return positions;
+            }
+            return new LinkedList<MapNavigation.Position>();
+        }
+
+        public LinkedList<MapNavigation.Position> getJoinablePositions( LevelEntities.GiftableTypes joinableType )
+        {
+            if( joinablePositions == null )
+            {
+                joinablePositions = new SortedDictionary<LevelEntities.GiftableTypes, LinkedList<MapNavigation.Position>>();
+                populateJoinablePositions();
+            }
+            if( joinablePositions.TryGetValue( joinableType, out LinkedList<MapNavigation.Position> positions ) )
             {
                 return positions;
             }
@@ -779,5 +803,22 @@ namespace TABSAT
             }
         }
 
+        private void populateJoinablePositions()
+        {
+            // Can't use a generic version for all entity item types because it needs to be filtered by Team value.
+
+            foreach( var joinableType in LevelEntities.joinableTypes )
+            {
+                var positions = new LinkedList<MapNavigation.Position>();
+                IEnumerable<XElement> joinableItems = entities.getNeutralJoinablesOfType( joinableType );
+                foreach( var joinable in joinableItems )
+                {
+                    extractCoordinates( joinable, out int x, out int y );
+                    positions.AddLast( new MapNavigation.Position( x, y ) );
+                }
+                joinablePositions.Add( (LevelEntities.GiftableTypes) joinableType, positions );
+            }
+        }
+        
     }
 }

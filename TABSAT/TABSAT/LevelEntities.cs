@@ -159,6 +159,8 @@ namespace TABSAT
         }
         internal static readonly Dictionary<VODTypes, string> vodSizesNames;
 
+        internal static readonly SortedSet<UInt64> joinableTypes;
+
         internal enum PickableTypes : UInt64
         {
             PickableEnergy = 5768965425817495539,
@@ -240,6 +242,13 @@ namespace TABSAT
                 { VODTypes.DoomBuildingMedium, "Taverns" },
                 { VODTypes.DoomBuildingLarge, "City Halls" }
             };
+
+            joinableTypes = new SortedSet<UInt64>
+            {
+                { (UInt64) GiftableTypes.RadarTower },
+                { (UInt64) GiftableTypes.Executor },
+                { (UInt64) GiftableTypes.ShockingTower }
+            };
         }
 
         internal readonly struct ScaledEntity
@@ -256,6 +265,7 @@ namespace TABSAT
         private readonly XElement levelEntitiesItems;
         private readonly SortedDictionary<UInt64, XElement> IDsToItems;
         private readonly SortedDictionary<UInt64, SortedSet<UInt64>> itemTypesToIDs;
+        private readonly SortedDictionary<UInt64, SortedSet<UInt64>> joinableTypesToIDs;
 
         private static XElement getComponents( XElement complex )
         {
@@ -278,7 +288,7 @@ namespace TABSAT
 
         private static XAttribute getPosition( XElement entity )
         {
-            return SaveReader.getFirstSimplePropertyNamed( entity.Element( "Complex" ), "Position" ).Attribute( "value" );
+            return SaveReader.getValueAttOfSimpleProp( entity.Element( "Complex" ), "Position" );
         }
 
         private static XElement getComplexItemOfType( XElement components, string type, bool assumeExists = true )
@@ -291,7 +301,7 @@ namespace TABSAT
 
         private static UInt64 getItemType( XElement entity )
         {
-            return (UInt64) SaveReader.getFirstSimplePropertyNamed( entity.Element( "Complex" ), "IDTemplate" ).Attribute( "value" );
+            return (UInt64) SaveReader.getValueAttOfSimpleProp( entity.Element( "Complex" ), "IDTemplate" );
         }
 
 
@@ -301,6 +311,11 @@ namespace TABSAT
 
             IDsToItems = new SortedDictionary<UInt64, XElement>();
             itemTypesToIDs = new SortedDictionary<UInt64, SortedSet<UInt64>>();
+            joinableTypesToIDs = new SortedDictionary<UInt64, SortedSet<UInt64>>();
+            foreach( var joinable in joinableTypes )
+            {
+                joinableTypesToIDs.Add( joinable, new SortedSet<UInt64>() );
+            }
 
             //Console.Write( "Starting parsing level entities..." );
             // Lazy parse these later, on first use?
@@ -326,12 +341,22 @@ namespace TABSAT
 
             var itemType = getItemType( i );
 
-            if( !itemTypesToIDs.TryGetValue( itemType, out SortedSet<ulong> typeIDs ) )
+            if( !itemTypesToIDs.TryGetValue( itemType, out SortedSet<UInt64> typeIDs ) )
             {
                 typeIDs = new SortedSet<UInt64>();
                 itemTypesToIDs.Add( itemType, typeIDs );
             }
             typeIDs.Add( id );
+
+            // Is it a map-spawned building that can be reclaimed?
+            if( joinableTypesToIDs.TryGetValue( itemType, out SortedSet<UInt64> joinableIDs ) )
+            {
+                var team = (string) SaveReader.getValueAttOfSimpleProp( i.Element( "Complex" ), "Team" );
+                if( "NeutralJoinable".Equals( team ) )
+                {
+                    joinableIDs.Add( id );
+                }
+            }
         }
 
         private void Add( XElement copy )
@@ -389,6 +414,19 @@ namespace TABSAT
             return subset;
         }
 
+        internal IEnumerable<XElement> getNeutralJoinablesOfType( in UInt64 entityType )
+        {
+            LinkedList<XElement> subset = new LinkedList<XElement>();
+            if( joinableTypesToIDs.TryGetValue( entityType, out SortedSet<UInt64> joinableIDs ) )
+            {
+                foreach( var id in joinableIDs )
+                {
+                    subset.AddLast( IDsToItems[id] );
+                }
+            }
+            return subset;
+        }
+
         internal SortedSet<UInt64> getIDs( in UInt64 itemType )
         {
             if( !itemTypesToIDs.TryGetValue( itemType, out SortedSet<UInt64> typeIDs ) )
@@ -434,7 +472,7 @@ namespace TABSAT
                 XElement iCopy = new XElement( i );     // Duplicate at the same position
                 var newID = editor.newID();
                 iCopy.Element( "Simple" ).SetAttributeValue( "value", newID );
-                SaveReader.getFirstSimplePropertyNamed( iCopy.Element( "Complex" ), "ID" ).SetAttributeValue( "value", newID );
+                SaveReader.getValueAttOfSimpleProp( iCopy.Element( "Complex" ), "ID" ).SetValue( newID );
 
                 Add( iCopy );
                 dupedEntities.AddLast( new ScaledEntity( (UInt64) i.Element( "Simple" ).Attribute( "value" ), newID ) );
@@ -516,7 +554,7 @@ namespace TABSAT
             string farthestPositionString = (string) getPosition( destinationEntity );
 
             getPosition( originEntity ).SetValue( farthestPositionString );
-            SaveReader.getFirstSimplePropertyNamed( originEntity.Element( "Complex" ), "LastPosition" ).SetAttributeValue( "value", farthestPositionString );
+            SaveReader.getValueAttOfSimpleProp( originEntity.Element( "Complex" ), "LastPosition" ).SetValue( farthestPositionString );
             currentBehaviourTargetPosition?.SetAttributeValue( "value", farthestPositionString );
             currentMovableTargetPosition?.SetAttributeValue( "value", farthestPositionString );
             currentLastDestinyProcessed?.SetAttributeValue( "value", farthestPositionString );
@@ -606,12 +644,12 @@ namespace TABSAT
             }
 
             complex.Attribute( "type" ).SetValue( typeString );
-            SaveReader.getFirstSimplePropertyNamed( complex, "Flags" ).Attribute( "value" ).SetValue( flags );
-            SaveReader.getFirstSimplePropertyNamed( complex, "IDTemplate" ).Attribute( "value" ).SetValue( typeID );
-            SaveReader.getFirstSimplePropertyNamed( cLife, "Life" ).Attribute( "value" ).SetValue( life );
+            SaveReader.getValueAttOfSimpleProp( complex, "Flags" ).SetValue( flags );
+            SaveReader.getValueAttOfSimpleProp( complex, "IDTemplate" ).SetValue( typeID );
+            SaveReader.getValueAttOfSimpleProp( cLife, "Life" ).SetValue( life );
             getBehaviour( entity ).Attribute( "type" ).SetValue( behaviour );
-            SaveReader.getFirstSimplePropertyNamed( path, "Capacity" ).Attribute( "value" ).SetValue( pathCapacity );
-            SaveReader.getFirstSimplePropertyNamed( complex, "Size" ).Attribute( "value" ).SetValue( size );
+            SaveReader.getValueAttOfSimpleProp( path, "Capacity" ).SetValue( pathCapacity );
+            SaveReader.getValueAttOfSimpleProp( complex, "Size" ).SetValue( size );
         }
 
         internal void resizeVODs( in VODTypes targetVodType )
@@ -673,9 +711,9 @@ namespace TABSAT
                 {
                     XElement complex = v.Element( "Complex" );
                     complex.SetAttributeValue( "type", newType );
-                    SaveReader.getFirstSimplePropertyNamed( complex, "IDTemplate" ).SetAttributeValue( "value", (UInt64) targetVodType );
-                    SaveReader.getFirstSimplePropertyNamed( getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ), "Life" ).SetAttributeValue( "value", newLife );
-                    SaveReader.getFirstSimplePropertyNamed( complex, "Size" ).SetAttributeValue( "value", newSize );
+                    SaveReader.getValueAttOfSimpleProp( complex, "IDTemplate" ).SetValue( (UInt64) targetVodType );
+                    SaveReader.getValueAttOfSimpleProp( getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ), "Life" ).SetValue( newLife );
+                    SaveReader.getValueAttOfSimpleProp( complex, "Size" ).SetValue( newSize );
                 }
             }
         }
@@ -683,6 +721,30 @@ namespace TABSAT
         internal void scaleVODs( in VODTypes vodType, in decimal scale, IDGenerator editor )
         {
             scaleEntities( (UInt64) vodType, scale, editor );
+        }
+
+        internal void removeReclaimables()
+        {
+            foreach( PickableTypes pickableType in Enum.GetValues( typeof( PickableTypes ) ) )
+            {
+                var positions = new LinkedList<MapNavigation.Position>();
+                IEnumerable<XElement> pickableItems = getEntitiesOfType( (UInt64) pickableType );
+                foreach( var pickable in pickableItems )
+                {
+                    var id = (UInt64) pickable.Element( "Simple" ).Attribute( "value" );
+                    Remove( id );
+                }
+            }
+
+            foreach( var k_v in joinableTypesToIDs )
+            {
+                var joinableIDs = k_v.Value;
+                foreach( var id in joinableIDs )
+                {
+                    Remove( id );
+                }
+                joinableIDs.Clear();    // Not currently needed as instances aren't reused after modifications
+            }
         }
     }
 }

@@ -227,7 +227,7 @@ namespace TABSAT
                 backupsTreeView.Nodes.AddRange( e.Backups );
                 backupsTreeView.EndUpdate();
 
-                backupsGroupBox.Text = "Backups: " + e.Count;
+                backupsGroupBox.Text = "Backup Save Files: " + e.Count;
                 backupsTreeView.Enabled = true;
             }
         }

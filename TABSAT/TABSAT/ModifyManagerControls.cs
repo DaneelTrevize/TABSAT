@@ -614,6 +614,11 @@ namespace TABSAT
                     statusWriter( "Disabling Mayors." );
                     dataEditor.disableMayors();
                 }
+                if( choices.RemoveReclaimables )
+                {
+                    statusWriter( "Removing neutral buildings and loot piles." );
+                    dataEditor.removeReclaimables();
+                }
 
                 dataEditor.save();
             }
