@@ -1,6 +1,6 @@
 ﻿namespace TABSAT
 {
-    partial class ModifySaveControls
+    partial class ModifyChoicesControls
     {
         /// <summary> 
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dataFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.groupsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.zombieScalingGroupBox = new System.Windows.Forms.GroupBox();
             this.zombiesScalingHorizontalDividerLabel = new System.Windows.Forms.Label();
             this.zombieScalingVerticalDividerLabel = new System.Windows.Forms.Label();
@@ -105,7 +105,7 @@
             this.disableMayorsCheckBox = new System.Windows.Forms.CheckBox();
             this.themeComboBox = new System.Windows.Forms.ComboBox();
             this.themeCheckBox = new System.Windows.Forms.CheckBox();
-            this.dataFlowLayoutPanel.SuspendLayout();
+            this.groupsFlowLayoutPanel.SuspendLayout();
             this.zombieScalingGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleMutantNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleGiantNumericUpDown)).BeginInit();
@@ -133,22 +133,22 @@
             this.generalGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
-            // dataFlowLayoutPanel
+            // groupsFlowLayoutPanel
             // 
-            this.dataFlowLayoutPanel.AutoScroll = true;
-            this.dataFlowLayoutPanel.Controls.Add(this.zombieScalingGroupBox);
-            this.dataFlowLayoutPanel.Controls.Add(this.mutantGroupBox);
-            this.dataFlowLayoutPanel.Controls.Add(this.vodGroupBox);
-            this.dataFlowLayoutPanel.Controls.Add(this.fogGroupBox);
-            this.dataFlowLayoutPanel.Controls.Add(this.ccExtraGroupBox);
-            this.dataFlowLayoutPanel.Controls.Add(this.warehousesGroupBox);
-            this.dataFlowLayoutPanel.Controls.Add(this.swarmsGroupBox);
-            this.dataFlowLayoutPanel.Controls.Add(this.generalGroupBox);
-            this.dataFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
-            this.dataFlowLayoutPanel.Name = "dataFlowLayoutPanel";
-            this.dataFlowLayoutPanel.Size = new System.Drawing.Size(570, 505);
-            this.dataFlowLayoutPanel.TabIndex = 1;
+            this.groupsFlowLayoutPanel.AutoScroll = true;
+            this.groupsFlowLayoutPanel.Controls.Add(this.zombieScalingGroupBox);
+            this.groupsFlowLayoutPanel.Controls.Add(this.mutantGroupBox);
+            this.groupsFlowLayoutPanel.Controls.Add(this.vodGroupBox);
+            this.groupsFlowLayoutPanel.Controls.Add(this.fogGroupBox);
+            this.groupsFlowLayoutPanel.Controls.Add(this.ccExtraGroupBox);
+            this.groupsFlowLayoutPanel.Controls.Add(this.warehousesGroupBox);
+            this.groupsFlowLayoutPanel.Controls.Add(this.swarmsGroupBox);
+            this.groupsFlowLayoutPanel.Controls.Add(this.generalGroupBox);
+            this.groupsFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupsFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.groupsFlowLayoutPanel.Name = "groupsFlowLayoutPanel";
+            this.groupsFlowLayoutPanel.Size = new System.Drawing.Size(570, 505);
+            this.groupsFlowLayoutPanel.TabIndex = 1;
             // 
             // zombieScalingGroupBox
             // 
@@ -1228,14 +1228,14 @@
             this.themeCheckBox.Text = "Change theme to";
             this.themeCheckBox.UseVisualStyleBackColor = true;
             // 
-            // ModifySaveControls
+            // ModifyChoicesControls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.dataFlowLayoutPanel);
-            this.Name = "ModifySaveControls";
+            this.Controls.Add(this.groupsFlowLayoutPanel);
+            this.Name = "ModifyChoicesControls";
             this.Size = new System.Drawing.Size(570, 505);
-            this.dataFlowLayoutPanel.ResumeLayout(false);
+            this.groupsFlowLayoutPanel.ResumeLayout(false);
             this.zombieScalingGroupBox.ResumeLayout(false);
             this.zombieScalingGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zombieScaleMutantNumericUpDown)).EndInit();
@@ -1275,7 +1275,7 @@
 
         #endregion
 
-        private System.Windows.Forms.FlowLayoutPanel dataFlowLayoutPanel;
+        private System.Windows.Forms.FlowLayoutPanel groupsFlowLayoutPanel;
         private System.Windows.Forms.GroupBox zombieScalingGroupBox;
         private System.Windows.Forms.NumericUpDown zombieScaleHarpyNumericUpDown;
         private System.Windows.Forms.NumericUpDown zombieScaleVenomNumericUpDown;

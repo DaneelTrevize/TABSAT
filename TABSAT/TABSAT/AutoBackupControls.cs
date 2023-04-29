@@ -250,13 +250,15 @@ namespace TABSAT
         private void disableControls()
         {
             backupFolderGroupBox.Enabled = false;
-            copySaveGroupBox.Enabled = false;
+            backupButton.Enabled = false;
+            restoreButton.Enabled = false;
         }
 
         private void enableControls()
         {
             backupFolderGroupBox.Enabled = true;
-            copySaveGroupBox.Enabled = true;
+            backupButton.Enabled = true;
+            restoreButton.Enabled = true;
         }
 
         private void CalculateBackupsChecksums_DoWork( object sender, DoWorkEventArgs e )

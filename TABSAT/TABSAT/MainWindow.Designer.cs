@@ -226,7 +226,7 @@ namespace TABSAT
             this.autoBackupTabPage.Name = "autoBackupTabPage";
             this.autoBackupTabPage.Size = new System.Drawing.Size(582, 768);
             this.autoBackupTabPage.TabIndex = 2;
-            this.autoBackupTabPage.Text = "Automatically Backup Save Files";
+            this.autoBackupTabPage.Text = "Backup Save Files";
             this.autoBackupTabPage.UseVisualStyleBackColor = true;
             // 
             // saveSelectorTabPage
@@ -235,7 +235,7 @@ namespace TABSAT
             this.saveSelectorTabPage.Name = "saveSelectorTabPage";
             this.saveSelectorTabPage.Size = new System.Drawing.Size(582, 768);
             this.saveSelectorTabPage.TabIndex = 3;
-            this.saveSelectorTabPage.Text = "Map Viewer (Beta)";
+            this.saveSelectorTabPage.Text = "Map Viewer";
             this.saveSelectorTabPage.UseVisualStyleBackColor = true;
             // 
             // statusTextBox

@@ -5,7 +5,7 @@ using static TABSAT.SaveReader;
 
 namespace TABSAT
 {
-    public partial class ModifySaveControls : UserControl
+    public partial class ModifyChoicesControls : UserControl
     {
         private bool automatedStateSetting;
         private readonly List<CheckBox> zombieScalingCheckBoxes;
@@ -27,7 +27,7 @@ namespace TABSAT
             return false;
         }
 
-        public ModifySaveControls()
+        public ModifyChoicesControls()
         {
             InitializeComponent();
 
