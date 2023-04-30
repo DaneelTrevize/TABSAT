@@ -61,11 +61,11 @@ namespace TABSAT
 
         private void viewMapButton_Click( object sender, EventArgs e )
         {
-            viewMapButton.Enabled = false;
-            viewMap( mapFolderBrowserDialog.SelectedPath );
+            //viewMapButton.Enabled = false;
+            viewMap( mapFolderBrowserDialog.SelectedPath, spoilersCheckBox.Checked );
         }
 
-        private void viewMap( string extractedSave )
+        private void viewMap( string extractedSave, in bool showSpoilers )
         {
             /*
             BeginInvoke(    // Assume all calls to this containing method are from off-UI-thread workers?
@@ -84,7 +84,7 @@ namespace TABSAT
                 statusWriter( "Unable to read extracted save file." );
                 return;
             }
-            var mapViewer = new MapViewerControl( mapData );
+            var mapViewer = new MapViewerControl( mapData, showSpoilers );
             Form f = new Form
             {
                 Text = mapData.Name() + " - MapViewer",

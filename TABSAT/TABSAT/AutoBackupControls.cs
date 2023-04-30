@@ -257,8 +257,8 @@ namespace TABSAT
         private void enableControls()
         {
             backupFolderGroupBox.Enabled = true;
-            backupButton.Enabled = true;
-            restoreButton.Enabled = true;
+            TreeNode backupNode = backupsTreeView.SelectedNode;
+            restoreButton.Enabled = backupNode != null && backupNode.Level == 1;
         }
 
         private void CalculateBackupsChecksums_DoWork( object sender, DoWorkEventArgs e )

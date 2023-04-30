@@ -17,11 +17,12 @@ namespace TABSAT
         private static readonly SortedDictionary<MapLayers, SortedDictionary<byte, Brush>> layersBrushes;
         private static readonly Brush unknown = new SolidBrush( Color.HotPink );
         private static readonly Brush arrowBrush = new SolidBrush( Color.White );
-        private static readonly Brush vodBrush = new SolidBrush( Color.FromArgb( 0xBF, 0xFF, 0x7F, 0x00 ) );
+        private static readonly Brush ccBrush = new SolidBrush( Color.FromArgb( 0xAF, 0x00, 0x3F, 0xFF ) );
+        private static readonly Brush vodBrush = new SolidBrush( Color.FromArgb( 0xAF, 0xFF, 0x7F, 0x00 ) );
         private static readonly Brush mutantBrush = new SolidBrush( Color.FromArgb( 0xFF, 0xBF, 0x00, 0xFF ) );
         private static readonly Brush giantBrush = new SolidBrush( Color.FromArgb( 0xFF, 0x3F, 0xBF, 0x9F ) );
-        private static readonly Brush pickableBrush = new SolidBrush( Color.FromArgb( 0xBF, 0x00, 0xFF, 0x00 ) );
-        private static readonly Brush joinableBrush = new SolidBrush( Color.FromArgb( 0xBF, 0x00, 0xFF, 0x7F ) );
+        private static readonly Brush pickableBrush = new SolidBrush( Color.FromArgb( 0xDF, 0x00, 0xFF, 0x0F ) );
+        private static readonly Brush joinableBrush = new SolidBrush( Color.FromArgb( 0xFF, 0xFF, 0xBF, 0x00 ) );
         private static readonly Pen redPen = new Pen( Color.FromArgb( 0x7F, 0xFF, 0x00, 0x00 ) );
         private readonly SortedDictionary<ViewLayer, SortedDictionary<int, Image>> layerCache;
         private readonly SortedDictionary<MapNavigation.Direction, Image> arrows;
@@ -56,7 +57,7 @@ namespace TABSAT
             Brush trees = new SolidBrush( Color.DarkGreen );
             Brush stone = new SolidBrush( Color.FromArgb( 0xA9, 0xA9, 0xB9, 0xA9 ) );
             Brush iron = new SolidBrush( Color.SteelBlue );
-            Brush gold = new SolidBrush( Color.Yellow );
+            Brush gold = new SolidBrush( Color.FromArgb( 0xBF, 0xFF, 0xFF, 0x00 ) );
             //Brush fortress = new SolidBrush( Color.Black );
             Brush fog = new SolidBrush( Color.FromArgb( 0xDF, 0x00, 0x00, 0x00 ) );
 
@@ -86,12 +87,12 @@ namespace TABSAT
             } );
             layersBrushes.Add( MapLayers.Navigable, new SortedDictionary<byte, Brush>
             {
-                { 0x00, new SolidBrush( Color.FromArgb( 0x7F, 0xFF, 0xFF, 0xFF ) ) },
-                { NAVIGABLE_BLOCKED, new SolidBrush( Color.FromArgb( 0xBF, 0x00, 0x00, 0x00 ) ) }
+                { 0x00, new SolidBrush( Color.FromArgb( 0x9F, 0xFF, 0xFF, 0xFF ) ) },
+                { NAVIGABLE_BLOCKED, new SolidBrush( Color.FromArgb( 0x9F, 0x00, 0x00, 0x00 ) ) }
             } );
         }
 
-        internal MapViewerControl( MapData m )
+        internal MapViewerControl( MapData m, bool showSpoilers )
         {
             InitializeComponent();
 
@@ -102,6 +103,13 @@ namespace TABSAT
                 layerCache[layer] = new SortedDictionary<int, Image>();
             }
             arrows = new SortedDictionary<MapNavigation.Direction, Image>();
+
+            if( showSpoilers )
+            {
+                fogCheckBox.Checked = false;
+                navQuadsCheckBox.Checked = false;
+                vodsCheckBox.Checked = true;
+            }
 
             zoomTrackBar.ValueChanged += new EventHandler( zoomTrackBar_ValueChanged );
             terrainCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
@@ -114,7 +122,7 @@ namespace TABSAT
             navQuadsTrackBar.ValueChanged += new EventHandler( navQuadsTrackBar_ValueChanged );
 
             zombieComboBox.DataSource = Enum.GetValues( typeof( LevelEntities.ScalableZombieGroups ) );
-            zombieComboBox.SelectedIndex = 0;
+            zombieComboBox.SelectedIndex = 5;   // Harpies
             zombieComboBox.SelectedIndexChanged += new EventHandler( zombieComboBox_SelectedIndexChanged );
 
             zombieCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
@@ -251,6 +259,10 @@ namespace TABSAT
                     drawJoinables( mapGraphics, mapSize );
                 }
 
+                // Draw CommandCenter
+                mapData.getCCPosition( out int x, out int y );
+                mapGraphics.FillRectangle( ccBrush, ( x - 2 ) * cellSize, ( y - 2 ) * cellSize, cellSize * 5, cellSize * 5 );
+
                 if( gridCheckBox.Checked )
                 {
                     // Grid
@@ -337,7 +349,7 @@ namespace TABSAT
             return map;
         }
 
-        private void drawLayer( MapLayers layer, int mapSize, Graphics mapGraphics )
+        private void drawLayer( MapLayers layer, in int mapSize, Graphics mapGraphics )
         {
             LayerData layerData = mapData.getLayerData( layer );
             int cellSize = mapSize / layerData.res;
@@ -392,9 +404,9 @@ namespace TABSAT
                 {
                     for( int y = 0; y < cells; y++ )
                     {
-                        var distance = mapData.getDistance( new MapNavigation.Position( x, y ) );
+                        var distance = mapData.getCCDistance( new MapNavigation.Position( x, y ) );
                         var brightness = distance == MapNavigation.UNNAVIGABLE ? 0 : Math.Max( 255 - ( (int) (distance * 2.5) ), 4 );
-                        Brush pathing = new SolidBrush( Color.FromArgb( 0x9F, brightness, brightness, brightness ) );
+                        Brush pathing = new SolidBrush( Color.FromArgb( 0xAF, brightness, brightness, brightness ) );
                         mapGraphics.FillRectangle( pathing, x * cellSize, y * cellSize, cellSize, cellSize );
                     }
                 }
@@ -413,7 +425,7 @@ namespace TABSAT
                 {
                     for( int y = 0; y < cells; y++ )
                     {
-                        var direction = mapData.getDirection( new MapNavigation.Position( x, y ) );
+                        var direction = mapData.getCCDirection( new MapNavigation.Position( x, y ) );
                         if( direction != null )
                         {
                             mapGraphics.DrawImage( getArrow( (MapNavigation.Direction) direction, cellSize ), x * cellSize, y * cellSize, cellSize, cellSize );
@@ -440,7 +452,7 @@ namespace TABSAT
                     {
                         var navCount = mapData.getNavigableCount( x, y, quadRes );
                         var density = navCount * 255 / maxPerQuad;
-                        Brush densityBrush = new SolidBrush( Color.FromArgb( 0x5F, density, density, density ) );
+                        Brush densityBrush = new SolidBrush( Color.FromArgb( 0x3F, density, density, density ) );
                         mapGraphics.FillRectangle( densityBrush, x * cellSize, y * cellSize, quadSize, quadSize );
                     }
                 }

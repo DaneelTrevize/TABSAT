@@ -34,6 +34,7 @@
             this.saveSelectorGroupBox = new System.Windows.Forms.GroupBox();
             this.viewMapButton = new System.Windows.Forms.Button();
             this.inspectionOptionsGroupBox = new System.Windows.Forms.GroupBox();
+            this.spoilersCheckBox = new System.Windows.Forms.CheckBox();
             this.saveSelectorGroupBox.SuspendLayout();
             this.inspectionOptionsGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -98,6 +99,7 @@
             // 
             this.inspectionOptionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.inspectionOptionsGroupBox.Controls.Add(this.spoilersCheckBox);
             this.inspectionOptionsGroupBox.Controls.Add(this.viewMapButton);
             this.inspectionOptionsGroupBox.Location = new System.Drawing.Point(3, 58);
             this.inspectionOptionsGroupBox.Name = "inspectionOptionsGroupBox";
@@ -105,6 +107,17 @@
             this.inspectionOptionsGroupBox.TabIndex = 5;
             this.inspectionOptionsGroupBox.TabStop = false;
             this.inspectionOptionsGroupBox.Text = "Save Inspection Options";
+            // 
+            // spoilersCheckBox
+            // 
+            this.spoilersCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.spoilersCheckBox.AutoSize = true;
+            this.spoilersCheckBox.Location = new System.Drawing.Point(193, 26);
+            this.spoilersCheckBox.Name = "spoilersCheckBox";
+            this.spoilersCheckBox.Size = new System.Drawing.Size(186, 17);
+            this.spoilersCheckBox.TabIndex = 5;
+            this.spoilersCheckBox.Text = "Show major map contents spoilers";
+            this.spoilersCheckBox.UseVisualStyleBackColor = true;
             // 
             // SaveSelectorControl
             // 
@@ -117,6 +130,7 @@
             this.saveSelectorGroupBox.ResumeLayout(false);
             this.saveSelectorGroupBox.PerformLayout();
             this.inspectionOptionsGroupBox.ResumeLayout(false);
+            this.inspectionOptionsGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -129,5 +143,6 @@
         private System.Windows.Forms.GroupBox saveSelectorGroupBox;
         private System.Windows.Forms.Button viewMapButton;
         private System.Windows.Forms.GroupBox inspectionOptionsGroupBox;
+        private System.Windows.Forms.CheckBox spoilersCheckBox;
     }
 }
