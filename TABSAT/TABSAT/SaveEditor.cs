@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace TABSAT
@@ -12,6 +13,8 @@ namespace TABSAT
 
     internal class MiniMapIcons
     {
+        // Refactor into SaveReader..?
+
         private const string GIANT_PROJECT_IMAGE = @"5072922660204167778";
         private const string MUTANT_PROJECT_IMAGE = @"3097669356589096184";
 
@@ -253,7 +256,7 @@ namespace TABSAT
               */
         }
 
-        internal void scalePopulation( decimal scale )
+        internal void scalePopulation( in decimal scale, in bool scaleIdle, in bool scaleActive )
         {
             if( scale < 0.0M )
             {
@@ -278,10 +281,10 @@ namespace TABSAT
                 { LevelEntities.ScalableZombieTypes.ZombieVenom, scale },
                 { LevelEntities.ScalableZombieTypes.ZombieHarpy, scale }
             };
-            scalePopulation( scalableZombieTypeFactors );
+            scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive );
         }
 
-        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors )
+        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors, in bool scaleIdle, in bool scaleActive )
         {
             SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<LevelEntities.ScalableZombieTypes, decimal>();
 
@@ -307,42 +310,46 @@ namespace TABSAT
                 }
             }
 
-            scalePopulation( scalableZombieTypeFactors );
+            scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive );
         }
 
-        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors )
+        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors, in bool scaleIdle, in bool scaleActive )
         {
             // First handle zombies from and idle since the map was generated, found in LevelFastSerializedEntities
-
-            var zombieTypes = getInactiveZombieItems();
-            foreach( var typeItem in zombieTypes )
+            if( scaleIdle )
             {
-                UInt64 zombieTypeInt = Convert.ToUInt64( typeItem.Element( "Simple" ).Attribute( "value" ).Value );
-                //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
-                if( !Enum.IsDefined( typeof( LevelEntities.ScalableZombieTypes ), zombieTypeInt ) )
+                var zombieTypes = getInactiveZombieItems();
+                foreach( var typeItem in zombieTypes )
                 {
-                    Console.Error.WriteLine( "Unexpected Serialized TypeID: " + zombieTypeInt );
-                    continue;   // Can't scale this type
-                }
+                    UInt64 zombieTypeInt = Convert.ToUInt64( typeItem.Element( "Simple" ).Attribute( "value" ).Value );
+                    //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
+                    if( !Enum.IsDefined( typeof( LevelEntities.ScalableZombieTypes ), zombieTypeInt ) )
+                    {
+                        Console.Error.WriteLine( "Unexpected Serialized TypeID: " + zombieTypeInt );
+                        continue;   // Can't scale this type
+                    }
 
-                LevelEntities.ScalableZombieTypes zombieType = (LevelEntities.ScalableZombieTypes) zombieTypeInt;
-                if( !scalableZombieTypeFactors.ContainsKey( zombieType ) )
-                {
-                    continue;   // Won't be scaling this type
-                }
+                    LevelEntities.ScalableZombieTypes zombieType = (LevelEntities.ScalableZombieTypes) zombieTypeInt;
+                    if( !scalableZombieTypeFactors.ContainsKey( zombieType ) )
+                    {
+                        continue;   // Won't be scaling this type
+                    }
 
-                var collection = typeItem.Element( "Collection" );
-                decimal scale = scalableZombieTypeFactors[zombieType];
-                scaleInactiveZombies( collection, scale );
+                    var collection = typeItem.Element( "Collection" );
+                    decimal scale = scalableZombieTypeFactors[zombieType];
+                    scaleInactiveZombies( collection, scale );
+                }
             }
 
             // Next handle aggro'd and spawn-generated zombies, found in LevelEntities
-
-            foreach( var k_v in scalableZombieTypeFactors )
+            if( scaleActive )
             {
-                var zombieType = k_v.Key;
-                var scale = k_v.Value;
-                entities.scaleEntities( (UInt64) zombieType, scale, this );
+                foreach( var k_v in scalableZombieTypeFactors )
+                {
+                    var zombieType = k_v.Key;
+                    var scale = k_v.Value;
+                    entities.scaleEntities( (UInt64) zombieType, scale, this );
+                }
             }
         }
 

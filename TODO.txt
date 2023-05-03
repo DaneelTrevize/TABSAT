@@ -7,9 +7,23 @@ Summarise whether maps are worth continuing, without showing the layout.
 Count total pathable land, food, zombies? Chart them at each radius from CC? Summary in a starting radius?
 
 Map Viewer:
-  Is swarm skull location explicit in saves, or derived from associated zombie positions?
-  Show friendly units & buildings, -pickables, damaged entities?
+  Swarm zombies, colour-coded per swarm, or dynamically generate checkboxes per swarm icon/set?
+  Show friendly units & buildings?
   Differentiate types by colour?
+
+Offer to remove all zombies that are:
+  Not idle/fast-serialized.
+  Visible/not under fog as was last updated.
+  Within x range of friendly units/buildings? Much easier to effectively do this via the prior 2 means.
+
+Offer to modify (inactive) zombies and/or ground:
+  within/outside radius;
+  checkboxes for each cardinal compass direction?
+
+Not modifying pathing, minimal change to vision, making building easier:
+  Replace rock with water (the reverse may break geometry assumptions about rock formations for art asset reasons)?
+  Replace gold with dirt, or grass?
+  Swap gold/iron/stone with another type or grass/dirt (possibly making teching up harder, but building layouts easier)?
 
 ----
 

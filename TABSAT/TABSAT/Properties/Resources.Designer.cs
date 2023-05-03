@@ -61,7 +61,7 @@ namespace TABSAT.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1.3.0.
+        ///   Looks up a localized string similar to 1.4.5.
         /// </summary>
         internal static string masterTag {
             get {

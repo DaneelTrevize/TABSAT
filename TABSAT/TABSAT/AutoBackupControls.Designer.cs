@@ -70,18 +70,18 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.progressBar.Location = new System.Drawing.Point(6, 19);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(168, 20);
+            this.progressBar.Size = new System.Drawing.Size(170, 20);
             this.progressBar.Step = 1;
             this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.progressBar.TabIndex = 0;
             // 
             // restoreButton
             // 
-            this.restoreButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.restoreButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.restoreButton.Enabled = false;
-            this.restoreButton.Location = new System.Drawing.Point(103, 169);
+            this.restoreButton.Location = new System.Drawing.Point(101, 153);
             this.restoreButton.Name = "restoreButton";
-            this.restoreButton.Size = new System.Drawing.Size(80, 30);
+            this.restoreButton.Size = new System.Drawing.Size(90, 30);
             this.restoreButton.TabIndex = 2;
             this.restoreButton.Text = "Restore";
             this.restoreButton.UseVisualStyleBackColor = true;
@@ -89,10 +89,11 @@
             // 
             // backupButton
             // 
+            this.backupButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.backupButton.Enabled = false;
-            this.backupButton.Location = new System.Drawing.Point(15, 169);
+            this.backupButton.Location = new System.Drawing.Point(9, 153);
             this.backupButton.Name = "backupButton";
-            this.backupButton.Size = new System.Drawing.Size(80, 30);
+            this.backupButton.Size = new System.Drawing.Size(90, 30);
             this.backupButton.TabIndex = 1;
             this.backupButton.Text = "Backup";
             this.backupButton.UseVisualStyleBackColor = true;
@@ -102,9 +103,10 @@
             // 
             this.savesGroupBox.Controls.Add(this.savesCheckedListBox);
             this.savesGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.savesGroupBox.Location = new System.Drawing.Point(3, 3);
+            this.savesGroupBox.Location = new System.Drawing.Point(0, 0);
+            this.savesGroupBox.Margin = new System.Windows.Forms.Padding(0);
             this.savesGroupBox.Name = "savesGroupBox";
-            this.savesGroupBox.Size = new System.Drawing.Size(155, 306);
+            this.savesGroupBox.Size = new System.Drawing.Size(157, 282);
             this.savesGroupBox.TabIndex = 2;
             this.savesGroupBox.TabStop = false;
             this.savesGroupBox.Text = "Active Save Files";
@@ -116,7 +118,7 @@
             this.savesCheckedListBox.HorizontalScrollbar = true;
             this.savesCheckedListBox.Location = new System.Drawing.Point(3, 16);
             this.savesCheckedListBox.Name = "savesCheckedListBox";
-            this.savesCheckedListBox.Size = new System.Drawing.Size(149, 287);
+            this.savesCheckedListBox.Size = new System.Drawing.Size(151, 263);
             this.savesCheckedListBox.TabIndex = 0;
             this.savesCheckedListBox.SelectedIndexChanged += new System.EventHandler(this.savesCheckedListBox_SelectedIndexChanged);
             // 
@@ -126,9 +128,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.backupsGroupBox.Controls.Add(this.backupsTreeView);
-            this.backupsGroupBox.Location = new System.Drawing.Point(364, 3);
+            this.backupsGroupBox.Location = new System.Drawing.Point(357, 0);
+            this.backupsGroupBox.Margin = new System.Windows.Forms.Padding(0);
             this.backupsGroupBox.Name = "backupsGroupBox";
-            this.backupsGroupBox.Size = new System.Drawing.Size(156, 306);
+            this.backupsGroupBox.Size = new System.Drawing.Size(157, 282);
             this.backupsGroupBox.TabIndex = 3;
             this.backupsGroupBox.TabStop = false;
             this.backupsGroupBox.Text = "Backup Save Files";
@@ -138,7 +141,7 @@
             this.backupsTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.backupsTreeView.Location = new System.Drawing.Point(3, 16);
             this.backupsTreeView.Name = "backupsTreeView";
-            this.backupsTreeView.Size = new System.Drawing.Size(150, 287);
+            this.backupsTreeView.Size = new System.Drawing.Size(151, 263);
             this.backupsTreeView.TabIndex = 0;
             this.backupsTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.backupsTreeView_AfterSelect);
             // 
@@ -147,10 +150,10 @@
             this.backupsHintLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.backupsHintLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.backupsHintLabel.Location = new System.Drawing.Point(9, 57);
+            this.backupsHintLabel.Location = new System.Drawing.Point(9, 45);
             this.backupsHintLabel.Name = "backupsHintLabel";
             this.backupsHintLabel.Padding = new System.Windows.Forms.Padding(10, 4, 4, 4);
-            this.backupsHintLabel.Size = new System.Drawing.Size(180, 101);
+            this.backupsHintLabel.Size = new System.Drawing.Size(182, 101);
             this.backupsHintLabel.TabIndex = 0;
             this.backupsHintLabel.Text = "Click an Active Save File to:\r\n  find an existing Backup;\r\n  enable creating a ne" +
     "w Backup.\r\n\r\nClick a Backup Save File to:\r\n  find any related Active Save;\r\n  en" +
@@ -165,7 +168,7 @@
             this.backupFolderGroupBox.Controls.Add(this.backupsDirectoryTextBox);
             this.backupFolderGroupBox.Location = new System.Drawing.Point(3, 3);
             this.backupFolderGroupBox.Name = "backupFolderGroupBox";
-            this.backupFolderGroupBox.Size = new System.Drawing.Size(517, 52);
+            this.backupFolderGroupBox.Size = new System.Drawing.Size(514, 51);
             this.backupFolderGroupBox.TabIndex = 0;
             this.backupFolderGroupBox.TabStop = false;
             this.backupFolderGroupBox.Text = "Folder for Backups";
@@ -173,9 +176,9 @@
             // backupFolderChooseButton
             // 
             this.backupFolderChooseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.backupFolderChooseButton.Location = new System.Drawing.Point(358, 13);
+            this.backupFolderChooseButton.Location = new System.Drawing.Point(368, 13);
             this.backupFolderChooseButton.Name = "backupFolderChooseButton";
-            this.backupFolderChooseButton.Size = new System.Drawing.Size(153, 30);
+            this.backupFolderChooseButton.Size = new System.Drawing.Size(140, 30);
             this.backupFolderChooseButton.TabIndex = 0;
             this.backupFolderChooseButton.Text = "Choose Backup Folder...";
             this.backupFolderChooseButton.UseVisualStyleBackColor = true;
@@ -189,7 +192,7 @@
             this.backupsDirectoryTextBox.Name = "backupsDirectoryTextBox";
             this.backupsDirectoryTextBox.ReadOnly = true;
             this.backupsDirectoryTextBox.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.backupsDirectoryTextBox.Size = new System.Drawing.Size(346, 20);
+            this.backupsDirectoryTextBox.Size = new System.Drawing.Size(356, 20);
             this.backupsDirectoryTextBox.TabIndex = 1;
             this.backupsDirectoryTextBox.TabStop = false;
             this.backupsDirectoryTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -200,13 +203,13 @@
             // 
             // keyGroupBox
             // 
-            this.keyGroupBox.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.keyGroupBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.keyGroupBox.Controls.Add(this.keyCheckBox2);
             this.keyGroupBox.Controls.Add(this.keyCheckBox3);
             this.keyGroupBox.Controls.Add(this.keyCheckBox1);
-            this.keyGroupBox.Location = new System.Drawing.Point(9, 259);
+            this.keyGroupBox.Location = new System.Drawing.Point(9, 240);
             this.keyGroupBox.Name = "keyGroupBox";
-            this.keyGroupBox.Size = new System.Drawing.Size(180, 42);
+            this.keyGroupBox.Size = new System.Drawing.Size(182, 42);
             this.keyGroupBox.TabIndex = 6;
             this.keyGroupBox.TabStop = false;
             this.keyGroupBox.Text = "Active Save File has a Backup?";
@@ -257,11 +260,11 @@
             // 
             // progressGroupBox
             // 
-            this.progressGroupBox.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.progressGroupBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.progressGroupBox.Controls.Add(this.progressBar);
-            this.progressGroupBox.Location = new System.Drawing.Point(9, 205);
+            this.progressGroupBox.Location = new System.Drawing.Point(9, 186);
             this.progressGroupBox.Name = "progressGroupBox";
-            this.progressGroupBox.Size = new System.Drawing.Size(180, 48);
+            this.progressGroupBox.Size = new System.Drawing.Size(182, 48);
             this.progressGroupBox.TabIndex = 5;
             this.progressGroupBox.TabStop = false;
             this.progressGroupBox.Text = "Progress";
@@ -287,9 +290,9 @@
             // 
             this.autoBackupGroupBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.autoBackupGroupBox.Controls.Add(this.autoBackupCheckBox);
-            this.autoBackupGroupBox.Location = new System.Drawing.Point(9, 3);
+            this.autoBackupGroupBox.Location = new System.Drawing.Point(9, 0);
             this.autoBackupGroupBox.Name = "autoBackupGroupBox";
-            this.autoBackupGroupBox.Size = new System.Drawing.Size(180, 42);
+            this.autoBackupGroupBox.Size = new System.Drawing.Size(182, 42);
             this.autoBackupGroupBox.TabIndex = 0;
             this.autoBackupGroupBox.TabStop = false;
             this.autoBackupGroupBox.Text = "Automatically Backup Save Files";
@@ -304,13 +307,13 @@
             this.listingsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
             this.listingsTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.listingsTableLayoutPanel.Controls.Add(this.centralPanel, 1, 0);
-            this.listingsTableLayoutPanel.Controls.Add(this.backupsGroupBox, 2, 0);
             this.listingsTableLayoutPanel.Controls.Add(this.savesGroupBox, 0, 0);
-            this.listingsTableLayoutPanel.Location = new System.Drawing.Point(0, 61);
+            this.listingsTableLayoutPanel.Controls.Add(this.backupsGroupBox, 2, 0);
+            this.listingsTableLayoutPanel.Location = new System.Drawing.Point(3, 60);
             this.listingsTableLayoutPanel.Name = "listingsTableLayoutPanel";
             this.listingsTableLayoutPanel.RowCount = 1;
             this.listingsTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.listingsTableLayoutPanel.Size = new System.Drawing.Size(523, 312);
+            this.listingsTableLayoutPanel.Size = new System.Drawing.Size(514, 282);
             this.listingsTableLayoutPanel.TabIndex = 7;
             // 
             // centralPanel
@@ -322,10 +325,10 @@
             this.centralPanel.Controls.Add(this.restoreButton);
             this.centralPanel.Controls.Add(this.backupButton);
             this.centralPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.centralPanel.Location = new System.Drawing.Point(161, 0);
+            this.centralPanel.Location = new System.Drawing.Point(157, 0);
             this.centralPanel.Margin = new System.Windows.Forms.Padding(0);
             this.centralPanel.Name = "centralPanel";
-            this.centralPanel.Size = new System.Drawing.Size(200, 312);
+            this.centralPanel.Size = new System.Drawing.Size(200, 282);
             this.centralPanel.TabIndex = 1;
             // 
             // AutoBackupControls
@@ -334,8 +337,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.listingsTableLayoutPanel);
             this.Controls.Add(this.backupFolderGroupBox);
+            this.Margin = new System.Windows.Forms.Padding(0);
+            this.MinimumSize = new System.Drawing.Size(520, 345);
             this.Name = "AutoBackupControls";
-            this.Size = new System.Drawing.Size(523, 376);
+            this.Size = new System.Drawing.Size(520, 345);
             this.Load += new System.EventHandler(this.AutoBackupControls_Load);
             this.savesGroupBox.ResumeLayout(false);
             this.backupsGroupBox.ResumeLayout(false);

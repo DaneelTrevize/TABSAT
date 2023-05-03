@@ -439,6 +439,8 @@ namespace TABSAT
             }
 
             return new ModifyChoices(
+                idleZombiesRadioButton.Checked || allZombiesRadioButton.Checked,
+                activeZombiesRadioButton.Checked || allZombiesRadioButton.Checked,
                 zombieScaleCheckBox.Checked ? zombieScaleNumericUpDown.Value : 1,
                 scalableZombieGroupFactors,
                 zombieScaleGiantCheckBox.Checked ? zombieScaleGiantNumericUpDown.Value : 1,

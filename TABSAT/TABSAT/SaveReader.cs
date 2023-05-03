@@ -22,9 +22,69 @@ namespace TABSAT
         LinkedList<MapNavigation.Position> getHugePositions( in LevelEntities.HugeTypes vodType );
         LinkedList<MapNavigation.Position> getPickablePositions( in LevelEntities.PickableTypes pickableType );
         LinkedList<MapNavigation.Position> getJoinablePositions( in LevelEntities.GiftableTypes joinableType );
+        LinkedList<MapNavigation.Position> getSwarmIconPositions();
     }
 
-    class SaveReader : MapData
+    internal class Swarm
+    {
+        /*
+        <Collection name="MiniMapIndicators" elementType="ZX.ZXMiniMapIndicator, TheyAreBillions">
+          <Items>
+            <Complex type="ZX.ZXMiniMapIndicatorInfectedSwarn, TheyAreBillions">
+              <Properties>
+                <Simple name="IDRequestEvent" value="..." />
+                <Collection name="SerUnits" elementType="DXVision.DXEntityRef, DXVision">
+                  <Items>
+                    <Complex>
+                      <Properties>
+                        <Simple name="IDEntity" value="..." />
+                      <Properties>
+                    </Complex>
+                    ...
+                  </Items>
+                </Collection>
+                <Simple name="Cell" value="..." />
+                <Simple name="Text" value="A swarm of infected is heading to the colony. From the ..." />
+                <Simple name="Title" value="Infected Swarm" />
+              </Properties>
+            </Complex>
+        */
+        private readonly SortedSet<UInt64> zombies;
+        internal readonly MapNavigation.Position position;
+
+        internal Swarm( SortedSet<UInt64> z, MapNavigation.Position p  )
+        {
+            zombies = z;
+            position = p;
+        }
+
+        static internal LinkedList<Swarm> GetSwarms( XElement levelComplex )
+        {
+            var swarms = new LinkedList<Swarm>();
+            foreach( var iconItem in SaveReader.getFirstPropertyOfTypeNamed( levelComplex, "Collection", "MiniMapIndicators" ).Element( "Items" ).Elements( "Complex" ) )
+            {
+                if( (string) iconItem.Attribute( "type" ) == @"ZX.ZXMiniMapIndicatorInfectedSwarn, TheyAreBillions" )
+                {
+                    var zombies = new SortedSet<UInt64>();
+                    var unitsCollection = SaveReader.getFirstPropertyOfTypeNamed( iconItem, "Collection", "SerUnits" );
+                    foreach( var zombie in unitsCollection.Element( "Items" ).Elements( "Complex" ) )
+                    {
+                        var ID = (UInt64) SaveReader.getValueAttOfSimpleProp( zombie, "IDEntity" );
+                        zombies.Add( ID );
+                    }
+
+                    var cell = SaveReader.getFirstSimplePropertyNamed( iconItem, "Cell" );
+                    SaveReader.extractInts( cell, out int x, out int y );
+
+                    var swarm = new Swarm( zombies, new MapNavigation.Position( x, y ) );
+                    swarms.AddLast( swarm );
+                }
+            }
+            return swarms;
+        }
+    }
+
+    internal class SaveReader : MapData
     {
         internal const int TERRAIN_WATER = 0x01;
         internal const int TERRAIN_GRASS = 0x02;
@@ -207,12 +267,15 @@ namespace TABSAT
         protected readonly int commandCenterX;
         protected readonly int commandCenterY;
         protected readonly LevelEntities entities;
-        private readonly Regex layerDataRegex;
         private XElement generatedLevel;
         private XElement extension;
         private XElement mapDrawer;
         private XElement extrasItems;
+        private readonly LinkedList<Swarm> swarms;  // Lazy-init..?
+
+        private readonly Regex layerDataRegex;
         private readonly SortedDictionary<MapLayers, LayerData> layerDataCache;
+
         private MapNavigation.FlowGraph flowGraph;
         private MapNavigation.IntQuadTree navQuadTree;
         private SortedDictionary<LevelEntities.ScalableZombieTypes, MapNavigation.IntQuadTree> popQuadTrees;
@@ -246,7 +309,7 @@ namespace TABSAT
             return getFirstPropertyOfTypeNamed( c, "Complex", name );
         }
 
-        protected static void extractInts( XElement property, out int x, out int y )
+        internal static void extractInts( XElement property, out int x, out int y )
         {
             string xy = (string) property.Attribute( "value" );
             string[] xySplit = xy.Split( ';' );
@@ -304,6 +367,8 @@ namespace TABSAT
             //Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
 
             entities = new LevelEntities( levelComplex );
+
+            swarms = Swarm.GetSwarms( levelComplex );
 
             layerDataRegex = new Regex( @"(?:\d+\|){2}(?<data>.+)", RegexOptions.Compiled );    //value="256|256|AAAA..."
             layerDataCache = new SortedDictionary<MapLayers, LayerData>();
@@ -798,6 +863,16 @@ namespace TABSAT
                 positions.AddLast( new MapNavigation.Position( x, y ) );
             }
             entityTypeToPositions.Add( impassibleTypeID, positions );
+        }
+
+        LinkedList<MapNavigation.Position> MapData.getSwarmIconPositions()
+        {
+            var positions = new LinkedList<MapNavigation.Position>();
+            foreach( var swarm in swarms )
+            {
+                positions.AddLast( swarm.position );
+            }
+            return positions;
         }
     }
 }

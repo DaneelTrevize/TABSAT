@@ -390,6 +390,8 @@ namespace TABSAT
 
                 entity.Remove();
 
+                // What about entity references in swarms..?
+
                 // What about entities assigned to group shortcuts? We don't try to remove such friendly entities.
                 /*
                   <SingleArray name="RefEntitySelectionGroups" elementType="System.Collections.Generic.List`1[[DXVision.DXEntityRef, DXVision]], mscorlib">

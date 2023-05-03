@@ -24,6 +24,8 @@ namespace TABSAT
             Full
         }
 
+        internal readonly bool ScaleIdle;
+        internal readonly bool ScaleActive;
         internal readonly decimal PopulationScale;
         internal readonly SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> ScalableZombieGroupFactors;
         internal readonly decimal GiantScale;
@@ -57,6 +59,8 @@ namespace TABSAT
         internal readonly bool RemoveReclaimables;
 
         internal ModifyChoices(
+            in bool sI,
+            in bool sA,
             in decimal pS,
             in SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> szgF,
             in decimal gS,
@@ -90,6 +94,8 @@ namespace TABSAT
             in bool rR
             )
         {
+            ScaleIdle = sI;
+            ScaleActive = sA;
             PopulationScale = pS;
             ScalableZombieGroupFactors = szgF;
             GiantScale = gS;

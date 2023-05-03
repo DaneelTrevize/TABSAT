@@ -38,7 +38,7 @@ namespace TABSAT
 
             modifyChoicesControls = new ModifyChoicesControls
             {
-                Location = new System.Drawing.Point( 3, 0 ),
+                Location = new System.Drawing.Point( 0, 0 ),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
                 Name = "modifyChoicesControls"
             };
@@ -457,14 +457,14 @@ namespace TABSAT
                 if( choices.PopulationScale != 1 )
                 {
                     statusWriter( "Scaling Zombie population x" + choices.PopulationScale + '.' );
-                    dataEditor.scalePopulation( choices.PopulationScale );
+                    dataEditor.scalePopulation( choices.PopulationScale, choices.ScaleIdle, choices.ScaleActive );
                 }
                 else
                 {
                     if( choices.ScalableZombieGroupFactors.Any() )
                     {
                         statusWriter( "Scaling Zombie population per type." );
-                        dataEditor.scalePopulation( choices.ScalableZombieGroupFactors );
+                        dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive );
                     }
                 }
                 if( choices.GiantScale != 1 )
