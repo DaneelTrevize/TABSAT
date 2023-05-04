@@ -5,7 +5,7 @@ using static TABSAT.SaveReader;
 
 namespace TABSAT
 {
-    public partial class ModifySaveControls : UserControl
+    public partial class ModifyChoicesControls : UserControl
     {
         private bool automatedStateSetting;
         private readonly List<CheckBox> zombieScalingCheckBoxes;
@@ -27,7 +27,7 @@ namespace TABSAT
             return false;
         }
 
-        public ModifySaveControls()
+        public ModifyChoicesControls()
         {
             InitializeComponent();
 
@@ -72,10 +72,11 @@ namespace TABSAT
                 swarmsEasyCheckBox,
                 swarmsHardCheckBox
             };
-            generalCheckBoxes = new List<CheckBox>( 2 )
+            generalCheckBoxes = new List<CheckBox>( 3 )
             {
                 themeCheckBox,
-                disableMayorsCheckBox
+                disableMayorsCheckBox,
+                removeReclaimablesCheckBox
             };
 
             vodReplaceComboBox.DataSource = new BindingSource( LevelEntities.vodSizesNames, null );
@@ -438,6 +439,8 @@ namespace TABSAT
             }
 
             return new ModifyChoices(
+                idleZombiesRadioButton.Checked || allZombiesRadioButton.Checked,
+                activeZombiesRadioButton.Checked || allZombiesRadioButton.Checked,
                 zombieScaleCheckBox.Checked ? zombieScaleNumericUpDown.Value : 1,
                 scalableZombieGroupFactors,
                 zombieScaleGiantCheckBox.Checked ? zombieScaleGiantNumericUpDown.Value : 1,
@@ -467,7 +470,8 @@ namespace TABSAT
                 hard,
                 themeCheckBox.Checked,
                 theme,
-                disableMayorsCheckBox.Checked
+                disableMayorsCheckBox.Checked,
+                removeReclaimablesCheckBox.Checked
             );
         }
 

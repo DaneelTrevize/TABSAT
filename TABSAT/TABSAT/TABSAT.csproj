@@ -125,11 +125,11 @@
     <Compile Include="ModifyManagerControls.Designer.cs">
       <DependentUpon>ModifyManagerControls.cs</DependentUpon>
     </Compile>
-    <Compile Include="ModifySaveControls.cs">
+    <Compile Include="ModifyChoicesControls.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ModifySaveControls.Designer.cs">
-      <DependentUpon>ModifySaveControls.cs</DependentUpon>
+    <Compile Include="ModifyChoicesControls.Designer.cs">
+      <DependentUpon>ModifyChoicesControls.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -157,8 +157,8 @@
     <EmbeddedResource Include="ModifyManagerControls.resx">
       <DependentUpon>ModifyManagerControls.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ModifySaveControls.resx">
-      <DependentUpon>ModifySaveControls.cs</DependentUpon>
+    <EmbeddedResource Include="ModifyChoicesControls.resx">
+      <DependentUpon>ModifyChoicesControls.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -199,7 +199,7 @@
     <None Include="Resources\masterTag.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\TAB Steam Cloud.png" />
+    <Content Include="Resources\TAB_Steam_Cloud.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

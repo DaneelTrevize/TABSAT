@@ -26,7 +26,7 @@ namespace TABSAT
 
         private readonly ModifyManager modifyManager;
         private readonly StatusWriterDelegate statusWriter;
-        private readonly ModifySaveControls modifySaveControls;
+        private readonly ModifyChoicesControls modifyChoicesControls;
         private EditingState editingState;
 
         public ModifyManagerControls( ModifyManager m, StatusWriterDelegate sW, string savesDirectory )
@@ -36,13 +36,13 @@ namespace TABSAT
             modifyManager = m;
             statusWriter = sW;
 
-            modifySaveControls = new ModifySaveControls
+            modifyChoicesControls = new ModifyChoicesControls
             {
-                Location = new System.Drawing.Point( 3, 0 ),
+                Location = new System.Drawing.Point( 0, 0 ),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
-                Name = "modifySaveControls"
+                Name = "modifyChoicesControls"
             };
-            optionsSplitContainer.Panel1.Controls.Add( modifySaveControls );
+            optionsSplitContainer.Panel1.Controls.Add( modifyChoicesControls );
 
             editingState = EditingState.CHOOSING_SAVE;
 
@@ -167,7 +167,7 @@ namespace TABSAT
         {
             // Don't let different options be chosen during file operations
             resetButton.Enabled = false;
-            modifySaveControls.Enabled = false;
+            modifyChoicesControls.Enabled = false;
             saveFileGroupBox.Enabled = false;
             extractLeaveCheckBox.Enabled = false;
             reflectorStopRepackCheckBox.Enabled = false;
@@ -184,7 +184,7 @@ namespace TABSAT
             if( editingState == EditingState.CHOOSING_SAVE )
             {
                 resetButton.Enabled = true;
-                modifySaveControls.Enabled = true;
+                modifyChoicesControls.Enabled = true;
                 saveFileGroupBox.Enabled = true;
                 extractLeaveCheckBox.Enabled = true;
                 reflectorStopRepackCheckBox.Enabled = true;
@@ -238,7 +238,7 @@ namespace TABSAT
 
         private void resetButton_Click( object sender, EventArgs e )
         {
-            modifySaveControls.resetChoices();
+            modifyChoicesControls.resetChoices();
         }
 
         private void saveFileChooseButton_Click( object sender, EventArgs e )
@@ -276,8 +276,8 @@ namespace TABSAT
                     modifySaveBackgroundWorker = new BackgroundWorker();
                     modifySaveBackgroundWorker.DoWork += new DoWorkEventHandler( quickModify_DoWork );
                     modifySaveBackgroundWorker.RunWorkerCompleted += repackingWork_RunWorkerCompleted;
-                    bool anyMods = modifySaveControls.anyModificationChosen();
-                    modifySaveBackgroundWorker.RunWorkerAsync( ( !extractLeaveCheckBox.Checked, backupCheckBox.Checked, anyMods, anyMods ? modifySaveControls.getChoices() : null ) );
+                    bool anyMods = modifyChoicesControls.anyModificationChosen();
+                    modifySaveBackgroundWorker.RunWorkerAsync( ( !extractLeaveCheckBox.Checked, backupCheckBox.Checked, anyMods, anyMods ? modifyChoicesControls.getChoices() : null ) );
 
                     break;
                 case EditingState.MANUAL_EXTRACTED:
@@ -358,8 +358,8 @@ namespace TABSAT
                     modifySaveBackgroundWorker = new BackgroundWorker();
                     modifySaveBackgroundWorker.DoWork += new DoWorkEventHandler( manualExtractSave_DoWork );
                     modifySaveBackgroundWorker.RunWorkerCompleted += manualExtractSave_RunWorkerCompleted;
-                    bool anyMods = modifySaveControls.anyModificationChosen();
-                    modifySaveBackgroundWorker.RunWorkerAsync( ( !extractLeaveCheckBox.Checked, anyMods, anyMods ? modifySaveControls.getChoices() : null ) );
+                    bool anyMods = modifyChoicesControls.anyModificationChosen();
+                    modifySaveBackgroundWorker.RunWorkerAsync( ( !extractLeaveCheckBox.Checked, anyMods, anyMods ? modifyChoicesControls.getChoices() : null ) );
 
                     break;
                 case EditingState.MANUAL_EXTRACTED:
@@ -457,14 +457,14 @@ namespace TABSAT
                 if( choices.PopulationScale != 1 )
                 {
                     statusWriter( "Scaling Zombie population x" + choices.PopulationScale + '.' );
-                    dataEditor.scalePopulation( choices.PopulationScale );
+                    dataEditor.scalePopulation( choices.PopulationScale, choices.ScaleIdle, choices.ScaleActive );
                 }
                 else
                 {
                     if( choices.ScalableZombieGroupFactors.Any() )
                     {
                         statusWriter( "Scaling Zombie population per type." );
-                        dataEditor.scalePopulation( choices.ScalableZombieGroupFactors );
+                        dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive );
                     }
                 }
                 if( choices.GiantScale != 1 )
@@ -613,6 +613,11 @@ namespace TABSAT
                 {
                     statusWriter( "Disabling Mayors." );
                     dataEditor.disableMayors();
+                }
+                if( choices.RemoveReclaimables )
+                {
+                    statusWriter( "Removing neutral buildings and loot piles." );
+                    dataEditor.removeReclaimables();
                 }
 
                 dataEditor.save();

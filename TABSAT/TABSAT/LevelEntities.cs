@@ -7,15 +7,9 @@ namespace TABSAT
 {
     internal class LevelEntities
     {
-        private const string GIANT_TYPE = @"ZX.Entities.ZombieGiant, TheyAreBillions";
-        private const string MUTANT_TYPE = @"ZX.Entities.ZombieMutant, TheyAreBillions";
-        private const string VOD_SMALL_TYPE = @"ZX.Entities.DoomBuildingSmall, TheyAreBillions";
-        private const string VOD_MEDIUM_TYPE = @"ZX.Entities.DoomBuildingMedium, TheyAreBillions";
-        private const string VOD_LARGE_TYPE = @"ZX.Entities.DoomBuildingLarge, TheyAreBillions";
-        //private const string WAREHOUSE_TYPE = @"ZX.Entities.WareHouse, TheyAreBillions";
-        //private const string OILPOOL_TYPE = @"ZX.Entities.OilSource, TheyAreBillions";
         //@"ZX.Entities.Raven, TheyAreBillions"  @"12735209386004068058"
         //@"ZX.Entities.CommandCenter, TheyAreBillions"  @"3153977018683405164"
+        //private const UInt64 CommandCenterType = 3153977018683405164;
         //@"ZX.Entities.ExplosiveBarrel, TheyAreBillions"  @"4963903858315893432"
 
         //@"ZX.Entities.MapSign, TheyAreBillions"  @"8008600744737996051"               SignWoodSmallA
@@ -30,43 +24,31 @@ namespace TABSAT
         private const string CBEHAVIOUR_TYPE = @"ZX.Components.CBehaviour, TheyAreBillions";
         private const string CMOVABLE_TYPE = @"ZX.Components.CMovable, TheyAreBillions";
 
-        private const string GIANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombieGiant, TheyAreBillions";
-        private const string MUTANT_BEHAVIOUR_TYPE = @"ZX.Behaviours.BHZombie, TheyAreBillions";
-
-        internal const UInt64 OilSourceType = 14597207313853823957;
-
-        internal const UInt64 TruckAType = 1130949242559706282;
-        internal const UInt64 FortressBarLeftType = 1858993070642015232;
-        internal const UInt64 FortressBarRightType = 5955209075099213047;
-        /*private const string RuinTreasureA_BR_Type = @"5985530356264170826";
-        private const string RuinTreasureA_TM_Type = @"257584999789546783";
-        private const string RuinTreasureA_AL_Type = @"8971922455791567927";
-        private const string RuinTreasureA_DS_Type = @"3137634406804904509";
-        private const string RuinTreasureA_VO_Type = @"807600697508101881";
-        private const string TensionTowerMediumFlip_Type = @"2617794739528169237";
-        private const string TensionTowerMedium_Type = @"4533866769353242870";
-        private const string TensionTowerHighFlip_Type = @"2342596987766548617";
-        private const string TensionTowerHigh_Type = @"3359149191582161849";
-        private const string VOLCANO_Type = @"5660774435759652919";      // Multiple sizes?*/
-        //private const string _Type = @"";
-
-        private const string GIANT_LIFE = @"10000";
-        private const string MUTANT_LIFE = @"4000";
-        private const string VOD_LARGE_LIFE = @"4000";
-        private const string VOD_MEDIUM_LIFE = @"1500";
-        private const string VOD_SMALL_LIFE = @"400";
-
-        private const string GIANT_SIZE = @"1.6;1.6";
-        private const string MUTANT_SIZE = @"0.8;0.8";
-        private const string VOD_LARGE_SIZE = @"4;4";
-        private const string VOD_MEDIUM_SIZE = @"3;3";
-        private const string VOD_SMALL_SIZE = @"2;2";
-
         internal enum HugeTypes : UInt64
         {
             Giant = 6179780658058987152,
             Mutant = 4885015758634569309
         }
+        protected class HugeData
+        {
+            internal readonly string Type;
+            internal readonly string Flags;
+            internal readonly string Behaviour;
+            internal readonly string Life;
+            internal readonly string PathCapacity;
+            internal readonly string Size;
+
+            internal HugeData( string t, string f, string b, string l, string p, string s )
+            {
+                Type = t;
+                Flags = f;
+                Behaviour = b;
+                Life = l;
+                PathCapacity = p;
+                Size = s;
+            }
+        }
+        protected static readonly Dictionary<HugeTypes, HugeData> hugeTypesData;
 
         internal enum GiftableTypes : UInt64
         {
@@ -157,7 +139,24 @@ namespace TABSAT
             DoomBuildingMedium = 293812117068830615,
             DoomBuildingLarge = 3441286325348372349
         }
-        internal static readonly Dictionary<VODTypes, string> vodSizesNames;
+
+        protected class VODData
+        {
+            internal readonly string Type;
+            internal readonly string Life;
+            internal readonly string Size;
+
+            internal VODData( string t, string l, string s )
+            {
+                Type = t;
+                Life = l;
+                Size = s;
+            }
+        }
+        internal static readonly Dictionary<VODTypes, string> vodSizesNames;    // Refactor with vodTypesData, making Name a field of VODData...
+        protected static readonly Dictionary<VODTypes, VODData> vodTypesData;
+
+        internal static readonly SortedSet<UInt64> joinableTypes;
 
         internal enum PickableTypes : UInt64
         {
@@ -172,6 +171,11 @@ namespace TABSAT
 
         static LevelEntities()
         {
+            hugeTypesData = new Dictionary<HugeTypes, HugeData> {
+                { HugeTypes.Giant, new HugeData( @"ZX.Entities.ZombieGiant, TheyAreBillions", @"None", @"ZX.Behaviours.BHZombieGiant, TheyAreBillions", @"10000", @"4", @"1.6;1.6" ) },
+                { HugeTypes.Mutant, new HugeData( @"ZX.Entities.ZombieMutant, TheyAreBillions", @"IsOneCellSize", @"ZX.Behaviours.BHZombie, TheyAreBillions", @"4000", @"0", @"0.8;0.8" ) }
+            };
+
             giftableTypeNames = new Dictionary<GiftableTypes, string> {
                 { GiftableTypes.Ranger, "Ranger" },
                 { GiftableTypes.SoldierRegular, "Soldier" },
@@ -240,6 +244,17 @@ namespace TABSAT
                 { VODTypes.DoomBuildingMedium, "Taverns" },
                 { VODTypes.DoomBuildingLarge, "City Halls" }
             };
+            vodTypesData = new Dictionary<VODTypes, VODData> {
+                { VODTypes.DoomBuildingSmall, new VODData( @"ZX.Entities.DoomBuildingSmall, TheyAreBillions", @"400", @"2;2" ) },
+                { VODTypes.DoomBuildingMedium, new VODData (@"ZX.Entities.DoomBuildingMedium, TheyAreBillions", @"1500", @"3;3" ) },
+                { VODTypes.DoomBuildingLarge, new VODData (@"ZX.Entities.DoomBuildingLarge, TheyAreBillions", @"4000", @"4;4" ) }
+            };
+
+            joinableTypes = new SortedSet<UInt64> {
+                { (UInt64) GiftableTypes.RadarTower },
+                { (UInt64) GiftableTypes.Executor },
+                { (UInt64) GiftableTypes.ShockingTower }
+            };
         }
 
         internal readonly struct ScaledEntity
@@ -256,6 +271,7 @@ namespace TABSAT
         private readonly XElement levelEntitiesItems;
         private readonly SortedDictionary<UInt64, XElement> IDsToItems;
         private readonly SortedDictionary<UInt64, SortedSet<UInt64>> itemTypesToIDs;
+        private readonly SortedDictionary<UInt64, SortedSet<UInt64>> joinableTypesToIDs;
 
         private static XElement getComponents( XElement complex )
         {
@@ -278,7 +294,7 @@ namespace TABSAT
 
         private static XAttribute getPosition( XElement entity )
         {
-            return SaveReader.getFirstSimplePropertyNamed( entity.Element( "Complex" ), "Position" ).Attribute( "value" );
+            return SaveReader.getValueAttOfSimpleProp( entity.Element( "Complex" ), "Position" );
         }
 
         private static XElement getComplexItemOfType( XElement components, string type, bool assumeExists = true )
@@ -291,7 +307,7 @@ namespace TABSAT
 
         private static UInt64 getItemType( XElement entity )
         {
-            return (UInt64) SaveReader.getFirstSimplePropertyNamed( entity.Element( "Complex" ), "IDTemplate" ).Attribute( "value" );
+            return (UInt64) SaveReader.getValueAttOfSimpleProp( entity.Element( "Complex" ), "IDTemplate" );
         }
 
 
@@ -301,6 +317,11 @@ namespace TABSAT
 
             IDsToItems = new SortedDictionary<UInt64, XElement>();
             itemTypesToIDs = new SortedDictionary<UInt64, SortedSet<UInt64>>();
+            joinableTypesToIDs = new SortedDictionary<UInt64, SortedSet<UInt64>>();
+            foreach( var joinable in joinableTypes )
+            {
+                joinableTypesToIDs.Add( joinable, new SortedSet<UInt64>() );
+            }
 
             //Console.Write( "Starting parsing level entities..." );
             // Lazy parse these later, on first use?
@@ -326,12 +347,22 @@ namespace TABSAT
 
             var itemType = getItemType( i );
 
-            if( !itemTypesToIDs.TryGetValue( itemType, out SortedSet<ulong> typeIDs ) )
+            if( !itemTypesToIDs.TryGetValue( itemType, out SortedSet<UInt64> typeIDs ) )
             {
                 typeIDs = new SortedSet<UInt64>();
                 itemTypesToIDs.Add( itemType, typeIDs );
             }
             typeIDs.Add( id );
+
+            // Is it a map-spawned building that can be reclaimed?
+            if( joinableTypesToIDs.TryGetValue( itemType, out SortedSet<UInt64> joinableIDs ) )
+            {
+                var team = (string) SaveReader.getValueAttOfSimpleProp( i.Element( "Complex" ), "Team" );
+                if( "NeutralJoinable".Equals( team ) )
+                {
+                    joinableIDs.Add( id );
+                }
+            }
         }
 
         private void Add( XElement copy )
@@ -359,6 +390,8 @@ namespace TABSAT
 
                 entity.Remove();
 
+                // What about entity references in swarms..?
+
                 // What about entities assigned to group shortcuts? We don't try to remove such friendly entities.
                 /*
                   <SingleArray name="RefEntitySelectionGroups" elementType="System.Collections.Generic.List`1[[DXVision.DXEntityRef, DXVision]], mscorlib">
@@ -382,6 +415,19 @@ namespace TABSAT
             if( itemTypesToIDs.TryGetValue( entityType, out SortedSet<UInt64> typeIDs ) )
             {
                 foreach( var id in typeIDs )
+                {
+                    subset.AddLast( IDsToItems[id] );
+                }
+            }
+            return subset;
+        }
+
+        internal IEnumerable<XElement> getNeutralJoinablesOfType( in UInt64 entityType )
+        {
+            LinkedList<XElement> subset = new LinkedList<XElement>();
+            if( joinableTypesToIDs.TryGetValue( entityType, out SortedSet<UInt64> joinableIDs ) )
+            {
+                foreach( var id in joinableIDs )
                 {
                     subset.AddLast( IDsToItems[id] );
                 }
@@ -434,7 +480,7 @@ namespace TABSAT
                 XElement iCopy = new XElement( i );     // Duplicate at the same position
                 var newID = editor.newID();
                 iCopy.Element( "Simple" ).SetAttributeValue( "value", newID );
-                SaveReader.getFirstSimplePropertyNamed( iCopy.Element( "Complex" ), "ID" ).SetAttributeValue( "value", newID );
+                SaveReader.getValueAttOfSimpleProp( iCopy.Element( "Complex" ), "ID" ).SetValue( newID );
 
                 Add( iCopy );
                 dupedEntities.AddLast( new ScaledEntity( (UInt64) i.Element( "Simple" ).Attribute( "value" ), newID ) );
@@ -516,7 +562,7 @@ namespace TABSAT
             string farthestPositionString = (string) getPosition( destinationEntity );
 
             getPosition( originEntity ).SetValue( farthestPositionString );
-            SaveReader.getFirstSimplePropertyNamed( originEntity.Element( "Complex" ), "LastPosition" ).SetAttributeValue( "value", farthestPositionString );
+            SaveReader.getValueAttOfSimpleProp( originEntity.Element( "Complex" ), "LastPosition" ).SetValue( farthestPositionString );
             currentBehaviourTargetPosition?.SetAttributeValue( "value", farthestPositionString );
             currentMovableTargetPosition?.SetAttributeValue( "value", farthestPositionString );
             currentLastDestinyProcessed?.SetAttributeValue( "value", farthestPositionString );
@@ -559,35 +605,20 @@ namespace TABSAT
                                 select c ).SingleOrDefault();*/
             XElement path = SaveReader.getFirstPropertyOfTypeNamed( getMovable( entity ), "Collection", "Path" );
 
-            string typeString;
-            string flags;
-            UInt64 typeID;
-            string life;
-            string behaviour;
-            string pathCapacity;
-            string size;
-            if( (string) complex.Attribute( "type" ) == MUTANT_TYPE )
+            UInt64 targetType;
+            HugeData targetHugeData;
+            if( getIDs( (UInt64) HugeTypes.Mutant ).Contains( id ) )
             {
-                typeString = GIANT_TYPE;
-                flags = "None";
-                typeID = (UInt64) HugeTypes.Giant;
-                life = GIANT_LIFE;
-                behaviour = GIANT_BEHAVIOUR_TYPE;
-                pathCapacity = "4";
-                size = GIANT_SIZE;
+                targetType = (UInt64) HugeTypes.Giant;
+                targetHugeData = hugeTypesData[HugeTypes.Giant];
 
                 XElement cInflamable = getComplexItemOfType( components, CINFLAMABLE, false );
                 cInflamable?.Remove();
             }
             else
             {
-                typeString = MUTANT_TYPE;
-                flags = "IsOneCellSize";
-                typeID = (UInt64) HugeTypes.Mutant;
-                life = MUTANT_LIFE;
-                behaviour = MUTANT_BEHAVIOUR_TYPE;
-                pathCapacity = "0";
-                size = MUTANT_SIZE;
+                targetType = (UInt64) HugeTypes.Mutant;
+                targetHugeData = hugeTypesData[HugeTypes.Mutant];
 
                 string cInflamable =
                 @"<Complex type=""ZX.Components.CInflamable, TheyAreBillions"">
@@ -605,39 +636,36 @@ namespace TABSAT
                 components.Element( "Items" ).Add( inflamable );
             }
 
-            complex.Attribute( "type" ).SetValue( typeString );
-            SaveReader.getFirstSimplePropertyNamed( complex, "Flags" ).Attribute( "value" ).SetValue( flags );
-            SaveReader.getFirstSimplePropertyNamed( complex, "IDTemplate" ).Attribute( "value" ).SetValue( typeID );
-            SaveReader.getFirstSimplePropertyNamed( cLife, "Life" ).Attribute( "value" ).SetValue( life );
-            getBehaviour( entity ).Attribute( "type" ).SetValue( behaviour );
-            SaveReader.getFirstSimplePropertyNamed( path, "Capacity" ).Attribute( "value" ).SetValue( pathCapacity );
-            SaveReader.getFirstSimplePropertyNamed( complex, "Size" ).Attribute( "value" ).SetValue( size );
+            complex.Attribute( "type" ).SetValue( targetHugeData.Type );
+            SaveReader.getValueAttOfSimpleProp( complex, "Flags" ).SetValue( targetHugeData.Flags );
+            SaveReader.getValueAttOfSimpleProp( complex, "IDTemplate" ).SetValue( targetType );
+            SaveReader.getValueAttOfSimpleProp( cLife, "Life" ).SetValue( targetHugeData.Life );
+            getBehaviour( entity ).Attribute( "type" ).SetValue( targetHugeData.Behaviour );
+            SaveReader.getValueAttOfSimpleProp( path, "Capacity" ).SetValue( targetHugeData.PathCapacity );
+            SaveReader.getValueAttOfSimpleProp( complex, "Size" ).SetValue( targetHugeData.Size );
+
+            // Also move ID from old itemTypesToIDs index type to new
+            changeItemType( id, (UInt64) ( targetType == (UInt64) HugeTypes.Mutant ? HugeTypes.Giant : HugeTypes.Mutant ), targetType );
+        }
+
+        private void changeItemType( in UInt64 id, in UInt64 oldType, in UInt64 newType )
+        {
+            if( itemTypesToIDs.TryGetValue( oldType, out SortedSet<UInt64> oldTypeIDs ) )
+            {
+                oldTypeIDs.Remove( id );
+
+                if( !itemTypesToIDs.TryGetValue( newType, out SortedSet<UInt64> newTypeIDs ) )
+                {
+                    newTypeIDs = new SortedSet<UInt64>();
+                    itemTypesToIDs.Add( newType, newTypeIDs );
+                }
+                newTypeIDs.Add( id );
+            }
         }
 
         internal void resizeVODs( in VODTypes targetVodType )
         {
-            string newType;
-            string newLife;
-            string newSize;
-            switch( targetVodType )
-            {
-                default:
-                case VODTypes.DoomBuildingSmall:
-                    newType = VOD_SMALL_TYPE;
-                    newLife = VOD_SMALL_LIFE;
-                    newSize = VOD_SMALL_SIZE;
-                    break;
-                case VODTypes.DoomBuildingMedium:
-                    newType = VOD_MEDIUM_TYPE;
-                    newLife = VOD_MEDIUM_LIFE;
-                    newSize = VOD_MEDIUM_SIZE;
-                    break;
-                case VODTypes.DoomBuildingLarge:
-                    newType = VOD_LARGE_TYPE;
-                    newLife = VOD_LARGE_LIFE;
-                    newSize = VOD_LARGE_SIZE;
-                    break;
-            }
+            var newVodData = vodTypesData[targetVodType];
             /*
              * To change VOD building sizes:
              * Change the <Complex type=
@@ -659,12 +687,12 @@ namespace TABSAT
                                 <Properties>
                                   <Simple name="NUnitsGenerated" value="0" />
              */
-            foreach( VODTypes vodType in Enum.GetValues( typeof( VODTypes ) ) )
+            foreach( VODTypes fromVodType in Enum.GetValues( typeof( VODTypes ) ) )
             {
-                IEnumerable<XElement> vodItems = getEntitiesOfType( (UInt64) vodType );
+                IEnumerable<XElement> vodItems = getEntitiesOfType( (UInt64) fromVodType );
                 //Console.WriteLine( "vodItems: " + vodItems.Count() );
 
-                if( vodType == targetVodType )
+                if( fromVodType == targetVodType )
                 {
                     continue;   // No need to modify these entities
                 }
@@ -672,10 +700,14 @@ namespace TABSAT
                 foreach( XElement v in vodItems.ToList() )  // no ToList() leads to only removing 1 <item> per save modify cycle?!
                 {
                     XElement complex = v.Element( "Complex" );
-                    complex.SetAttributeValue( "type", newType );
-                    SaveReader.getFirstSimplePropertyNamed( complex, "IDTemplate" ).SetAttributeValue( "value", (UInt64) targetVodType );
-                    SaveReader.getFirstSimplePropertyNamed( getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ), "Life" ).SetAttributeValue( "value", newLife );
-                    SaveReader.getFirstSimplePropertyNamed( complex, "Size" ).SetAttributeValue( "value", newSize );
+                    complex.SetAttributeValue( "type", newVodData.Type );
+                    SaveReader.getValueAttOfSimpleProp( complex, "IDTemplate" ).SetValue( (UInt64) targetVodType );
+                    SaveReader.getValueAttOfSimpleProp( getComplexItemOfType( getComponents( complex ), CLIFE_TYPE ), "Life" ).SetValue( newVodData.Life );
+                    SaveReader.getValueAttOfSimpleProp( complex, "Size" ).SetValue( newVodData.Size );
+
+                    // Also move ID from old itemTypesToIDs index type to new
+                    var id = (UInt64) v.Element( "Simple" ).Attribute( "value" );
+                    changeItemType( id, (UInt64) fromVodType, (UInt64) targetVodType );
                 }
             }
         }
@@ -683,6 +715,30 @@ namespace TABSAT
         internal void scaleVODs( in VODTypes vodType, in decimal scale, IDGenerator editor )
         {
             scaleEntities( (UInt64) vodType, scale, editor );
+        }
+
+        internal void removeReclaimables()
+        {
+            foreach( PickableTypes pickableType in Enum.GetValues( typeof( PickableTypes ) ) )
+            {
+                var positions = new LinkedList<MapNavigation.Position>();
+                IEnumerable<XElement> pickableItems = getEntitiesOfType( (UInt64) pickableType );
+                foreach( var pickable in pickableItems )
+                {
+                    var id = (UInt64) pickable.Element( "Simple" ).Attribute( "value" );
+                    Remove( id );
+                }
+            }
+
+            foreach( var k_v in joinableTypesToIDs )
+            {
+                var joinableIDs = k_v.Value;
+                foreach( var id in joinableIDs )
+                {
+                    Remove( id );
+                }
+                joinableIDs.Clear();    // Not currently needed as instances aren't reused after modifications
+            }
         }
     }
 }

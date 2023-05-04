@@ -13,16 +13,78 @@ namespace TABSAT
         int CellsCount();
         SaveReader.ThemeType Theme();
         SaveReader.LayerData getLayerData( SaveReader.MapLayers layer );
-        int getDistance( MapNavigation.Position position );
-        MapNavigation.Direction? getDirection( MapNavigation.Position position );
-        int getNavigableCount( int x, int y, int res );
-        int getZombieCount( int x, int y, int res, SortedSet<LevelEntities.ScalableZombieGroups> groups );
-        LinkedList<MapNavigation.Position> getVodPositions( LevelEntities.VODTypes vodType );
-        LinkedList<MapNavigation.Position> getHugePositions( LevelEntities.HugeTypes vodType );
-        LinkedList<MapNavigation.Position> getPickablePositions( LevelEntities.PickableTypes pickableType );
+        void getCCPosition( out int X, out int Y );
+        int getCCDistance( MapNavigation.Position position );
+        MapNavigation.Direction? getCCDirection( MapNavigation.Position position );
+        int getNavigableCount( in int x, in int y, in int res );
+        int getZombieCount( in int x, in int y, in int res, SortedSet<LevelEntities.ScalableZombieGroups> groups );
+        LinkedList<MapNavigation.Position> getVodPositions( in LevelEntities.VODTypes vodType );
+        LinkedList<MapNavigation.Position> getHugePositions( in LevelEntities.HugeTypes vodType );
+        LinkedList<MapNavigation.Position> getPickablePositions( in LevelEntities.PickableTypes pickableType );
+        LinkedList<MapNavigation.Position> getJoinablePositions( in LevelEntities.GiftableTypes joinableType );
+        LinkedList<MapNavigation.Position> getSwarmIconPositions();
     }
 
-    class SaveReader : MapData
+    internal class Swarm
+    {
+        /*
+        <Collection name="MiniMapIndicators" elementType="ZX.ZXMiniMapIndicator, TheyAreBillions">
+          <Items>
+            <Complex type="ZX.ZXMiniMapIndicatorInfectedSwarn, TheyAreBillions">
+              <Properties>
+                <Simple name="IDRequestEvent" value="..." />
+                <Collection name="SerUnits" elementType="DXVision.DXEntityRef, DXVision">
+                  <Items>
+                    <Complex>
+                      <Properties>
+                        <Simple name="IDEntity" value="..." />
+                      <Properties>
+                    </Complex>
+                    ...
+                  </Items>
+                </Collection>
+                <Simple name="Cell" value="..." />
+                <Simple name="Text" value="A swarm of infected is heading to the colony. From the ..." />
+                <Simple name="Title" value="Infected Swarm" />
+              </Properties>
+            </Complex>
+        */
+        private readonly SortedSet<UInt64> zombies;
+        internal readonly MapNavigation.Position position;
+
+        internal Swarm( SortedSet<UInt64> z, MapNavigation.Position p  )
+        {
+            zombies = z;
+            position = p;
+        }
+
+        static internal LinkedList<Swarm> GetSwarms( XElement levelComplex )
+        {
+            var swarms = new LinkedList<Swarm>();
+            foreach( var iconItem in SaveReader.getFirstPropertyOfTypeNamed( levelComplex, "Collection", "MiniMapIndicators" ).Element( "Items" ).Elements( "Complex" ) )
+            {
+                if( (string) iconItem.Attribute( "type" ) == @"ZX.ZXMiniMapIndicatorInfectedSwarn, TheyAreBillions" )
+                {
+                    var zombies = new SortedSet<UInt64>();
+                    var unitsCollection = SaveReader.getFirstPropertyOfTypeNamed( iconItem, "Collection", "SerUnits" );
+                    foreach( var zombie in unitsCollection.Element( "Items" ).Elements( "Complex" ) )
+                    {
+                        var ID = (UInt64) SaveReader.getValueAttOfSimpleProp( zombie, "IDEntity" );
+                        zombies.Add( ID );
+                    }
+
+                    var cell = SaveReader.getFirstSimplePropertyNamed( iconItem, "Cell" );
+                    SaveReader.extractInts( cell, out int x, out int y );
+
+                    var swarm = new Swarm( zombies, new MapNavigation.Position( x, y ) );
+                    swarms.AddLast( swarm );
+                }
+            }
+            return swarms;
+        }
+    }
+
+    internal class SaveReader : MapData
     {
         internal const int TERRAIN_WATER = 0x01;
         internal const int TERRAIN_GRASS = 0x02;
@@ -109,6 +171,26 @@ namespace TABSAT
             Navigable
         }
 
+        internal enum ImpassableTypes : UInt64
+        {
+            OilSource = 14597207313853823957,
+            TruckA = 1130949242559706282,
+            FortressBarLeft = 1858993070642015232,
+            FortressBarRight = 5955209075099213047,
+            TensionTowerMediumFlip = 2617794739528169237,
+            TensionTowerMedium = 4533866769353242870,
+            TensionTowerHighFlip = 2342596987766548617,
+            TensionTowerHigh = 3359149191582161849
+        }
+
+        /*private const string RuinTreasureA_BR_Type = @"5985530356264170826";
+        private const string RuinTreasureA_TM_Type = @"257584999789546783";
+        private const string RuinTreasureA_AL_Type = @"8971922455791567927";
+        private const string RuinTreasureA_DS_Type = @"3137634406804904509";
+        private const string RuinTreasureA_VO_Type = @"807600697508101881";
+        private const string VOLCANO_Type = @"5660774435759652919";      // Multiple sizes?*/
+        //private const string _Type = @"";
+
         static SaveReader()
         {
             themeTypeNames = new Dictionary<ThemeType, string> {
@@ -128,7 +210,7 @@ namespace TABSAT
             };
 
             swarmTimings = new SortedDictionary<GameFinish, SwarmTimingSet> {
-                { GameFinish.Day100, new SwarmTimingSet(    // Taken from a <Simple name="ChallengeType" value="CommunityChallenge" /> map
+                { GameFinish.Day100, new SwarmTimingSet(
                     Won: new SwarmTimings( "2400", "2400", "0", "0" ),
                     Final: new SwarmTimings( "2208", "2208", "0", "2184" ),
                     Easy: new SwarmTimings( "312", "312", "240", "304" ),
@@ -142,7 +224,7 @@ namespace TABSAT
                     Hard: new SwarmTimings( "969", "960", "135", "961" ),
                     Weak: new SwarmTimings( "39", "39", "39", "0" ),
                     Medium: new SwarmTimings( "482", "480", "116", "0" ) ) },
-                { GameFinish.Day50, new SwarmTimingSet(
+                { GameFinish.Day50, new SwarmTimingSet(     // Taken from a <Simple name="ChallengeType" value="CommunityChallenge" /> map
                     Won: new SwarmTimings( "1200", "1200", "0", "0" ),
                     Final: new SwarmTimings( "1104", "1104", "0", "1080" ),
                     Easy: new SwarmTimings( "174", "156", "120", "166" ),
@@ -185,18 +267,20 @@ namespace TABSAT
         protected readonly int commandCenterX;
         protected readonly int commandCenterY;
         protected readonly LevelEntities entities;
-        private readonly Regex layerDataRegex;
         private XElement generatedLevel;
         private XElement extension;
         private XElement mapDrawer;
         private XElement extrasItems;
+        private readonly LinkedList<Swarm> swarms;  // Lazy-init..?
+
+        private readonly Regex layerDataRegex;
         private readonly SortedDictionary<MapLayers, LayerData> layerDataCache;
+
         private MapNavigation.FlowGraph flowGraph;
         private MapNavigation.IntQuadTree navQuadTree;
         private SortedDictionary<LevelEntities.ScalableZombieTypes, MapNavigation.IntQuadTree> popQuadTrees;
-        private SortedDictionary<LevelEntities.VODTypes, LinkedList<MapNavigation.Position>> vodPositions;
-        private SortedDictionary<LevelEntities.HugeTypes, LinkedList<MapNavigation.Position>> hugePositions;
-        private SortedDictionary<LevelEntities.PickableTypes, LinkedList<MapNavigation.Position>> pickablePositions;
+        private readonly SortedDictionary<UInt64, LinkedList<MapNavigation.Position>> entityTypeToPositions;
+        private readonly SortedDictionary<LevelEntities.GiftableTypes, LinkedList<MapNavigation.Position>> joinablePositions;
 
         internal static XElement getFirstPropertyOfTypeNamed( XElement c, string type, string name )    // 5 Collections, 3 Dictionaries
         {
@@ -210,12 +294,22 @@ namespace TABSAT
             return getFirstPropertyOfTypeNamed( c, "Simple", name );
         }
 
+        internal static XAttribute getValueAttOfSimpleProp( XElement c, string name )
+        {
+            /*
+            <ComplexElement>
+              <Properties>
+                <Simple name=name value="..." />
+             */
+            return getFirstPropertyOfTypeNamed( c, "Simple", name ).Attribute( "value" );
+        }
+
         internal static XElement getFirstComplexPropertyNamed( XElement c, string name )
         {
             return getFirstPropertyOfTypeNamed( c, "Complex", name );
         }
 
-        protected static void extractInts( XElement property, out int x, out int y )
+        internal static void extractInts( XElement property, out int x, out int y )
         {
             string xy = (string) property.Attribute( "value" );
             string[] xySplit = xy.Split( ';' );
@@ -232,8 +326,7 @@ namespace TABSAT
                 // rather than an element from an Items collection of Complex elements each with a propertyName Simple Property.
                 complex = item.Element( "Complex" );
             }
-            var position = getFirstSimplePropertyNamed( complex, positionPropertyName );
-            string xy = (string) position.Attribute( "value" );
+            string xy = (string) getValueAttOfSimpleProp( complex, positionPropertyName );
             string[] xySplit = xy.Split( ';' );
             var float_x = float.Parse( xySplit[0] );
             var float_y = float.Parse( xySplit[1] );
@@ -260,7 +353,7 @@ namespace TABSAT
             //        <Complex name = "CurrentGeneratedLevel" >
             //          <Properties>
             //            <Simple name="NCells" value="256" />
-            XAttribute nCells = getFirstSimplePropertyNamed( getGeneratedLevel(), "NCells" ).Attribute( "value" );
+            XAttribute nCells = getValueAttOfSimpleProp( getGeneratedLevel(), "NCells" );
             if( !Int32.TryParse( nCells.Value, out cellsCount ) )
             {
                 Console.Error.WriteLine( "Unable to find the number of cells in the map." );
@@ -275,13 +368,16 @@ namespace TABSAT
 
             entities = new LevelEntities( levelComplex );
 
+            swarms = Swarm.GetSwarms( levelComplex );
+
             layerDataRegex = new Regex( @"(?:\d+\|){2}(?<data>.+)", RegexOptions.Compiled );    //value="256|256|AAAA..."
             layerDataCache = new SortedDictionary<MapLayers, LayerData>();
 
             flowGraph = null;
             navQuadTree = null;
             popQuadTrees = null;
-            vodPositions = null;
+            entityTypeToPositions = new SortedDictionary<UInt64, LinkedList<MapNavigation.Position>>();
+            joinablePositions = new SortedDictionary<LevelEntities.GiftableTypes, LinkedList<MapNavigation.Position>>();
         }
 
         public string Name()
@@ -296,7 +392,7 @@ namespace TABSAT
 
         public ThemeType Theme()
         {
-            XAttribute levelThemeType = getFirstSimplePropertyNamed( getMapDrawer(), "ThemeType" ).Attribute( "value" );
+            XAttribute levelThemeType = getValueAttOfSimpleProp( getMapDrawer(), "ThemeType" );
             ThemeType theme = (ThemeType) Enum.Parse( typeof(ThemeType), levelThemeType.Value );
             return theme;
         }
@@ -405,13 +501,13 @@ namespace TABSAT
                         values = trimData( getLayer( "LayerBelts" ), layer );
                         break;
                     case MapLayers.Fog:
-                        XElement layerFogSimple = getFirstSimplePropertyNamed( levelComplex, "LayerFog" );
-                        values = trimData( Convert.FromBase64String( (string) layerFogSimple.Attribute( "value" ) ), layer );
+                        XAttribute layerFogSimpleValue = getValueAttOfSimpleProp( levelComplex, "LayerFog" );
+                        values = trimData( Convert.FromBase64String( (string) layerFogSimpleValue ), layer );
                         break;
                     case MapLayers.Activity:
                         res = 64;
-                        XElement layerActivitySimple = getFirstSimplePropertyNamed( levelComplex, "LayerActivity" );
-                        Match match = layerDataRegex.Match( (string) layerActivitySimple.Attribute( "value" ) );
+                        XAttribute layerActivitySimpleValue = getValueAttOfSimpleProp( levelComplex, "LayerActivity" );
+                        Match match = layerDataRegex.Match( (string) layerActivitySimpleValue );
                         if( match.Success )
                         {
                             values = trimData( Convert.FromBase64String( match.Groups["data"].Value ), layer );
@@ -442,8 +538,7 @@ namespace TABSAT
         {
             byte[] fullData;
 
-            XElement layerSimple = getFirstSimplePropertyNamed( getFirstComplexPropertyNamed( getMapDrawer(), layerName ), "Cells" );
-            string encoded_value = (string) layerSimple.Attribute( "value" );
+            string encoded_value = (string) getValueAttOfSimpleProp( getFirstComplexPropertyNamed( getMapDrawer(), layerName ), "Cells" );
             Match match = layerDataRegex.Match( encoded_value );
             if( match.Success )
             {
@@ -524,22 +619,26 @@ namespace TABSAT
                 }
             }
 
-            var impassibleTypes = new[] { LevelEntities.OilSourceType, LevelEntities.FortressBarLeftType, LevelEntities.FortressBarRightType, LevelEntities.TruckAType };
-            var impassibles = from c in getExtraEntities().Elements( "Complex" )
-                              where impassibleTypes.Contains( (UInt64) getFirstSimplePropertyNamed( c, "IDTemplate" ).Attribute( "value" ) )
-                              select c;
-            foreach( var c in impassibles )
+            // Use a caching dictionary of ImpassableTypes to class/struct/record of positions & size, because generateNavigableData() is called every res change...
+            foreach( ImpassableTypes impassableType in Enum.GetValues( typeof( ImpassableTypes ) ) )
             {
-                extractCoordinates( c, out int p_x, out int p_y, true );
-                extractInts( getFirstSimplePropertyNamed( c, "Size" ), out int s_x, out int s_y );
-                int corner_x = p_x - ( s_x / 2 );
-                int corner_y = p_y - ( s_y / 2 );
-                for( int x = 0; x < s_x; x++ )
+                UInt64 impassibleTypeID = (UInt64) impassableType;
+                var impassibles = from c in getExtraEntities().Elements( "Complex" )
+                                  where (UInt64) getValueAttOfSimpleProp( c, "IDTemplate" ) == impassibleTypeID
+                                  select c;
+                foreach( var c in impassibles )
                 {
-                    for( int y = 0; y < s_y; y++ )
+                    extractCoordinates( c, out int p_x, out int p_y, true );
+                    extractInts( getFirstSimplePropertyNamed( c, "Size" ), out int s_x, out int s_y );
+                    int corner_x = p_x - ( s_x / 2 );
+                    int corner_y = p_y - ( s_y / 2 );
+                    for( int x = 0; x < s_x; x++ )
                     {
-                        int i = MapNavigation.axesToIndex( res, corner_x + x, corner_y + y );
-                        values[i] = NAVIGABLE_BLOCKED;
+                        for( int y = 0; y < s_y; y++ )
+                        {
+                            int i = MapNavigation.axesToIndex( res, corner_x + x, corner_y + y );
+                            values[i] = NAVIGABLE_BLOCKED;
+                        }
                     }
                 }
             }
@@ -557,22 +656,28 @@ namespace TABSAT
             return values;
         }
 
-        public int getDistance( MapNavigation.Position position )
+        public void getCCPosition( out Int32 X, out Int32 Y )
+        {
+            X = commandCenterX;
+            Y = commandCenterY;
+        }
+
+        public int getCCDistance( MapNavigation.Position position )
         {
             return getFlowGraph().getDistance( position );
         }
 
-        public MapNavigation.Direction? getDirection( MapNavigation.Position position )
+        public MapNavigation.Direction? getCCDirection( MapNavigation.Position position )
         {
             return getFlowGraph().getDirection( position );
         }
 
-        public int getNavigableCount( int x, int y, int res )
+        public int getNavigableCount( in int x, in int y, in int res )
         {
             return getNavQuadTree().getCount( x, y, res );
         }
 
-        public int getZombieCount( int x, int y, int res, SortedSet<LevelEntities.ScalableZombieGroups> groups )
+        public int getZombieCount( in int x, in int y, in int res, SortedSet<LevelEntities.ScalableZombieGroups> groups )
         {
             int count = 0;
             foreach( var g in groups )
@@ -586,46 +691,48 @@ namespace TABSAT
             return count;
         }
 
-        public LinkedList<MapNavigation.Position> getVodPositions( LevelEntities.VODTypes vodType )
+        public LinkedList<MapNavigation.Position> getVodPositions( in LevelEntities.VODTypes vodType )
         {
-            if( vodPositions == null )
-            {
-                vodPositions = new SortedDictionary<LevelEntities.VODTypes, LinkedList<MapNavigation.Position>>();
-                populateVodPositions();
-            }
-            if( vodPositions.TryGetValue( vodType, out LinkedList<MapNavigation.Position> positions ) )
-            {
-                return positions;
-            }
-            return new LinkedList<MapNavigation.Position>();
+            UInt64 entityType = (UInt64) vodType;
+            return getPositions( entityType );
         }
 
-        public LinkedList<MapNavigation.Position> getHugePositions( LevelEntities.HugeTypes hugeType )
+        public LinkedList<MapNavigation.Position> getHugePositions( in LevelEntities.HugeTypes hugeType )
         {
-            if( hugePositions == null )
-            {
-                hugePositions = new SortedDictionary<LevelEntities.HugeTypes, LinkedList<MapNavigation.Position>>();
-                populateHugePositions();
-            }
-            if( hugePositions.TryGetValue( hugeType, out LinkedList<MapNavigation.Position> positions ) )
-            {
-                return positions;
-            }
-            return new LinkedList<MapNavigation.Position>();
+            UInt64 entityType = (UInt64) hugeType;
+            return getPositions( entityType );
         }
 
-        public LinkedList<MapNavigation.Position> getPickablePositions( LevelEntities.PickableTypes pickableType )
+        public LinkedList<MapNavigation.Position> getPickablePositions( in LevelEntities.PickableTypes pickableType )
         {
-            if( pickablePositions == null )
+            UInt64 entityType = (UInt64) pickableType;
+            return getPositions( entityType );
+        }
+
+        private LinkedList<MapNavigation.Position> getPositions( in UInt64 entityType )
+        {
+            if( !entityTypeToPositions.ContainsKey( entityType ) )
             {
-                pickablePositions = new SortedDictionary<LevelEntities.PickableTypes, LinkedList<MapNavigation.Position>>();
-                populatePickablePositions();
+                populatePositions( entityType );
             }
-            if( pickablePositions.TryGetValue( pickableType, out LinkedList<MapNavigation.Position> positions ) )
+            return entityTypeToPositions[entityType];
+        }
+
+        public LinkedList<MapNavigation.Position> getJoinablePositions( in LevelEntities.GiftableTypes joinableType )
+        {
+            if( !joinablePositions.ContainsKey( joinableType ) )
             {
-                return positions;
+                // Can't use a generic version for all entity item types because it needs to be filtered by Team value.
+                var positions = new LinkedList<MapNavigation.Position>();
+                IEnumerable<XElement> joinableItems = entities.getNeutralJoinablesOfType( (UInt64) joinableType );
+                foreach( var joinable in joinableItems )
+                {
+                    extractCoordinates( joinable, out int x, out int y );
+                    positions.AddLast( new MapNavigation.Position( x, y ) );
+                }
+                joinablePositions.Add( joinableType, positions );
             }
-            return new LinkedList<MapNavigation.Position>();
+            return joinablePositions[joinableType];
         }
 
         private MapNavigation.FlowGraph getFlowGraph()
@@ -686,7 +793,7 @@ namespace TABSAT
                         continue;
                     }
 
-                    if( getDistance( new MapNavigation.Position( x, y ) ) != MapNavigation.UNNAVIGABLE )
+                    if( getCCDistance( new MapNavigation.Position( x, y ) ) != MapNavigation.UNNAVIGABLE )
                     {
                         navQuadTree.Add( x, y );
                     }
@@ -730,54 +837,42 @@ namespace TABSAT
             }
         }
 
-        private void populateVodPositions()
+        private void populatePositions( in UInt64 entityType )
         {
-            foreach( LevelEntities.VODTypes vodType in Enum.GetValues( typeof( LevelEntities.VODTypes ) ) )
+            var positions = new LinkedList<MapNavigation.Position>();
+            IEnumerable<XElement> items = entities.getEntitiesOfType( entityType );
+            foreach( var item in items )
             {
-                var positions = new LinkedList<MapNavigation.Position>();
-                IEnumerable<XElement> vodItems = entities.getEntitiesOfType( (UInt64) vodType );
-                foreach( var vod in vodItems )
-                {
-                    extractCoordinates( vod, out int x, out int y );
-                    positions.AddLast( new MapNavigation.Position( x, y ) );
-                }
-                vodPositions.Add( vodType, positions );
+                extractCoordinates( item, out int x, out int y );
+                positions.AddLast( new MapNavigation.Position( x, y ) );
             }
+            entityTypeToPositions.Add( entityType, positions );
+        }
+        
+        private void populatePositions( in ImpassableTypes impassableType )
+        {
+            UInt64 impassibleTypeID = (UInt64) impassableType;
+            var positions = new LinkedList<MapNavigation.Position>();
+
+            var impassibles = from c in getExtraEntities().Elements( "Complex" )
+                              where (UInt64) getValueAttOfSimpleProp( c, "IDTemplate" ) == impassibleTypeID
+                              select c;
+            foreach( var c in impassibles )
+            {
+                extractCoordinates( c, out int x, out int y, true );
+                positions.AddLast( new MapNavigation.Position( x, y ) );
+            }
+            entityTypeToPositions.Add( impassibleTypeID, positions );
         }
 
-        private void populateHugePositions()
+        LinkedList<MapNavigation.Position> MapData.getSwarmIconPositions()
         {
-            // Refactor along with populateVodPositions() into generic version for all entity item types..?
-
-            foreach( LevelEntities.HugeTypes hugeType in Enum.GetValues( typeof( LevelEntities.HugeTypes ) ) )
+            var positions = new LinkedList<MapNavigation.Position>();
+            foreach( var swarm in swarms )
             {
-                var positions = new LinkedList<MapNavigation.Position>();
-                IEnumerable<XElement> hugeItems = entities.getEntitiesOfType( (UInt64) hugeType );
-                foreach( var huge in hugeItems )
-                {
-                    extractCoordinates( huge, out int x, out int y );
-                    positions.AddLast( new MapNavigation.Position( x, y ) );
-                }
-                hugePositions.Add( hugeType, positions );
+                positions.AddLast( swarm.position );
             }
+            return positions;
         }
-
-        private void populatePickablePositions()
-        {
-            // Refactor along with populateVodPositions() into generic version for all entity item types..?
-
-            foreach( LevelEntities.PickableTypes pickableType in Enum.GetValues( typeof( LevelEntities.PickableTypes ) ) )
-            {
-                var positions = new LinkedList<MapNavigation.Position>();
-                IEnumerable<XElement> pickableItems = entities.getEntitiesOfType( (UInt64) pickableType );
-                foreach( var pickable in pickableItems )
-                {
-                    extractCoordinates( pickable, out int x, out int y );
-                    positions.AddLast( new MapNavigation.Position( x, y ) );
-                }
-                pickablePositions.Add( pickableType, positions );
-            }
-        }
-
     }
 }

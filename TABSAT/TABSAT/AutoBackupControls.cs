@@ -227,7 +227,7 @@ namespace TABSAT
                 backupsTreeView.Nodes.AddRange( e.Backups );
                 backupsTreeView.EndUpdate();
 
-                backupsGroupBox.Text = "Backups: " + e.Count;
+                backupsGroupBox.Text = "Backup Save Files: " + e.Count;
                 backupsTreeView.Enabled = true;
             }
         }
@@ -250,13 +250,15 @@ namespace TABSAT
         private void disableControls()
         {
             backupFolderGroupBox.Enabled = false;
-            copySaveGroupBox.Enabled = false;
+            backupButton.Enabled = false;
+            restoreButton.Enabled = false;
         }
 
         private void enableControls()
         {
             backupFolderGroupBox.Enabled = true;
-            copySaveGroupBox.Enabled = true;
+            TreeNode backupNode = backupsTreeView.SelectedNode;
+            restoreButton.Enabled = backupNode != null && backupNode.Level == 1;
         }
 
         private void CalculateBackupsChecksums_DoWork( object sender, DoWorkEventArgs e )

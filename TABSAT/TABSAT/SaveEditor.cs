@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace TABSAT
@@ -12,6 +13,8 @@ namespace TABSAT
 
     internal class MiniMapIcons
     {
+        // Refactor into SaveReader..?
+
         private const string GIANT_PROJECT_IMAGE = @"5072922660204167778";
         private const string MUTANT_PROJECT_IMAGE = @"3097669356589096184";
 
@@ -22,17 +25,12 @@ namespace TABSAT
             //                 <Complex name="EntityRef">
             //                   <Properties >
             //                     <Simple name = "IDEntity"
-            return SaveReader.getFirstComplexPropertyNamed( icon, "EntityRef" ).Element( "Properties" ).Element( "Simple" ).Attribute( "value" );   // Could use getFirstSimplePropertyNamed( ..., "IDEntity" )?
-        }
-
-        private static XAttribute getCell( XElement icon )
-        {
-            return SaveReader.getFirstSimplePropertyNamed( icon, "Cell" ).Attribute( "value" );
+            return SaveReader.getValueAttOfSimpleProp( SaveReader.getFirstComplexPropertyNamed( icon, "EntityRef" ), "IDEntity" );
         }
 
         internal MiniMapIcons( XElement levelComplex )
         {
-            iconsItems = new SortedDictionary<ulong, XElement>();
+            iconsItems = new SortedDictionary<UInt64, XElement>();
             foreach( var icon in SaveReader.getFirstPropertyOfTypeNamed( levelComplex, "Collection", "MiniMapIndicators" ).Element( "Items" ).Elements( "Complex" ) )
             {
                 // Check it's not for ZXMiniMapIndicatorInfectedSwarn or something else
@@ -76,7 +74,7 @@ namespace TABSAT
             if( iconsItems.TryGetValue( id, out XElement icon ) )
             {
                 //<Simple name="IDProjectImage">
-                XAttribute image = SaveReader.getFirstSimplePropertyNamed( icon, "IDProjectImage" ).Attribute( "value" );
+                XAttribute image = SaveReader.getValueAttOfSimpleProp( icon, "IDProjectImage" );
 
                 string project_image;
                 string text;
@@ -95,8 +93,8 @@ namespace TABSAT
                 }
 
                 image.SetValue( project_image );
-                SaveReader.getFirstSimplePropertyNamed( icon, "Text" ).Attribute( "value" ).SetValue( text );
-                SaveReader.getFirstSimplePropertyNamed( icon, "Title" ).Attribute( "value" ).SetValue( title );
+                SaveReader.getValueAttOfSimpleProp( icon, "Text" ).SetValue( text );
+                SaveReader.getValueAttOfSimpleProp( icon, "Title" ).SetValue( title );
             }
         }
 
@@ -111,7 +109,7 @@ namespace TABSAT
             {
                 if( iconsItems.TryGetValue( fromID, out XElement fromIcon ) )
                 {
-                    getCell( fromIcon ).SetValue( getCell( toIcon ).Value );
+                    SaveReader.getValueAttOfSimpleProp( fromIcon, "Cell" ).SetValue( SaveReader.getValueAttOfSimpleProp( toIcon, "Cell" ).Value );
 
                     //Console.WriteLine( "Icon: " + fromID + " relocated to: " + getCell( toIcon ).Value );
                 }
@@ -193,7 +191,7 @@ namespace TABSAT
                                 <Simple name="ID" value="
              */
             var extrasIDs = from c in getExtraEntities().Elements( "Complex" )
-                            select getFirstSimplePropertyNamed( c, "ID" ).Attribute( "value" ).Value;
+                            select getValueAttOfSimpleProp( c, "ID" ).Value;
             //Console.WriteLine( "extrasIDs: " + extrasIDs.Count() );
             addIDs( extrasIDs );
             //Console.WriteLine( "Unique IDs: " + uniqueIDs.Count );
@@ -258,7 +256,7 @@ namespace TABSAT
               */
         }
 
-        internal void scalePopulation( decimal scale )
+        internal void scalePopulation( in decimal scale, in bool scaleIdle, in bool scaleActive )
         {
             if( scale < 0.0M )
             {
@@ -283,10 +281,10 @@ namespace TABSAT
                 { LevelEntities.ScalableZombieTypes.ZombieVenom, scale },
                 { LevelEntities.ScalableZombieTypes.ZombieHarpy, scale }
             };
-            scalePopulation( scalableZombieTypeFactors );
+            scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive );
         }
 
-        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors )
+        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors, in bool scaleIdle, in bool scaleActive )
         {
             SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<LevelEntities.ScalableZombieTypes, decimal>();
 
@@ -312,42 +310,46 @@ namespace TABSAT
                 }
             }
 
-            scalePopulation( scalableZombieTypeFactors );
+            scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive );
         }
 
-        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors )
+        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors, in bool scaleIdle, in bool scaleActive )
         {
             // First handle zombies from and idle since the map was generated, found in LevelFastSerializedEntities
-
-            var zombieTypes = getInactiveZombieItems();
-            foreach( var typeItem in zombieTypes )
+            if( scaleIdle )
             {
-                UInt64 zombieTypeInt = Convert.ToUInt64( typeItem.Element( "Simple" ).Attribute( "value" ).Value );
-                //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
-                if( !Enum.IsDefined( typeof( LevelEntities.ScalableZombieTypes ), zombieTypeInt ) )
+                var zombieTypes = getInactiveZombieItems();
+                foreach( var typeItem in zombieTypes )
                 {
-                    Console.Error.WriteLine( "Unexpected Serialized TypeID: " + zombieTypeInt );
-                    continue;   // Can't scale this type
-                }
+                    UInt64 zombieTypeInt = Convert.ToUInt64( typeItem.Element( "Simple" ).Attribute( "value" ).Value );
+                    //Console.WriteLine( "zombieTypeInt: " + zombieTypeInt );
+                    if( !Enum.IsDefined( typeof( LevelEntities.ScalableZombieTypes ), zombieTypeInt ) )
+                    {
+                        Console.Error.WriteLine( "Unexpected Serialized TypeID: " + zombieTypeInt );
+                        continue;   // Can't scale this type
+                    }
 
-                LevelEntities.ScalableZombieTypes zombieType = (LevelEntities.ScalableZombieTypes) zombieTypeInt;
-                if( !scalableZombieTypeFactors.ContainsKey( zombieType ) )
-                {
-                    continue;   // Won't be scaling this type
-                }
+                    LevelEntities.ScalableZombieTypes zombieType = (LevelEntities.ScalableZombieTypes) zombieTypeInt;
+                    if( !scalableZombieTypeFactors.ContainsKey( zombieType ) )
+                    {
+                        continue;   // Won't be scaling this type
+                    }
 
-                var collection = typeItem.Element( "Collection" );
-                decimal scale = scalableZombieTypeFactors[zombieType];
-                scaleInactiveZombies( collection, scale );
+                    var collection = typeItem.Element( "Collection" );
+                    decimal scale = scalableZombieTypeFactors[zombieType];
+                    scaleInactiveZombies( collection, scale );
+                }
             }
 
             // Next handle aggro'd and spawn-generated zombies, found in LevelEntities
-
-            foreach( var k_v in scalableZombieTypeFactors )
+            if( scaleActive )
             {
-                var zombieType = k_v.Key;
-                var scale = k_v.Value;
-                entities.scaleEntities( (UInt64) zombieType, scale, this );
+                foreach( var k_v in scalableZombieTypeFactors )
+                {
+                    var zombieType = k_v.Key;
+                    var scale = k_v.Value;
+                    entities.scaleEntities( (UInt64) zombieType, scale, this );
+                }
             }
         }
 
@@ -371,7 +373,7 @@ namespace TABSAT
                 /*( from s in zCopy.Element( "Properties" ).Elements( "Simple" )
                   where (string) s.Attribute( "name" ) == "A"
                   select s ).Single()*/
-                getFirstSimplePropertyNamed( zCopy, "A" ).SetAttributeValue( "value", newID() );
+                getValueAttOfSimpleProp( zCopy, "A" ).SetValue( newID() );
                 copiedZombies.AddLast( zCopy );
             }
 
@@ -392,7 +394,7 @@ namespace TABSAT
              */
             var cap = /*( from s in col.Element( "Properties" ).Elements( "Simple" )
                          where (string) s.Attribute( "name" ) == "Capacity"
-                         select s ).Single()*/getFirstSimplePropertyNamed( collection, "Capacity" ).Attribute( "value" );
+                         select s ).Single()*/getValueAttOfSimpleProp( collection, "Capacity" );
             //Console.WriteLine( zombieType + ": " + cap.Value );
 
             if( scale < 1.0M )
@@ -730,9 +732,8 @@ namespace TABSAT
 
             string layerFog = Convert.ToBase64String( clearFog );
             //Console.WriteLine( layerFog );
-
-            XElement layerFogSimple = getFirstSimplePropertyNamed( levelComplex, "LayerFog" );
-            layerFogSimple.SetAttributeValue( "value", layerFog );
+            
+            getValueAttOfSimpleProp( levelComplex, "LayerFog" ).SetValue( layerFog );
         }
 
         private void circularFog( int size, byte[] clearFog, uint r )
@@ -821,41 +822,40 @@ namespace TABSAT
         internal void showFullMap()
         {
             //        <Simple name="ShowFullMap" value="False" />
-            XElement ShowFullMap = getFirstSimplePropertyNamed( levelComplex, "ShowFullMap" );
-            ShowFullMap.SetAttributeValue( "value", "True" );
+            getValueAttOfSimpleProp( levelComplex, "ShowFullMap" ).SetValue( "True" );
         }
 
         internal void addExtraSupplies( uint food, uint energy, uint workers )
         {
-            bool addValue( XElement extra, uint add )
+            bool addValue( XAttribute extra, uint add )
             {
-                if( !Int32.TryParse( extra.Attribute( "value" ).Value, out int value ) )
+                if( !Int32.TryParse( extra.Value, out int value ) )
                 {
                     return false;
                 }
 
                 value += (int) add;
-                extra.SetAttributeValue( "value", value );
+                extra.SetValue( value );
                 return true;
             }
 
             if( food > 0 )
             {
-                if( !addValue( getFirstSimplePropertyNamed( levelComplex, "CommandCenterExtraFood" ), food ) )
+                if( !addValue( getValueAttOfSimpleProp( levelComplex, "CommandCenterExtraFood" ), food ) )
                 {
                     Console.Error.WriteLine( "Unable to get the current CC Food supply value." );
                 }
             }
             if( energy > 0 )
             {
-                if( !addValue( getFirstSimplePropertyNamed( levelComplex, "CommandCenterExtraEnergy" ), energy ) )
+                if( !addValue( getValueAttOfSimpleProp( levelComplex, "CommandCenterExtraEnergy" ), energy ) )
                 {
                     Console.Error.WriteLine( "Unable to get the current CC Energy supply value." );
                 }
             }
             if( workers > 0 )
             {
-                if( !addValue( getFirstSimplePropertyNamed( levelComplex, "CommandCenterExtraWorkers" ), workers ) )
+                if( !addValue( getValueAttOfSimpleProp( levelComplex, "CommandCenterExtraWorkers" ), workers ) )
                 {
                     Console.Error.WriteLine( "Unable to get the current CC Workers supply value." );
                 }
@@ -922,23 +922,23 @@ namespace TABSAT
             // Update CC stored values, per resource
             if( gold )
             {
-                getFirstSimplePropertyNamed( levelComplex, "Gold" ).SetAttributeValue( "value", storesCapacity * GOLD_STORAGE_FACTOR );
+                getValueAttOfSimpleProp( levelComplex, "Gold" ).SetValue( storesCapacity * GOLD_STORAGE_FACTOR );
             }
             if( wood )
             {
-                getFirstSimplePropertyNamed( levelComplex, "Wood" ).SetAttributeValue( "value", storesCapacity );
+                getValueAttOfSimpleProp( levelComplex, "Wood" ).SetValue( storesCapacity );
             }
             if( stone )
             {
-                getFirstSimplePropertyNamed( levelComplex, "Stone" ).SetAttributeValue( "value", storesCapacity );
+                getValueAttOfSimpleProp( levelComplex, "Stone" ).SetValue( storesCapacity );
             }
             if( iron )
             {
-                getFirstSimplePropertyNamed( levelComplex, "Iron" ).SetAttributeValue( "value", storesCapacity );
+                getValueAttOfSimpleProp( levelComplex, "Iron" ).SetValue( storesCapacity );
             }
             if( oil )
             {
-                getFirstSimplePropertyNamed( levelComplex, "Oil" ).SetAttributeValue( "value", storesCapacity );
+                getValueAttOfSimpleProp( levelComplex, "Oil" ).SetValue( storesCapacity );
             }
         }
 
@@ -952,7 +952,7 @@ namespace TABSAT
             //                    <Complex name="MapDrawer">
             //                      <Properties>
             //                        <Simple name="ThemeType" value=
-            XElement levelThemeType = getFirstSimplePropertyNamed( getMapDrawer(), "ThemeType" );
+            getValueAttOfSimpleProp( getMapDrawer(), "ThemeType" ).SetValue( themeValue );
 
             //<Complex name="Root" type="ZX.ZXGameState, TheyAreBillions">
             //  < Properties >
@@ -960,10 +960,7 @@ namespace TABSAT
             XElement paramsComplex = getFirstComplexPropertyNamed( data, "SurvivalModeParams" );
             //      <Properties>
             //        <Simple name="ThemeType"
-            XElement paramsThemeType = getFirstSimplePropertyNamed( paramsComplex, "ThemeType" );
-
-            levelThemeType.SetAttributeValue( "value", themeValue );
-            paramsThemeType.SetAttributeValue( "value", themeValue );
+            getValueAttOfSimpleProp( paramsComplex, "ThemeType" ).SetValue( themeValue );
         }
 
         private XElement getSwarmByName( XElement collectionContainer, string name )
@@ -974,7 +971,7 @@ namespace TABSAT
              */
             XElement eventsItems = getFirstPropertyOfTypeNamed( collectionContainer, "Collection", "LevelEvents" ).Element( "Items" );
             return ( from c in eventsItems.Elements( "Complex" )
-                     where (string) getFirstSimplePropertyNamed( c, "Name" ).Attribute( "value" ) == name
+                     where (string) getValueAttOfSimpleProp( c, "Name" ) == name
                      select c ).FirstOrDefault();
         }
 
@@ -984,10 +981,10 @@ namespace TABSAT
             {
                 if( c != null )
                 {
-                    getFirstSimplePropertyNamed( c, "StartTimeH" ).SetAttributeValue( "value", times.startTime );
-                    getFirstSimplePropertyNamed( c, "GameTimeH" ).SetAttributeValue( "value", times.gameTime );
-                    getFirstSimplePropertyNamed( c, "RepeatTimeH" ).SetAttributeValue( "value", times.repeatTime );
-                    getFirstSimplePropertyNamed( c, "StartNotifyTimeH" ).SetAttributeValue( "value", times.notifyTime );
+                    getValueAttOfSimpleProp( c, "StartTimeH" ).SetValue( times.startTime );
+                    getValueAttOfSimpleProp( c, "GameTimeH" ).SetValue( times.gameTime );
+                    getValueAttOfSimpleProp( c, "RepeatTimeH" ).SetValue( times.repeatTime );
+                    getValueAttOfSimpleProp( c, "StartNotifyTimeH" ).SetValue( times.notifyTime );
                 }
             }
 
@@ -1014,7 +1011,7 @@ namespace TABSAT
                 var complex = getSwarmByName( collectionContainer, s );
                 if( complex != null )
                 {
-                    getFirstSimplePropertyNamed( complex, "Generators" ).SetAttributeValue( "value", g );
+                    getValueAttOfSimpleProp( complex, "Generators" ).SetValue( g );
                 }
             }
 
@@ -1075,8 +1072,13 @@ namespace TABSAT
             //                 <Complex name="Extension" type="ZX.GameSystems.ZXLevelExtension, TheyAreBillions">
             //                  <Properties>
             //                    <Simple name="AllowMayors" value="True" />
-            XElement allowMayors = getFirstSimplePropertyNamed( getDataExtension(), "AllowMayors" );
-            allowMayors.SetAttributeValue( "value", "False" );
+            getValueAttOfSimpleProp( getDataExtension(), "AllowMayors" ).SetValue( "False" );
+        }
+
+        internal void removeReclaimables()
+        {
+            entities.removeReclaimables();
+            // No need to update/reset SaveReader's Positions structures, as instance isn't reused after modification..?
         }
     }
 }

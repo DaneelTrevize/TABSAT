@@ -53,7 +53,7 @@ namespace TABSAT
 
             initSaveSelectorControl();
 
-            tabControl1.SelectedIndexChanged += tabControl_SelectedIndexChanged;
+            mainTabControl.SelectedIndexChanged += tabControl_SelectedIndexChanged;
 
             updatesM = new UpdatesManager( statusWriter );
         }
@@ -149,11 +149,11 @@ namespace TABSAT
 
         private void tabControl_SelectedIndexChanged( object sender, EventArgs e )
         {
-            if( tabControl1.SelectedIndex == 1 )    // Assumes Modify tab page is 2nd
+            if( mainTabControl.SelectedIndex == 1 )    // Assumes Modify tab page is 2nd
             {
                 modifySaveC?.refreshSaveFileChoice();
             }
-            if( tabControl1.SelectedIndex == 3 )    // Assumes Viewer tab page is 4th
+            if( mainTabControl.SelectedIndex == 3 )    // Assumes Viewer tab page is 4th
             {
                 saveSelectorC?.refreshSaveFileChoice();
             }

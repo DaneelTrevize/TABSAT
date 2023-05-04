@@ -7,9 +7,23 @@ Summarise whether maps are worth continuing, without showing the layout.
 Count total pathable land, food, zombies? Chart them at each radius from CC? Summary in a starting radius?
 
 Map Viewer:
-  Is swarm skull location explicit in saves, or derived from associated zombie positions?
-  Show friendly units & buildings, -pickables, damaged entities?
+  Swarm zombies, colour-coded per swarm, or dynamically generate checkboxes per swarm icon/set?
+  Show friendly units & buildings?
   Differentiate types by colour?
+
+Offer to remove all zombies that are:
+  Not idle/fast-serialized.
+  Visible/not under fog as was last updated.
+  Within x range of friendly units/buildings? Much easier to effectively do this via the prior 2 means.
+
+Offer to modify (inactive) zombies and/or ground:
+  within/outside radius;
+  checkboxes for each cardinal compass direction?
+
+Not modifying pathing, minimal change to vision, making building easier:
+  Replace rock with water (the reverse may break geometry assumptions about rock formations for art asset reasons)?
+  Replace gold with dirt, or grass?
+  Swap gold/iron/stone with another type or grass/dirt (possibly making teching up harder, but building layouts easier)?
 
 ----
 
@@ -73,8 +87,6 @@ Make games harder:
 
 Remove Mutants and/or Giant minimap icons?
 
-Remove all Pickable resources & reclaimable buildings (and Fortress walls)? To remove potential early Radar vision or resources chiefly accessed via kiting?
-
 Possibly add a script element (that constantly loops?) to spawns a new zombie per troop loss, with specific loss type to zombie spawned pairing. E.g. Harpy for each ranger, Spitter for each Sniper, Mutant for each Thanatos?
 Might have to have a pseudo daily/8-hourly/faster wave, that spawns unit types & numbers depending on a diff between previous and current troop counts? So quickly replaced units might not trigger snowballing?
 
@@ -109,8 +121,12 @@ Clear straight/spiral paths from the CC to the edges in cardinal directions?
 
 Mostly for Caustic generator: Try to detect if entire ~halves (N/S/E/W) are unpopulated (& unpathable). If so, mirror the terrain w.r.t the CC, and 50/50 relocate, or 100% duplicate, zombies and VODs/oil, etc.
 
+Remove Fortress walls?
+
 --
 Make games easier:
+
+Remove active (non-fast-serialized) zombies. Would remove current waves, infections, kited blobs.
 
 Remove Fog over zombies, either all or only certain type(s)? And/or over VOD buildings?
 Remove Fog in a random pattern, would result in a spray effect? Or a non-uniform version based on CC distance?
