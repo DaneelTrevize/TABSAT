@@ -29,7 +29,7 @@ N.b. City Halls can spawn thousands more zombies and cause pathing issues, which
 * Changing the map Theme. This not only changes the visuals and background sound, but also inherits the rules modifiers of the standard themes, such as Frozen Highlands slowing zombies & increasing power consumption, or Desert Wasteland increasing zombie speed and range of noise.  
 See [the spreadsheets generated in the Modded Mayors repo](https://github.com/DaneelTrevize/Modded-Mayors/tree/master/Source) for the specific data from the MapThemes table.
 
-* Scaling the zombie population by a decimal factor, on a per-type basis.  
+* Scaling the zombie population by a decimal factor, on a per-type basis. This can be applied to the initially spawned map zombies that remain idle, and/or the later spawned zombies from swarms, VODs, and those aggrod by the player.  
 E.g. Harpy x0.5 is a 50% chance to keep/remove each Harpy.  
 Spitter x2.1 would duplicate each Spitter plus a 10% chance to triplicate them.
 
@@ -47,6 +47,9 @@ N.b. The on-screen text and icons will represent all current directions of a swa
 
 * Disabling Mayors. No new mayors will be granted for reaching colony population thresholds.
 
+* Removing neutral buildings and loot piles.
+These are the reclaimable towers that start on the map, as well as the pickable items from that initial start and any subsequently destroyed VOD buildings.
+
 ----
 
 # Automatical Backup Features
@@ -57,8 +60,15 @@ Save changes will be reported in the Log text area at the bottom of the UI.
 Active saves for which there is not a matching Backup set found in the Backups folder (default `DRIVE:\Users\USERNAME\Documents\TABSAT\saves\`) can be selected and manually backed up in the UI, copying both the `.zxsav` and `.zxcheck` files of a given save set.  
 The matching criteria is based upon a full file checksum, not just name and creation/modification timestamps. Checksumming may take in the order of 1 second per 100 save files, be those active or backup files, and the results are cached per TABSAT usage.
 
-Active saves can also automatically be backed up, upon change detection, by toggling the top right 'Enable AutoBackup' button. The Log area will also notify when Automatic Backup is enabled or disabled.
+Active saves can also automatically be backed up, upon change detection, by toggling the central 'Automatically Backup Save Files' checkbox. The Log area will also notify when Automatic Backup is enabled or disabled.
 
 Backups are versioned under their save name (for which there can be many corresponding saves per game, as well as name reuse between games), and then under the timestamp of when that save was last modified.
 
 Backups can be selected and manually restored in the UI, again copying both paired files of a given save set.
+
+----
+
+# Map Viewer
+
+When a Save File is extracted as a step in the Modification process, the contents is unpacked into a new folder (default under `DRIVE:\Users\USERNAME\Documents\TABSAT\edits\`).  
+These XML files contain enough of the state data layers from the game that a visual representation can be generated similar to the in-game minimap, with options to have the various layers shown, as well as derived values such as terrain navigability, and additional entity properties.

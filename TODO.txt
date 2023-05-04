@@ -12,7 +12,6 @@ Map Viewer:
   Differentiate types by colour?
 
 Offer to remove all zombies that are:
-  Not idle/fast-serialized.
   Visible/not under fog as was last updated.
   Within x range of friendly units/buildings? Much easier to effectively do this via the prior 2 means.
 
@@ -51,7 +50,7 @@ Also update Info file, just to be consistent with Data file?
 
 Consider approaches to keeping Backups TreeView sorted by baseName, then lastWriteUtc. Either via custom sorter, or careful insertion of single backups when generated.
 
--Use state Enums, FSM and change listeners for GUI/TABSAT when modifying file, and ReflectorManager?
+Use state Enums, FSM and change listeners for the ReflectorManager and UI?
 
 
 Provide an option to leave the Reflector deployed, and verify whether it is during ReflectorManager initialisation? Including file checksum?
