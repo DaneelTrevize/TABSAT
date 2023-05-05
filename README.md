@@ -43,7 +43,7 @@ TAB saves are Zipped folders of XML files, and encrypted with user-unknown passw
 TABSAT ironically launches a *zombie* incomplete instance of TAB to then coerce into helping extract and repack save files for our needs, before terminating it.  
 The incomplete nature of this TAB instance is why it mistakenly presents a warning pop-up about corrupted game data files, rather than the main game window, but the data files are unchanged.
 
-![Data Files Corrupted pop-up]](https://github.com/DaneelTrevize/TABSAT/blob/master/TABSAT/TABSAT/Resources/TAB_ignore_popup.png)
+![Data Files Corrupted pop-up](https://github.com/DaneelTrevize/TABSAT/blob/master/TABSAT/TABSAT/Resources/TAB_ignore_popup.png)
 
 This tool is formed of 2 C# projects, the main application: TABSAT.exe and a sister binary TABReflector.exe that is stored compressed within the main assembly. We also use the 3rd party Ionic.Zip.dll as found in the TAB install.  
 In the action of subverting TAB to modify save files, the Reflector component is automatically temporarily copied into your TAB install directory and launched in a second process which is augmented with TAB exe components.  
