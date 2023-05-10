@@ -454,107 +454,124 @@ namespace TABSAT
             try
             {
                 // Zombie Population Scaling
-                if( choices.PopulationScale != 1 )
+                if( choices.PopulationArea != ModifyChoices.AreaChoices.None )
                 {
-                    statusWriter( "Scaling Zombie population x" + choices.PopulationScale + '.' );
-                    dataEditor.scalePopulation( choices.PopulationScale, choices.ScaleIdle, choices.ScaleActive );
-                }
-                else
-                {
-                    if( choices.ScalableZombieGroupFactors.Any() )
+                    if( choices.PopulationScale != 1 )
                     {
-                        statusWriter( "Scaling Zombie population per type." );
-                        dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive );
+                        statusWriter( "Scaling Zombie population x" + choices.PopulationScale + '.' );
+                        dataEditor.scalePopulation( choices.PopulationScale, choices.ScaleIdle, choices.ScaleActive );
                     }
-                }
-                if( choices.GiantScale != 1 )
-                {
-                    statusWriter( "Scaling Giant population x" + choices.GiantScale + '.' );
-                    dataEditor.scaleHugePopulation( true, choices.GiantScale );
-                }
-                if( choices.MutantScale != 1 )
-                {
-                    statusWriter( "Scaling Mutant population x" + choices.MutantScale + '.' );
-                    dataEditor.scaleHugePopulation( false, choices.MutantScale );
+                    else
+                    {
+                        if( choices.ScalableZombieGroupFactors.Any() )
+                        {
+                            statusWriter( "Scaling Zombie population per type." );
+                            dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive );
+                        }
+                    }
+                    if( choices.GiantScale != 1 )
+                    {
+                        statusWriter( "Scaling Giant population x" + choices.GiantScale + '.' );
+                        dataEditor.scaleHugePopulation( true, choices.GiantScale );
+                    }
+                    if( choices.MutantScale != 1 )
+                    {
+                        statusWriter( "Scaling Mutant population x" + choices.MutantScale + '.' );
+                        dataEditor.scaleHugePopulation( false, choices.MutantScale );
+                    }
                 }
 
                 // Mutants
-                switch( choices.Mutants )
+                if( choices.HugeArea != ModifyChoices.AreaChoices.None )
                 {
-                    case ModifyChoices.MutantChoices.None:
-                        break;
-                    case ModifyChoices.MutantChoices.ReplaceWithGiants:
-                        statusWriter( "Replacing all Mutants with Giants." );
-                        dataEditor.replaceHugeZombies( true );
-                        break;
-                    case ModifyChoices.MutantChoices.ReplaceWithMutants:
-                        statusWriter( "Replacing all Giants with Mutants." );
-                        dataEditor.replaceHugeZombies( false );
-                        break;
-                    case ModifyChoices.MutantChoices.MoveToGiants:
-                        statusWriter( "Relocating Mutants to farthest Giant on the map." );
-                        dataEditor.relocateMutants( true, false );
-                        break;
-                    case ModifyChoices.MutantChoices.MoveToMutants:
-                        statusWriter( "Relocating Mutants to farthest Mutant on the map." );
-                        dataEditor.relocateMutants( false, false );
-                        break;
-                    case ModifyChoices.MutantChoices.MoveToGiantsPerQuadrant:
-                        statusWriter( "Relocating Mutants to farthest Giant per Compass quadrant if possible." );
-                        dataEditor.relocateMutants( true, true );
-                        break;
-                    case ModifyChoices.MutantChoices.MoveToMutantsPerQuadrant:
-                        statusWriter( "Relocating Mutants to farthest Mutant per Compass quadrant if possible." );
-                        dataEditor.relocateMutants( false, true );
-                        break;
-                    default:
-                        throw new ArgumentException( "Unimplemented choice: " + choices.Mutants );
+                    switch( choices.Mutants )
+                    {
+                        case ModifyChoices.MutantChoices.ReplaceWithGiants:
+                            statusWriter( "Replacing all Mutants with Giants." );
+                            dataEditor.replaceHugeZombies( true );
+                            break;
+                        case ModifyChoices.MutantChoices.ReplaceWithMutants:
+                            statusWriter( "Replacing all Giants with Mutants." );
+                            dataEditor.replaceHugeZombies( false );
+                            break;
+                        case ModifyChoices.MutantChoices.MoveToGiants:
+                            statusWriter( "Relocating Mutants to farthest Giant on the map." );
+                            dataEditor.relocateMutants( true, false );
+                            break;
+                        case ModifyChoices.MutantChoices.MoveToMutants:
+                            statusWriter( "Relocating Mutants to farthest Mutant on the map." );
+                            dataEditor.relocateMutants( false, false );
+                            break;
+                        case ModifyChoices.MutantChoices.MoveToGiantsPerQuadrant:
+                            statusWriter( "Relocating Mutants to farthest Giant per Compass quadrant if possible." );
+                            dataEditor.relocateMutants( true, true );
+                            break;
+                        case ModifyChoices.MutantChoices.MoveToMutantsPerQuadrant:
+                            statusWriter( "Relocating Mutants to farthest Mutant per Compass quadrant if possible." );
+                            dataEditor.relocateMutants( false, true );
+                            break;
+                        default:
+                            throw new ArgumentException( "Unimplemented choice: " + choices.Mutants );
+                    }
                 }
-                
+
                 // VODs
-                if( choices.ResizeVODs )
+                if( choices.VODArea != ModifyChoices.AreaChoices.None )
                 {
-                    statusWriter( "Replacing all VOD buildings with " + LevelEntities.vodSizesNames[choices.VodSize] + '.' );
-                    dataEditor.resizeVODs( choices.VodSize );
-                }
-                else
-                {
-                    if( choices.SmallScale != 1 )
+                    /*if( choices.ResizeVODs )
                     {
-                        statusWriter( "Scaling Dwellings count x" + choices.SmallScale + '.' );
-                        dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingSmall, choices.SmallScale );
+                        statusWriter( "Replacing all VOD buildings with " + LevelEntities.vodSizesNames[choices.VodSize] + '.' );
+                        dataEditor.resizeVODs( choices.VodSize );
                     }
-                    if( choices.MediumScale != 1 )
+                    else*/
                     {
-                        statusWriter( "Scaling Taverns count x" + choices.MediumScale + '.' );
-                        dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingMedium, choices.MediumScale );
-                    }
-                    if( choices.LargeScale != 1 )
-                    {
-                        statusWriter( "Scaling City Halls count x" + choices.LargeScale + '.' );
-                        dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingLarge, choices.LargeScale );
+                        if( choices.SmallScale != 1 )
+                        {
+                            statusWriter( "Scaling Dwellings count x" + choices.SmallScale + '.' );
+                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingSmall, choices.SmallScale );
+                        }
+                        if( choices.MediumScale != 1 )
+                        {
+                            statusWriter( "Scaling Taverns count x" + choices.MediumScale + '.' );
+                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingMedium, choices.MediumScale );
+                        }
+                        if( choices.LargeScale != 1 )
+                        {
+                            statusWriter( "Scaling City Halls count x" + choices.LargeScale + '.' );
+                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingLarge, choices.LargeScale );
+                        }
                     }
                 }
 
                 // Fog of War
-                switch ( choices.Fog )
+                if( choices.FogShowFullVision )
                 {
-                    case ModifyChoices.FogChoices.None:
-                        break;
-                    case ModifyChoices.FogChoices.All:
-                        statusWriter( "Removing all the fog." );
-                        dataEditor.removeFog();
-                        break;
-                    case ModifyChoices.FogChoices.Radius:
-                        statusWriter( "Removing the fog with cell range: " + choices.FogRadius );
-                        dataEditor.removeFog( choices.FogRadius );
-                        break;
-                    case ModifyChoices.FogChoices.Full:
-                        statusWriter( "Revealing the map." );
-                        dataEditor.showFullMap();
-                        break;
-                    default:
-                        throw new ArgumentException( "Unimplemented choice: " + choices.Fog );
+                    statusWriter( "Revealing the map." );
+                    dataEditor.showFullMap();
+                }
+                else
+                {
+                    switch( choices.FogArea )
+                    {
+                        case ModifyChoices.AreaChoices.None:
+                            break;
+                        case ModifyChoices.AreaChoices.Everywhere:
+                            statusWriter( "Removing all the fog." );
+                            dataEditor.removeFog();
+                            break;
+                        case ModifyChoices.AreaChoices.WithinRadius:
+                            statusWriter( "Removing the fog within cell range: " + choices.FogRadius );
+                            dataEditor.removeFog( choices.FogRadius );
+                            break;
+                        case ModifyChoices.AreaChoices.BeyondRadius:
+                            statusWriter( "Removing the fog beyond cell range: " + choices.FogRadius );
+                            dataEditor.removeFog( choices.FogRadius, false );
+                            break;
+                        case ModifyChoices.AreaChoices.Sections:
+                            // To implement...
+                        default:
+                            throw new ArgumentException( "Unimplemented choice: " + choices.FogArea );
+                    }
                 }
 
                 // Command Center Extras

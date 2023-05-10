@@ -5,9 +5,17 @@ namespace TABSAT
 {
     internal class ModifyChoices
     {
-        public enum MutantChoices
+        public enum AreaChoices
         {
             None,
+            Everywhere,
+            Sections,
+            WithinRadius,
+            BeyondRadius
+        }
+
+        public enum MutantChoices
+        {
             ReplaceWithGiants,
             ReplaceWithMutants,
             MoveToGiants,
@@ -16,28 +24,22 @@ namespace TABSAT
             MoveToMutantsPerQuadrant
         }
 
-        public enum FogChoices
-        {
-            None,
-            All,
-            Radius,
-            Full
-        }
-
+        internal readonly AreaChoices PopulationArea;
         internal readonly bool ScaleIdle;
         internal readonly bool ScaleActive;
         internal readonly decimal PopulationScale;
         internal readonly SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> ScalableZombieGroupFactors;
         internal readonly decimal GiantScale;
         internal readonly decimal MutantScale;
+        internal readonly AreaChoices HugeArea;
         internal readonly MutantChoices Mutants;
-        internal readonly bool ResizeVODs;
-        internal readonly LevelEntities.VODTypes VodSize;
+        internal readonly AreaChoices VODArea;
         internal readonly decimal SmallScale;
         internal readonly decimal MediumScale;
         internal readonly decimal LargeScale;
-        internal readonly FogChoices Fog;
+        internal readonly AreaChoices FogArea;
         internal readonly uint FogRadius;
+        internal readonly bool FogShowFullVision;
         internal readonly uint Food;
         internal readonly uint Energy;
         internal readonly uint Workers;
@@ -59,20 +61,22 @@ namespace TABSAT
         internal readonly bool RemoveReclaimables;
 
         internal ModifyChoices(
+            in AreaChoices pA,
             in bool sI,
             in bool sA,
             in decimal pS,
             in SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> szgF,
             in decimal gS,
             in decimal mS,
+            in AreaChoices hA,
             in MutantChoices m,
-            in bool rV,
-            in LevelEntities.VODTypes vS,
+            in AreaChoices vA,
             in decimal sV,
             in decimal mV,
             in decimal lV,
-            in FogChoices fog,
+            in AreaChoices fA,
             in uint fR,
+            in bool fF,
             in uint f,
             in uint e,
             in uint w,
@@ -94,20 +98,22 @@ namespace TABSAT
             in bool rR
             )
         {
+            PopulationArea = pA;
             ScaleIdle = sI;
             ScaleActive = sA;
             PopulationScale = pS;
             ScalableZombieGroupFactors = szgF;
             GiantScale = gS;
             MutantScale = mS;
+            HugeArea = hA;
             Mutants = m;
-            ResizeVODs = rV;
-            VodSize = vS;
+            VODArea = vA;
             SmallScale = sV;
             MediumScale = mV;
             LargeScale = lV;
-            Fog = fog;
+            FogArea = fA;
             FogRadius = fR;
+            FogShowFullVision = fF;
             Food = f;
             Energy = e;
             Workers = w;

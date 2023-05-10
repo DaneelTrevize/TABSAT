@@ -717,7 +717,7 @@ namespace TABSAT
             entities.scaleVODs( vodType, scale, this );
         }
 
-        internal void removeFog( uint radius = 0 )
+        internal void removeFog( in uint radius = 0, in bool withinNotBeyond = true )
         {
             int rawLength = 4 * cellsCount * cellsCount;        // 4 bytes just to store 00 00 00 FF or 00 00 00 00, yuck
 
@@ -725,9 +725,33 @@ namespace TABSAT
 
             byte[] clearFog = new byte[rawLength];  // Defaulting to 00 00 00 00, good if we want less than 50% fog
 
-            if( radius > 0 )
+            // Should we not modify the existing LayerFog data instead of potentially adding more fog than before..?
+
+            if( withinNotBeyond )
             {
-                circularFog( cellsCount, clearFog, radius );
+                if( radius > 0 )
+                {
+                    setFogCircle( commandCenterX, commandCenterY, cellsCount, clearFog, radius, withinNotBeyond );
+                }
+                // Else no fog, already done thanks to default byte array values.
+            }
+            else
+            {
+                if( radius > 0 )
+                {
+                    setFogCircle( commandCenterX, commandCenterY, cellsCount, clearFog, radius, withinNotBeyond );
+                }/*
+                else
+                {
+                    // Add fog everywhere. Never used?
+                    for( int x = 0; x < cellsCount; x++ )
+                    {
+                        for( int y = 0; y < cellsCount; y++ )
+                        {
+                            //setFog( cellsCount, clearFog, x, y );
+                        }
+                    }
+                }*/
             }
 
             string layerFog = Convert.ToBase64String( clearFog );
@@ -736,17 +760,17 @@ namespace TABSAT
             getValueAttOfSimpleProp( levelComplex, "LayerFog" ).SetValue( layerFog );
         }
 
-        private void circularFog( int size, byte[] clearFog, uint r )
+        private static void setFogCircle( in int commandCenterX, in int commandCenterY, in int size, byte[] clearFog, in uint r, in bool clearWithinNotBeyond )
         {
             int radius = (int) r;   // Just assume it'll fit
 
-            void setFog( int s, byte[] f, int x, int y )
+            void setFog( in int s, byte[] f, in int x, in int y )
             {
                 int wordIndex = ( ( y * s ) + x ) * 4;  // This indexing is backwards, because fog is oddly reversed, as well as in the opposite byte of the word
                 f[wordIndex + 3] = 0xFF;
             }
 
-            void setFogLine( int s, byte[] f, int xStart, int y, int xEnd )
+            void setFogLine( in int s, byte[] f, in int xStart, in int y, in int xEnd )
             {
                 for( int x = xStart; x < xEnd; x++ )
                 {
@@ -754,38 +778,42 @@ namespace TABSAT
                 }
             }
 
-            // Fill outside the circle with 00 00 00 FF, aka step 4 bytes at a time. Centered on CC
             int beforeCCx = commandCenterX - radius;
             int beforeCCy = commandCenterY - radius;
             int afterCCx = commandCenterX + radius;
             int afterCCy = commandCenterY + radius;
 
-            // Quick fill in "thirds" of before, adjacent, after (CC +- radius)
-            for( int x = 0; x < size; x++ )
+            if( clearWithinNotBeyond )
             {
-                // 1/3 before, NorthEast
-                for( int y = 0; y < beforeCCy; y++ )
-                {
-                    setFog( size, clearFog, x, y );
-                }
-                // 1/3 after, SouthWest
-                for( int y = afterCCy; y < size; y++ )
-                {
-                    setFog( size, clearFog, x, y );
-                }
-            }
+                // Fill outside the circle with 00 00 00 FF, aka step 4 bytes at a time. Centered on CC
 
-            for( int y = beforeCCy; y < afterCCy; y++ )
-            {
-                // 1/9 adjacent before, NorthWest
-                for( int x = 0; x < beforeCCx; x++ )
+                // Quick fill in "thirds" of before, adjacent, after (CC +- radius)
+                for( int x = 0; x < size; x++ )
                 {
-                    setFog( size, clearFog, x, y );
+                    // 1/3 before, NorthEast
+                    for( int y = 0; y < beforeCCy; y++ )
+                    {
+                        setFog( size, clearFog, x, y );
+                    }
+                    // 1/3 after, SouthWest
+                    for( int y = afterCCy; y < size; y++ )
+                    {
+                        setFog( size, clearFog, x, y );
+                    }
                 }
-                // 1/9 adjacent after, SouthEast
-                for( int x = afterCCx; x < size; x++ )
+
+                for( int y = beforeCCy; y < afterCCy; y++ )
                 {
-                    setFog( size, clearFog, x, y );
+                    // 1/9 adjacent before, NorthWest
+                    for( int x = 0; x < beforeCCx; x++ )
+                    {
+                        setFog( size, clearFog, x, y );
+                    }
+                    // 1/9 adjacent after, SouthEast
+                    for( int x = afterCCx; x < size; x++ )
+                    {
+                        setFog( size, clearFog, x, y );
+                    }
                 }
             }
             // Central 1/9 left to do
@@ -803,17 +831,31 @@ namespace TABSAT
             {
                 xFromCC = Convert.ToInt32( Math.Sqrt( radiusSquared - (yFromCC * yFromCC) ) );
 
-                // SE to S to SW
-                setFogLine( size, clearFog, commandCenterX + xFromCC, commandCenterY + yFromCC, radiusAfterCommandCenterX );
+                if( clearWithinNotBeyond )
+                {
+                    // SE to S to SW
+                    setFogLine( size, clearFog, commandCenterX + xFromCC, commandCenterY + yFromCC, radiusAfterCommandCenterX );
 
-                // SW to W to NW
-                setFogLine( size, clearFog, radiusBeforeCommandCenterX, commandCenterY + yFromCC, commandCenterX - xFromCC );
+                    // SW to W to NW
+                    setFogLine( size, clearFog, radiusBeforeCommandCenterX, commandCenterY + yFromCC, commandCenterX - xFromCC );
 
-                // NW to N to NE
-                setFogLine( size, clearFog, radiusBeforeCommandCenterX, commandCenterY - yFromCC, commandCenterX - xFromCC );
+                    // NW to N to NE
+                    setFogLine( size, clearFog, radiusBeforeCommandCenterX, commandCenterY - yFromCC, commandCenterX - xFromCC );
 
-                // NE to E to SE
-                setFogLine( size, clearFog, commandCenterX + xFromCC, commandCenterY - yFromCC, radiusAfterCommandCenterX );
+                    // NE to E to SE
+                    setFogLine( size, clearFog, commandCenterX + xFromCC, commandCenterY - yFromCC, radiusAfterCommandCenterX );
+                }
+                else
+                {
+                    // Temp square implementation...
+                    for( int x = 0; x < radius; x++ )
+                    {
+                        for( int y = 0; y < radius; y++ )
+                        {
+                            setFog( size, clearFog, commandCenterX + x - (radius/2), commandCenterY + y - (radius/2));
+                        }
+                    }
+                }
 
                 yFromCC += 1;
             }

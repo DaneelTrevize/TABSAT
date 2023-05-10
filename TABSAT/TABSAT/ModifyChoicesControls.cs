@@ -47,10 +47,9 @@ namespace TABSAT
             };
             vodCheckBoxes = new List<CheckBox>( 4 )
             {
-                vodReplaceCheckBox,
-                vodStackDwellingCheckBox,
-                vodStackTavernsCheckBox,
-                vodStackCityHallsCheckBox
+                vodDwellingCheckBox,
+                vodTavernsCheckBox,
+                vodCityHallsCheckBox
             };
             ccExtrasCheckBoxes = new List<CheckBox>( 3 )
             {
@@ -79,10 +78,6 @@ namespace TABSAT
                 removeReclaimablesCheckBox
             };
 
-            vodReplaceComboBox.DataSource = new BindingSource( LevelEntities.vodSizesNames, null );
-            vodReplaceComboBox.DisplayMember = "Value";
-            vodReplaceComboBox.ValueMember = "Key";
-
             giftComboBox.DataSource = new BindingSource( LevelEntities.giftableTypeNames, null );
             giftComboBox.DisplayMember = "Value";
             giftComboBox.ValueMember = "Key";
@@ -101,7 +96,6 @@ namespace TABSAT
             mutantReplaceAllComboBox.SelectedIndex = 0;
             mutantMoveWhatComboBox.SelectedIndex = 0;
             mutantMoveGlobalComboBox.SelectedIndex = 1;
-            vodReplaceComboBox.SelectedIndex = 0;
             giftComboBox.SelectedIndex = 1;
             swarmEasyComboBox.SelectedIndex = 1;
             swarmHardComboBox.SelectedIndex = 2;
@@ -132,26 +126,15 @@ namespace TABSAT
             zombieScaleGiantNumericUpDown.ValueChanged += numericHandler;
             zombieScaleMutantNumericUpDown.ValueChanged += numericHandler;
 
-
             mutantReplaceAllComboBox.SelectedIndexChanged += comboHandler;
             mutantMoveGlobalComboBox.SelectedIndexChanged += comboHandler;
             mutantMoveWhatComboBox.SelectedIndexChanged += comboHandler;
-
-
-            vodReplaceCheckBox.CheckedChanged += vodReplaceCheckBox_CheckedChanged;
-            vodStackDwellingCheckBox.CheckedChanged += notVodReplaceCheckBox_CheckedChanged;
-            vodStackTavernsCheckBox.CheckedChanged += notVodReplaceCheckBox_CheckedChanged;
-            vodStackCityHallsCheckBox.CheckedChanged += notVodReplaceCheckBox_CheckedChanged;
-
-            vodReplaceComboBox.SelectedIndexChanged += comboHandler;
 
             vodStackDwellingsNumericUpDown.ValueChanged += numericHandler;
             vodStackTavernsNumericUpDown.ValueChanged += numericHandler;
             vodStackCityHallsNumericUpDown.ValueChanged += numericHandler;
 
-
-            fogNumericUpDown.ValueChanged += numericHandler;
-
+            // fogShowFullRadioButton.CheckChanged should force area choice Everywhere while Checked, and disable radius & section choices..?
 
             ccFoodNumericUpDown.ValueChanged += numericHandler;
             ccEnergyNumericUpDown.ValueChanged += numericHandler;
@@ -160,12 +143,15 @@ namespace TABSAT
             giftComboBox.SelectedIndexChanged += comboHandler;
             giftNumericUpDown.ValueChanged += numericHandler;
 
-
             swarmEasyComboBox.SelectedIndexChanged += comboHandler;
             swarmHardComboBox.SelectedIndexChanged += comboHandler;
 
-
             themeComboBox.SelectedIndexChanged += comboHandler;
+
+            // Temporary option restrictions...
+            scalingAreaSelectorControl.disableRadiusChoice();
+            hugeAreaSelectorControl.disableRadiusChoice();
+            vodAreaSelectorControl.disableRadiusChoice();
         }
 
         private void comboBox_SelectedIndexChanged( object sender, EventArgs e )
@@ -179,10 +165,6 @@ namespace TABSAT
             else if( box == mutantMoveWhatComboBox || box == mutantMoveGlobalComboBox )
             {
                 mutantsMoveRadio.Checked = true;
-            }
-            else if( box == vodReplaceComboBox )
-            {
-                vodReplaceCheckBox.Checked = true;
             }
             else if( box == giftComboBox )
             {
@@ -252,19 +234,15 @@ namespace TABSAT
             }
             else if( num == vodStackDwellingsNumericUpDown )
             {
-                vodStackDwellingCheckBox.Checked = true;
+                vodDwellingCheckBox.Checked = true;
             }
             else if( num == vodStackTavernsNumericUpDown )
             {
-                vodStackTavernsCheckBox.Checked = true;
+                vodTavernsCheckBox.Checked = true;
             }
             else if( num == vodStackCityHallsNumericUpDown )
             {
-                vodStackCityHallsCheckBox.Checked = true;
-            }
-            else if( num == fogNumericUpDown )
-            {
-                fogClearRadioButton.Checked = true;
+                vodCityHallsCheckBox.Checked = true;
             }
             else if( num == ccFoodNumericUpDown )
             {
@@ -305,28 +283,12 @@ namespace TABSAT
             }
         }
 
-        private void vodReplaceCheckBox_CheckedChanged( object sender, EventArgs e )
-        {
-            if( ( (CheckBox) sender ).Checked )
-            {
-                vodStackDwellingCheckBox.Checked = false;
-                vodStackTavernsCheckBox.Checked = false;
-                vodStackCityHallsCheckBox.Checked = false;
-            }
-        }
-
-        private void notVodReplaceCheckBox_CheckedChanged( object sender, EventArgs e )
-        {
-            if( ( (CheckBox) sender ).Checked )
-            {
-                vodReplaceCheckBox.Checked = false;
-            }
-        }
-
         internal bool anyModificationChosen()
         {
-            return anyChecked( zombieScalingCheckBoxes ) || !mutantsNothingRadio.Checked || anyChecked( vodCheckBoxes ) || !fogLeaveRadioButton.Checked
-                || anyChecked( ccExtrasCheckBoxes ) || ccGiftCheckBox.Checked || anyChecked( warehousesFillCheckBoxes ) || anyChecked( swarmsCheckBoxes ) || anyChecked( generalCheckBoxes );
+            return scalingAreaSelectorControl.AreaChoice() != ModifyChoices.AreaChoices.None || hugeAreaSelectorControl.AreaChoice() != ModifyChoices.AreaChoices.None
+                || vodAreaSelectorControl.AreaChoice() != ModifyChoices.AreaChoices.None || fogAreaSelectorControl.AreaChoice() != ModifyChoices.AreaChoices.None
+                || anyChecked( ccExtrasCheckBoxes ) || ccGiftCheckBox.Checked || anyChecked( warehousesFillCheckBoxes )
+                || anyChecked( swarmsCheckBoxes ) || anyChecked( generalCheckBoxes );
         }
 
         internal ModifyChoices getChoices()
@@ -359,13 +321,13 @@ namespace TABSAT
             }
 
             // Mutants
-            ModifyChoices.MutantChoices mutants = ModifyChoices.MutantChoices.None;
+            ModifyChoices.MutantChoices mutants;
             if( mutantReplaceAllRadio.Checked )
             {
                 bool toGiantNotMutant = mutantReplaceAllComboBox.SelectedIndex == 0;
                 mutants = toGiantNotMutant ? ModifyChoices.MutantChoices.ReplaceWithGiants : ModifyChoices.MutantChoices.ReplaceWithMutants;
             }
-            else if( mutantsMoveRadio.Checked )
+            else// if( mutantsMoveRadio.Checked )
             {
                 bool toGiantNotMutant = mutantMoveWhatComboBox.SelectedIndex == 0;
                 bool perDirection = mutantMoveGlobalComboBox.SelectedIndex == 1;
@@ -380,29 +342,8 @@ namespace TABSAT
             }
 
             // VODs
-            LevelEntities.VODTypes vodSize = LevelEntities.VODTypes.DoomBuildingSmall;
-            if( vodReplaceCheckBox.Checked )
-            {
-                KeyValuePair<LevelEntities.VODTypes, string> kv = (KeyValuePair<LevelEntities.VODTypes, string>) vodReplaceComboBox.SelectedItem;
-                vodSize = kv.Key;
-            }
 
             // Fog of War
-            ModifyChoices.FogChoices fog = ModifyChoices.FogChoices.None;
-            uint fogRadius = 0;
-            if( fogRemoveRadioButton.Checked )
-            {
-                fog = ModifyChoices.FogChoices.All;
-            }
-            else if( fogClearRadioButton.Checked )
-            {
-                fogRadius = Convert.ToUInt32( fogNumericUpDown.Value );
-                fog = ModifyChoices.FogChoices.Radius;
-            }
-            else if( fogShowFullRadioButton.Checked )
-            {
-                fog = ModifyChoices.FogChoices.Full;
-            }
 
             // Command Center Extras
             uint giftCount = 0;
@@ -439,20 +380,22 @@ namespace TABSAT
             }
 
             return new ModifyChoices(
-                idleZombiesRadioButton.Checked || allZombiesRadioButton.Checked,
-                activeZombiesRadioButton.Checked || allZombiesRadioButton.Checked,
+                scalingAreaSelectorControl.AreaChoice(),
+                idleRadioButton.Checked || bothRadioButton.Checked,
+                activeRadioButton.Checked || bothRadioButton.Checked,
                 zombieScaleCheckBox.Checked ? zombieScaleNumericUpDown.Value : 1,
                 scalableZombieGroupFactors,
                 zombieScaleGiantCheckBox.Checked ? zombieScaleGiantNumericUpDown.Value : 1,
                 zombieScaleMutantCheckBox.Checked ? zombieScaleMutantNumericUpDown.Value : 1,
+                hugeAreaSelectorControl.AreaChoice(),
                 mutants,
-                vodReplaceCheckBox.Checked,
-                vodSize,
-                vodStackDwellingCheckBox.Checked ? vodStackDwellingsNumericUpDown.Value : 1,
-                vodStackTavernsCheckBox.Checked ? vodStackTavernsNumericUpDown.Value : 1,
-                vodStackCityHallsCheckBox.Checked ? vodStackCityHallsNumericUpDown.Value : 1,
-                fog,
-                fogRadius,
+                vodAreaSelectorControl.AreaChoice(),
+                vodDwellingCheckBox.Checked ? vodStackDwellingsNumericUpDown.Value : 1,
+                vodTavernsCheckBox.Checked ? vodStackTavernsNumericUpDown.Value : 1,
+                vodCityHallsCheckBox.Checked ? vodStackCityHallsNumericUpDown.Value : 1,
+                fogAreaSelectorControl.AreaChoice(),
+                Convert.ToUInt32( fogAreaSelectorControl.Radius() ),
+                fogShowFullRadioButton.Checked,
                 ccExtraFoodCheckBox.Checked ? Convert.ToUInt32( ccFoodNumericUpDown.Value ) : 0,
                 ccExtraEnergyCheckBox.Checked ? Convert.ToUInt32( ccEnergyNumericUpDown.Value ) : 0,
                 ccExtraWorkersCheckBox.Checked ? Convert.ToUInt32( ccWorkersNumericUpDown.Value ) : 0,
@@ -485,8 +428,10 @@ namespace TABSAT
                     c.Checked = false;
                 }
             }
-            mutantsNothingRadio.Checked = true;
-            fogLeaveRadioButton.Checked = true;
+            scalingAreaSelectorControl.reset();
+            vodAreaSelectorControl.reset();
+            hugeAreaSelectorControl.reset();
+            fogAreaSelectorControl.reset();
             ccGiftCheckBox.Checked = false;
         }
     }
