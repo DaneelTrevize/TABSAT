@@ -5,6 +5,7 @@ Improve UI by alternating background colouring of save modification options?
 
 Summarise whether maps are worth continuing, without showing the layout.
 Count total pathable land, food, zombies? Chart them at each radius from CC? Summary in a starting radius?
+Assess values such as NEntitesCreatedPerTemplate, NSoldiersDead, EntitiesDeadByTemplate, to determine which achievements may still accomplished.
 
 Map Viewer:
   Swarm zombies, colour-coded per swarm, or dynamically generate checkboxes per swarm icon/set?
@@ -141,7 +142,7 @@ Or relocate existing pickables to be by the CC.
 Duplicate all existing resource-producing buildings (not housing).
 Duplicate all Oil Pools.
 
-Make all existing troops veterans.
+Make all existing troops veterans. <Simple name="Experience" value="..."
 
 Add the scripted pseudo-train system from some custom maps, for regular delivery of chosen resources?
 
