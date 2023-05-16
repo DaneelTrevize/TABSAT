@@ -847,14 +847,9 @@ namespace TABSAT
                 }
                 else
                 {
-                    // Temp square implementation...
-                    for( int x = 0; x < radius; x++ )
-                    {
-                        for( int y = 0; y < radius; y++ )
-                        {
-                            setFog( size, clearFog, commandCenterX + x - (radius/2), commandCenterY + y - (radius/2));
-                        }
-                    }
+                    // Before and after CC
+                    setFogLine( size, clearFog, commandCenterX - xFromCC, commandCenterY - yFromCC, commandCenterX + xFromCC );
+                    setFogLine( size, clearFog, commandCenterX - xFromCC, commandCenterY + yFromCC, commandCenterX + xFromCC );
                 }
 
                 yFromCC += 1;
