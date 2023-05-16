@@ -100,18 +100,18 @@
             // 
             this.radiusNumericUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.radiusNumericUpDown.Increment = new decimal(new int[] {
-            10,
+            5,
             0,
             0,
             0});
             this.radiusNumericUpDown.Location = new System.Drawing.Point(189, 69);
             this.radiusNumericUpDown.Maximum = new decimal(new int[] {
-            90,
+            95,
             0,
             0,
             0});
             this.radiusNumericUpDown.Minimum = new decimal(new int[] {
-            20,
+            10,
             0,
             0,
             0});

@@ -158,7 +158,7 @@ namespace TABSAT
                         considerStoppingReflector( reflectorStopExtractCheckBox.Checked );
                         break;
                     default:
-                        throw new ArgumentException( "Unimplemented EditingState: " + newState );
+                        throw new NotImplementedException( "Unimplemented EditingState: " + newState );
                 }
             }
         }
@@ -454,35 +454,174 @@ namespace TABSAT
             try
             {
                 // Zombie Population Scaling
-                if( choices.PopulationArea != ModifyChoices.AreaChoices.None )
+                switch( choices.PopulationArea )
                 {
-                    if( choices.PopulationScale != 1 )
-                    {
-                        statusWriter( "Scaling Zombie population x" + choices.PopulationScale + '.' );
-                        dataEditor.scalePopulation( choices.PopulationScale, choices.ScaleIdle, choices.ScaleActive );
-                    }
-                    else
-                    {
-                        if( choices.ScalableZombieGroupFactors.Any() )
+                    case ModifyChoices.AreaChoices.None:
+                        break;
+                    case ModifyChoices.AreaChoices.Everywhere:
+                        if( choices.PopulationScale != 1 )
                         {
-                            statusWriter( "Scaling Zombie population per type." );
-                            dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive );
+                            statusWriter( "Scaling Zombie population x" + choices.PopulationScale + '.' );
+                            dataEditor.scalePopulation( choices.PopulationScale, choices.ScaleIdle, choices.ScaleActive );
                         }
-                    }
-                    if( choices.GiantScale != 1 )
+                        else
+                        {
+                            if( choices.ScalableZombieGroupFactors.Any() )
+                            {
+                                statusWriter( "Scaling Zombie population per type." );
+                                dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive );
+                            }
+                        }
+                        if( choices.GiantScale != 1 )
+                        {
+                            statusWriter( "Scaling Giant population x" + choices.GiantScale + '.' );
+                            dataEditor.scaleHugePopulation( true, choices.GiantScale );
+                        }
+                        if( choices.MutantScale != 1 )
+                        {
+                            statusWriter( "Scaling Mutant population x" + choices.MutantScale + '.' );
+                            dataEditor.scaleHugePopulation( false, choices.MutantScale );
+                        }
+                        break;
+                    case ModifyChoices.AreaChoices.WithinRadius:
+                        if( choices.PopulationScale != 1 )
+                        {
+                            statusWriter( "Scaling Zombie population x" + choices.PopulationScale + " within cell range: " + choices.PopulationRadius );
+                            dataEditor.scalePopulation( choices.PopulationScale, choices.ScaleIdle, choices.ScaleActive, choices.PopulationRadius, false );
+                        }
+                        else
+                        {
+                            if( choices.ScalableZombieGroupFactors.Any() )
+                            {
+                                statusWriter( "Scaling Zombie population per type within cell range: " + choices.PopulationRadius );
+                                dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive, choices.PopulationRadius, false );
+                            }
+                        }
+                        if( choices.GiantScale != 1 )
+                        {
+                            statusWriter( "Scaling Giant population x" + choices.GiantScale + " within cell range: " + choices.PopulationRadius );
+                            dataEditor.scaleHugePopulation( true, choices.GiantScale, choices.PopulationRadius, false );
+                        }
+                        if( choices.MutantScale != 1 )
+                        {
+                            statusWriter( "Scaling Mutant population x" + choices.MutantScale + " within cell range: " + choices.PopulationRadius );
+                            dataEditor.scaleHugePopulation( false, choices.MutantScale, choices.PopulationRadius , false );
+                        }
+                        break;
+                    case ModifyChoices.AreaChoices.BeyondRadius:
+                        if( choices.PopulationScale != 1 )
+                        {
+                            statusWriter( "Scaling Zombie population x" + choices.PopulationScale + " beyond cell range: " + choices.PopulationRadius );
+                            dataEditor.scalePopulation( choices.PopulationScale, choices.ScaleIdle, choices.ScaleActive, choices.PopulationRadius );
+                        }
+                        else
+                        {
+                            if( choices.ScalableZombieGroupFactors.Any() )
+                            {
+                                statusWriter( "Scaling Zombie population per type beyond cell range: " + choices.PopulationRadius );
+                                dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive, choices.PopulationRadius );
+                            }
+                        }
+                        if( choices.GiantScale != 1 )
+                        {
+                            statusWriter( "Scaling Giant population x" + choices.GiantScale + " beyond cell range: " + choices.PopulationRadius );
+                            dataEditor.scaleHugePopulation( true, choices.GiantScale, choices.PopulationRadius );
+                        }
+                        if( choices.MutantScale != 1 )
+                        {
+                            statusWriter( "Scaling Mutant population x" + choices.MutantScale + " beyond cell range: " + choices.PopulationRadius );
+                            dataEditor.scaleHugePopulation( false, choices.MutantScale, choices.PopulationRadius );
+                        }
+                        break;
+                    default:
+                        throw new NotImplementedException( "Unimplemented choice: " + choices.PopulationArea );
+                }
+
+                // VODs
+                    /*if( choices.ResizeVODs )
                     {
-                        statusWriter( "Scaling Giant population x" + choices.GiantScale + '.' );
-                        dataEditor.scaleHugePopulation( true, choices.GiantScale );
+                        statusWriter( "Replacing all VOD buildings with " + LevelEntities.vodSizesNames[choices.VodSize] + '.' );
+                        dataEditor.resizeVODs( choices.VodSize );
                     }
-                    if( choices.MutantScale != 1 )
-                    {
-                        statusWriter( "Scaling Mutant population x" + choices.MutantScale + '.' );
-                        dataEditor.scaleHugePopulation( false, choices.MutantScale );
-                    }
+                    else*/
+                switch( choices.VODArea )
+                {
+                    case ModifyChoices.AreaChoices.None:
+                        break;
+                    case ModifyChoices.AreaChoices.Everywhere:
+                        if( choices.VODSmallScale != 1 )
+                        {
+                            statusWriter( "Scaling Dwellings count x" + choices.VODSmallScale + '.' );
+                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingSmall, choices.VODSmallScale );
+                        }
+                        if( choices.VODMediumScale != 1 )
+                        {
+                            statusWriter( "Scaling Taverns count x" + choices.VODMediumScale + '.' );
+                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingMedium, choices.VODMediumScale );
+                        }
+                        if( choices.VODLargeScale != 1 )
+                        {
+                            statusWriter( "Scaling City Halls count x" + choices.VODLargeScale + '.' );
+                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingLarge, choices.VODLargeScale );
+                        }
+                        break;
+                    case ModifyChoices.AreaChoices.WithinRadius:
+                        if( choices.VODSmallScale != 1 )
+                        {
+                            statusWriter( "Scaling Dwellings count x" + choices.VODSmallScale + " within cell range: " + choices.VODRadius );
+                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingSmall, choices.VODSmallScale, choices.VODRadius, false );
+                        }
+                        if( choices.VODMediumScale != 1 )
+                        {
+                            statusWriter( "Scaling Taverns count x" + choices.VODMediumScale + " within cell range: " + choices.VODRadius );
+                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingMedium, choices.VODMediumScale, choices.VODRadius, false );
+                        }
+                        if( choices.VODLargeScale != 1 )
+                        {
+                            statusWriter( "Scaling City Halls count x" + choices.VODLargeScale + " within cell range: " + choices.VODRadius );
+                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingLarge, choices.VODLargeScale, choices.VODRadius, false );
+                        }
+                        break;
+                    case ModifyChoices.AreaChoices.BeyondRadius:
+                        if( choices.VODSmallScale != 1 )
+                        {
+                            statusWriter( "Scaling Dwellings count x" + choices.VODSmallScale + " beyond cell range: " + choices.VODRadius );
+                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingSmall, choices.VODSmallScale, choices.VODRadius );
+                        }
+                        if( choices.VODMediumScale != 1 )
+                        {
+                            statusWriter( "Scaling Taverns count x" + choices.VODMediumScale + " beyond cell range: " + choices.VODRadius );
+                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingMedium, choices.VODMediumScale, choices.VODRadius );
+                        }
+                        if( choices.VODLargeScale != 1 )
+                        {
+                            statusWriter( "Scaling City Halls count x" + choices.VODLargeScale + " beyond cell range: " + choices.VODRadius );
+                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingLarge, choices.VODLargeScale, choices.VODRadius );
+                        }
+                        break;
+                    default:
+                        throw new NotImplementedException( "Unimplemented choice: " + choices.VODArea );
+                }
+
+                // Command Center Extras
+                if( choices.Food != 0 || choices.Energy != 0 || choices.Workers != 0 )
+                {
+                    statusWriter( "Adding Command Center extra supplies,"
+                        + ( choices.Food > 0 ? " Food: +" + choices.Food : "" )
+                        + ( choices.Energy > 0 ? " Energy: +" + choices.Energy : "" )
+                        + ( choices.Workers > 0 ? " Workers: +" + choices.Workers : "" )
+                        + '.' );
+                    dataEditor.addExtraSupplies( choices.Food, choices.Energy, choices.Workers );
+                }
+
+                if( choices.GiftCount != 0 )
+                {
+                    statusWriter( "Gifting " + choices.GiftCount + "x " + LevelEntities.giftableTypeNames[choices.Gift] + "." );
+                    dataEditor.giftEntities( choices.Gift, choices.GiftCount );
                 }
 
                 // Mutants
-                if( choices.HugeArea != ModifyChoices.AreaChoices.None )
+                if( choices.MutantsArea != ModifyChoices.AreaChoices.None )
                 {
                     switch( choices.Mutants )
                     {
@@ -511,36 +650,20 @@ namespace TABSAT
                             dataEditor.relocateMutants( false, true );
                             break;
                         default:
-                            throw new ArgumentException( "Unimplemented choice: " + choices.Mutants );
+                            throw new NotImplementedException( "Unimplemented choice: " + choices.Mutants );
                     }
                 }
 
-                // VODs
-                if( choices.VODArea != ModifyChoices.AreaChoices.None )
+                // Fill Resource Storage
+                if( choices.FillGold || choices.FillWood || choices.FillStone || choices.FillIron || choices.FillOil )
                 {
-                    /*if( choices.ResizeVODs )
-                    {
-                        statusWriter( "Replacing all VOD buildings with " + LevelEntities.vodSizesNames[choices.VodSize] + '.' );
-                        dataEditor.resizeVODs( choices.VodSize );
-                    }
-                    else*/
-                    {
-                        if( choices.SmallScale != 1 )
-                        {
-                            statusWriter( "Scaling Dwellings count x" + choices.SmallScale + '.' );
-                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingSmall, choices.SmallScale );
-                        }
-                        if( choices.MediumScale != 1 )
-                        {
-                            statusWriter( "Scaling Taverns count x" + choices.MediumScale + '.' );
-                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingMedium, choices.MediumScale );
-                        }
-                        if( choices.LargeScale != 1 )
-                        {
-                            statusWriter( "Scaling City Halls count x" + choices.LargeScale + '.' );
-                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingLarge, choices.LargeScale );
-                        }
-                    }
+                    statusWriter( "Filling storage for specified resources:"
+                        + ( choices.FillGold ? " Gold;" : "" )
+                        + ( choices.FillWood ? " Wood;" : "" )
+                        + ( choices.FillStone ? " Stone;" : "" )
+                        + ( choices.FillIron ? " Iron;" : "" )
+                        + ( choices.FillOil ? " Oil;" : "" ) );
+                    dataEditor.fillStorage( choices.FillGold, choices.FillWood, choices.FillStone, choices.FillIron, choices.FillOil );
                 }
 
                 // Fog of War
@@ -570,37 +693,8 @@ namespace TABSAT
                         case ModifyChoices.AreaChoices.Sections:
                             // To implement...
                         default:
-                            throw new ArgumentException( "Unimplemented choice: " + choices.FogArea );
+                            throw new NotImplementedException( "Unimplemented choice: " + choices.FogArea );
                     }
-                }
-
-                // Command Center Extras
-                if( choices.Food != 0 || choices.Energy != 0 || choices.Workers != 0 )
-                {
-                    statusWriter( "Adding Command Center extra supplies,"
-                        + ( choices.Food > 0 ? " Food: +" + choices.Food : "" )
-                        + ( choices.Energy > 0 ? " Energy: +" + choices.Energy : "" )
-                        + ( choices.Workers > 0 ? " Workers: +" + choices.Workers : "" )
-                        + '.' );
-                    dataEditor.addExtraSupplies( choices.Food, choices.Energy, choices.Workers );
-                }
-
-                if( choices.GiftCount != 0 )
-                {
-                    statusWriter( "Gifting " + choices.GiftCount + "x " + LevelEntities.giftableTypeNames[choices.Gift] + "." );
-                    dataEditor.giftEntities( choices.Gift, choices.GiftCount );
-                }
-
-                // Fill Resource Storage
-                if( choices.FillGold || choices.FillWood || choices.FillStone || choices.FillIron || choices.FillOil )
-                {
-                    statusWriter( "Filling storage for specified resources:"
-                        + ( choices.FillGold ? " Gold;" : "" )
-                        + ( choices.FillWood ? " Wood;" : "" )
-                        + ( choices.FillStone ? " Stone;" : "" )
-                        + ( choices.FillIron ? " Iron;" : "" )
-                        + ( choices.FillOil ? " Oil;" : "" ) );
-                    dataEditor.fillStorage( choices.FillGold, choices.FillWood, choices.FillStone, choices.FillIron, choices.FillOil );
                 }
 
                 // Swarms

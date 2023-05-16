@@ -468,7 +468,7 @@ namespace TABSAT
             return keys;
         }
 
-        internal LinkedList<ScaledEntity> scaleEntities( in UInt64 entityType, in decimal scale, IDGenerator editor )
+        internal LinkedList<ScaledEntity> scaleEntities( in UInt64 entityType, in decimal scale, IDGenerator editor, in MapNavigation.Position ccPosition, in uint radius, in bool beyondNotWithin )
         {
             if( scale < 0.0M )
             {
@@ -493,43 +493,65 @@ namespace TABSAT
 
             var selectedEntities = new LinkedList<ScaledEntity>();
 
-            if( scale < 1.0M )
+            IEnumerable<XElement> items = getEntitiesOfType( entityType );
+            foreach( var item in items )
             {
-                // chance is now chance to not remove existing entities
-                // selectedEntities will be those removed
+                // First test that their position is in the affected area
+                    if( notInArea( radius, beyondNotWithin, item, ccPosition ) )
+                    {
+                        continue;
+                    }
+                // item is in the affected area, we continue here rather than loop to another immediately
 
-                // 0 >= scale < 1
-                foreach( var i in getEntitiesOfType( entityType ) )
+                if( scale < 1.0M )
                 {
+                    // chance is now chance to not remove existing entities
+                    // selectedEntities will be those removed
+
+                    // 0 >= scale < 1
                     if( scale == 0.0M || chance < rand.NextDouble() )
                     {
-                        var id = (UInt64) i.Element( "Simple" ).Attribute( "value" );
+                        var id = (UInt64) item.Element( "Simple" ).Attribute( "value" );
                         Remove( id );
                         selectedEntities.AddLast( new ScaledEntity( id ) );
                     }
                 }
-                //Console.WriteLine( "selectedEntities: " + selectedEntities.Count );
-            }
-            else
-            {
-
-                foreach( var i in getEntitiesOfType( entityType ) )
+                else
                 {
                     // First the certain duplications
                     for( uint m = 1; m < multiples; m++ )
                     {
-                        duplicateLevelEntity( i, selectedEntities );
+                        duplicateLevelEntity( item, selectedEntities );
                     }
                     // And now the chance-based duplication
                     if( chance >= rand.NextDouble() )   // If the chance is not less than the roll
                     {
-                        duplicateLevelEntity( i, selectedEntities );
+                        duplicateLevelEntity( item, selectedEntities );
                     }
                 }
-                //Console.WriteLine( "selectedEntities: " + selectedEntities.Count );
             }
+            //Console.WriteLine( "selectedEntities: " + selectedEntities.Count );
 
             return selectedEntities;
+        }
+
+        private static bool notInArea( in uint radius, in bool beyondNotWithin, in XElement item, in MapNavigation.Position cc )
+        {
+            if( radius == 0 )
+            {
+                return !beyondNotWithin;
+            }
+
+            SaveReader.extractCoordinates( item, out int x, out int y );
+            var distanceSquared = ( ( x - cc.x ) * ( x - cc.x ) ) + ( ( y - cc.y ) * ( y - cc.y ) );
+            if( distanceSquared > radius * radius )
+            {
+                return !beyondNotWithin;
+            }
+            else
+            {
+                return beyondNotWithin;
+            }
         }
 
         internal void relocateHuge( in UInt64 origin, in UInt64 destination )
@@ -710,11 +732,6 @@ namespace TABSAT
                     changeItemType( id, (UInt64) fromVodType, (UInt64) targetVodType );
                 }
             }
-        }
-
-        internal void scaleVODs( in VODTypes vodType, in decimal scale, IDGenerator editor )
-        {
-            scaleEntities( (UInt64) vodType, scale, editor );
         }
 
         internal void removeReclaimables()

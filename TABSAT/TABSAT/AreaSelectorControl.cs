@@ -6,6 +6,8 @@ namespace TABSAT
 {
     public partial class AreaSelectorControl : UserControl
     {
+        // We could reduce the height by making "Modify everywhere/within sections" use 1 RadioButton and a ComboBox...
+
         private static readonly SolidBrush backgroundBrush = new SolidBrush( Color.DarkGray );
         private static readonly Pen gridPen = new Pen( Color.Black );
         private static readonly SolidBrush highlightBrush = new SolidBrush( Color.Yellow );
@@ -142,9 +144,9 @@ namespace TABSAT
             return areaChoice;
         }
 
-        internal decimal Radius()
+        internal UInt32 Radius()
         {
-            return radiusNumericUpDown.Value;
+            return Convert.ToUInt32( radiusNumericUpDown.Value );
         }
 
         internal byte Sections()
@@ -163,6 +165,27 @@ namespace TABSAT
             boundaryComboBox.Enabled = false;
             radiusLabel.Enabled = false;
             radiusNumericUpDown.Enabled = false;
+        }
+
+        internal void enableRadiusChoice()
+        {
+            radiusRadioButton.Enabled = true;
+            boundaryComboBox.Enabled = true;
+            radiusLabel.Enabled = true;
+            radiusNumericUpDown.Enabled = true;
+        }
+
+        internal void ensureSomeArea()
+        {
+            if( areaChoice == ModifyChoices.AreaChoices.None )
+            {
+                SetAreaEverywhere();
+            }
+        }
+
+        internal void SetAreaEverywhere()
+        {
+            everywhereRadioButton.Checked = true;
         }
     }
 }

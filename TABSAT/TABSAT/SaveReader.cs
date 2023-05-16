@@ -13,7 +13,7 @@ namespace TABSAT
         int CellsCount();
         SaveReader.ThemeType Theme();
         SaveReader.LayerData getLayerData( SaveReader.MapLayers layer );
-        void getCCPosition( out int X, out int Y );
+        MapNavigation.Position getCCPosition();
         int getCCDistance( MapNavigation.Position position );
         MapNavigation.Direction? getCCDirection( MapNavigation.Position position );
         int getNavigableCount( in int x, in int y, in int res );
@@ -264,8 +264,7 @@ namespace TABSAT
         protected readonly XElement data;
         protected readonly XElement levelComplex;
         protected readonly int cellsCount;
-        protected readonly int commandCenterX;
-        protected readonly int commandCenterY;
+        protected readonly MapNavigation.Position ccPosition;
         protected readonly LevelEntities entities;
         private XElement generatedLevel;
         private XElement extension;
@@ -317,7 +316,7 @@ namespace TABSAT
             y = int.Parse( xySplit[1] );
         }
 
-        protected static void extractCoordinates( XElement item, out int x, out int y, in bool alreadyComplex = false, string positionPropertyName = "Position" )
+        internal static void extractCoordinates( XElement item, out int x, out int y, in bool alreadyComplex = false, string positionPropertyName = "Position" )
         {
             var complex = item;
             if( !alreadyComplex )
@@ -363,7 +362,8 @@ namespace TABSAT
             //      <Properties>
             //        <Simple name="CurrentCommandCenterCell"
             XElement currentCommandCenterCell = getFirstSimplePropertyNamed( levelComplex, "CurrentCommandCenterCell" );
-            extractInts( currentCommandCenterCell, out commandCenterX, out commandCenterY );
+            extractInts( currentCommandCenterCell, out int commandCenterX, out int commandCenterY );
+            ccPosition = new MapNavigation.Position( commandCenterX, commandCenterY );
             //Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
 
             entities = new LevelEntities( levelComplex );
@@ -648,7 +648,7 @@ namespace TABSAT
             {
                 for( int y = -2; y <= 2; y++ )
                 {
-                    int i = MapNavigation.axesToIndex( res, commandCenterX + x, commandCenterY + y );
+                    int i = MapNavigation.axesToIndex( res, ccPosition.x + x, ccPosition.y + y );
                     values[i] = NAVIGABLE_BLOCKED;
                 }
             }
@@ -656,10 +656,9 @@ namespace TABSAT
             return values;
         }
 
-        public void getCCPosition( out Int32 X, out Int32 Y )
+        public MapNavigation.Position getCCPosition()
         {
-            X = commandCenterX;
-            Y = commandCenterY;
+            return ccPosition;
         }
 
         public int getCCDistance( MapNavigation.Position position )
@@ -740,7 +739,7 @@ namespace TABSAT
             if( flowGraph == null )
             {
                 flowGraph = new MapNavigation.FlowGraph( cellsCount, getLayerData( MapLayers.Navigable ).values );
-                flowGraph.floodFromCC( commandCenterX, commandCenterY );    // Should be constructor?
+                flowGraph.floodFromCC( ccPosition );    // Should be constructor?
             }
             return flowGraph;
         }

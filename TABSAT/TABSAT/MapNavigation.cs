@@ -46,7 +46,7 @@ namespace TABSAT
                 case Direction.NORTHWEST:
                     return Direction.SOUTHEAST;
                 default:
-                    throw new ArgumentException( "Unimplemented Direction: " + d );
+                    throw new NotImplementedException( "Unimplemented Direction: " + d );
             }
         }
 
@@ -100,7 +100,7 @@ namespace TABSAT
                         newX -= 1;
                         break;
                     default:
-                        throw new ArgumentException( "Unimplemented Direction: " + d );
+                        throw new NotImplementedException( "Unimplemented Direction: " + d );
                 }
 
                 if( newX < 0 || newY < 0 )
@@ -156,15 +156,15 @@ namespace TABSAT
                 ccDirections = new SortedDictionary<Position, Direction>();
             }
 
-            internal void floodFromCC( int CCX, int CCY)
+            internal void floodFromCC( in Position cc )
             {
                 SortedDictionary<Position, Direction> aroundCC = new SortedDictionary<Position, Direction>
                 {
                     // 5 cells per side, Corners +/-2 from center co-ords.
-                    { new Position( CCX - 3, CCY ), Direction.SOUTHEAST },
-                    { new Position( CCX, CCY - 3 ), Direction.SOUTHWEST },
-                    { new Position( CCX + 3, CCY ), Direction.NORTHWEST },
-                    { new Position( CCX, CCY + 3 ), Direction.NORTHEAST }
+                    { new Position( cc.x - 3, cc.y ), Direction.SOUTHEAST },
+                    { new Position( cc.x, cc.y - 3 ), Direction.SOUTHWEST },
+                    { new Position( cc.x + 3, cc.y ), Direction.NORTHWEST },
+                    { new Position( cc.x, cc.y + 3 ), Direction.NORTHEAST }
                 };
 
                 flood( aroundCC, 1, UNNAVIGABLE );

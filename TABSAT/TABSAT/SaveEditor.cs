@@ -256,7 +256,7 @@ namespace TABSAT
               */
         }
 
-        internal void scalePopulation( in decimal scale, in bool scaleIdle, in bool scaleActive )
+        internal void scalePopulation( in decimal scale, in bool scaleIdle, in bool scaleActive, in uint radius = 0, in bool beyondNotWithin = true )
         {
             if( scale < 0.0M )
             {
@@ -281,10 +281,10 @@ namespace TABSAT
                 { LevelEntities.ScalableZombieTypes.ZombieVenom, scale },
                 { LevelEntities.ScalableZombieTypes.ZombieHarpy, scale }
             };
-            scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive );
+            scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive, radius, beyondNotWithin );
         }
 
-        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors, in bool scaleIdle, in bool scaleActive )
+        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors, in bool scaleIdle, in bool scaleActive, in uint radius = 0, in bool beyondNotWithin = true )
         {
             SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<LevelEntities.ScalableZombieTypes, decimal>();
 
@@ -310,10 +310,10 @@ namespace TABSAT
                 }
             }
 
-            scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive );
+            scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive, radius, beyondNotWithin );
         }
 
-        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors, in bool scaleIdle, in bool scaleActive )
+        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors, in bool scaleIdle, in bool scaleActive, in uint radius, in bool beyondNotWithin )
         {
             // First handle zombies from and idle since the map was generated, found in LevelFastSerializedEntities
             if( scaleIdle )
@@ -348,7 +348,7 @@ namespace TABSAT
                 {
                     var zombieType = k_v.Key;
                     var scale = k_v.Value;
-                    entities.scaleEntities( (UInt64) zombieType, scale, this );
+                    entities.scaleEntities( (UInt64) zombieType, scale, this, ccPosition, radius, beyondNotWithin );
                 }
             }
         }
@@ -465,14 +465,14 @@ namespace TABSAT
             }
         }
 
-        internal void scaleHugePopulation( in bool giantsNotMutants, in decimal scale )
+        internal void scaleHugePopulation( in bool giantsNotMutants, in decimal scale, in uint radius = 0, in bool beyondNotWithin = true )
         {
             if( scale == 1.0M )
             {
                 return;     // Nothing needs be done
             }
 
-            var selectedZombies = entities.scaleEntities( (UInt64) (giantsNotMutants ? LevelEntities.HugeTypes.Giant : LevelEntities.HugeTypes.Mutant), scale, this );
+            var selectedZombies = entities.scaleEntities( (UInt64) (giantsNotMutants ? LevelEntities.HugeTypes.Giant : LevelEntities.HugeTypes.Mutant), scale, this, ccPosition, radius, beyondNotWithin );
 
             if( scale < 1.0M )
             {
@@ -529,25 +529,25 @@ namespace TABSAT
             public readonly CompassDirection Direction;
             public readonly float distanceSquared;
 
-            internal RelativePosition( XElement i, in int CCX, in int CCY )
+            internal RelativePosition( XElement i, in MapNavigation.Position cc )
             {
                 // The below value extractions are best relocated into LevelEntities? EntityDescriptors under UnitsGenerationPack under LevelEvents under LevelState also have ID and Position.
                 // LevelEvents is also duplicated under Extension under Data under CurrentGeneratedLevel also under LevelState.
                 ID = (UInt64) i.Element( "Simple" ).Attribute( "value" );
                 extractCoordinates( i, out int x, out int y );
 
-                if( x <= CCX )
+                if( x <= cc.x )
                 {
                     // North or West
-                    Direction = y <= CCY ? CompassDirection.North : CompassDirection.West;
+                    Direction = y <= cc.y ? CompassDirection.North : CompassDirection.West;
                 }
                 else
                 {
                     // East or South
-                    Direction = y <= CCY ? CompassDirection.East : CompassDirection.South;
+                    Direction = y <= cc.y ? CompassDirection.East : CompassDirection.South;
                 }
 
-                distanceSquared = (( x - CCX ) * ( x - CCX )) + (( y - CCY ) * ( y - CCY ));
+                distanceSquared = (( x - cc.x ) * ( x - cc.x )) + (( y - cc.y ) * ( y - cc.y ));
 
                 //Console.WriteLine( "id: " + id + "\tPosition: " + x + ", " + y + "\tis: " + dir + ",\tdistanceSquared: " + distanceSquared );
             }
@@ -601,12 +601,12 @@ namespace TABSAT
             // Split huge zombies by direction
             foreach( var mutant in mutants )
             {
-                RelativePosition p = new RelativePosition( mutant, commandCenterX, commandCenterY );
+                RelativePosition p = new RelativePosition( mutant, ccPosition );
                 mutantsPerDirection[p.Direction].Add( p );
             }
             foreach( var giant in giants )
             {
-                RelativePosition p = new RelativePosition( giant, commandCenterX, commandCenterY );
+                RelativePosition p = new RelativePosition( giant, ccPosition );
                 giantsPerDirection[p.Direction].Add( p );
             }
 
@@ -699,22 +699,22 @@ namespace TABSAT
             }
 
         }
-        
+        /*
         internal void resizeVODs( LevelEntities.VODTypes vodType )
         {
             entities.resizeVODs( vodType );
         }
-
-        internal void stackVODbuildings( LevelEntities.VODTypes vodType, decimal scale )
+        */
+        internal void stackVODbuildings( in LevelEntities.VODTypes vodType, in decimal scale, in uint radius = 0, in bool beyondNotWithin = true )
         {
-            // Could use some add/remove entity delegates, to refactor this and zombie type scaling? Except zombie type collections can be RemoveNodes()'d per type, while level entities are all mixed in 1 collection.
+            // Could use some add/remove entity delegates, to refactor this and zombie type scaling? Except idle zombie type collections can be RemoveNodes()'d per type, while level entities are all mixed in 1 collection.
 
             if( scale == 1.0M )
             {
                 return;     // Nothing needs be done
             }
 
-            entities.scaleVODs( vodType, scale, this );
+            entities.scaleEntities( (UInt64) vodType, scale, this, ccPosition, radius, beyondNotWithin );
         }
 
         internal void removeFog( in uint radius = 0, in bool withinNotBeyond = true )
@@ -731,7 +731,7 @@ namespace TABSAT
             {
                 if( radius > 0 )
                 {
-                    setFogCircle( commandCenterX, commandCenterY, cellsCount, clearFog, radius, withinNotBeyond );
+                    setFogCircle( ccPosition, cellsCount, clearFog, radius, withinNotBeyond );
                 }
                 // Else no fog, already done thanks to default byte array values.
             }
@@ -739,7 +739,7 @@ namespace TABSAT
             {
                 if( radius > 0 )
                 {
-                    setFogCircle( commandCenterX, commandCenterY, cellsCount, clearFog, radius, withinNotBeyond );
+                    setFogCircle( ccPosition, cellsCount, clearFog, radius, withinNotBeyond );
                 }/*
                 else
                 {
@@ -760,7 +760,7 @@ namespace TABSAT
             getValueAttOfSimpleProp( levelComplex, "LayerFog" ).SetValue( layerFog );
         }
 
-        private static void setFogCircle( in int commandCenterX, in int commandCenterY, in int size, byte[] clearFog, in uint r, in bool clearWithinNotBeyond )
+        private static void setFogCircle( in MapNavigation.Position ccPosition, in int size, byte[] clearFog, in uint r, in bool clearWithinNotBeyond )
         {
             int radius = (int) r;   // Just assume it'll fit
 
@@ -778,10 +778,10 @@ namespace TABSAT
                 }
             }
 
-            int beforeCCx = commandCenterX - radius;
-            int beforeCCy = commandCenterY - radius;
-            int afterCCx = commandCenterX + radius;
-            int afterCCy = commandCenterY + radius;
+            int beforeCCx = ccPosition.x - radius;
+            int beforeCCy = ccPosition.y - radius;
+            int afterCCx = ccPosition.x + radius;
+            int afterCCy = ccPosition.y + radius;
 
             if( clearWithinNotBeyond )
             {
@@ -822,8 +822,8 @@ namespace TABSAT
 
             // We'll just skip messing with Bresenham and use square roots, for a 90degree arc quadrant, and mirror 4 times.
             int radiusSquared = radius * radius;
-            int radiusBeforeCommandCenterX = commandCenterX - radius;
-            int radiusAfterCommandCenterX = commandCenterX + radius;
+            int radiusBeforeCommandCenterX = ccPosition.x - radius;
+            int radiusAfterCommandCenterX = ccPosition.x + radius;
 
             int xFromCC;// = radius;
             int yFromCC = 0;
@@ -834,22 +834,22 @@ namespace TABSAT
                 if( clearWithinNotBeyond )
                 {
                     // SE to S to SW
-                    setFogLine( size, clearFog, commandCenterX + xFromCC, commandCenterY + yFromCC, radiusAfterCommandCenterX );
+                    setFogLine( size, clearFog, ccPosition.x + xFromCC, ccPosition.y + yFromCC, radiusAfterCommandCenterX );
 
                     // SW to W to NW
-                    setFogLine( size, clearFog, radiusBeforeCommandCenterX, commandCenterY + yFromCC, commandCenterX - xFromCC );
+                    setFogLine( size, clearFog, radiusBeforeCommandCenterX, ccPosition.y + yFromCC, ccPosition.x - xFromCC );
 
                     // NW to N to NE
-                    setFogLine( size, clearFog, radiusBeforeCommandCenterX, commandCenterY - yFromCC, commandCenterX - xFromCC );
+                    setFogLine( size, clearFog, radiusBeforeCommandCenterX, ccPosition.y - yFromCC, ccPosition.x - xFromCC );
 
                     // NE to E to SE
-                    setFogLine( size, clearFog, commandCenterX + xFromCC, commandCenterY - yFromCC, radiusAfterCommandCenterX );
+                    setFogLine( size, clearFog, ccPosition.x + xFromCC, ccPosition.y - yFromCC, radiusAfterCommandCenterX );
                 }
                 else
                 {
                     // Before and after CC
-                    setFogLine( size, clearFog, commandCenterX - xFromCC, commandCenterY - yFromCC, commandCenterX + xFromCC );
-                    setFogLine( size, clearFog, commandCenterX - xFromCC, commandCenterY + yFromCC, commandCenterX + xFromCC );
+                    setFogLine( size, clearFog, ccPosition.x - xFromCC, ccPosition.y - yFromCC, ccPosition.x + xFromCC );
+                    setFogLine( size, clearFog, ccPosition.x - xFromCC, ccPosition.y + yFromCC, ccPosition.x + xFromCC );
                 }
 
                 yFromCC += 1;

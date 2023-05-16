@@ -268,8 +268,8 @@ namespace TABSAT
                 }
 
                 // Draw CommandCenter
-                mapData.getCCPosition( out int x, out int y );
-                mapGraphics.FillRectangle( ccBrush, ( x - 2 ) * cellSize, ( y - 2 ) * cellSize, cellSize * 5, cellSize * 5 );
+                var cc = mapData.getCCPosition();
+                mapGraphics.FillRectangle( ccBrush, ( cc.x - 2 ) * cellSize, ( cc.y - 2 ) * cellSize, cellSize * 5, cellSize * 5 );
 
                 if( gridCheckBox.Checked )
                 {
