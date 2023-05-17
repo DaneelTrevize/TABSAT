@@ -16,6 +16,7 @@ namespace TABSAT
         MapNavigation.Position getCCPosition();
         int getCCDistance( MapNavigation.Position position );
         MapNavigation.Direction? getCCDirection( MapNavigation.Position position );
+        SaveReader.InArea InRadiusArea( uint radius, bool beyondNotWithin );
         int getNavigableCount( in int x, in int y, in int res );
         int getZombieCount( in int x, in int y, in int res, SortedSet<LevelEntities.ScalableZombieGroups> groups );
         LinkedList<MapNavigation.Position> getVodPositions( in LevelEntities.VODTypes vodType );
@@ -95,7 +96,7 @@ namespace TABSAT
         internal const int OBJECTS_IRON = 0x05;
         internal const int NAVIGABLE_BLOCKED = 0x01;
 
-        internal enum ThemeType
+        internal enum ThemeType : byte
         {
             FA,
             BR,
@@ -106,7 +107,7 @@ namespace TABSAT
         }
         internal static readonly Dictionary<ThemeType, string> themeTypeNames;
 
-        internal enum SwarmDirections
+        internal enum SwarmDirections : byte
         {
             ONE,
             TWO,
@@ -147,7 +148,7 @@ namespace TABSAT
             internal SwarmTimings Weak { get; }
             internal SwarmTimings Medium { get; }
         }
-        protected enum GameFinish
+        protected enum GameFinish : byte
         {
             Day50,
             Day80,
@@ -157,7 +158,7 @@ namespace TABSAT
         }
         protected static readonly SortedDictionary<GameFinish, SwarmTimingSet> swarmTimings;
 
-        internal enum MapLayers
+        internal enum MapLayers : byte
         {
             Terrain,
             Objects,
@@ -190,6 +191,9 @@ namespace TABSAT
         private const string RuinTreasureA_VO_Type = @"807600697508101881";
         private const string VOLCANO_Type = @"5660774435759652919";      // Multiple sizes?*/
         //private const string _Type = @"";
+
+        public delegate bool InArea( in XElement item, in bool levelEntityNotFast = true );
+        public static readonly InArea Everywhere;
 
         static SaveReader()
         {
@@ -232,10 +236,12 @@ namespace TABSAT
                     Weak: new SwarmTimings( "120", "120", "60", "0" ),
                     Medium: new SwarmTimings( "482", "480", "120", "0" ) ) }
             };
+
+            Everywhere = ( in XElement i, in bool l ) => true;
         }
 
         // TAB cell coordinates are origin top left?, before 45 degree rotation clockwise. Positive x is due SE, positive y is due SW?
-        internal enum CompassDirection
+        internal enum CompassDirection : byte
         {
             North,
             East,
@@ -872,6 +878,39 @@ namespace TABSAT
                 positions.AddLast( swarm.position );
             }
             return positions;
+        }
+
+        public InArea InRadiusArea( uint radius = 0U, bool beyondNotWithin = false )
+        {
+            // Consider usage consistency with bool withinNotBeyond...
+
+            return ( in XElement item, in bool levelEntityNotFast ) =>
+            {
+                if( radius == 0U )
+                {
+                    return beyondNotWithin;
+                }
+
+                int x;
+                int y;
+                if( levelEntityNotFast )
+                {
+                    extractCoordinates( item, out x, out y );
+                }
+                else
+                {
+                    extractCoordinates( item, out x, out y, true, "B" );
+                }
+                var distanceSquared = ( ( x - ccPosition.x ) * ( x - ccPosition.x ) ) + ( ( y - ccPosition.y ) * ( y - ccPosition.y ) );
+                if( distanceSquared > radius * radius )
+                {
+                    return beyondNotWithin;
+                }
+                else
+                {
+                    return !beyondNotWithin;
+                }
+            };
         }
     }
 }

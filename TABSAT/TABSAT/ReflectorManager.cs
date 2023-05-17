@@ -9,7 +9,7 @@ namespace TABSAT
 {
     class ReflectorManager
     {
-        internal enum ReflectorState
+        internal enum ReflectorState : byte
         {
             UNDEPLOYED,
             DEPLOYED,

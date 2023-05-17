@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace TABSAT
@@ -256,7 +255,7 @@ namespace TABSAT
               */
         }
 
-        internal void scalePopulation( in decimal scale, in bool scaleIdle, in bool scaleActive, in uint radius = 0, in bool beyondNotWithin = true )
+        internal void scalePopulation( in decimal scale, in bool scaleIdle, in bool scaleActive, InArea inArea )
         {
             if( scale < 0.0M )
             {
@@ -281,10 +280,10 @@ namespace TABSAT
                 { LevelEntities.ScalableZombieTypes.ZombieVenom, scale },
                 { LevelEntities.ScalableZombieTypes.ZombieHarpy, scale }
             };
-            scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive, radius, beyondNotWithin );
+            scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive, inArea );
         }
 
-        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors, in bool scaleIdle, in bool scaleActive, in uint radius = 0, in bool beyondNotWithin = true )
+        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors, in bool scaleIdle, in bool scaleActive, InArea inArea )
         {
             SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<LevelEntities.ScalableZombieTypes, decimal>();
 
@@ -296,10 +295,6 @@ namespace TABSAT
                 {
                     throw new ArgumentOutOfRangeException( "Scale must not be negative." );
                 }
-                if( scale == 1.0M )
-                {
-                    continue;     // Nothing needs be done
-                }
 
                 if( LevelEntities.scalableZombieTypeGroups.TryGetValue( k_v.Key, out SortedSet<LevelEntities.ScalableZombieTypes> groupTypes ) )
                 {
@@ -310,12 +305,12 @@ namespace TABSAT
                 }
             }
 
-            scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive, radius, beyondNotWithin );
+            scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive, inArea );
         }
 
-        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors, in bool scaleIdle, in bool scaleActive, in uint radius, in bool beyondNotWithin )
+        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors, in bool scaleIdle, in bool scaleActive, InArea inArea )
         {
-            // First handle zombies from and idle since the map was generated, found in LevelFastSerializedEntities
+            // First handle zombies from-and-idle-since the map was generated, found in LevelFastSerializedEntities
             if( scaleIdle )
             {
                 var zombieTypes = getInactiveZombieItems();
@@ -337,7 +332,7 @@ namespace TABSAT
 
                     var collection = typeItem.Element( "Collection" );
                     decimal scale = scalableZombieTypeFactors[zombieType];
-                    scaleInactiveZombies( collection, scale );
+                    scaleInactiveZombies( collection, scale, inArea );
                 }
             }
 
@@ -348,12 +343,12 @@ namespace TABSAT
                 {
                     var zombieType = k_v.Key;
                     var scale = k_v.Value;
-                    entities.scaleEntities( (UInt64) zombieType, scale, this, ccPosition, radius, beyondNotWithin );
+                    entities.scaleEntities( (UInt64) zombieType, scale, this, inArea );
                 }
             }
         }
 
-        private void scaleInactiveZombies( XElement collection, in decimal scale )
+        private void scaleInactiveZombies( XElement collection, in decimal scale, InArea inArea )
         {
             /*
              *        <Dictionary name="LevelFastSerializedEntities" >
@@ -367,12 +362,20 @@ namespace TABSAT
              *                      <Simple name="A" value=
              */
 
+            if( scale < 0.0M )
+            {
+                throw new ArgumentOutOfRangeException( "Scale must not be negative." );
+            }
+
+            if( scale == 1.0M )
+            {
+                // Nothing needs be done
+                return;
+            }
+
             void duplicateZombie( XElement com, LinkedList<XElement> copiedZombies )
             {
                 XElement zCopy = new XElement( com );       // Duplicate at the same position
-                /*( from s in zCopy.Element( "Properties" ).Elements( "Simple" )
-                  where (string) s.Attribute( "name" ) == "A"
-                  select s ).Single()*/
                 getValueAttOfSimpleProp( zCopy, "A" ).SetValue( newID() );
                 copiedZombies.AddLast( zCopy );
             }
@@ -392,53 +395,34 @@ namespace TABSAT
              *                   <Simple name="Capacity" value=
              * 
              */
-            var cap = /*( from s in col.Element( "Properties" ).Elements( "Simple" )
-                         where (string) s.Attribute( "name" ) == "Capacity"
-                         select s ).Single()*/getValueAttOfSimpleProp( collection, "Capacity" );
+            var cap = getValueAttOfSimpleProp( collection, "Capacity" );
             //Console.WriteLine( zombieType + ": " + cap.Value );
 
-            if( scale < 1.0M )
+            // By having to iterate each zombie to test their position, we lose an optimisation opportunity when scale == 0M to just Remove() and replace the type Items node..?
+
+            var selectedZombies = new LinkedList<XElement>();
+            foreach( var com in collection.Element( "Items" ).Elements( "Complex" ) )
             {
-                // chance is now chance to not remove existing zombies
-
-                if( scale == 0.0M )
+                // First test that their position is in the affected area
+                if( !inArea( com, false ) )
                 {
-                    // No need to iterate and count
-                    collection.Element( "Items" ).RemoveNodes();
+                    continue;
+                }
+                // item is in the affected area, we continue here rather than loop to another immediately
 
-                    cap.SetValue( 0 );
+                if( scale < 1.0M )
+                {
+                    // chance is now chance to not remove existing entities
+                    // selectedEntities will be those removed
+
+                    // 0 >= scale < 1
+                    if( scale == 0.0M || chance < rand.NextDouble() )
+                    {
+                        // Removing within foreach doen't work, without .ToList(). Might as well collect candidates so we also have an O(1) count for later too
+                        selectedZombies.AddLast( com );
+                    }
                 }
                 else
-                {
-                    // 0 > scale < 1
-                    var removedZombies = new LinkedList<XElement>();
-
-                    foreach( var com in collection.Element( "Items" ).Elements( "Complex" ) )
-                    {
-                        if( chance < rand.NextDouble() )
-                        {
-                            // Removing within foreach doen't work, without .ToList(). Might as well collect candidates so we also have an O(1) count for later too
-                            removedZombies.AddLast( com );
-                        }
-                    }
-                    //Console.WriteLine( "removedZombies: " + removedZombies.Count );
-
-                    foreach( var i in removedZombies )
-                    {
-                        i.Remove();
-                    }
-
-                    // Update capacity count
-                    UInt64 newCap = (UInt64) ( Convert.ToInt32( cap.Value ) - removedZombies.Count );   // Assume actual UInt64 Capacity value is positive Int32 size and no less than Count removed
-                    cap.SetValue( newCap );
-                    //Console.WriteLine( "newCap: " + newCap );
-                }
-            }
-            else
-            {
-                var selectedZombies = new LinkedList<XElement>();
-
-                foreach( var com in collection.Element( "Items" ).Elements( "Complex" ) )
                 {
                     // First the certain duplications
                     for( int m = 1; m < multiples; m++ )
@@ -451,8 +435,23 @@ namespace TABSAT
                         duplicateZombie( com, selectedZombies );
                     }
                 }
-                //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
+            }
+            //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
 
+            if( scale < 1.0M )
+            {
+                foreach( var i in selectedZombies )
+                {
+                    i.Remove();
+                }
+
+                // Update capacity count
+                UInt64 newCap = (UInt64) ( Convert.ToInt32( cap.Value ) - selectedZombies.Count );   // Assume actual UInt64 Capacity value is positive Int32 size and no less than Count removed
+                cap.SetValue( newCap );
+                //Console.WriteLine( "newCap: " + newCap );
+            }
+            else
+            {
                 foreach( var i in selectedZombies )
                 {
                     collection.Element( "Items" ).Add( i );
@@ -465,15 +464,16 @@ namespace TABSAT
             }
         }
 
-        internal void scaleHugePopulation( in bool giantsNotMutants, in decimal scale, in uint radius = 0, in bool beyondNotWithin = true )
+        internal void scaleEntities( UInt64 type, in decimal scale, InArea inArea, in bool haveIcons = false )
         {
-            if( scale == 1.0M )
+            // Could refactor with scalePopulation( scaleIdle = false, scaleActive = true ) ..? Need to rename the method and those parameters though.
+
+            var selectedZombies = entities.scaleEntities( type, scale, this, inArea );
+
+            if( !haveIcons )
             {
-                return;     // Nothing needs be done
+                return;
             }
-
-            var selectedZombies = entities.scaleEntities( (UInt64) (giantsNotMutants ? LevelEntities.HugeTypes.Giant : LevelEntities.HugeTypes.Mutant), scale, this, ccPosition, radius, beyondNotWithin );
-
             if( scale < 1.0M )
             {
                 foreach( var s in selectedZombies )
@@ -492,7 +492,7 @@ namespace TABSAT
             }
         }
         
-        internal void replaceHugeZombies( bool toGiantNotMutant )
+        internal void replaceHugeZombies( bool toGiantNotMutant, InArea inArea )
         {
             var mutants = entities.getIDs( (UInt64) LevelEntities.HugeTypes.Mutant );
             if( toGiantNotMutant && !mutants.Any() )
@@ -517,9 +517,10 @@ namespace TABSAT
             var fromSet = toGiantNotMutant ? mutants : giants;
             foreach( var id in fromSet )
             {
-                entities.swapZombieType( id );
-
-                icons.swapZombieType( id );
+                if( entities.swapZombieType( id, inArea ) )
+                {
+                    icons.swapZombieType( id );
+                }
             }
         }
 
@@ -561,7 +562,7 @@ namespace TABSAT
             }
         }
         
-        internal void relocateMutants( bool toGiantNotMutant, bool perDirection )
+        internal void relocateMutants( bool toGiantNotMutant, bool perDirection, InArea inArea )
         {
             var mutants = entities.getEntitiesOfType( (UInt64) LevelEntities.HugeTypes.Mutant );
             if( !mutants.Any() )
@@ -575,10 +576,11 @@ namespace TABSAT
             {
                 foreach( RelativePosition z in movingMutants )
                 {
-                    entities.relocateHuge( z.ID, farthestID );
-
-                    // Also see if both HugeZombies have had icons generated, for 1 to be repositioned to the other
-                    icons.relocate( z.ID, farthestID );
+                    if( entities.relocateHuge( z.ID, farthestID, inArea ) )
+                    {
+                        // Also see if both HugeZombies have had icons generated, for 1 to be repositioned to the other
+                        icons.relocate( z.ID, farthestID );
+                    }
                 }
             }
 
@@ -601,6 +603,12 @@ namespace TABSAT
             // Split huge zombies by direction
             foreach( var mutant in mutants )
             {
+                // We can't filter potential mutants to move by InArea delegate here, as that will also filter out target positions to move them to
+                /*
+                 * Maybe we shouldn't only use ID references in these structures, which forces an ID to entity lookup before we can retest InArea.
+                 * Maybe we could rewrite this method to remove all need for RelativePosition, if we store entity,distance pairs in per direction maps..?
+                 * We wouldn't need DistanceComparer if we keep the farthest entity,distance pair per direction while iterating over them all the first time.
+                */
                 RelativePosition p = new RelativePosition( mutant, ccPosition );
                 mutantsPerDirection[p.Direction].Add( p );
             }
@@ -705,19 +713,8 @@ namespace TABSAT
             entities.resizeVODs( vodType );
         }
         */
-        internal void stackVODbuildings( in LevelEntities.VODTypes vodType, in decimal scale, in uint radius = 0, in bool beyondNotWithin = true )
-        {
-            // Could use some add/remove entity delegates, to refactor this and zombie type scaling? Except idle zombie type collections can be RemoveNodes()'d per type, while level entities are all mixed in 1 collection.
 
-            if( scale == 1.0M )
-            {
-                return;     // Nothing needs be done
-            }
-
-            entities.scaleEntities( (UInt64) vodType, scale, this, ccPosition, radius, beyondNotWithin );
-        }
-
-        internal void removeFog( in uint radius = 0, in bool withinNotBeyond = true )
+        internal void removeFog( in uint radius = 0U, in bool withinNotBeyond = true )
         {
             int rawLength = 4 * cellsCount * cellsCount;        // 4 bytes just to store 00 00 00 FF or 00 00 00 00, yuck
 
@@ -729,7 +726,7 @@ namespace TABSAT
 
             if( withinNotBeyond )
             {
-                if( radius > 0 )
+                if( radius > 0U )
                 {
                     setFogCircle( ccPosition, cellsCount, clearFog, radius, withinNotBeyond );
                 }
@@ -737,7 +734,7 @@ namespace TABSAT
             }
             else
             {
-                if( radius > 0 )
+                if( radius > 0U )
                 {
                     setFogCircle( ccPosition, cellsCount, clearFog, radius, withinNotBeyond );
                 }/*

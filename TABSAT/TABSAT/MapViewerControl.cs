@@ -28,7 +28,7 @@ namespace TABSAT
         private readonly SortedDictionary<ViewLayer, SortedDictionary<int, Image>> layerCache;
         private readonly SortedDictionary<MapNavigation.Direction, Image> arrows;
 
-        private enum ViewLayer
+        private enum ViewLayer : byte
         {
             Terrain,
             Fog,

@@ -52,6 +52,7 @@ namespace TABSAT
 
         internal class Position : IComparable
         {
+            // Could be bytes, unsigned 8bit ints..?
             internal readonly int x;
             internal readonly int y;
 

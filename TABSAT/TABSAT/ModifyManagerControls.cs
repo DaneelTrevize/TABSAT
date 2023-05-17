@@ -4,13 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using static TABSAT.MainWindow;
-using static TABSAT.SaveReader;
 
 namespace TABSAT
 {
     internal partial class ModifyManagerControls : UserControl
     {
-        private enum EditingState
+        private enum EditingState : byte
         {
             CHOOSING_SAVE,
             SAVE_CHOSEN,
@@ -449,158 +448,103 @@ namespace TABSAT
             return true;
         }
 
-        private bool modifySave( in ModifyChoices choices, SaveEditor dataEditor )
+        private bool modifySave( ModifyChoices choices, SaveEditor dataEditor )
         {
+            string formatArea( in uint radius, in bool withinNotBeyond )
+            {
+                return ( radius == 0U ? "" : ( withinNotBeyond ? " within" : " beyond" ) + " cell range: " + radius );
+            }
+
+            void logAndScale( string name, decimal scale, string areaText, SaveReader.InArea area, Action<decimal, SaveReader.InArea> modify )
+            {
+                if( scale == 1M )
+                {
+                    return;
+                }
+                statusWriter( "Scaling " + name + ( scale == 1M ? " per type" : " x" + scale ) + areaText );
+                modify.Invoke( scale, area );
+            }
+
+            void logAndModify( string text, string areaText, SaveReader.InArea area, Action<SaveReader.InArea> modify )
+            {
+                statusWriter( String.Format( text, areaText ) );
+                modify.Invoke( area );
+            }
+
             try
             {
                 // Zombie Population Scaling
+                uint popRadius = 0U;
+                SaveReader.InArea popArea = null;
+                bool popWNB = true;
+                decimal popScale = choices.PopulationScale;
                 switch( choices.PopulationArea )
                 {
                     case ModifyChoices.AreaChoices.None:
                         break;
                     case ModifyChoices.AreaChoices.Everywhere:
-                        if( choices.PopulationScale != 1 )
-                        {
-                            statusWriter( "Scaling Zombie population x" + choices.PopulationScale + '.' );
-                            dataEditor.scalePopulation( choices.PopulationScale, choices.ScaleIdle, choices.ScaleActive );
-                        }
-                        else
-                        {
-                            if( choices.ScalableZombieGroupFactors.Any() )
-                            {
-                                statusWriter( "Scaling Zombie population per type." );
-                                dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive );
-                            }
-                        }
-                        if( choices.GiantScale != 1 )
-                        {
-                            statusWriter( "Scaling Giant population x" + choices.GiantScale + '.' );
-                            dataEditor.scaleHugePopulation( true, choices.GiantScale );
-                        }
-                        if( choices.MutantScale != 1 )
-                        {
-                            statusWriter( "Scaling Mutant population x" + choices.MutantScale + '.' );
-                            dataEditor.scaleHugePopulation( false, choices.MutantScale );
-                        }
+                        popArea = SaveReader.Everywhere;
                         break;
                     case ModifyChoices.AreaChoices.WithinRadius:
-                        if( choices.PopulationScale != 1 )
-                        {
-                            statusWriter( "Scaling Zombie population x" + choices.PopulationScale + " within cell range: " + choices.PopulationRadius );
-                            dataEditor.scalePopulation( choices.PopulationScale, choices.ScaleIdle, choices.ScaleActive, choices.PopulationRadius, false );
-                        }
-                        else
-                        {
-                            if( choices.ScalableZombieGroupFactors.Any() )
-                            {
-                                statusWriter( "Scaling Zombie population per type within cell range: " + choices.PopulationRadius );
-                                dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive, choices.PopulationRadius, false );
-                            }
-                        }
-                        if( choices.GiantScale != 1 )
-                        {
-                            statusWriter( "Scaling Giant population x" + choices.GiantScale + " within cell range: " + choices.PopulationRadius );
-                            dataEditor.scaleHugePopulation( true, choices.GiantScale, choices.PopulationRadius, false );
-                        }
-                        if( choices.MutantScale != 1 )
-                        {
-                            statusWriter( "Scaling Mutant population x" + choices.MutantScale + " within cell range: " + choices.PopulationRadius );
-                            dataEditor.scaleHugePopulation( false, choices.MutantScale, choices.PopulationRadius , false );
-                        }
+                        popRadius = choices.PopulationRadius;
+                        popArea = dataEditor.InRadiusArea( popRadius );
                         break;
                     case ModifyChoices.AreaChoices.BeyondRadius:
-                        if( choices.PopulationScale != 1 )
-                        {
-                            statusWriter( "Scaling Zombie population x" + choices.PopulationScale + " beyond cell range: " + choices.PopulationRadius );
-                            dataEditor.scalePopulation( choices.PopulationScale, choices.ScaleIdle, choices.ScaleActive, choices.PopulationRadius );
-                        }
-                        else
-                        {
-                            if( choices.ScalableZombieGroupFactors.Any() )
-                            {
-                                statusWriter( "Scaling Zombie population per type beyond cell range: " + choices.PopulationRadius );
-                                dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive, choices.PopulationRadius );
-                            }
-                        }
-                        if( choices.GiantScale != 1 )
-                        {
-                            statusWriter( "Scaling Giant population x" + choices.GiantScale + " beyond cell range: " + choices.PopulationRadius );
-                            dataEditor.scaleHugePopulation( true, choices.GiantScale, choices.PopulationRadius );
-                        }
-                        if( choices.MutantScale != 1 )
-                        {
-                            statusWriter( "Scaling Mutant population x" + choices.MutantScale + " beyond cell range: " + choices.PopulationRadius );
-                            dataEditor.scaleHugePopulation( false, choices.MutantScale, choices.PopulationRadius );
-                        }
+                        popRadius = choices.PopulationRadius;
+                        popArea = dataEditor.InRadiusArea( popRadius, true );
+                        popWNB = false;
                         break;
                     default:
                         throw new NotImplementedException( "Unimplemented choice: " + choices.PopulationArea );
                 }
+                if( popArea != null )
+                {
+                    if( popScale != 1M )
+                    {
+                        logAndScale( "Zombie population", popScale, formatArea( popRadius, popWNB ), popArea, ( s, a ) => { dataEditor.scalePopulation( s, choices.ScaleIdle, choices.ScaleActive, a ); } );
+                    }
+                    else if( choices.ScalableZombieGroupFactors.Any() )
+                    {
+                        logAndScale( "Zombie population", popScale, formatArea( popRadius, popWNB ), popArea, ( s, a ) => { dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive, a ); } );
+                    }
+                    logAndScale( "Giant population", choices.GiantScale, formatArea( popRadius, popWNB ), popArea, ( s, a ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.HugeTypes.Giant, s, a, true ); } );
+                    logAndScale( "Mutant population", choices.MutantScale, formatArea( popRadius, popWNB ), popArea, ( s, a ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.HugeTypes.Mutant, s, a, true ); } );
+                }
 
                 // VODs
-                    /*if( choices.ResizeVODs )
-                    {
-                        statusWriter( "Replacing all VOD buildings with " + LevelEntities.vodSizesNames[choices.VodSize] + '.' );
-                        dataEditor.resizeVODs( choices.VodSize );
-                    }
-                    else*/
+                /*if( choices.ResizeVODs )
+                {
+                    statusWriter( "Replacing all VOD buildings with " + LevelEntities.vodSizesNames[choices.VodSize] + '.' );
+                    dataEditor.resizeVODs( choices.VodSize );
+                }
+                else*/
+                uint vodRadius = 0U;
+                SaveReader.InArea vodArea = null;
+                bool vodWNB = true;
                 switch( choices.VODArea )
                 {
                     case ModifyChoices.AreaChoices.None:
                         break;
                     case ModifyChoices.AreaChoices.Everywhere:
-                        if( choices.VODSmallScale != 1 )
-                        {
-                            statusWriter( "Scaling Dwellings count x" + choices.VODSmallScale + '.' );
-                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingSmall, choices.VODSmallScale );
-                        }
-                        if( choices.VODMediumScale != 1 )
-                        {
-                            statusWriter( "Scaling Taverns count x" + choices.VODMediumScale + '.' );
-                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingMedium, choices.VODMediumScale );
-                        }
-                        if( choices.VODLargeScale != 1 )
-                        {
-                            statusWriter( "Scaling City Halls count x" + choices.VODLargeScale + '.' );
-                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingLarge, choices.VODLargeScale );
-                        }
+                        vodArea = SaveReader.Everywhere;
                         break;
                     case ModifyChoices.AreaChoices.WithinRadius:
-                        if( choices.VODSmallScale != 1 )
-                        {
-                            statusWriter( "Scaling Dwellings count x" + choices.VODSmallScale + " within cell range: " + choices.VODRadius );
-                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingSmall, choices.VODSmallScale, choices.VODRadius, false );
-                        }
-                        if( choices.VODMediumScale != 1 )
-                        {
-                            statusWriter( "Scaling Taverns count x" + choices.VODMediumScale + " within cell range: " + choices.VODRadius );
-                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingMedium, choices.VODMediumScale, choices.VODRadius, false );
-                        }
-                        if( choices.VODLargeScale != 1 )
-                        {
-                            statusWriter( "Scaling City Halls count x" + choices.VODLargeScale + " within cell range: " + choices.VODRadius );
-                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingLarge, choices.VODLargeScale, choices.VODRadius, false );
-                        }
+                        vodRadius = choices.VODRadius;
+                        vodArea = dataEditor.InRadiusArea( vodRadius );
                         break;
                     case ModifyChoices.AreaChoices.BeyondRadius:
-                        if( choices.VODSmallScale != 1 )
-                        {
-                            statusWriter( "Scaling Dwellings count x" + choices.VODSmallScale + " beyond cell range: " + choices.VODRadius );
-                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingSmall, choices.VODSmallScale, choices.VODRadius );
-                        }
-                        if( choices.VODMediumScale != 1 )
-                        {
-                            statusWriter( "Scaling Taverns count x" + choices.VODMediumScale + " beyond cell range: " + choices.VODRadius );
-                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingMedium, choices.VODMediumScale, choices.VODRadius );
-                        }
-                        if( choices.VODLargeScale != 1 )
-                        {
-                            statusWriter( "Scaling City Halls count x" + choices.VODLargeScale + " beyond cell range: " + choices.VODRadius );
-                            dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingLarge, choices.VODLargeScale, choices.VODRadius );
-                        }
+                        vodRadius = choices.VODRadius;
+                        vodArea = dataEditor.InRadiusArea( vodRadius, true );
+                        vodWNB = false;
                         break;
                     default:
                         throw new NotImplementedException( "Unimplemented choice: " + choices.VODArea );
+                }
+                if( vodArea != null )
+                {
+                    logAndScale( "Dwellings count", choices.VODSmallScale, formatArea( vodRadius, vodWNB ), vodArea, ( s, a ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingSmall, s, a ); } );
+                    logAndScale( "Taverns count", choices.VODMediumScale, formatArea( vodRadius, vodWNB ), vodArea, ( s, a ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingMedium, s, a ); } );
+                    logAndScale( "City Halls count", choices.VODLargeScale, formatArea( vodRadius, vodWNB ), vodArea, ( s, a ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingLarge, s, a ); } );
                 }
 
                 // Command Center Extras
@@ -621,33 +565,49 @@ namespace TABSAT
                 }
 
                 // Mutants
-                if( choices.MutantsArea != ModifyChoices.AreaChoices.None )
+                uint mutantsRadius = 0U;
+                SaveReader.InArea mutantsArea = null;
+                bool mutantsWNB = true;
+                switch( choices.MutantsArea )
+                {
+                    case ModifyChoices.AreaChoices.None:
+                        break;
+                    case ModifyChoices.AreaChoices.Everywhere:
+                        mutantsArea = SaveReader.Everywhere;
+                        break;
+                    case ModifyChoices.AreaChoices.WithinRadius:
+                        mutantsRadius = choices.MutantsRadius;
+                        mutantsArea = dataEditor.InRadiusArea( mutantsRadius );
+                        break;
+                    case ModifyChoices.AreaChoices.BeyondRadius:
+                        mutantsRadius = choices.MutantsRadius;
+                        mutantsArea = dataEditor.InRadiusArea( mutantsRadius, true );
+                        mutantsWNB = false;
+                        break;
+                    default:
+                        throw new NotImplementedException( "Unimplemented choice: " + choices.MutantsArea );
+                }
+                if( mutantsArea != null )
                 {
                     switch( choices.Mutants )
                     {
                         case ModifyChoices.MutantChoices.ReplaceWithGiants:
-                            statusWriter( "Replacing all Mutants with Giants." );
-                            dataEditor.replaceHugeZombies( true );
+                            logAndModify( "Replacing all Mutants{0} with Giants.", formatArea( mutantsRadius, mutantsWNB ) , mutantsArea, ( a ) => { dataEditor.replaceHugeZombies( true, a ); } );
                             break;
                         case ModifyChoices.MutantChoices.ReplaceWithMutants:
-                            statusWriter( "Replacing all Giants with Mutants." );
-                            dataEditor.replaceHugeZombies( false );
+                            logAndModify( "Replacing all Giants{0} with Mutants.", formatArea( mutantsRadius, mutantsWNB ), mutantsArea, ( a ) => { dataEditor.replaceHugeZombies( false, a ); } );
                             break;
                         case ModifyChoices.MutantChoices.MoveToGiants:
-                            statusWriter( "Relocating Mutants to farthest Giant on the map." );
-                            dataEditor.relocateMutants( true, false );
+                            logAndModify( "Relocating Mutants{0} to farthest Giant on the map.", formatArea( mutantsRadius, mutantsWNB ), mutantsArea, ( a ) => { dataEditor.relocateMutants( true, false, a ); } );
                             break;
                         case ModifyChoices.MutantChoices.MoveToMutants:
-                            statusWriter( "Relocating Mutants to farthest Mutant on the map." );
-                            dataEditor.relocateMutants( false, false );
+                            logAndModify( "Relocating Mutants{0} to farthest Mutant on the map.", formatArea( mutantsRadius, mutantsWNB ), mutantsArea, ( a ) => { dataEditor.relocateMutants( false, false, a ); } );
                             break;
                         case ModifyChoices.MutantChoices.MoveToGiantsPerQuadrant:
-                            statusWriter( "Relocating Mutants to farthest Giant per Compass quadrant if possible." );
-                            dataEditor.relocateMutants( true, true );
+                            logAndModify( "Relocating Mutants{0} to farthest Giant per Compass quadrant if possible.", formatArea( mutantsRadius, mutantsWNB ), mutantsArea, ( a ) => { dataEditor.relocateMutants( true, true, a ); } );
                             break;
                         case ModifyChoices.MutantChoices.MoveToMutantsPerQuadrant:
-                            statusWriter( "Relocating Mutants to farthest Mutant per Compass quadrant if possible." );
-                            dataEditor.relocateMutants( false, true );
+                            logAndModify( "Relocating Mutants{0} to farthest Mutant per Compass quadrant if possible.", formatArea( mutantsRadius, mutantsWNB ), mutantsArea, ( a ) => { dataEditor.relocateMutants( false, true, a ); } );
                             break;
                         default:
                             throw new NotImplementedException( "Unimplemented choice: " + choices.Mutants );
@@ -705,19 +665,19 @@ namespace TABSAT
                 }
                 if( choices.ChangeEasy )
                 {
-                    statusWriter( "Setting earlier swarm directions to " + SwarmDirectionsNames[choices.EasySwarms] + '.' );
+                    statusWriter( "Setting earlier swarm directions to " + SaveReader.SwarmDirectionsNames[choices.EasySwarms] + '.' );
                     dataEditor.setSwarms( true, choices.EasySwarms );
                 }
                 if( choices.ChangeHard )
                 {
-                    statusWriter( "Setting later swarm directions to " + SwarmDirectionsNames[choices.HardSwarms] + '.' );
+                    statusWriter( "Setting later swarm directions to " + SaveReader.SwarmDirectionsNames[choices.HardSwarms] + '.' );
                     dataEditor.setSwarms( false, choices.HardSwarms );
                 }
 
                 // General Rules
                 if( choices.ChangeTheme )
                 {
-                    statusWriter( "Changing Theme to " + themeTypeNames[choices.Theme] + '.' );
+                    statusWriter( "Changing Theme to " + SaveReader.themeTypeNames[choices.Theme] + '.' );
                     dataEditor.changeTheme( choices.Theme );
                 }
                 if( choices.DisableMayors )

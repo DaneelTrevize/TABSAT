@@ -5,7 +5,7 @@ namespace TABSAT
 {
     internal class ModifyChoices
     {
-        public enum AreaChoices
+        public enum AreaChoices : byte
         {
             None,
             Everywhere,
@@ -14,7 +14,7 @@ namespace TABSAT
             BeyondRadius
         }
 
-        public enum MutantChoices
+        public enum MutantChoices : byte
         {
             ReplaceWithGiants,
             ReplaceWithMutants,
@@ -23,6 +23,8 @@ namespace TABSAT
             MoveToGiantsPerQuadrant,
             MoveToMutantsPerQuadrant
         }
+
+        // Reconsider the use of 16byte decimals just to accurately represent 0.1...
 
         internal readonly AreaChoices PopulationArea;
         internal readonly uint PopulationRadius;

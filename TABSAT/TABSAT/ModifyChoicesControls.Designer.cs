@@ -278,12 +278,12 @@
             this.fogGroupBox.TabStop = false;
             this.fogGroupBox.Text = "Fog of War";
             // 
-            // removeFogRadioButton
+            // fogRemoveRadioButton
             // 
             this.fogRemoveRadioButton.AutoSize = true;
             this.fogRemoveRadioButton.Checked = true;
             this.fogRemoveRadioButton.Location = new System.Drawing.Point(245, 19);
-            this.fogRemoveRadioButton.Name = "removeFogRadioButton";
+            this.fogRemoveRadioButton.Name = "fogRemoveRadioButton";
             this.fogRemoveRadioButton.Size = new System.Drawing.Size(86, 17);
             this.fogRemoveRadioButton.TabIndex = 6;
             this.fogRemoveRadioButton.TabStop = true;
@@ -387,7 +387,7 @@
             this.mutantGroupBox.TabStop = false;
             this.mutantGroupBox.Text = "Mutants";
             // 
-            // mutantReplaceAllComboBox
+            // mutantsReplaceAllComboBox
             // 
             this.mutantsReplaceAllComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.mutantsReplaceAllComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -397,11 +397,11 @@
             "Mutants with Giants",
             "Giants with Mutants"});
             this.mutantsReplaceAllComboBox.Location = new System.Drawing.Point(335, 17);
-            this.mutantsReplaceAllComboBox.Name = "mutantReplaceAllComboBox";
+            this.mutantsReplaceAllComboBox.Name = "mutantsReplaceAllComboBox";
             this.mutantsReplaceAllComboBox.Size = new System.Drawing.Size(117, 21);
             this.mutantsReplaceAllComboBox.TabIndex = 1;
             // 
-            // mutantMoveGlobalComboBox
+            // mutantsMoveGlobalComboBox
             // 
             this.mutantsMoveGlobalComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.mutantsMoveGlobalComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -411,11 +411,11 @@
             "anywhere on the map",
             "per compass quadrant"});
             this.mutantsMoveGlobalComboBox.Location = new System.Drawing.Point(321, 63);
-            this.mutantsMoveGlobalComboBox.Name = "mutantMoveGlobalComboBox";
+            this.mutantsMoveGlobalComboBox.Name = "mutantsMoveGlobalComboBox";
             this.mutantsMoveGlobalComboBox.Size = new System.Drawing.Size(131, 21);
             this.mutantsMoveGlobalComboBox.TabIndex = 4;
             // 
-            // mutantMoveWhatComboBox
+            // mutantsMoveWhatComboBox
             // 
             this.mutantsMoveWhatComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.mutantsMoveWhatComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -425,7 +425,7 @@
             "Giant",
             "Mutant"});
             this.mutantsMoveWhatComboBox.Location = new System.Drawing.Point(395, 40);
-            this.mutantsMoveWhatComboBox.Name = "mutantMoveWhatComboBox";
+            this.mutantsMoveWhatComboBox.Name = "mutantsMoveWhatComboBox";
             this.mutantsMoveWhatComboBox.Size = new System.Drawing.Size(57, 21);
             this.mutantsMoveWhatComboBox.TabIndex = 3;
             // 
@@ -450,23 +450,23 @@
             this.mutantMoveCCLabel.TabIndex = 0;
             this.mutantMoveCCLabel.Text = "from the CC";
             // 
-            // mutantReplaceAllRadio
+            // mutantsReplaceAllRadio
             // 
             this.mutantsReplaceAllRadio.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.mutantsReplaceAllRadio.AutoSize = true;
             this.mutantsReplaceAllRadio.Checked = true;
             this.mutantsReplaceAllRadio.Location = new System.Drawing.Point(245, 19);
-            this.mutantsReplaceAllRadio.Name = "mutantReplaceAllRadio";
+            this.mutantsReplaceAllRadio.Name = "mutantsReplaceAllRadio";
             this.mutantsReplaceAllRadio.Size = new System.Drawing.Size(96, 17);
             this.mutantsReplaceAllRadio.TabIndex = 2;
             this.mutantsReplaceAllRadio.TabStop = true;
             this.mutantsReplaceAllRadio.Text = "Replace all the";
             this.mutantsReplaceAllRadio.UseVisualStyleBackColor = true;
             // 
-            // hugeAreaSelectorControl
+            // mutantsAreaSelectorControl
             // 
             this.mutantsAreaSelectorControl.Location = new System.Drawing.Point(6, 19);
-            this.mutantsAreaSelectorControl.Name = "hugeAreaSelectorControl";
+            this.mutantsAreaSelectorControl.Name = "mutantsAreaSelectorControl";
             this.mutantsAreaSelectorControl.Size = new System.Drawing.Size(225, 90);
             this.mutantsAreaSelectorControl.TabIndex = 6;
             // 
@@ -844,10 +844,10 @@
             this.zombieScalingGroupBox.TabStop = false;
             this.zombieScalingGroupBox.Text = "Zombie Population Count Scaling";
             // 
-            // scalingAreaSelectorControl
+            // zombieAreaSelectorControl
             // 
             this.zombieAreaSelectorControl.Location = new System.Drawing.Point(6, 19);
-            this.zombieAreaSelectorControl.Name = "scalingAreaSelectorControl";
+            this.zombieAreaSelectorControl.Name = "zombieAreaSelectorControl";
             this.zombieAreaSelectorControl.Size = new System.Drawing.Size(225, 90);
             this.zombieAreaSelectorControl.TabIndex = 20;
             // 
@@ -960,7 +960,8 @@
             // 
             this.bothRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.bothRadioButton.AutoSize = true;
-            this.bothRadioButton.Location = new System.Drawing.Point(276, 6);
+            this.bothRadioButton.Checked = true;
+            this.bothRadioButton.Location = new System.Drawing.Point(150, 8);
             this.bothRadioButton.Name = "bothRadioButton";
             this.bothRadioButton.Size = new System.Drawing.Size(47, 17);
             this.bothRadioButton.TabIndex = 2;
@@ -996,11 +997,10 @@
             // 
             this.idleRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.idleRadioButton.AutoSize = true;
-            this.idleRadioButton.Location = new System.Drawing.Point(218, 6);
+            this.idleRadioButton.Location = new System.Drawing.Point(296, 8);
             this.idleRadioButton.Name = "idleRadioButton";
             this.idleRadioButton.Size = new System.Drawing.Size(42, 17);
             this.idleRadioButton.TabIndex = 1;
-            this.idleRadioButton.TabStop = true;
             this.idleRadioButton.Text = "Idle";
             this.idleRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -1032,12 +1032,10 @@
             // 
             this.activeRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.activeRadioButton.AutoSize = true;
-            this.activeRadioButton.Checked = true;
-            this.activeRadioButton.Location = new System.Drawing.Point(150, 6);
+            this.activeRadioButton.Location = new System.Drawing.Point(220, 8);
             this.activeRadioButton.Name = "activeRadioButton";
             this.activeRadioButton.Size = new System.Drawing.Size(55, 17);
             this.activeRadioButton.TabIndex = 0;
-            this.activeRadioButton.TabStop = true;
             this.activeRadioButton.Text = "Active";
             this.activeRadioButton.UseVisualStyleBackColor = true;
             // 
@@ -1214,19 +1212,19 @@
             this.panel1.Size = new System.Drawing.Size(156, 35);
             this.panel1.TabIndex = 23;
             // 
-            // zombieScaleCheckBox
+            // zombieScaleAllCheckBox
             // 
             this.zombieScaleAllCheckBox.AutoSize = true;
             this.zombieScaleAllCheckBox.Checked = true;
             this.zombieScaleAllCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.zombieScaleAllCheckBox.Location = new System.Drawing.Point(5, 8);
-            this.zombieScaleAllCheckBox.Name = "zombieScaleCheckBox";
+            this.zombieScaleAllCheckBox.Name = "zombieScaleAllCheckBox";
             this.zombieScaleAllCheckBox.Size = new System.Drawing.Size(103, 17);
             this.zombieScaleAllCheckBox.TabIndex = 1;
             this.zombieScaleAllCheckBox.Text = "Non-Huge types";
             this.zombieScaleAllCheckBox.UseVisualStyleBackColor = true;
             // 
-            // zombieScaleNumericUpDown
+            // zombieScaleAllNumericUpDown
             // 
             this.zombieScaleAllNumericUpDown.DecimalPlaces = 1;
             this.zombieScaleAllNumericUpDown.Increment = new decimal(new int[] {
@@ -1240,7 +1238,7 @@
             0,
             0,
             65536});
-            this.zombieScaleAllNumericUpDown.Name = "zombieScaleNumericUpDown";
+            this.zombieScaleAllNumericUpDown.Name = "zombieScaleAllNumericUpDown";
             this.zombieScaleAllNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleAllNumericUpDown.TabIndex = 0;
             this.zombieScaleAllNumericUpDown.Value = new decimal(new int[] {

@@ -412,7 +412,7 @@ namespace TABSAT
             // Fog of War
 
             // Command Center Extras
-            uint giftCount = 0;
+            uint giftCount = 0U;
             LevelEntities.GiftableTypes gift = LevelEntities.GiftableTypes.SoldierRegular;
             if( ccGiftCheckBox.Checked )
             {
@@ -450,18 +450,18 @@ namespace TABSAT
                 zombieAreaSelectorControl.Radius(),
                 idleRadioButton.Checked || bothRadioButton.Checked,
                 activeRadioButton.Checked || bothRadioButton.Checked,
-                zombieScaleAllCheckBox.Checked ? zombieScaleAllNumericUpDown.Value : 1,
+                zombieScaleAllCheckBox.Checked ? zombieScaleAllNumericUpDown.Value : 1M,
                 scalableZombieGroupFactors,
-                zombieScaleGiantCheckBox.Checked ? zombieScaleGiantNumericUpDown.Value : 1,
-                zombieScaleMutantCheckBox.Checked ? zombieScaleMutantNumericUpDown.Value : 1,
+                zombieScaleGiantCheckBox.Checked ? zombieScaleGiantNumericUpDown.Value : 1M,
+                zombieScaleMutantCheckBox.Checked ? zombieScaleMutantNumericUpDown.Value : 1M,
                 vodAreaSelectorControl.AreaChoice(),
                 vodAreaSelectorControl.Radius(),
-                vodDwellingCheckBox.Checked ? vodStackDwellingsNumericUpDown.Value : 1,
-                vodTavernsCheckBox.Checked ? vodStackTavernsNumericUpDown.Value : 1,
-                vodCityHallsCheckBox.Checked ? vodStackCityHallsNumericUpDown.Value : 1,
-                ccExtraFoodCheckBox.Checked ? Convert.ToUInt32( ccFoodNumericUpDown.Value ) : 0,
-                ccExtraEnergyCheckBox.Checked ? Convert.ToUInt32( ccEnergyNumericUpDown.Value ) : 0,
-                ccExtraWorkersCheckBox.Checked ? Convert.ToUInt32( ccWorkersNumericUpDown.Value ) : 0,
+                vodDwellingCheckBox.Checked ? vodStackDwellingsNumericUpDown.Value : 1M,
+                vodTavernsCheckBox.Checked ? vodStackTavernsNumericUpDown.Value : 1M,
+                vodCityHallsCheckBox.Checked ? vodStackCityHallsNumericUpDown.Value : 1M,
+                ccExtraFoodCheckBox.Checked ? Convert.ToUInt32( ccFoodNumericUpDown.Value ) : 0U,
+                ccExtraEnergyCheckBox.Checked ? Convert.ToUInt32( ccEnergyNumericUpDown.Value ) : 0U,
+                ccExtraWorkersCheckBox.Checked ? Convert.ToUInt32( ccWorkersNumericUpDown.Value ) : 0U,
                 giftCount,
                 gift,
                 mutantsAreaSelectorControl.AreaChoice(),
@@ -498,7 +498,7 @@ namespace TABSAT
                 }
             }
             zombieScaleAllCheckBox.Checked = true;
-            activeRadioButton.Checked = true;       // Should we also reset the numerous ComboBox.SelectedIndex and NumericUpDown.Value..?
+            bothRadioButton.Checked = true;       // Should we also reset the numerous ComboBox.SelectedIndex and NumericUpDown.Value..?
             zombieAreaSelectorControl.reset();
             vodAreaSelectorControl.reset();
             mutantsAreaSelectorControl.reset();

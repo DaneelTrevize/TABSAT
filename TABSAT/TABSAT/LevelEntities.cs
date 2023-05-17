@@ -122,7 +122,7 @@ namespace TABSAT
             ZombieHarpy = 1214272082232025268,
             ZombieVenom = 12658363830661735733
         }
-        internal enum ScalableZombieGroups
+        internal enum ScalableZombieGroups : byte
         {
             WEAK,
             MEDIUM,
@@ -468,11 +468,19 @@ namespace TABSAT
             return keys;
         }
 
-        internal LinkedList<ScaledEntity> scaleEntities( in UInt64 entityType, in decimal scale, IDGenerator editor, in MapNavigation.Position ccPosition, in uint radius, in bool beyondNotWithin )
+        internal LinkedList<ScaledEntity> scaleEntities( in UInt64 entityType, in decimal scale, IDGenerator editor, SaveReader.InArea inArea )
         {
             if( scale < 0.0M )
             {
                 throw new ArgumentOutOfRangeException( "Scale must not be negative." );
+            }
+
+            var selectedEntities = new LinkedList<ScaledEntity>();
+
+            if( scale == 1.0M )
+            {
+                // Nothing needs be done
+                return selectedEntities;
             }
 
             void duplicateLevelEntity( XElement i, LinkedList<ScaledEntity> dupedEntities )
@@ -491,16 +499,14 @@ namespace TABSAT
 
             Random rand = new Random();
 
-            var selectedEntities = new LinkedList<ScaledEntity>();
-
             IEnumerable<XElement> items = getEntitiesOfType( entityType );
             foreach( var item in items )
             {
                 // First test that their position is in the affected area
-                    if( notInArea( radius, beyondNotWithin, item, ccPosition ) )
-                    {
-                        continue;
-                    }
+                if( !inArea( item, true ) )
+                {
+                    continue;
+                }
                 // item is in the affected area, we continue here rather than loop to another immediately
 
                 if( scale < 1.0M )
@@ -535,41 +541,27 @@ namespace TABSAT
             return selectedEntities;
         }
 
-        private static bool notInArea( in uint radius, in bool beyondNotWithin, in XElement item, in MapNavigation.Position cc )
-        {
-            if( radius == 0 )
-            {
-                return !beyondNotWithin;
-            }
-
-            SaveReader.extractCoordinates( item, out int x, out int y );
-            var distanceSquared = ( ( x - cc.x ) * ( x - cc.x ) ) + ( ( y - cc.y ) * ( y - cc.y ) );
-            if( distanceSquared > radius * radius )
-            {
-                return !beyondNotWithin;
-            }
-            else
-            {
-                return beyondNotWithin;
-            }
-        }
-
-        internal void relocateHuge( in UInt64 origin, in UInt64 destination )
+        internal bool relocateHuge( in UInt64 origin, in UInt64 destination, SaveReader.InArea inArea )
         {
             if( origin == destination )
             {
-                return;
+                return false;
             }
 
             if( !IDsToItems.TryGetValue( origin, out XElement originEntity ) )
             {
                 Console.Error.WriteLine( "Could not relocate LevelEntity: " + origin );
-                return;
+                return false;
             }
             if( !IDsToItems.TryGetValue( destination, out XElement destinationEntity ) )
             {
                 Console.Error.WriteLine( "Could not relocate LevelEntity: " + origin + " to: " + destination );
-                return;
+                return false;
+            }
+
+            if( !inArea( originEntity, true ) )
+            {
+                return false;
             }
 
             // We're after 3 different values in 2 different <Complex under Components
@@ -588,15 +580,22 @@ namespace TABSAT
             currentBehaviourTargetPosition?.SetAttributeValue( "value", farthestPositionString );
             currentMovableTargetPosition?.SetAttributeValue( "value", farthestPositionString );
             currentLastDestinyProcessed?.SetAttributeValue( "value", farthestPositionString );
+
+            return true;
         }
 
-        internal void swapZombieType( in UInt64 id )
+        internal bool swapZombieType( in UInt64 id, SaveReader.InArea inArea )
         {
             if( !IDsToItems.TryGetValue( id, out XElement entity ) )
             {
                 Console.Error.WriteLine( "Could not type-swap LevelEntity: " + id );
-                return;
+                return false;
             }
+            if( !inArea( entity, true ) )
+            {
+                return false;
+            }
+
             /*
             * change the <Item><Complex type=> from ZX.Entities.ZombieMutant to ZombieGiant
             * change the <Item><Complex><Properties><Simple name= value=> IDTemplate, Flags, Size
@@ -668,6 +667,8 @@ namespace TABSAT
 
             // Also move ID from old itemTypesToIDs index type to new
             changeItemType( id, (UInt64) ( targetType == (UInt64) HugeTypes.Mutant ? HugeTypes.Giant : HugeTypes.Mutant ), targetType );
+
+            return true;
         }
 
         private void changeItemType( in UInt64 id, in UInt64 oldType, in UInt64 newType )
