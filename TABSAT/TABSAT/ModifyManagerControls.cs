@@ -461,7 +461,7 @@ namespace TABSAT
                 {
                     return;
                 }
-                statusWriter( "Scaling " + name + ( scale == 100 ? " per type" : " x" + scale ) + areaText );
+                statusWriter( "Scaling " + name + ( scale == 100 ? " per type" : " " + scale + "%" ) + areaText );
                 modify.Invoke( scale );
             }
 
@@ -627,34 +627,34 @@ namespace TABSAT
                 }
 
                 // Fog of War
-                if( choices.FogShowFullVision )
+                switch( choices.FogArea )
                 {
-                    statusWriter( "Revealing the map." );
-                    dataEditor.showFullMap();
-                }
-                else
-                {
-                    switch( choices.FogArea )
-                    {
-                        case ModifyChoices.AreaChoices.None:
-                            break;
-                        case ModifyChoices.AreaChoices.Everywhere:
+                    case ModifyChoices.AreaChoices.None:
+                        break;
+                    case ModifyChoices.AreaChoices.Everywhere:
+                        if( choices.FogShowFullVision )
+                        {
+                            statusWriter( "Revealing the map." );
+                            dataEditor.showFullMap();
+                        }
+                        else
+                        {
                             statusWriter( "Removing all the fog." );
                             dataEditor.removeFog();
-                            break;
-                        case ModifyChoices.AreaChoices.WithinRadius:
-                            statusWriter( "Removing the fog within cell range: " + choices.FogRadius );
-                            dataEditor.removeFog( choices.FogRadius, true );
-                            break;
-                        case ModifyChoices.AreaChoices.BeyondRadius:
-                            statusWriter( "Removing the fog beyond cell range: " + choices.FogRadius );
-                            dataEditor.removeFog( choices.FogRadius );
-                            break;
-                        case ModifyChoices.AreaChoices.Sections:
-                            // To implement...
-                        default:
-                            throw new NotImplementedException( "Unimplemented choice: " + choices.FogArea );
-                    }
+                        }
+                        break;
+                    case ModifyChoices.AreaChoices.WithinRadius:
+                        statusWriter( "Removing the fog within cell range: " + choices.FogRadius );
+                        dataEditor.removeFog( choices.FogRadius, true );
+                        break;
+                    case ModifyChoices.AreaChoices.BeyondRadius:
+                        statusWriter( "Removing the fog beyond cell range: " + choices.FogRadius );
+                        dataEditor.removeFog( choices.FogRadius );
+                        break;
+                    case ModifyChoices.AreaChoices.Sections:
+                        // To implement...
+                    default:
+                        throw new NotImplementedException( "Unimplemented choice: " + choices.FogArea );
                 }
 
                 // Swarms

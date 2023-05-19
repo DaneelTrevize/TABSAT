@@ -17,7 +17,7 @@ Offer to remove all zombies that are:
   Within x range of friendly units/buildings? Much easier to effectively do this via the prior 2 means.
 
 Offer to modify (inactive) zombies and/or ground:
-  within/outside radius;
+  -within/outside radius;
   checkboxes for each cardinal compass direction?
 
 Not modifying pathing, minimal change to vision, making building easier:
@@ -76,7 +76,9 @@ Options for Mutant modification/max % restoration:
 
 Relocate mutants onto nearest giant per mutant;
 
-Remove/Relocate if within l distance of CC? To those Giants/Mutants at least l distance from CC?
+Relocate if within distance of CC to those Giants/Mutants at least distance from CC?
+
+Swap the closest Mutants with the farthest Giants?
 
 ----
 
@@ -101,8 +103,6 @@ Swap the locations of different types to affect distribution difficulty?
 Specifically, could:
 place most/all special infected in concentric rings, e.g. Fatties closest, then Spitters, then Harpies?
 place most/all Spitters in 1 cardinal direction, all Harpies in another, all Fatties, etc?
-
-Swap the closest Mutants with the farthest Giants?
 
 Alter the size and composition of waves?
 Alter the number and #timing of waves?
@@ -159,4 +159,7 @@ Charts could be compared across games to see averages and long term trends.
 Offer to apply or revert Modded Mayors game-wide rules change?
 Or other complete rebalancing mods, should someone make one.
 
-Also Sound/Texture/Font packs such as https://www.reddit.com/r/TheyAreBillions/comments/ekc8gx/starcraft_warcraft_diablo2_dow2_soundpacks_like_a/
+Also Sound/Texture/Font packs such as  
+https://www.reddit.com/r/TheyAreBillions/comments/13cisqz/6_custom_map_themes_tutorial/  
+and  
+https://www.reddit.com/r/TheyAreBillions/comments/13citig/starcraft_warcraft_cnc_diablo2_dow2_surpreme/

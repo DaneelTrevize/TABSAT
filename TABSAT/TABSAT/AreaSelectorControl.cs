@@ -53,10 +53,10 @@ namespace TABSAT
             Image map = new Bitmap( mapPictureBox.Width, mapPictureBox.Height );
             using( Graphics mapGraphics = Graphics.FromImage( map ) )
             {
-                var radius_percent = radiusNumericUpDown.Value / 100;
-                var width_percent = (int) ( mapPictureBox.Width * radius_percent );
-                //var height_percent = (int) ( mapPictureBox.Height * radius_percent );     // We assume this is the larger dimension, and that we want a circle not an ellipse.
-                var half_width_percent = width_percent / 2;
+                var width_fraction = (int) ( mapPictureBox.Width * radiusNumericUpDown.Value / 65 );
+                var height_fraction = (int) ( mapPictureBox.Height * radiusNumericUpDown.Value / 90 );
+                var half_ellipse_width = width_fraction / 2;
+                var half_ellipse_height = height_fraction / 2;
 
                 switch( areaChoice )
                 {
@@ -69,7 +69,7 @@ namespace TABSAT
                         mapGraphics.DrawLine( gridPen, 0, thirdHeight, mapPictureBox.Width - 1, thirdHeight );
                         mapGraphics.DrawLine( gridPen, 0, mapPictureBox.Height * 2 / 3, mapPictureBox.Width - 1, mapPictureBox.Height * 2 / 3 );
 
-                        mapGraphics.DrawEllipse( gridPen, halfWidth - half_width_percent, halfHeight - half_width_percent, width_percent, width_percent );
+                        mapGraphics.DrawEllipse( gridPen, halfWidth - half_ellipse_width, halfHeight - half_ellipse_height, width_fraction, height_fraction );
                         break;
                     case ModifyChoices.AreaChoices.Everywhere:
                         mapGraphics.FillRectangle( highlightBrush, 0, 0, mapPictureBox.Width, mapPictureBox.Height );
@@ -86,12 +86,12 @@ namespace TABSAT
                         break;
                     case ModifyChoices.AreaChoices.WithinRadius:
                         mapGraphics.FillRectangle( backgroundBrush, 0, 0, mapPictureBox.Width, mapPictureBox.Height );
-                        mapGraphics.FillEllipse( highlightBrush, halfWidth - half_width_percent, halfHeight - half_width_percent, width_percent, width_percent );
+                        mapGraphics.FillEllipse( highlightBrush, halfWidth - half_ellipse_width, halfHeight - half_ellipse_height, width_fraction, height_fraction );
                         break;
                     case ModifyChoices.AreaChoices.BeyondRadius:
                         //System.Drawing.Drawing2D.CombineMode.Exclude;
                         mapGraphics.FillRectangle( highlightBrush, 0, 0, mapPictureBox.Width, mapPictureBox.Height );
-                        mapGraphics.FillEllipse( backgroundBrush, halfWidth - half_width_percent, halfHeight - half_width_percent, width_percent, width_percent );
+                        mapGraphics.FillEllipse( backgroundBrush, halfWidth - half_ellipse_width, halfHeight - half_ellipse_height, width_fraction, height_fraction );
                         break;
                 }
 
@@ -157,6 +157,7 @@ namespace TABSAT
 
         internal void reset()
         {
+            radiusNumericUpDown.Value = 45;
             nothingRadioButton.Checked = true;
         }
 

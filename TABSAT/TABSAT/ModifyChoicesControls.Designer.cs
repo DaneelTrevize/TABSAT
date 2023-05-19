@@ -86,7 +86,6 @@
             this.zombieScaleMutantNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.zombieScaleGiantNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.zombieScaleMutantCheckBox = new System.Windows.Forms.CheckBox();
-            this.zombieScaleGiantCheckBox = new System.Windows.Forms.CheckBox();
             this.nonHugeGroupsPanel = new System.Windows.Forms.Panel();
             this.zombieStateLabel = new System.Windows.Forms.Label();
             this.bothRadioButton = new System.Windows.Forms.RadioButton();
@@ -99,14 +98,21 @@
             this.zombieScaleDressedNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.zombieScaleMediumCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleMediumNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.zombieScaleDressedCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleWeakNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.harpyLabel = new System.Windows.Forms.Label();
+            this.dressedLabel = new System.Windows.Forms.Label();
+            this.venomLabel = new System.Windows.Forms.Label();
+            this.strongLabel = new System.Windows.Forms.Label();
+            this.runnerLabel = new System.Windows.Forms.Label();
+            this.walkerLabel = new System.Windows.Forms.Label();
+            this.zombieScaleDressedCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleStrongCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleHarpyCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleVenomCheckBox = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.zombieScaleAllCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleAllNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.zombieScaleAllCheckBox = new System.Windows.Forms.CheckBox();
+            this.zombieScaleGiantCheckBox = new System.Windows.Forms.CheckBox();
             this.groupsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.generalGroupBox.SuspendLayout();
             this.swarmsGroupBox.SuspendLayout();
@@ -220,7 +226,7 @@
             this.swarmHardComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.swarmHardComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.swarmHardComboBox.FormattingEnabled = true;
-            this.swarmHardComboBox.Location = new System.Drawing.Point(136, 85);
+            this.swarmHardComboBox.Location = new System.Drawing.Point(138, 85);
             this.swarmHardComboBox.Name = "swarmHardComboBox";
             this.swarmHardComboBox.Size = new System.Drawing.Size(63, 21);
             this.swarmHardComboBox.TabIndex = 3;
@@ -231,7 +237,7 @@
             this.swarmEasyComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.swarmEasyComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.swarmEasyComboBox.FormattingEnabled = true;
-            this.swarmEasyComboBox.Location = new System.Drawing.Point(136, 63);
+            this.swarmEasyComboBox.Location = new System.Drawing.Point(138, 63);
             this.swarmEasyComboBox.Name = "swarmEasyComboBox";
             this.swarmEasyComboBox.Size = new System.Drawing.Size(63, 21);
             this.swarmEasyComboBox.TabIndex = 1;
@@ -316,7 +322,7 @@
             this.warehousesGroupBox.Controls.Add(this.warehousesFillGoldCheckBox);
             this.warehousesGroupBox.Location = new System.Drawing.Point(469, 275);
             this.warehousesGroupBox.Name = "warehousesGroupBox";
-            this.warehousesGroupBox.Size = new System.Drawing.Size(115, 86);
+            this.warehousesGroupBox.Size = new System.Drawing.Size(115, 112);
             this.warehousesGroupBox.TabIndex = 4;
             this.warehousesGroupBox.TabStop = false;
             this.warehousesGroupBox.Text = "Fill Storage";
@@ -324,7 +330,7 @@
             // warehousesFillOilCheckBox
             // 
             this.warehousesFillOilCheckBox.AutoSize = true;
-            this.warehousesFillOilCheckBox.Location = new System.Drawing.Point(61, 42);
+            this.warehousesFillOilCheckBox.Location = new System.Drawing.Point(6, 88);
             this.warehousesFillOilCheckBox.Name = "warehousesFillOilCheckBox";
             this.warehousesFillOilCheckBox.Size = new System.Drawing.Size(38, 17);
             this.warehousesFillOilCheckBox.TabIndex = 4;
@@ -364,7 +370,7 @@
             // warehousesFillGoldCheckBox
             // 
             this.warehousesFillGoldCheckBox.AutoSize = true;
-            this.warehousesFillGoldCheckBox.Location = new System.Drawing.Point(61, 20);
+            this.warehousesFillGoldCheckBox.Location = new System.Drawing.Point(69, 19);
             this.warehousesFillGoldCheckBox.Name = "warehousesFillGoldCheckBox";
             this.warehousesFillGoldCheckBox.Size = new System.Drawing.Size(48, 17);
             this.warehousesFillGoldCheckBox.TabIndex = 0;
@@ -831,9 +837,9 @@
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleMutantNumericUpDown);
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleGiantNumericUpDown);
             this.zombieScalingGroupBox.Controls.Add(this.zombieScaleMutantCheckBox);
-            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleGiantCheckBox);
             this.zombieScalingGroupBox.Controls.Add(this.nonHugeGroupsPanel);
             this.zombieScalingGroupBox.Controls.Add(this.panel1);
+            this.zombieScalingGroupBox.Controls.Add(this.zombieScaleGiantCheckBox);
             this.zombieScalingGroupBox.Location = new System.Drawing.Point(3, 3);
             this.zombieScalingGroupBox.Name = "zombieScalingGroupBox";
             this.zombieScalingGroupBox.Size = new System.Drawing.Size(581, 148);
@@ -866,7 +872,7 @@
             this.zombieScaleMutantNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleMutantNumericUpDown.TabIndex = 4;
             this.zombieScaleMutantNumericUpDown.Value = new decimal(new int[] {
-            110,
+            150,
             0,
             0,
             0});
@@ -889,7 +895,7 @@
             this.zombieScaleGiantNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleGiantNumericUpDown.TabIndex = 2;
             this.zombieScaleGiantNumericUpDown.Value = new decimal(new int[] {
-            110,
+            150,
             0,
             0,
             0});
@@ -905,20 +911,9 @@
             this.zombieScaleMutantCheckBox.Text = "Mutants";
             this.zombieScaleMutantCheckBox.UseVisualStyleBackColor = true;
             // 
-            // zombieScaleGiantCheckBox
-            // 
-            this.zombieScaleGiantCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.zombieScaleGiantCheckBox.AutoSize = true;
-            this.zombieScaleGiantCheckBox.Location = new System.Drawing.Point(423, 18);
-            this.zombieScaleGiantCheckBox.Name = "zombieScaleGiantCheckBox";
-            this.zombieScaleGiantCheckBox.Size = new System.Drawing.Size(56, 17);
-            this.zombieScaleGiantCheckBox.TabIndex = 3;
-            this.zombieScaleGiantCheckBox.Text = "Giants";
-            this.zombieScaleGiantCheckBox.UseVisualStyleBackColor = true;
-            // 
             // nonHugeGroupsPanel
             // 
-            this.nonHugeGroupsPanel.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.nonHugeGroupsPanel.BackColor = System.Drawing.Color.WhiteSmoke;
             this.nonHugeGroupsPanel.Controls.Add(this.zombieStateLabel);
             this.nonHugeGroupsPanel.Controls.Add(this.bothRadioButton);
             this.nonHugeGroupsPanel.Controls.Add(this.zombieScaleHarpyNumericUpDown);
@@ -930,22 +925,27 @@
             this.nonHugeGroupsPanel.Controls.Add(this.zombieScaleDressedNumericUpDown);
             this.nonHugeGroupsPanel.Controls.Add(this.zombieScaleMediumCheckBox);
             this.nonHugeGroupsPanel.Controls.Add(this.zombieScaleMediumNumericUpDown);
-            this.nonHugeGroupsPanel.Controls.Add(this.zombieScaleDressedCheckBox);
             this.nonHugeGroupsPanel.Controls.Add(this.zombieScaleWeakNumericUpDown);
+            this.nonHugeGroupsPanel.Controls.Add(this.harpyLabel);
+            this.nonHugeGroupsPanel.Controls.Add(this.dressedLabel);
+            this.nonHugeGroupsPanel.Controls.Add(this.venomLabel);
+            this.nonHugeGroupsPanel.Controls.Add(this.strongLabel);
+            this.nonHugeGroupsPanel.Controls.Add(this.runnerLabel);
+            this.nonHugeGroupsPanel.Controls.Add(this.walkerLabel);
+            this.nonHugeGroupsPanel.Controls.Add(this.zombieScaleDressedCheckBox);
             this.nonHugeGroupsPanel.Controls.Add(this.zombieScaleStrongCheckBox);
             this.nonHugeGroupsPanel.Controls.Add(this.zombieScaleHarpyCheckBox);
             this.nonHugeGroupsPanel.Controls.Add(this.zombieScaleVenomCheckBox);
             this.nonHugeGroupsPanel.Location = new System.Drawing.Point(239, 42);
             this.nonHugeGroupsPanel.Margin = new System.Windows.Forms.Padding(0);
             this.nonHugeGroupsPanel.Name = "nonHugeGroupsPanel";
-            this.nonHugeGroupsPanel.Size = new System.Drawing.Size(342, 105);
+            this.nonHugeGroupsPanel.Size = new System.Drawing.Size(339, 103);
             this.nonHugeGroupsPanel.TabIndex = 22;
             // 
             // zombieStateLabel
             // 
-            this.zombieStateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.zombieStateLabel.AutoSize = true;
-            this.zombieStateLabel.Location = new System.Drawing.Point(3, 8);
+            this.zombieStateLabel.Location = new System.Drawing.Point(39, 9);
             this.zombieStateLabel.Name = "zombieStateLabel";
             this.zombieStateLabel.Size = new System.Drawing.Size(121, 13);
             this.zombieStateLabel.TabIndex = 21;
@@ -953,10 +953,9 @@
             // 
             // bothRadioButton
             // 
-            this.bothRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.bothRadioButton.AutoSize = true;
             this.bothRadioButton.Checked = true;
-            this.bothRadioButton.Location = new System.Drawing.Point(150, 8);
+            this.bothRadioButton.Location = new System.Drawing.Point(275, 7);
             this.bothRadioButton.Name = "bothRadioButton";
             this.bothRadioButton.Size = new System.Drawing.Size(47, 17);
             this.bothRadioButton.TabIndex = 2;
@@ -966,13 +965,12 @@
             // 
             // zombieScaleHarpyNumericUpDown
             // 
-            this.zombieScaleHarpyNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.zombieScaleHarpyNumericUpDown.Increment = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.zombieScaleHarpyNumericUpDown.Location = new System.Drawing.Point(296, 77);
+            this.zombieScaleHarpyNumericUpDown.Location = new System.Drawing.Point(296, 80);
             this.zombieScaleHarpyNumericUpDown.Maximum = new decimal(new int[] {
             250,
             0,
@@ -982,16 +980,15 @@
             this.zombieScaleHarpyNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleHarpyNumericUpDown.TabIndex = 16;
             this.zombieScaleHarpyNumericUpDown.Value = new decimal(new int[] {
-            110,
+            150,
             0,
             0,
             0});
             // 
             // idleRadioButton
             // 
-            this.idleRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.idleRadioButton.AutoSize = true;
-            this.idleRadioButton.Location = new System.Drawing.Point(296, 8);
+            this.idleRadioButton.Location = new System.Drawing.Point(227, 7);
             this.idleRadioButton.Name = "idleRadioButton";
             this.idleRadioButton.Size = new System.Drawing.Size(42, 17);
             this.idleRadioButton.TabIndex = 1;
@@ -1000,13 +997,12 @@
             // 
             // zombieScaleVenomNumericUpDown
             // 
-            this.zombieScaleVenomNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.zombieScaleVenomNumericUpDown.Increment = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.zombieScaleVenomNumericUpDown.Location = new System.Drawing.Point(296, 54);
+            this.zombieScaleVenomNumericUpDown.Location = new System.Drawing.Point(296, 57);
             this.zombieScaleVenomNumericUpDown.Maximum = new decimal(new int[] {
             250,
             0,
@@ -1016,16 +1012,15 @@
             this.zombieScaleVenomNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleVenomNumericUpDown.TabIndex = 14;
             this.zombieScaleVenomNumericUpDown.Value = new decimal(new int[] {
-            110,
+            150,
             0,
             0,
             0});
             // 
             // activeRadioButton
             // 
-            this.activeRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.activeRadioButton.AutoSize = true;
-            this.activeRadioButton.Location = new System.Drawing.Point(220, 8);
+            this.activeRadioButton.Location = new System.Drawing.Point(166, 7);
             this.activeRadioButton.Name = "activeRadioButton";
             this.activeRadioButton.Size = new System.Drawing.Size(55, 17);
             this.activeRadioButton.TabIndex = 0;
@@ -1034,13 +1029,12 @@
             // 
             // zombieScaleStrongNumericUpDown
             // 
-            this.zombieScaleStrongNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.zombieScaleStrongNumericUpDown.Increment = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.zombieScaleStrongNumericUpDown.Location = new System.Drawing.Point(296, 31);
+            this.zombieScaleStrongNumericUpDown.Location = new System.Drawing.Point(296, 34);
             this.zombieScaleStrongNumericUpDown.Maximum = new decimal(new int[] {
             250,
             0,
@@ -1050,31 +1044,29 @@
             this.zombieScaleStrongNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleStrongNumericUpDown.TabIndex = 12;
             this.zombieScaleStrongNumericUpDown.Value = new decimal(new int[] {
-            110,
+            150,
             0,
             0,
             0});
             // 
             // zombieScaleWeakCheckBox
             // 
-            this.zombieScaleWeakCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.zombieScaleWeakCheckBox.AutoSize = true;
-            this.zombieScaleWeakCheckBox.Location = new System.Drawing.Point(6, 32);
+            this.zombieScaleWeakCheckBox.Location = new System.Drawing.Point(6, 35);
             this.zombieScaleWeakCheckBox.Name = "zombieScaleWeakCheckBox";
-            this.zombieScaleWeakCheckBox.Size = new System.Drawing.Size(98, 17);
+            this.zombieScaleWeakCheckBox.Size = new System.Drawing.Size(55, 17);
             this.zombieScaleWeakCheckBox.TabIndex = 7;
-            this.zombieScaleWeakCheckBox.Text = "Weak (Walker)";
+            this.zombieScaleWeakCheckBox.Text = "Weak";
             this.zombieScaleWeakCheckBox.UseVisualStyleBackColor = true;
             // 
             // zombieScaleDressedNumericUpDown
             // 
-            this.zombieScaleDressedNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.zombieScaleDressedNumericUpDown.Increment = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.zombieScaleDressedNumericUpDown.Location = new System.Drawing.Point(124, 77);
+            this.zombieScaleDressedNumericUpDown.Location = new System.Drawing.Point(124, 80);
             this.zombieScaleDressedNumericUpDown.Maximum = new decimal(new int[] {
             250,
             0,
@@ -1084,31 +1076,29 @@
             this.zombieScaleDressedNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleDressedNumericUpDown.TabIndex = 10;
             this.zombieScaleDressedNumericUpDown.Value = new decimal(new int[] {
-            110,
+            150,
             0,
             0,
             0});
             // 
             // zombieScaleMediumCheckBox
             // 
-            this.zombieScaleMediumCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.zombieScaleMediumCheckBox.AutoSize = true;
-            this.zombieScaleMediumCheckBox.Location = new System.Drawing.Point(6, 55);
+            this.zombieScaleMediumCheckBox.Location = new System.Drawing.Point(6, 58);
             this.zombieScaleMediumCheckBox.Name = "zombieScaleMediumCheckBox";
-            this.zombieScaleMediumCheckBox.Size = new System.Drawing.Size(107, 17);
+            this.zombieScaleMediumCheckBox.Size = new System.Drawing.Size(63, 17);
             this.zombieScaleMediumCheckBox.TabIndex = 9;
-            this.zombieScaleMediumCheckBox.Text = "Medium (Runner)";
+            this.zombieScaleMediumCheckBox.Text = "Medium";
             this.zombieScaleMediumCheckBox.UseVisualStyleBackColor = true;
             // 
             // zombieScaleMediumNumericUpDown
             // 
-            this.zombieScaleMediumNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.zombieScaleMediumNumericUpDown.Increment = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.zombieScaleMediumNumericUpDown.Location = new System.Drawing.Point(124, 54);
+            this.zombieScaleMediumNumericUpDown.Location = new System.Drawing.Point(124, 57);
             this.zombieScaleMediumNumericUpDown.Maximum = new decimal(new int[] {
             250,
             0,
@@ -1118,31 +1108,19 @@
             this.zombieScaleMediumNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleMediumNumericUpDown.TabIndex = 8;
             this.zombieScaleMediumNumericUpDown.Value = new decimal(new int[] {
-            110,
+            150,
             0,
             0,
             0});
             // 
-            // zombieScaleDressedCheckBox
-            // 
-            this.zombieScaleDressedCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.zombieScaleDressedCheckBox.AutoSize = true;
-            this.zombieScaleDressedCheckBox.Location = new System.Drawing.Point(6, 78);
-            this.zombieScaleDressedCheckBox.Name = "zombieScaleDressedCheckBox";
-            this.zombieScaleDressedCheckBox.Size = new System.Drawing.Size(121, 17);
-            this.zombieScaleDressedCheckBox.TabIndex = 11;
-            this.zombieScaleDressedCheckBox.Text = "Dressed (Executive)";
-            this.zombieScaleDressedCheckBox.UseVisualStyleBackColor = true;
-            // 
             // zombieScaleWeakNumericUpDown
             // 
-            this.zombieScaleWeakNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.zombieScaleWeakNumericUpDown.Increment = new decimal(new int[] {
             10,
             0,
             0,
             0});
-            this.zombieScaleWeakNumericUpDown.Location = new System.Drawing.Point(124, 31);
+            this.zombieScaleWeakNumericUpDown.Location = new System.Drawing.Point(124, 34);
             this.zombieScaleWeakNumericUpDown.Maximum = new decimal(new int[] {
             250,
             0,
@@ -1152,66 +1130,121 @@
             this.zombieScaleWeakNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleWeakNumericUpDown.TabIndex = 6;
             this.zombieScaleWeakNumericUpDown.Value = new decimal(new int[] {
-            110,
+            150,
             0,
             0,
             0});
             // 
+            // harpyLabel
+            // 
+            this.harpyLabel.AutoSize = true;
+            this.harpyLabel.Location = new System.Drawing.Point(255, 82);
+            this.harpyLabel.Name = "harpyLabel";
+            this.harpyLabel.Size = new System.Drawing.Size(41, 13);
+            this.harpyLabel.TabIndex = 27;
+            this.harpyLabel.Text = "(Witch)";
+            this.harpyLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // dressedLabel
+            // 
+            this.dressedLabel.AutoSize = true;
+            this.dressedLabel.Location = new System.Drawing.Point(64, 82);
+            this.dressedLabel.Name = "dressedLabel";
+            this.dressedLabel.Size = new System.Drawing.Size(60, 13);
+            this.dressedLabel.TabIndex = 26;
+            this.dressedLabel.Text = "(Executive)";
+            this.dressedLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // venomLabel
+            // 
+            this.venomLabel.AutoSize = true;
+            this.venomLabel.Location = new System.Drawing.Point(253, 59);
+            this.venomLabel.Name = "venomLabel";
+            this.venomLabel.Size = new System.Drawing.Size(43, 13);
+            this.venomLabel.TabIndex = 25;
+            this.venomLabel.Text = "(Spitter)";
+            this.venomLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // strongLabel
+            // 
+            this.strongLabel.AutoSize = true;
+            this.strongLabel.Location = new System.Drawing.Point(247, 36);
+            this.strongLabel.Name = "strongLabel";
+            this.strongLabel.Size = new System.Drawing.Size(49, 13);
+            this.strongLabel.TabIndex = 24;
+            this.strongLabel.Text = "(Chubby)";
+            this.strongLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // runnerLabel
+            // 
+            this.runnerLabel.AutoSize = true;
+            this.runnerLabel.Location = new System.Drawing.Point(76, 59);
+            this.runnerLabel.Name = "runnerLabel";
+            this.runnerLabel.Size = new System.Drawing.Size(48, 13);
+            this.runnerLabel.TabIndex = 23;
+            this.runnerLabel.Text = "(Runner)";
+            this.runnerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // walkerLabel
+            // 
+            this.walkerLabel.AutoSize = true;
+            this.walkerLabel.Location = new System.Drawing.Point(77, 36);
+            this.walkerLabel.Name = "walkerLabel";
+            this.walkerLabel.Size = new System.Drawing.Size(47, 13);
+            this.walkerLabel.TabIndex = 22;
+            this.walkerLabel.Text = "(Walker)";
+            this.walkerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // zombieScaleDressedCheckBox
+            // 
+            this.zombieScaleDressedCheckBox.AutoSize = true;
+            this.zombieScaleDressedCheckBox.Location = new System.Drawing.Point(6, 81);
+            this.zombieScaleDressedCheckBox.Name = "zombieScaleDressedCheckBox";
+            this.zombieScaleDressedCheckBox.Size = new System.Drawing.Size(65, 17);
+            this.zombieScaleDressedCheckBox.TabIndex = 11;
+            this.zombieScaleDressedCheckBox.Text = "Dressed";
+            this.zombieScaleDressedCheckBox.UseVisualStyleBackColor = true;
+            // 
             // zombieScaleStrongCheckBox
             // 
-            this.zombieScaleStrongCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.zombieScaleStrongCheckBox.AutoSize = true;
-            this.zombieScaleStrongCheckBox.Location = new System.Drawing.Point(184, 32);
+            this.zombieScaleStrongCheckBox.Location = new System.Drawing.Point(196, 35);
             this.zombieScaleStrongCheckBox.Name = "zombieScaleStrongCheckBox";
-            this.zombieScaleStrongCheckBox.Size = new System.Drawing.Size(102, 17);
+            this.zombieScaleStrongCheckBox.Size = new System.Drawing.Size(57, 17);
             this.zombieScaleStrongCheckBox.TabIndex = 13;
-            this.zombieScaleStrongCheckBox.Text = "Strong (Chubby)";
+            this.zombieScaleStrongCheckBox.Text = "Strong";
             this.zombieScaleStrongCheckBox.UseVisualStyleBackColor = true;
             // 
             // zombieScaleHarpyCheckBox
             // 
-            this.zombieScaleHarpyCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.zombieScaleHarpyCheckBox.AutoSize = true;
-            this.zombieScaleHarpyCheckBox.Location = new System.Drawing.Point(184, 78);
+            this.zombieScaleHarpyCheckBox.Location = new System.Drawing.Point(196, 81);
             this.zombieScaleHarpyCheckBox.Name = "zombieScaleHarpyCheckBox";
-            this.zombieScaleHarpyCheckBox.Size = new System.Drawing.Size(91, 17);
+            this.zombieScaleHarpyCheckBox.Size = new System.Drawing.Size(54, 17);
             this.zombieScaleHarpyCheckBox.TabIndex = 17;
-            this.zombieScaleHarpyCheckBox.Text = "Harpy (Witch)";
+            this.zombieScaleHarpyCheckBox.Text = "Harpy";
             this.zombieScaleHarpyCheckBox.UseVisualStyleBackColor = true;
             // 
             // zombieScaleVenomCheckBox
             // 
-            this.zombieScaleVenomCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.zombieScaleVenomCheckBox.AutoSize = true;
-            this.zombieScaleVenomCheckBox.Location = new System.Drawing.Point(184, 55);
+            this.zombieScaleVenomCheckBox.Location = new System.Drawing.Point(196, 58);
             this.zombieScaleVenomCheckBox.Name = "zombieScaleVenomCheckBox";
-            this.zombieScaleVenomCheckBox.Size = new System.Drawing.Size(98, 17);
+            this.zombieScaleVenomCheckBox.Size = new System.Drawing.Size(59, 17);
             this.zombieScaleVenomCheckBox.TabIndex = 15;
-            this.zombieScaleVenomCheckBox.Text = "Venom (Spitter)";
+            this.zombieScaleVenomCheckBox.Text = "Venom";
             this.zombieScaleVenomCheckBox.UseVisualStyleBackColor = true;
             // 
             // panel1
             // 
-            this.panel1.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.panel1.Controls.Add(this.zombieScaleAllCheckBox);
+            this.panel1.BackColor = System.Drawing.Color.WhiteSmoke;
             this.panel1.Controls.Add(this.zombieScaleAllNumericUpDown);
+            this.panel1.Controls.Add(this.zombieScaleAllCheckBox);
             this.panel1.Location = new System.Drawing.Point(83, 112);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(156, 35);
+            this.panel1.Size = new System.Drawing.Size(156, 33);
             this.panel1.TabIndex = 23;
-            // 
-            // zombieScaleAllCheckBox
-            // 
-            this.zombieScaleAllCheckBox.AutoSize = true;
-            this.zombieScaleAllCheckBox.Checked = true;
-            this.zombieScaleAllCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.zombieScaleAllCheckBox.Location = new System.Drawing.Point(5, 8);
-            this.zombieScaleAllCheckBox.Name = "zombieScaleAllCheckBox";
-            this.zombieScaleAllCheckBox.Size = new System.Drawing.Size(103, 17);
-            this.zombieScaleAllCheckBox.TabIndex = 1;
-            this.zombieScaleAllCheckBox.Text = "Non-Huge types";
-            this.zombieScaleAllCheckBox.UseVisualStyleBackColor = true;
             // 
             // zombieScaleAllNumericUpDown
             // 
@@ -1220,7 +1253,7 @@
             0,
             0,
             0});
-            this.zombieScaleAllNumericUpDown.Location = new System.Drawing.Point(107, 7);
+            this.zombieScaleAllNumericUpDown.Location = new System.Drawing.Point(107, 10);
             this.zombieScaleAllNumericUpDown.Maximum = new decimal(new int[] {
             250,
             0,
@@ -1230,10 +1263,33 @@
             this.zombieScaleAllNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleAllNumericUpDown.TabIndex = 0;
             this.zombieScaleAllNumericUpDown.Value = new decimal(new int[] {
-            110,
+            150,
             0,
             0,
             0});
+            // 
+            // zombieScaleAllCheckBox
+            // 
+            this.zombieScaleAllCheckBox.AutoSize = true;
+            this.zombieScaleAllCheckBox.Checked = true;
+            this.zombieScaleAllCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.zombieScaleAllCheckBox.Location = new System.Drawing.Point(5, 11);
+            this.zombieScaleAllCheckBox.Name = "zombieScaleAllCheckBox";
+            this.zombieScaleAllCheckBox.Size = new System.Drawing.Size(103, 17);
+            this.zombieScaleAllCheckBox.TabIndex = 1;
+            this.zombieScaleAllCheckBox.Text = "Non-Huge types";
+            this.zombieScaleAllCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // zombieScaleGiantCheckBox
+            // 
+            this.zombieScaleGiantCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.zombieScaleGiantCheckBox.AutoSize = true;
+            this.zombieScaleGiantCheckBox.Location = new System.Drawing.Point(435, 19);
+            this.zombieScaleGiantCheckBox.Name = "zombieScaleGiantCheckBox";
+            this.zombieScaleGiantCheckBox.Size = new System.Drawing.Size(56, 17);
+            this.zombieScaleGiantCheckBox.TabIndex = 3;
+            this.zombieScaleGiantCheckBox.Text = "Giants";
+            this.zombieScaleGiantCheckBox.UseVisualStyleBackColor = true;
             // 
             // groupsFlowLayoutPanel
             // 
@@ -1386,5 +1442,11 @@
         private System.Windows.Forms.CheckBox zombieScaleVenomCheckBox;
         private System.Windows.Forms.FlowLayoutPanel groupsFlowLayoutPanel;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label walkerLabel;
+        private System.Windows.Forms.Label harpyLabel;
+        private System.Windows.Forms.Label dressedLabel;
+        private System.Windows.Forms.Label venomLabel;
+        private System.Windows.Forms.Label strongLabel;
+        private System.Windows.Forms.Label runnerLabel;
     }
 }

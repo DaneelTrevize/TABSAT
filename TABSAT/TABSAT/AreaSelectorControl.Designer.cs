@@ -119,7 +119,7 @@
             this.radiusNumericUpDown.Size = new System.Drawing.Size(35, 20);
             this.radiusNumericUpDown.TabIndex = 5;
             this.radiusNumericUpDown.Value = new decimal(new int[] {
-            50,
+            45,
             0,
             0,
             0});
