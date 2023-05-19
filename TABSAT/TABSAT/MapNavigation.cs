@@ -23,7 +23,7 @@ namespace TABSAT
         //private const Direction ORDINALS = Direction.NORTHEAST | Direction.SOUTHEAST | Direction.SOUTHWEST | Direction.NORTHWEST;
         private static readonly SortedSet<Direction> CARDINALS = new SortedSet<Direction> { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
         private static readonly SortedSet<Direction> ORDINALS = new SortedSet<Direction> { Direction.NORTHEAST, Direction.SOUTHEAST, Direction.SOUTHWEST, Direction.NORTHWEST };
-        internal const int UNNAVIGABLE = int.MaxValue;
+        internal const ushort UNNAVIGABLE = ushort.MaxValue;
 
         private static Direction Reverse( Direction d )
         {
@@ -53,23 +53,19 @@ namespace TABSAT
         internal class Position : IComparable
         {
             // Could be bytes, unsigned 8bit ints..?
-            internal readonly int x;
-            internal readonly int y;
+            internal readonly ushort x;
+            internal readonly ushort y;
 
-            internal Position( int x, int y )
+            internal Position( ushort x, ushort y )
             {
-                if( x < 0 || y < 0 )
-                {
-                    throw new ArgumentException( "x or y should not be negative." );
-                }
                 this.x = x;
                 this.y = y;
             }
 
             internal Position TryMoveDirection( Direction d )      // Doesn't account for 45degree rotation..?
             {
-                int newX = x;
-                int newY = y;
+                ushort newX = x;
+                ushort newY = y;
                 switch( d )
                 {
                     case Direction.NORTH:
@@ -131,29 +127,29 @@ namespace TABSAT
             }
         }
         /*
-        private static void indexToAxes( int index, int res, out int x, out int y )
+        private static void indexToAxes( int index, ushort res, out ushort x, out ushort y )
         {
             x = index / res;
             y = index % res;
         }
         */
-        internal static int axesToIndex( int res, int x, int y )
+        internal static int axesToIndex( ushort res, ushort x, ushort y )
         {
             return ( x * res ) + y;
         }
 
         internal class FlowGraph
         {
-            private readonly int resolution;    // Cells per axis
+            private readonly ushort resolution;   // Cells per axis
             private readonly byte[] navigable;
-            private readonly SortedDictionary<Position, int> ccDistances;
+            private readonly SortedDictionary<Position, ushort> ccDistances;
             private readonly SortedDictionary<Position, Direction> ccDirections;
 
-            internal FlowGraph( int r, byte[] n )
+            internal FlowGraph( ushort r, byte[] n )
             {
                 resolution = r;
                 navigable = n;
-                ccDistances = new SortedDictionary<Position, int>();
+                ccDistances = new SortedDictionary<Position, ushort>();
                 ccDirections = new SortedDictionary<Position, Direction>();
             }
 
@@ -162,10 +158,10 @@ namespace TABSAT
                 SortedDictionary<Position, Direction> aroundCC = new SortedDictionary<Position, Direction>
                 {
                     // 5 cells per side, Corners +/-2 from center co-ords.
-                    { new Position( cc.x - 3, cc.y ), Direction.SOUTHEAST },
-                    { new Position( cc.x, cc.y - 3 ), Direction.SOUTHWEST },
-                    { new Position( cc.x + 3, cc.y ), Direction.NORTHWEST },
-                    { new Position( cc.x, cc.y + 3 ), Direction.NORTHEAST }
+                    { new Position( (ushort) (cc.x - 3), cc.y ), Direction.SOUTHEAST },
+                    { new Position( cc.x, (ushort) (cc.y - 3) ), Direction.SOUTHWEST },
+                    { new Position( (ushort) (cc.x + 3), cc.y ), Direction.NORTHWEST },
+                    { new Position( cc.x, (ushort) (cc.y + 3) ), Direction.NORTHEAST }
                 };
 
                 flood( aroundCC, 1, UNNAVIGABLE );
@@ -173,7 +169,7 @@ namespace TABSAT
                 favourFlow( ORDINALS );
             }
 
-            private void flood( SortedDictionary<Position, Direction> toVisit, int distance, int limit )
+            private void flood( SortedDictionary<Position, Direction> toVisit, ushort distance, ushort limit )
             {
                 foreach( var k_v in toVisit )
                 {
@@ -211,13 +207,13 @@ namespace TABSAT
 
                 if( nextToVisit.Any() )
                 {
-                    flood( nextToVisit, distance + 1, limit );
+                    flood( nextToVisit, (ushort) (distance + 1), limit );
                 }
             }
 
-            private void recordFlood( Position position, int distance, Direction direction )
+            private void recordFlood( Position position, ushort distance, Direction direction )
             {
-                if( ccDistances.TryGetValue( position, out int existing ) )
+                if( ccDistances.TryGetValue( position, out ushort existing ) )
                 {
                     if( existing <= distance )
                     {
@@ -228,7 +224,7 @@ namespace TABSAT
                 ccDirections.Add( position, direction );
             }
 
-            private void considerFlood( Position position, Direction floodDir, bool checkAdjacent, int range, SortedDictionary<Position, Direction> nextToVisit )
+            private void considerFlood( Position position, Direction floodDir, bool checkAdjacent, ushort range, SortedDictionary<Position, Direction> nextToVisit )
             {
                 var candidatePos = TryMove( position, floodDir );
                 if( candidatePos == null )
@@ -252,7 +248,7 @@ namespace TABSAT
                 }
 
                 // Might the current position be a shorter path to an adjacent navigable?
-                if( ccDistances.TryGetValue( candidatePos, out int distance ) )
+                if( ccDistances.TryGetValue( candidatePos, out ushort distance ) )
                 {
                     if( distance <= range )
                     {
@@ -292,7 +288,7 @@ namespace TABSAT
                 return /*p.x >= 0 && p.y >= 0 &&*/ p.x < resolution && p.y < resolution;
             }
 
-            private bool IsNavigable( int x, int y )
+            private bool IsNavigable( ushort x, ushort y )
             {
                 int i = axesToIndex( resolution, x, y );
                 return navigable[i] == 0x00;  // != SaveReader.NAVIGABLE_BLOCKED
@@ -320,7 +316,7 @@ namespace TABSAT
                             {
                                 continue;   // direction isn't navigable
                             }
-                            int candidateDistance = getDistance( resultingPosition );
+                            uint candidateDistance = getDistance( resultingPosition );
                             if( candidateDistance < getDistance( position ) )           // Is towards the CC
                             {
                                 //ccDirections[position] = candidateDirection;
@@ -337,9 +333,9 @@ namespace TABSAT
                 }
             }
 
-            internal int getDistance( Position position )
+            internal ushort getDistance( Position position )
             {
-                if( !ccDistances.TryGetValue( position, out int distance ) )
+                if( !ccDistances.TryGetValue( position, out ushort distance ) )
                 {
                     distance = UNNAVIGABLE;
                 }
@@ -358,24 +354,20 @@ namespace TABSAT
 
         internal class IntQuadTree
         {
-            private const int RES_LIMIT = 2;
+            private const ushort RES_LIMIT = 2;
 
-            private readonly int CornerX;       // North (W/S) corner of covered coords
-            private readonly int CornerY;       // North (W/S) corner of covered coords
-            private readonly int Resolution;    // Length of sides of covered square. Power of 2.
+            private readonly ushort CornerX;        // North (W/S) corner of covered coords
+            private readonly ushort CornerY;        // North (W/S) corner of covered coords
+            private readonly ushort Resolution;     // Length of sides of covered square. Power of 2.
 
-            private int count;
+            private ushort count;
             private IntQuadTree northQuad;
             private IntQuadTree eastQuad;
             private IntQuadTree southQuad;
             private IntQuadTree westQuad;
 
-            internal IntQuadTree( int x, int y, int res )
+            internal IntQuadTree( ushort x, ushort y, ushort res )
             {
-                if( x < 0 || y < 0 )
-                {
-                    throw new ArgumentOutOfRangeException( "x and y coordinates must not be negative." );
-                }
                 if( res == 0 || ( res & (res - 1)) != 0 )
                 {
                     throw new ArgumentOutOfRangeException( "res must be a positive power of 2." );
@@ -391,7 +383,7 @@ namespace TABSAT
                 westQuad = null;
             }
 
-            internal int getCount( int x, int y, int res )
+            internal ushort getCount( ushort x, ushort y, ushort res )
             {
                 if( !IsWithinQuad( x, y ) )
                 {
@@ -412,11 +404,18 @@ namespace TABSAT
                     }
                     // Find the corresponding quad and recurse
                     IntQuadTree tree = SubTree( getDir( x, y ) );
-                    return tree == null ? 0 : tree.getCount( x, y, res );
+                    if( tree == null )
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return tree.getCount( x, y, res );
+                    }
                 }
             }
 
-            private bool IsWithinQuad( int x, int y )
+            private bool IsWithinQuad( ushort x, ushort y )
             {
                 if( x < CornerX || x >= CornerX + Resolution )
                 {
@@ -429,7 +428,7 @@ namespace TABSAT
                 return true;
             }
 
-            private SaveReader.CompassDirection getDir( int x, int y )
+            private SaveReader.CompassDirection getDir( ushort x, ushort y )
             {
                 if( x - CornerX < Resolution / 2 )
                 {
@@ -464,7 +463,7 @@ namespace TABSAT
                 return ref tree;
             }
 
-            internal void Add( int x, int y )
+            internal void Add( ushort x, ushort y )
             {
                 if( !IsWithinQuad( x, y ) )
                 {
@@ -481,9 +480,9 @@ namespace TABSAT
 
                     if( tree == null )
                     {
-                        int newRes = Resolution / 2;
-                        int newX = dir == SaveReader.CompassDirection.North || dir == SaveReader.CompassDirection.West ? CornerX : CornerX + newRes;
-                        int newY = dir == SaveReader.CompassDirection.North || dir == SaveReader.CompassDirection.East ? CornerY : CornerY + newRes;
+                        ushort newRes = (ushort) (Resolution / 2);
+                        ushort newX = dir == SaveReader.CompassDirection.North || dir == SaveReader.CompassDirection.West ? CornerX : (ushort) (CornerX + newRes);
+                        ushort newY = dir == SaveReader.CompassDirection.North || dir == SaveReader.CompassDirection.East ? CornerY : (ushort) (CornerY + newRes);
                         tree = new IntQuadTree( newX, newY, newRes );
                     }
 

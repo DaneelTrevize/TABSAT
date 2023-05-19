@@ -73,7 +73,7 @@
             this.ccExtraEnergyCheckBox = new System.Windows.Forms.CheckBox();
             this.ccExtraFoodCheckBox = new System.Windows.Forms.CheckBox();
             this.vodGroupBox = new System.Windows.Forms.GroupBox();
-            this.vodStackLabel = new System.Windows.Forms.Label();
+            this.vodScaleLabel = new System.Windows.Forms.Label();
             this.vodStackCityHallsNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.vodCityHallsCheckBox = new System.Windows.Forms.CheckBox();
             this.vodStackTavernsNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -693,7 +693,7 @@
             // 
             // vodGroupBox
             // 
-            this.vodGroupBox.Controls.Add(this.vodStackLabel);
+            this.vodGroupBox.Controls.Add(this.vodScaleLabel);
             this.vodGroupBox.Controls.Add(this.vodStackCityHallsNumericUpDown);
             this.vodGroupBox.Controls.Add(this.vodCityHallsCheckBox);
             this.vodGroupBox.Controls.Add(this.vodStackTavernsNumericUpDown);
@@ -708,27 +708,26 @@
             this.vodGroupBox.TabStop = false;
             this.vodGroupBox.Text = "Villages of Doom";
             // 
-            // vodStackLabel
+            // vodScaleLabel
             // 
-            this.vodStackLabel.AutoSize = true;
-            this.vodStackLabel.Location = new System.Drawing.Point(242, 18);
-            this.vodStackLabel.Name = "vodStackLabel";
-            this.vodStackLabel.Size = new System.Drawing.Size(38, 13);
-            this.vodStackLabel.TabIndex = 9;
-            this.vodStackLabel.Text = "Stack:";
+            this.vodScaleLabel.AutoSize = true;
+            this.vodScaleLabel.Location = new System.Drawing.Point(242, 18);
+            this.vodScaleLabel.Name = "vodScaleLabel";
+            this.vodScaleLabel.Size = new System.Drawing.Size(116, 13);
+            this.vodScaleLabel.TabIndex = 9;
+            this.vodScaleLabel.Text = "Building Count Scale %";
             // 
             // vodStackCityHallsNumericUpDown
             // 
             this.vodStackCityHallsNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.vodStackCityHallsNumericUpDown.DecimalPlaces = 1;
             this.vodStackCityHallsNumericUpDown.Increment = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            0});
             this.vodStackCityHallsNumericUpDown.Location = new System.Drawing.Point(324, 87);
             this.vodStackCityHallsNumericUpDown.Maximum = new decimal(new int[] {
-            3,
+            250,
             0,
             0,
             0});
@@ -736,7 +735,7 @@
             this.vodStackCityHallsNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.vodStackCityHallsNumericUpDown.TabIndex = 6;
             this.vodStackCityHallsNumericUpDown.Value = new decimal(new int[] {
-            2,
+            200,
             0,
             0,
             0});
@@ -755,15 +754,14 @@
             // 
             this.vodStackTavernsNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.vodStackTavernsNumericUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.vodStackTavernsNumericUpDown.DecimalPlaces = 1;
             this.vodStackTavernsNumericUpDown.Increment = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            0});
             this.vodStackTavernsNumericUpDown.Location = new System.Drawing.Point(324, 64);
             this.vodStackTavernsNumericUpDown.Maximum = new decimal(new int[] {
-            3,
+            250,
             0,
             0,
             0});
@@ -771,7 +769,7 @@
             this.vodStackTavernsNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.vodStackTavernsNumericUpDown.TabIndex = 4;
             this.vodStackTavernsNumericUpDown.Value = new decimal(new int[] {
-            2,
+            200,
             0,
             0,
             0});
@@ -790,15 +788,14 @@
             // 
             this.vodStackDwellingsNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.vodStackDwellingsNumericUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.vodStackDwellingsNumericUpDown.DecimalPlaces = 1;
             this.vodStackDwellingsNumericUpDown.Increment = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            0});
             this.vodStackDwellingsNumericUpDown.Location = new System.Drawing.Point(324, 41);
             this.vodStackDwellingsNumericUpDown.Maximum = new decimal(new int[] {
-            3,
+            250,
             0,
             0,
             0});
@@ -806,7 +803,7 @@
             this.vodStackDwellingsNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.vodStackDwellingsNumericUpDown.TabIndex = 2;
             this.vodStackDwellingsNumericUpDown.Value = new decimal(new int[] {
-            2,
+            200,
             0,
             0,
             0});
@@ -842,7 +839,7 @@
             this.zombieScalingGroupBox.Size = new System.Drawing.Size(581, 148);
             this.zombieScalingGroupBox.TabIndex = 0;
             this.zombieScalingGroupBox.TabStop = false;
-            this.zombieScalingGroupBox.Text = "Zombie Population Count Scaling";
+            this.zombieScalingGroupBox.Text = "Zombie Population Count Scaling %";
             // 
             // zombieAreaSelectorControl
             // 
@@ -854,15 +851,14 @@
             // zombieScaleMutantNumericUpDown
             // 
             this.zombieScaleMutantNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.zombieScaleMutantNumericUpDown.DecimalPlaces = 1;
             this.zombieScaleMutantNumericUpDown.Increment = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleMutantNumericUpDown.Location = new System.Drawing.Point(363, 18);
             this.zombieScaleMutantNumericUpDown.Maximum = new decimal(new int[] {
-            3,
+            250,
             0,
             0,
             0});
@@ -870,23 +866,22 @@
             this.zombieScaleMutantNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleMutantNumericUpDown.TabIndex = 4;
             this.zombieScaleMutantNumericUpDown.Value = new decimal(new int[] {
-            11,
+            110,
             0,
             0,
-            65536});
+            0});
             // 
             // zombieScaleGiantNumericUpDown
             // 
             this.zombieScaleGiantNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.zombieScaleGiantNumericUpDown.DecimalPlaces = 1;
             this.zombieScaleGiantNumericUpDown.Increment = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleGiantNumericUpDown.Location = new System.Drawing.Point(535, 18);
             this.zombieScaleGiantNumericUpDown.Maximum = new decimal(new int[] {
-            3,
+            250,
             0,
             0,
             0});
@@ -894,10 +889,10 @@
             this.zombieScaleGiantNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleGiantNumericUpDown.TabIndex = 2;
             this.zombieScaleGiantNumericUpDown.Value = new decimal(new int[] {
-            11,
+            110,
             0,
             0,
-            65536});
+            0});
             // 
             // zombieScaleMutantCheckBox
             // 
@@ -972,15 +967,14 @@
             // zombieScaleHarpyNumericUpDown
             // 
             this.zombieScaleHarpyNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.zombieScaleHarpyNumericUpDown.DecimalPlaces = 1;
             this.zombieScaleHarpyNumericUpDown.Increment = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleHarpyNumericUpDown.Location = new System.Drawing.Point(296, 77);
             this.zombieScaleHarpyNumericUpDown.Maximum = new decimal(new int[] {
-            3,
+            250,
             0,
             0,
             0});
@@ -988,10 +982,10 @@
             this.zombieScaleHarpyNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleHarpyNumericUpDown.TabIndex = 16;
             this.zombieScaleHarpyNumericUpDown.Value = new decimal(new int[] {
-            11,
+            110,
             0,
             0,
-            65536});
+            0});
             // 
             // idleRadioButton
             // 
@@ -1007,15 +1001,14 @@
             // zombieScaleVenomNumericUpDown
             // 
             this.zombieScaleVenomNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.zombieScaleVenomNumericUpDown.DecimalPlaces = 1;
             this.zombieScaleVenomNumericUpDown.Increment = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleVenomNumericUpDown.Location = new System.Drawing.Point(296, 54);
             this.zombieScaleVenomNumericUpDown.Maximum = new decimal(new int[] {
-            3,
+            250,
             0,
             0,
             0});
@@ -1023,10 +1016,10 @@
             this.zombieScaleVenomNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleVenomNumericUpDown.TabIndex = 14;
             this.zombieScaleVenomNumericUpDown.Value = new decimal(new int[] {
-            11,
+            110,
             0,
             0,
-            65536});
+            0});
             // 
             // activeRadioButton
             // 
@@ -1042,15 +1035,14 @@
             // zombieScaleStrongNumericUpDown
             // 
             this.zombieScaleStrongNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.zombieScaleStrongNumericUpDown.DecimalPlaces = 1;
             this.zombieScaleStrongNumericUpDown.Increment = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleStrongNumericUpDown.Location = new System.Drawing.Point(296, 31);
             this.zombieScaleStrongNumericUpDown.Maximum = new decimal(new int[] {
-            3,
+            250,
             0,
             0,
             0});
@@ -1058,10 +1050,10 @@
             this.zombieScaleStrongNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleStrongNumericUpDown.TabIndex = 12;
             this.zombieScaleStrongNumericUpDown.Value = new decimal(new int[] {
-            11,
+            110,
             0,
             0,
-            65536});
+            0});
             // 
             // zombieScaleWeakCheckBox
             // 
@@ -1077,15 +1069,14 @@
             // zombieScaleDressedNumericUpDown
             // 
             this.zombieScaleDressedNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.zombieScaleDressedNumericUpDown.DecimalPlaces = 1;
             this.zombieScaleDressedNumericUpDown.Increment = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleDressedNumericUpDown.Location = new System.Drawing.Point(124, 77);
             this.zombieScaleDressedNumericUpDown.Maximum = new decimal(new int[] {
-            3,
+            250,
             0,
             0,
             0});
@@ -1093,10 +1084,10 @@
             this.zombieScaleDressedNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleDressedNumericUpDown.TabIndex = 10;
             this.zombieScaleDressedNumericUpDown.Value = new decimal(new int[] {
-            11,
+            110,
             0,
             0,
-            65536});
+            0});
             // 
             // zombieScaleMediumCheckBox
             // 
@@ -1112,15 +1103,14 @@
             // zombieScaleMediumNumericUpDown
             // 
             this.zombieScaleMediumNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.zombieScaleMediumNumericUpDown.DecimalPlaces = 1;
             this.zombieScaleMediumNumericUpDown.Increment = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleMediumNumericUpDown.Location = new System.Drawing.Point(124, 54);
             this.zombieScaleMediumNumericUpDown.Maximum = new decimal(new int[] {
-            3,
+            250,
             0,
             0,
             0});
@@ -1128,10 +1118,10 @@
             this.zombieScaleMediumNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleMediumNumericUpDown.TabIndex = 8;
             this.zombieScaleMediumNumericUpDown.Value = new decimal(new int[] {
-            11,
+            110,
             0,
             0,
-            65536});
+            0});
             // 
             // zombieScaleDressedCheckBox
             // 
@@ -1147,15 +1137,14 @@
             // zombieScaleWeakNumericUpDown
             // 
             this.zombieScaleWeakNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.zombieScaleWeakNumericUpDown.DecimalPlaces = 1;
             this.zombieScaleWeakNumericUpDown.Increment = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleWeakNumericUpDown.Location = new System.Drawing.Point(124, 31);
             this.zombieScaleWeakNumericUpDown.Maximum = new decimal(new int[] {
-            3,
+            250,
             0,
             0,
             0});
@@ -1163,10 +1152,10 @@
             this.zombieScaleWeakNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleWeakNumericUpDown.TabIndex = 6;
             this.zombieScaleWeakNumericUpDown.Value = new decimal(new int[] {
-            11,
+            110,
             0,
             0,
-            65536});
+            0});
             // 
             // zombieScaleStrongCheckBox
             // 
@@ -1226,26 +1215,25 @@
             // 
             // zombieScaleAllNumericUpDown
             // 
-            this.zombieScaleAllNumericUpDown.DecimalPlaces = 1;
             this.zombieScaleAllNumericUpDown.Increment = new decimal(new int[] {
-            1,
+            10,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleAllNumericUpDown.Location = new System.Drawing.Point(107, 7);
             this.zombieScaleAllNumericUpDown.Maximum = new decimal(new int[] {
-            20,
+            250,
             0,
             0,
-            65536});
+            0});
             this.zombieScaleAllNumericUpDown.Name = "zombieScaleAllNumericUpDown";
             this.zombieScaleAllNumericUpDown.Size = new System.Drawing.Size(40, 20);
             this.zombieScaleAllNumericUpDown.TabIndex = 0;
             this.zombieScaleAllNumericUpDown.Value = new decimal(new int[] {
-            11,
+            110,
             0,
             0,
-            65536});
+            0});
             // 
             // groupsFlowLayoutPanel
             // 
@@ -1363,7 +1351,7 @@
         private System.Windows.Forms.CheckBox ccExtraEnergyCheckBox;
         private System.Windows.Forms.CheckBox ccExtraFoodCheckBox;
         private System.Windows.Forms.GroupBox vodGroupBox;
-        private System.Windows.Forms.Label vodStackLabel;
+        private System.Windows.Forms.Label vodScaleLabel;
         private System.Windows.Forms.NumericUpDown vodStackCityHallsNumericUpDown;
         private System.Windows.Forms.CheckBox vodCityHallsCheckBox;
         private System.Windows.Forms.NumericUpDown vodStackTavernsNumericUpDown;

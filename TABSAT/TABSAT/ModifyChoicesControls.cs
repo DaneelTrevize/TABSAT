@@ -299,7 +299,10 @@ namespace TABSAT
 
         private void zombieScaleRadioButton_CheckedChanged( object sender, EventArgs e )
         {
-            zombieAreaSelectorControl.ensureSomeArea();
+            if( ( (RadioButton) sender ).Checked )
+            {
+                zombieAreaSelectorControl.ensureSomeArea();
+            }
         }
 
         private void zombieScaleHugeCheckBox_CheckedChanged( object sender, EventArgs e )
@@ -320,16 +323,9 @@ namespace TABSAT
 
         private void mutants_CheckedChanged( object sender, EventArgs e )
         {
-            if( mutantsReplaceAllRadio.Checked )
+            if( ( (RadioButton) sender ).Checked )
             {
                 mutantsAreaSelectorControl.ensureSomeArea();
-                mutantsAreaSelectorControl.enableRadiusChoice();
-            }
-            else
-            {
-                // mutantsMoveRadio.Checked
-                mutantsAreaSelectorControl.SetAreaEverywhere();
-                mutantsAreaSelectorControl.disableRadiusChoice();
             }
         }
 
@@ -360,30 +356,30 @@ namespace TABSAT
         internal ModifyChoices getChoices()
         {
             // Zombie Population Scaling
-            SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors = new SortedDictionary<LevelEntities.ScalableZombieGroups, decimal>();
+            SortedDictionary<LevelEntities.ScalableZombieGroups, byte> scalableZombieGroupFactors = new SortedDictionary<LevelEntities.ScalableZombieGroups, byte>();
             if( zombieScaleWeakCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.WEAK, zombieScaleWeakNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.WEAK, Convert.ToByte( zombieScaleWeakNumericUpDown.Value ) );
             }
             if( zombieScaleMediumCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.MEDIUM, zombieScaleMediumNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.MEDIUM, Convert.ToByte( zombieScaleMediumNumericUpDown.Value ) );
             }
             if( zombieScaleDressedCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.DRESSED, zombieScaleDressedNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.DRESSED, Convert.ToByte( zombieScaleDressedNumericUpDown.Value ) );
             }
             if( zombieScaleStrongCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.STRONG, zombieScaleStrongNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.STRONG, Convert.ToByte( zombieScaleStrongNumericUpDown.Value ) );
             }
             if( zombieScaleVenomCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.VENOM, zombieScaleVenomNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.VENOM, Convert.ToByte( zombieScaleVenomNumericUpDown.Value ) );
             }
             if( zombieScaleHarpyCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.HARPY, zombieScaleHarpyNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.HARPY, Convert.ToByte( zombieScaleHarpyNumericUpDown.Value ) );
             }
 
             // Mutants
@@ -412,11 +408,11 @@ namespace TABSAT
             // Fog of War
 
             // Command Center Extras
-            uint giftCount = 0U;
+            ushort giftCount = 0;
             LevelEntities.GiftableTypes gift = LevelEntities.GiftableTypes.SoldierRegular;
             if( ccGiftCheckBox.Checked )
             {
-                giftCount = Convert.ToUInt32( giftNumericUpDown.Value );
+                giftCount = Convert.ToUInt16( giftNumericUpDown.Value );
                 KeyValuePair<LevelEntities.GiftableTypes, string> kv = (KeyValuePair<LevelEntities.GiftableTypes, string>) giftComboBox.SelectedItem;
                 gift = kv.Key;
             }
@@ -450,18 +446,18 @@ namespace TABSAT
                 zombieAreaSelectorControl.Radius(),
                 idleRadioButton.Checked || bothRadioButton.Checked,
                 activeRadioButton.Checked || bothRadioButton.Checked,
-                zombieScaleAllCheckBox.Checked ? zombieScaleAllNumericUpDown.Value : 1M,
+                (byte) (zombieScaleAllCheckBox.Checked ? Convert.ToByte( zombieScaleAllNumericUpDown.Value ) : 100U),
                 scalableZombieGroupFactors,
-                zombieScaleGiantCheckBox.Checked ? zombieScaleGiantNumericUpDown.Value : 1M,
-                zombieScaleMutantCheckBox.Checked ? zombieScaleMutantNumericUpDown.Value : 1M,
+                (byte) (zombieScaleGiantCheckBox.Checked ? Convert.ToByte( zombieScaleGiantNumericUpDown.Value ) : 100U),
+                (byte) (zombieScaleMutantCheckBox.Checked ? Convert.ToByte( zombieScaleMutantNumericUpDown.Value ) : 100U),
                 vodAreaSelectorControl.AreaChoice(),
                 vodAreaSelectorControl.Radius(),
-                vodDwellingCheckBox.Checked ? vodStackDwellingsNumericUpDown.Value : 1M,
-                vodTavernsCheckBox.Checked ? vodStackTavernsNumericUpDown.Value : 1M,
-                vodCityHallsCheckBox.Checked ? vodStackCityHallsNumericUpDown.Value : 1M,
-                ccExtraFoodCheckBox.Checked ? Convert.ToUInt32( ccFoodNumericUpDown.Value ) : 0U,
-                ccExtraEnergyCheckBox.Checked ? Convert.ToUInt32( ccEnergyNumericUpDown.Value ) : 0U,
-                ccExtraWorkersCheckBox.Checked ? Convert.ToUInt32( ccWorkersNumericUpDown.Value ) : 0U,
+                (byte) (vodDwellingCheckBox.Checked ? Convert.ToByte( vodStackDwellingsNumericUpDown.Value ) : 100U),
+                (byte) (vodTavernsCheckBox.Checked ? Convert.ToByte( vodStackTavernsNumericUpDown.Value ) : 100U),
+                (byte) (vodCityHallsCheckBox.Checked ? Convert.ToByte( vodStackCityHallsNumericUpDown.Value ) : 100U),
+                ccExtraFoodCheckBox.Checked ? Convert.ToUInt16( ccFoodNumericUpDown.Value ) : (ushort) (0U),
+                ccExtraEnergyCheckBox.Checked ? Convert.ToUInt16( ccEnergyNumericUpDown.Value ) : (ushort) (0U),
+                ccExtraWorkersCheckBox.Checked ? Convert.ToUInt16( ccWorkersNumericUpDown.Value ) : (ushort) (0U),
                 giftCount,
                 gift,
                 mutantsAreaSelectorControl.AreaChoice(),

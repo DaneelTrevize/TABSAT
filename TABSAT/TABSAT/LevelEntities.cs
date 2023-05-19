@@ -153,7 +153,7 @@ namespace TABSAT
                 Size = s;
             }
         }
-        internal static readonly Dictionary<VODTypes, string> vodSizesNames;    // Refactor with vodTypesData, making Name a field of VODData...
+        //internal static readonly Dictionary<VODTypes, string> vodSizesNames;    // Refactor with vodTypesData if still needed, making Name a field of VODData..?
         protected static readonly Dictionary<VODTypes, VODData> vodTypesData;
 
         internal static readonly SortedSet<UInt64> joinableTypes;
@@ -238,12 +238,12 @@ namespace TABSAT
                 { ScalableZombieGroups.VENOM, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieVenom } },
                 { ScalableZombieGroups.HARPY, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieHarpy } }
             };
-
+            /*
             vodSizesNames = new Dictionary<VODTypes, string> {
                 { VODTypes.DoomBuildingSmall, "Dwellings" },
                 { VODTypes.DoomBuildingMedium, "Taverns" },
                 { VODTypes.DoomBuildingLarge, "City Halls" }
-            };
+            };*/
             vodTypesData = new Dictionary<VODTypes, VODData> {
                 { VODTypes.DoomBuildingSmall, new VODData( @"ZX.Entities.DoomBuildingSmall, TheyAreBillions", @"400", @"2;2" ) },
                 { VODTypes.DoomBuildingMedium, new VODData (@"ZX.Entities.DoomBuildingMedium, TheyAreBillions", @"1500", @"3;3" ) },
@@ -468,16 +468,11 @@ namespace TABSAT
             return keys;
         }
 
-        internal LinkedList<ScaledEntity> scaleEntities( in UInt64 entityType, in decimal scale, IDGenerator editor, SaveReader.InArea inArea )
+        internal LinkedList<ScaledEntity> scaleEntities( in UInt64 entityType, in byte scale, IDGenerator editor, SaveReader.InArea inArea )
         {
-            if( scale < 0.0M )
-            {
-                throw new ArgumentOutOfRangeException( "Scale must not be negative." );
-            }
-
             var selectedEntities = new LinkedList<ScaledEntity>();
 
-            if( scale == 1.0M )
+            if( scale == 100U )
             {
                 // Nothing needs be done
                 return selectedEntities;
@@ -485,7 +480,7 @@ namespace TABSAT
 
             void duplicateLevelEntity( XElement i, LinkedList<ScaledEntity> dupedEntities )
             {
-                XElement iCopy = new XElement( i );     // Duplicate at the same position
+                XElement iCopy = new XElement( i );         // Duplicate at the same position
                 var newID = editor.newID();
                 iCopy.Element( "Simple" ).SetAttributeValue( "value", newID );
                 SaveReader.getValueAttOfSimpleProp( iCopy.Element( "Complex" ), "ID" ).SetValue( newID );
@@ -494,10 +489,10 @@ namespace TABSAT
                 dupedEntities.AddLast( new ScaledEntity( (UInt64) i.Element( "Simple" ).Attribute( "value" ), newID ) );
             }
 
-            uint multiples = (uint) scale;              // How many duplicates to certainly make of each entity
-            double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per entity
-
             Random rand = new Random();
+
+            uint multiples = scale / 100U;                  // How many duplicates to certainly make of each zombie
+            double chance = ( scale % 100U ) / 100;         // The chance of making 1 more duplicate per zombie
 
             IEnumerable<XElement> items = getEntitiesOfType( entityType );
             foreach( var item in items )
@@ -509,13 +504,13 @@ namespace TABSAT
                 }
                 // item is in the affected area, we continue here rather than loop to another immediately
 
-                if( scale < 1.0M )
+                if( scale < 100U )
                 {
                     // chance is now chance to not remove existing entities
                     // selectedEntities will be those removed
 
-                    // 0 >= scale < 1
-                    if( scale == 0.0M || chance < rand.NextDouble() )
+                    // 0 >= scale < 100
+                    if( scale == 0U || chance < rand.NextDouble() )
                     {
                         var id = (UInt64) item.Element( "Simple" ).Attribute( "value" );
                         Remove( id );
@@ -541,45 +536,29 @@ namespace TABSAT
             return selectedEntities;
         }
 
-        internal bool relocateHuge( in UInt64 origin, in UInt64 destination, SaveReader.InArea inArea )
+        internal bool relocateHuge( in XElement fromEntity, in XElement toEntity )
         {
-            if( origin == destination )
-            {
-                return false;
-            }
-
-            if( !IDsToItems.TryGetValue( origin, out XElement originEntity ) )
-            {
-                Console.Error.WriteLine( "Could not relocate LevelEntity: " + origin );
-                return false;
-            }
-            if( !IDsToItems.TryGetValue( destination, out XElement destinationEntity ) )
-            {
-                Console.Error.WriteLine( "Could not relocate LevelEntity: " + origin + " to: " + destination );
-                return false;
-            }
-
-            if( !inArea( originEntity, true ) )
+            if( fromEntity == toEntity )
             {
                 return false;
             }
 
             // We're after 3 different values in 2 different <Complex under Components
             // 1
-            XElement currentBehaviourTargetPosition = SaveReader.getFirstSimplePropertyNamed( SaveReader.getFirstComplexPropertyNamed( getBehaviour( originEntity ), "Data" ), "TargetPosition" );
+            XElement currentBehaviourTargetPosition = SaveReader.getFirstSimplePropertyNamed( SaveReader.getFirstComplexPropertyNamed( getBehaviour( fromEntity ), "Data" ), "TargetPosition" );
 
             // 2
-            XElement currentMovableTargetPosition = SaveReader.getFirstSimplePropertyNamed( getMovable( originEntity ), "TargetPosition" );
+            XElement currentMovableTargetPosition = SaveReader.getFirstSimplePropertyNamed( getMovable( fromEntity ), "TargetPosition" );
             // 3
-            XElement currentLastDestinyProcessed = SaveReader.getFirstSimplePropertyNamed( getMovable( originEntity ), "LastDestinyProcessed" );
+            XElement currentLastDestinyProcessed = SaveReader.getFirstSimplePropertyNamed( getMovable( fromEntity ), "LastDestinyProcessed" );
 
-            string farthestPositionString = (string) getPosition( destinationEntity );
+            string toPositionString = (string) getPosition( toEntity );
 
-            getPosition( originEntity ).SetValue( farthestPositionString );
-            SaveReader.getValueAttOfSimpleProp( originEntity.Element( "Complex" ), "LastPosition" ).SetValue( farthestPositionString );
-            currentBehaviourTargetPosition?.SetAttributeValue( "value", farthestPositionString );
-            currentMovableTargetPosition?.SetAttributeValue( "value", farthestPositionString );
-            currentLastDestinyProcessed?.SetAttributeValue( "value", farthestPositionString );
+            getPosition( fromEntity ).SetValue( toPositionString );
+            SaveReader.getValueAttOfSimpleProp( fromEntity.Element( "Complex" ), "LastPosition" ).SetValue( toPositionString );
+            currentBehaviourTargetPosition?.SetAttributeValue( "value", toPositionString );
+            currentMovableTargetPosition?.SetAttributeValue( "value", toPositionString );
+            currentLastDestinyProcessed?.SetAttributeValue( "value", toPositionString );
 
             return true;
         }

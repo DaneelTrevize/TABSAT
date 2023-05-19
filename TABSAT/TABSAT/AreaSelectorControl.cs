@@ -6,7 +6,8 @@ namespace TABSAT
 {
     public partial class AreaSelectorControl : UserControl
     {
-        // We could reduce the height by making "Modify everywhere/within sections" use 1 RadioButton and a ComboBox...
+        // We could reduce the height by making "Modify everywhere/within sections" use 1 RadioButton and a ComboBox..?
+        // In theory we could also add "Do not modify" to that ComboBox, but it doesn't seem like good UX.
 
         private static readonly SolidBrush backgroundBrush = new SolidBrush( Color.DarkGray );
         private static readonly Pen gridPen = new Pen( Color.Black );
@@ -144,9 +145,9 @@ namespace TABSAT
             return areaChoice;
         }
 
-        internal UInt32 Radius()
+        internal byte Radius()
         {
-            return Convert.ToUInt32( radiusNumericUpDown.Value );
+            return Convert.ToByte( radiusNumericUpDown.Value );
         }
 
         internal byte Sections()

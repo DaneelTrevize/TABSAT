@@ -10,15 +10,17 @@ namespace TABSAT
     interface MapData
     {
         string Name();
-        int CellsCount();
+        ushort CellsCount();
         SaveReader.ThemeType Theme();
         SaveReader.LayerData getLayerData( SaveReader.MapLayers layer );
         MapNavigation.Position getCCPosition();
-        int getCCDistance( MapNavigation.Position position );
-        MapNavigation.Direction? getCCDirection( MapNavigation.Position position );
-        SaveReader.InArea InRadiusArea( uint radius, bool beyondNotWithin );
-        int getNavigableCount( in int x, in int y, in int res );
-        int getZombieCount( in int x, in int y, in int res, SortedSet<LevelEntities.ScalableZombieGroups> groups );
+        ushort pathDistanceToCC( MapNavigation.Position position );
+        MapNavigation.Direction? pathDirectionToCC( MapNavigation.Position position );
+        SaveReader.CompassDirection compassDirectionToCC( MapNavigation.Position position );
+        uint squaredDistanceToCC( MapNavigation.Position position );
+        SaveReader.InArea InRadiusArea( byte radius, bool beyondNotWithin );
+        ushort getNavigableCount( in ushort x, in ushort y, in ushort res );
+        ushort getZombieCount( in ushort x, in ushort y, in ushort res, SortedSet<LevelEntities.ScalableZombieGroups> groups );
         LinkedList<MapNavigation.Position> getVodPositions( in LevelEntities.VODTypes vodType );
         LinkedList<MapNavigation.Position> getHugePositions( in LevelEntities.HugeTypes vodType );
         LinkedList<MapNavigation.Position> getPickablePositions( in LevelEntities.PickableTypes pickableType );
@@ -75,7 +77,7 @@ namespace TABSAT
                     }
 
                     var cell = SaveReader.getFirstSimplePropertyNamed( iconItem, "Cell" );
-                    SaveReader.extractInts( cell, out int x, out int y );
+                    SaveReader.extractUShorts( cell, out ushort x, out ushort y );
 
                     var swarm = new Swarm( zombies, new MapNavigation.Position( x, y ) );
                     swarms.AddLast( swarm );
@@ -264,12 +266,12 @@ namespace TABSAT
         protected const int RESOURCE_STORE_CAPACITY = 50;
         protected const int GOLD_STORAGE_FACTOR = 40;
 
-        private const int BYTES_PER_WORD = 4;
+        private const byte BYTES_PER_WORD = 4;
 
         protected readonly string dataFile;
         protected readonly XElement data;
         protected readonly XElement levelComplex;
-        protected readonly int cellsCount;
+        protected readonly ushort cellsCount;
         protected readonly MapNavigation.Position ccPosition;
         protected readonly LevelEntities entities;
         private XElement generatedLevel;
@@ -314,15 +316,15 @@ namespace TABSAT
             return getFirstPropertyOfTypeNamed( c, "Complex", name );
         }
 
-        internal static void extractInts( XElement property, out int x, out int y )
+        internal static void extractUShorts( XElement property, out ushort x, out ushort y )
         {
             string xy = (string) property.Attribute( "value" );
             string[] xySplit = xy.Split( ';' );
-            x = int.Parse( xySplit[0] );
-            y = int.Parse( xySplit[1] );
+            x = ushort.Parse( xySplit[0] );
+            y = ushort.Parse( xySplit[1] );
         }
 
-        internal static void extractCoordinates( XElement item, out int x, out int y, in bool alreadyComplex = false, string positionPropertyName = "Position" )
+        internal static void extractCoordinates( XElement item, out ushort x, out ushort y, in bool alreadyComplex = false, string positionPropertyName = "Position" )
         {
             var complex = item;
             if( !alreadyComplex )
@@ -335,8 +337,8 @@ namespace TABSAT
             string[] xySplit = xy.Split( ';' );
             var float_x = float.Parse( xySplit[0] );
             var float_y = float.Parse( xySplit[1] );
-            x = (int) float_x;
-            y = (int) float_y;
+            x = (ushort) float_x;
+            y = (ushort) float_y;
         }
 
         internal SaveReader( string filesPath )
@@ -359,7 +361,7 @@ namespace TABSAT
             //          <Properties>
             //            <Simple name="NCells" value="256" />
             XAttribute nCells = getValueAttOfSimpleProp( getGeneratedLevel(), "NCells" );
-            if( !Int32.TryParse( nCells.Value, out cellsCount ) )
+            if( !UInt16.TryParse( nCells.Value, out cellsCount ) )
             {
                 Console.Error.WriteLine( "Unable to find the number of cells in the map." );
                 cellsCount = 256;
@@ -368,7 +370,7 @@ namespace TABSAT
             //      <Properties>
             //        <Simple name="CurrentCommandCenterCell"
             XElement currentCommandCenterCell = getFirstSimplePropertyNamed( levelComplex, "CurrentCommandCenterCell" );
-            extractInts( currentCommandCenterCell, out int commandCenterX, out int commandCenterY );
+            extractUShorts( currentCommandCenterCell, out ushort commandCenterX, out ushort commandCenterY );
             ccPosition = new MapNavigation.Position( commandCenterX, commandCenterY );
             //Console.WriteLine( "CurrentCommandCenterCell: " + commandCenterX + ", " + commandCenterY );
 
@@ -391,7 +393,7 @@ namespace TABSAT
             return Directory.GetParent( dataFile ).Name;
         }
 
-        public int CellsCount()
+        public ushort CellsCount()
         {
             return cellsCount;
         }
@@ -466,9 +468,9 @@ namespace TABSAT
 
         internal readonly struct LayerData
         {
-            internal readonly int res;
+            internal readonly ushort res;
             internal readonly byte[] values;    // Assuming linear assignment, rather than anything fancy like a Hilbert curve
-            internal LayerData( int r, byte[] v )
+            internal LayerData( ushort r, byte[] v )
             {
                 res = r;
                 values = v;
@@ -479,7 +481,7 @@ namespace TABSAT
         {
             if( !layerDataCache.TryGetValue( layer, out LayerData data ) )
             {
-                int res = cellsCount;
+                ushort res = cellsCount;
 
                 byte[] values;
 
@@ -594,7 +596,7 @@ namespace TABSAT
             return trimmedData;
         }
 
-        private byte[] generateNavigableData( int res )
+        private byte[] generateNavigableData( ushort res )
         {
             byte[] values = new byte[res * res];
 
@@ -634,15 +636,15 @@ namespace TABSAT
                                   select c;
                 foreach( var c in impassibles )
                 {
-                    extractCoordinates( c, out int p_x, out int p_y, true );
-                    extractInts( getFirstSimplePropertyNamed( c, "Size" ), out int s_x, out int s_y );
-                    int corner_x = p_x - ( s_x / 2 );
-                    int corner_y = p_y - ( s_y / 2 );
-                    for( int x = 0; x < s_x; x++ )
+                    extractCoordinates( c, out ushort p_x, out ushort p_y, true );
+                    extractUShorts( getFirstSimplePropertyNamed( c, "Size" ), out ushort s_x, out ushort s_y );
+                    var corner_x = p_x - ( s_x / 2 );
+                    var corner_y = p_y - ( s_y / 2 );
+                    for( ushort x = 0; x < s_x; x++ )
                     {
-                        for( int y = 0; y < s_y; y++ )
+                        for( ushort y = 0; y < s_y; y++ )
                         {
-                            int i = MapNavigation.axesToIndex( res, corner_x + x, corner_y + y );
+                            var i = MapNavigation.axesToIndex( res, (ushort) (corner_x + x), (ushort) ( corner_y + y ) );
                             values[i] = NAVIGABLE_BLOCKED;
                         }
                     }
@@ -650,11 +652,11 @@ namespace TABSAT
             }
 
             // Remove CC from navigable positions
-            for( int x = -2; x <= 2; x++ )
+            for( short x = -2; x <= 2; x++ )
             {
-                for( int y = -2; y <= 2; y++ )
+                for( short y = -2; y <= 2; y++ )
                 {
-                    int i = MapNavigation.axesToIndex( res, ccPosition.x + x, ccPosition.y + y );
+                    var i = MapNavigation.axesToIndex( res, (ushort) (ccPosition.x + x), (ushort) (ccPosition.y + y) );
                     values[i] = NAVIGABLE_BLOCKED;
                 }
             }
@@ -664,27 +666,28 @@ namespace TABSAT
 
         public MapNavigation.Position getCCPosition()
         {
+            // Could refactor with several other wrappers of getPositions( entityType )..?
             return ccPosition;
         }
 
-        public int getCCDistance( MapNavigation.Position position )
+        public ushort pathDistanceToCC( MapNavigation.Position position )
         {
             return getFlowGraph().getDistance( position );
         }
 
-        public MapNavigation.Direction? getCCDirection( MapNavigation.Position position )
+        public MapNavigation.Direction? pathDirectionToCC( MapNavigation.Position position )
         {
             return getFlowGraph().getDirection( position );
         }
 
-        public int getNavigableCount( in int x, in int y, in int res )
+        public ushort getNavigableCount( in ushort x, in ushort y, in ushort res )
         {
             return getNavQuadTree().getCount( x, y, res );
         }
 
-        public int getZombieCount( in int x, in int y, in int res, SortedSet<LevelEntities.ScalableZombieGroups> groups )
+        public ushort getZombieCount( in ushort x, in ushort y, in ushort res, SortedSet<LevelEntities.ScalableZombieGroups> groups )
         {
-            int count = 0;
+            ushort count = 0;
             foreach( var g in groups )
             {
                 foreach( LevelEntities.ScalableZombieTypes t in LevelEntities.scalableZombieTypeGroups[g] )
@@ -732,7 +735,7 @@ namespace TABSAT
                 IEnumerable<XElement> joinableItems = entities.getNeutralJoinablesOfType( (UInt64) joinableType );
                 foreach( var joinable in joinableItems )
                 {
-                    extractCoordinates( joinable, out int x, out int y );
+                    extractCoordinates( joinable, out ushort x, out ushort y );
                     positions.AddLast( new MapNavigation.Position( x, y ) );
                 }
                 joinablePositions.Add( joinableType, positions );
@@ -773,9 +776,9 @@ namespace TABSAT
         private void populateNavQuadTree()
         {
             //            <Simple name="PlayableArea" value="54;54;148;148" />
-            for( int x = 0; x < cellsCount; x++ )
+            for( ushort x = 0; x < cellsCount; x++ )
             {
-                for( int y = 0; y < cellsCount; y++ )
+                for( ushort y = 0; y < cellsCount; y++ )
                 {
                     // North (-West)
                     if( y + 148 < cellsCount - x )
@@ -798,7 +801,7 @@ namespace TABSAT
                         continue;
                     }
 
-                    if( getCCDistance( new MapNavigation.Position( x, y ) ) != MapNavigation.UNNAVIGABLE )
+                    if( pathDistanceToCC( new MapNavigation.Position( x, y ) ) != MapNavigation.UNNAVIGABLE )
                     {
                         navQuadTree.Add( x, y );
                     }
@@ -828,7 +831,7 @@ namespace TABSAT
                 foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
                 {
                     // Get zombie coordinates, convert to ints/position, add to quadtree
-                    extractCoordinates( com, out int p_x, out int p_y, true, "B" );
+                    extractCoordinates( com, out ushort p_x, out ushort p_y, true, "B" );
                     popQuadTrees[zombieType].Add( p_x, p_y );
                 }
 
@@ -836,7 +839,7 @@ namespace TABSAT
                 IEnumerable<XElement> entityItems = entities.getEntitiesOfType( zombieTypeInt );
                 foreach( var entity in entityItems )
                 {
-                    extractCoordinates( entity, out int x, out int y );
+                    extractCoordinates( entity, out ushort x, out ushort y );
                     popQuadTrees[zombieType].Add( x, y );
                 }
             }
@@ -848,7 +851,7 @@ namespace TABSAT
             IEnumerable<XElement> items = entities.getEntitiesOfType( entityType );
             foreach( var item in items )
             {
-                extractCoordinates( item, out int x, out int y );
+                extractCoordinates( item, out ushort x, out ushort y );
                 positions.AddLast( new MapNavigation.Position( x, y ) );
             }
             entityTypeToPositions.Add( entityType, positions );
@@ -864,7 +867,7 @@ namespace TABSAT
                               select c;
             foreach( var c in impassibles )
             {
-                extractCoordinates( c, out int x, out int y, true );
+                extractCoordinates( c, out ushort x, out ushort y, true );
                 positions.AddLast( new MapNavigation.Position( x, y ) );
             }
             entityTypeToPositions.Add( impassibleTypeID, positions );
@@ -880,19 +883,36 @@ namespace TABSAT
             return positions;
         }
 
-        public InArea InRadiusArea( uint radius = 0U, bool beyondNotWithin = false )
+        public CompassDirection compassDirectionToCC( MapNavigation.Position position )
         {
-            // Consider usage consistency with bool withinNotBeyond...
+            if( position.x <= ccPosition.x )
+            {
+                // North or West
+                return position.y <= ccPosition.y ? CompassDirection.North : CompassDirection.West;
+            }
+            else
+            {
+                // East or South
+                return position.y <= ccPosition.y ? CompassDirection.East : CompassDirection.South;
+            }
+        }
 
+        public uint squaredDistanceToCC( MapNavigation.Position position )
+        {
+            return (uint) (( ( position.x - ccPosition.x ) * ( position.x - ccPosition.x ) ) + ( ( position.y - ccPosition.y ) * ( position.y - ccPosition.y ) ));
+        }
+
+        public InArea InRadiusArea( byte radius, bool beyondNotWithin )
+        {
             return ( in XElement item, in bool levelEntityNotFast ) =>
             {
-                if( radius == 0U )
+                if( radius == 0 )
                 {
                     return beyondNotWithin;
                 }
 
-                int x;
-                int y;
+                ushort x;
+                ushort y;
                 if( levelEntityNotFast )
                 {
                     extractCoordinates( item, out x, out y );
@@ -901,8 +921,7 @@ namespace TABSAT
                 {
                     extractCoordinates( item, out x, out y, true, "B" );
                 }
-                var distanceSquared = ( ( x - ccPosition.x ) * ( x - ccPosition.x ) ) + ( ( y - ccPosition.y ) * ( y - ccPosition.y ) );
-                if( distanceSquared > radius * radius )
+                if( squaredDistanceToCC( new MapNavigation.Position( x, y ) ) > radius * radius )
                 {
                     return beyondNotWithin;
                 }

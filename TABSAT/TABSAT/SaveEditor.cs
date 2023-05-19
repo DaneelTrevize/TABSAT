@@ -97,8 +97,10 @@ namespace TABSAT
             }
         }
 
-        internal void relocate( UInt64 fromID, UInt64 toID )
+        internal void relocate( XElement from, XElement to )
         {
+            UInt64 fromID = (UInt64) from.Element( "Simple" ).Attribute( "value" );
+            UInt64 toID = (UInt64) to.Element( "Simple" ).Attribute( "value" );
             if( fromID == toID )
             {
                 return;
@@ -141,6 +143,9 @@ namespace TABSAT
         private UInt64 getHighestID()
         {
             // Get all the UInt64 entity IDs, from LevelEntities, LevelFastSerializedEntities, ExtraEntities
+
+            // EntityDescriptors under UnitsGenerationPack under LevelEvents under LevelState also have ID and Position.
+            // LevelEvents is also duplicated under Extension under Data under CurrentGeneratedLevel also under LevelState.
 
             SortedSet<UInt64> uniqueIDs = new SortedSet<UInt64>();
             void addIDs( IEnumerable<string> ids )
@@ -255,19 +260,14 @@ namespace TABSAT
               */
         }
 
-        internal void scalePopulation( in decimal scale, in bool scaleIdle, in bool scaleActive, InArea inArea )
+        internal void scalePopulation( in byte scale, in bool scaleIdle, in bool scaleActive, InArea inArea )
         {
-            if( scale < 0.0M )
-            {
-                throw new ArgumentOutOfRangeException( "Scale must not be negative." );
-            }
-
-            if( scale == 1.0M )
+            if( scale == 100 )
             {
                 return;     // Nothing needs be done
             }
 
-            SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> {
+            SortedDictionary<LevelEntities.ScalableZombieTypes, byte> scalableZombieTypeFactors = new SortedDictionary<LevelEntities.ScalableZombieTypes, byte> {
                 { LevelEntities.ScalableZombieTypes.ZombieWeakA, scale },
                 { LevelEntities.ScalableZombieTypes.ZombieWeakB, scale },
                 { LevelEntities.ScalableZombieTypes.ZombieWeakC, scale },
@@ -283,18 +283,13 @@ namespace TABSAT
             scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive, inArea );
         }
 
-        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors, in bool scaleIdle, in bool scaleActive, InArea inArea )
+        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, byte> scalableZombieGroupFactors, in bool scaleIdle, in bool scaleActive, InArea inArea )
         {
-            SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors = new SortedDictionary<LevelEntities.ScalableZombieTypes, decimal>();
+            SortedDictionary<LevelEntities.ScalableZombieTypes, byte> scalableZombieTypeFactors = new SortedDictionary<LevelEntities.ScalableZombieTypes, byte>();
 
             foreach( var k_v in scalableZombieGroupFactors )
             {
-                decimal scale = k_v.Value;
-
-                if( scale < 0.0M )
-                {
-                    throw new ArgumentOutOfRangeException( "Scale must not be negative." );
-                }
+                byte scale = k_v.Value;
 
                 if( LevelEntities.scalableZombieTypeGroups.TryGetValue( k_v.Key, out SortedSet<LevelEntities.ScalableZombieTypes> groupTypes ) )
                 {
@@ -308,7 +303,7 @@ namespace TABSAT
             scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive, inArea );
         }
 
-        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, decimal> scalableZombieTypeFactors, in bool scaleIdle, in bool scaleActive, InArea inArea )
+        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, byte> scalableZombieTypeFactors, in bool scaleIdle, in bool scaleActive, InArea inArea )
         {
             // First handle zombies from-and-idle-since the map was generated, found in LevelFastSerializedEntities
             if( scaleIdle )
@@ -331,7 +326,7 @@ namespace TABSAT
                     }
 
                     var collection = typeItem.Element( "Collection" );
-                    decimal scale = scalableZombieTypeFactors[zombieType];
+                    byte scale = scalableZombieTypeFactors[zombieType];
                     scaleInactiveZombies( collection, scale, inArea );
                 }
             }
@@ -348,7 +343,7 @@ namespace TABSAT
             }
         }
 
-        private void scaleInactiveZombies( XElement collection, in decimal scale, InArea inArea )
+        private void scaleInactiveZombies( XElement collection, in byte scale, InArea inArea )
         {
             /*
              *        <Dictionary name="LevelFastSerializedEntities" >
@@ -362,12 +357,7 @@ namespace TABSAT
              *                      <Simple name="A" value=
              */
 
-            if( scale < 0.0M )
-            {
-                throw new ArgumentOutOfRangeException( "Scale must not be negative." );
-            }
-
-            if( scale == 1.0M )
+            if( scale == 100 )
             {
                 // Nothing needs be done
                 return;
@@ -382,8 +372,8 @@ namespace TABSAT
 
             Random rand = new Random();
 
-            int multiples = (int) scale;                // How many duplicates to certainly make of each zombie
-            double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per zombie
+            uint multiples = scale / 100U;                  // How many duplicates to certainly make of each zombie
+            double chance = ( scale % 100U ) / 100;         // The chance of making 1 more duplicate per zombie
             //Console.WriteLine( "multiples: " + multiples + ", chance: " + chance );
 
             // Get the capacity for each ZombieType
@@ -410,13 +400,13 @@ namespace TABSAT
                 }
                 // item is in the affected area, we continue here rather than loop to another immediately
 
-                if( scale < 1.0M )
+                if( scale < 100U )
                 {
                     // chance is now chance to not remove existing entities
                     // selectedEntities will be those removed
 
-                    // 0 >= scale < 1
-                    if( scale == 0.0M || chance < rand.NextDouble() )
+                    // 0 >= scale < 100
+                    if( scale == 0U || chance < rand.NextDouble() )
                     {
                         // Removing within foreach doen't work, without .ToList(). Might as well collect candidates so we also have an O(1) count for later too
                         selectedZombies.AddLast( com );
@@ -425,7 +415,7 @@ namespace TABSAT
                 else
                 {
                     // First the certain duplications
-                    for( int m = 1; m < multiples; m++ )
+                    for( uint m = 1; m < multiples; m++ )
                     {
                         duplicateZombie( com, selectedZombies );
                     }
@@ -438,7 +428,7 @@ namespace TABSAT
             }
             //Console.WriteLine( "selectedZombies: " + selectedZombies.Count );
 
-            if( scale < 1.0M )
+            if( scale < 100 )
             {
                 foreach( var i in selectedZombies )
                 {
@@ -464,7 +454,7 @@ namespace TABSAT
             }
         }
 
-        internal void scaleEntities( UInt64 type, in decimal scale, InArea inArea, in bool haveIcons = false )
+        internal void scaleEntities( UInt64 type, in byte scale, InArea inArea, in bool haveIcons = false )
         {
             // Could refactor with scalePopulation( scaleIdle = false, scaleActive = true ) ..? Need to rename the method and those parameters though.
 
@@ -474,7 +464,7 @@ namespace TABSAT
             {
                 return;
             }
-            if( scale < 1.0M )
+            if( scale < 100 )
             {
                 foreach( var s in selectedZombies )
                 {
@@ -523,44 +513,6 @@ namespace TABSAT
                 }
             }
         }
-
-        private class RelativePosition
-        {
-            public readonly UInt64 ID;
-            public readonly CompassDirection Direction;
-            public readonly float distanceSquared;
-
-            internal RelativePosition( XElement i, in MapNavigation.Position cc )
-            {
-                // The below value extractions are best relocated into LevelEntities? EntityDescriptors under UnitsGenerationPack under LevelEvents under LevelState also have ID and Position.
-                // LevelEvents is also duplicated under Extension under Data under CurrentGeneratedLevel also under LevelState.
-                ID = (UInt64) i.Element( "Simple" ).Attribute( "value" );
-                extractCoordinates( i, out int x, out int y );
-
-                if( x <= cc.x )
-                {
-                    // North or West
-                    Direction = y <= cc.y ? CompassDirection.North : CompassDirection.West;
-                }
-                else
-                {
-                    // East or South
-                    Direction = y <= cc.y ? CompassDirection.East : CompassDirection.South;
-                }
-
-                distanceSquared = (( x - cc.x ) * ( x - cc.x )) + (( y - cc.y ) * ( y - cc.y ));
-
-                //Console.WriteLine( "id: " + id + "\tPosition: " + x + ", " + y + "\tis: " + dir + ",\tdistanceSquared: " + distanceSquared );
-            }
-        }
-        
-        private class DistanceComparer : IComparer<RelativePosition>
-        {
-            public int Compare( RelativePosition a, RelativePosition b )
-            {
-                return b.distanceSquared.CompareTo( a.distanceSquared );    // b.CompareTo( a ) for reversed order
-            }
-        }
         
         internal void relocateMutants( bool toGiantNotMutant, bool perDirection, InArea inArea )
         {
@@ -571,80 +523,89 @@ namespace TABSAT
                 return;
             }
             var giants = entities.getEntitiesOfType( (UInt64) LevelEntities.HugeTypes.Giant );
+            
+            // Per direction, we'll have a list of huge zombies, a map of the farthest, and a list of mutants in the filtered area to relocate (as well as their corresponding icons).
 
-            void relocateMutants( ICollection<RelativePosition> movingMutants, in UInt64 farthestID )
-            {
-                foreach( RelativePosition z in movingMutants )
-                {
-                    if( entities.relocateHuge( z.ID, farthestID, inArea ) )
-                    {
-                        // Also see if both HugeZombies have had icons generated, for 1 to be repositioned to the other
-                        icons.relocate( z.ID, farthestID );
-                    }
-                }
-            }
+            var mutantsPerDirection = new SortedDictionary<CompassDirection,List<XElement>>();
+            var mutantsInAreaPerDirection = new SortedDictionary<CompassDirection, List<XElement>>();
+            var giantsPerDirection = new SortedDictionary<CompassDirection, List<XElement>>();
 
-            // Globally, or per direction, we'll have a list of huge zombie to find the farthest of, and a list of mutants to relocate, as well as their corresponding icons?
-
-            var mutantsPerDirection = new SortedDictionary<CompassDirection,List<RelativePosition>>();
+            var farthestMutantPerDirection = new SortedDictionary<CompassDirection, XElement>();
+            var farthestMutantDistancePerDirection = new SortedDictionary<CompassDirection, uint>();
+            var farthestGiantPerDirection = new SortedDictionary<CompassDirection, XElement>();
+            var farthestGiantDistancePerDirection = new SortedDictionary<CompassDirection, uint>();
             foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
             {
-                mutantsPerDirection.Add( d, new List<RelativePosition>( mutants.Count() ) );
+                mutantsPerDirection.Add( d, new List<XElement>( mutants.Count() ) );
+                mutantsInAreaPerDirection.Add( d, new List<XElement>( mutants.Count() ) );
+                giantsPerDirection.Add( d, new List<XElement>( giants.Count() ) );
             }
-            var giantsPerDirection = new SortedDictionary<CompassDirection,List<RelativePosition>>();
-            foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
-            {
-                giantsPerDirection.Add( d, new List<RelativePosition>( giants.Count() ) );
-            }
-            var farthestMutantShortlist = new List<RelativePosition>();
-            var farthestGiantShortlist = new List<RelativePosition>();
-
 
             // Split huge zombies by direction
             foreach( var mutant in mutants )
             {
-                // We can't filter potential mutants to move by InArea delegate here, as that will also filter out target positions to move them to
-                /*
-                 * Maybe we shouldn't only use ID references in these structures, which forces an ID to entity lookup before we can retest InArea.
-                 * Maybe we could rewrite this method to remove all need for RelativePosition, if we store entity,distance pairs in per direction maps..?
-                 * We wouldn't need DistanceComparer if we keep the farthest entity,distance pair per direction while iterating over them all the first time.
-                */
-                RelativePosition p = new RelativePosition( mutant, ccPosition );
-                mutantsPerDirection[p.Direction].Add( p );
+                extractCoordinates( mutant, out ushort x, out ushort y );
+                var position = new MapNavigation.Position( x, y );
+                var direction = compassDirectionToCC( position );
+                mutantsPerDirection[direction].Add( mutant );
+
+                if( inArea( mutant ) )  // duplicate call to extractCoordinates() ..?
+                {
+                    mutantsInAreaPerDirection[direction].Add( mutant );
+                }
+
+                var distance = squaredDistanceToCC( position );
+                if( !farthestMutantDistancePerDirection.TryGetValue( direction, out uint farthestDistance ) || distance > farthestDistance )
+                {
+                    farthestMutantDistancePerDirection[direction] = distance;
+                    farthestMutantPerDirection[direction] = mutant;
+                }
             }
             foreach( var giant in giants )
             {
-                RelativePosition p = new RelativePosition( giant, ccPosition );
-                giantsPerDirection[p.Direction].Add( p );
-            }
+                extractCoordinates( giant, out ushort x, out ushort y );
+                var position = new MapNavigation.Position( x, y );
+                var direction = compassDirectionToCC( position );
+                giantsPerDirection[direction].Add( giant );
 
-            // Sort each direction, take the farthest, form a new shortlist and sort that for the overall farthest
-            IComparer<RelativePosition> relativePositionDistanceComparer = new DistanceComparer();
-
-            foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
-            {
-                var mutantsInDirection = mutantsPerDirection[d];
-                if( mutantsInDirection.Count > 0 )
+                var distance = squaredDistanceToCC( position );
+                if( !farthestGiantDistancePerDirection.TryGetValue( direction, out uint farthestDistance ) || distance > farthestDistance )
                 {
-                    mutantsInDirection.Sort( relativePositionDistanceComparer );
-                    farthestMutantShortlist.Add( mutantsInDirection.First() );
-                }
-            }
-            foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
-            {
-                var giantsInDirection = giantsPerDirection[d];
-                if( giantsInDirection.Count > 0 )
-                {
-                    giantsInDirection.Sort( relativePositionDistanceComparer );
-                    farthestGiantShortlist.Add( giantsInDirection.First() );
+                    farthestGiantDistancePerDirection[direction] = distance;
+                    farthestGiantPerDirection[direction] = giant;
                 }
             }
 
-            farthestMutantShortlist.Sort( relativePositionDistanceComparer );
-            farthestGiantShortlist.Sort( relativePositionDistanceComparer );
-            RelativePosition globalFarthestMutant = farthestMutantShortlist.FirstOrDefault();
-            RelativePosition globalFarthestGiant = farthestGiantShortlist.FirstOrDefault();
-            
+            // Find global farthest huge zombie of each type
+            XElement farthestMutant = null;
+            uint farthestMutantDistance = uint.MaxValue;
+            XElement farthestGiant = null;
+            uint farthestGiantDistance = uint.MaxValue;
+            foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
+            {
+                if( farthestMutantDistancePerDirection.TryGetValue( d, out uint mutantDistance ) && ( farthestMutant == null || mutantDistance < farthestMutantDistance ) )
+                {
+                    farthestMutant = farthestMutantPerDirection[d];
+                    farthestMutantDistance = mutantDistance;
+                }
+                if( farthestGiantDistancePerDirection.TryGetValue( d, out uint giantDistance ) && ( farthestGiant == null || giantDistance < farthestGiantDistance ) )
+                {
+                    farthestGiant = farthestGiantPerDirection[d];
+                    farthestGiantDistance = giantDistance;
+                }
+            }
+
+            void relocateMutants( ICollection<XElement> movingMutants, in XElement farthest )
+            {
+                foreach( var m in movingMutants )
+                {
+                    if( entities.relocateHuge( m, farthest ) )
+                    {
+                        // Also see if both HugeZombies have had icons generated, for 1 to be repositioned to the other
+                        icons.relocate( m, farthest );
+                    }
+                }
+            }
 
             if( perDirection )
             {
@@ -654,56 +615,58 @@ namespace TABSAT
 
                 foreach( CompassDirection d in Enum.GetValues( typeof( CompassDirection ) ) )
                 {
-                    var mutantsInDirection = mutantsPerDirection[d];
-                    if( mutantsInDirection.Count > 0 )
+                    var mutantsInAreaAndDirection = mutantsInAreaPerDirection[d];
+                    if( mutantsInAreaAndDirection.Count > 0 )
                     {
-                        // There are mutants in this direction to relocation
+                        // There are mutants in this direction and area filter to relocate
 
-                        UInt64 relocateToID;
+                        XElement relocateTo;
                         // Should and could we use a Giant?
                         if( toGiantNotMutant )
                         {
                             var giantsInDirection = giantsPerDirection[d];
                             if( giantsInDirection.Count > 0 )
                             {
-                                relocateToID = giantsInDirection.First().ID;
+                                relocateTo = farthestGiantPerDirection[d];
                             }
                             else
                             {
                                 //Console.WriteLine( "No Giants to relocate Mutants onto in direction: " + d + ", using global farthest Mutant, or Giant if one exists." );
-                                relocateToID = globalFarthestMutant.ID;
-                                if( globalFarthestGiant != null )
+                                // Could consider farthestMutantPerDirection[d]..?
+
+                                relocateTo = farthestMutant;
+                                if( farthestGiant != null )
                                 {
                                     //Console.WriteLine( "Using farthest Giant." );
-                                    relocateToID = globalFarthestGiant.ID;
+                                    relocateTo = farthestGiant;
                                 }
                             }
                         }
                         else
                         {
-                            relocateToID = mutantsInDirection.First().ID;
+                            relocateTo = farthestMutantPerDirection[d];     // There must be at least one in this direction as we are relocating some (that also passed the InArea test)
                         }
 
-                        relocateMutants( mutantsInDirection, relocateToID );
+                        relocateMutants( mutantsInAreaAndDirection, relocateTo );
                     }
                 }
             }
             else
             {
                 // Should and could we use a Giant?
-                RelativePosition farthest = toGiantNotMutant ? globalFarthestGiant : globalFarthestMutant;
+                XElement farthest = toGiantNotMutant ? farthestGiant : farthestMutant;
                 if( farthest == null )
                 {
                     //Console.WriteLine( "No Giants to relocate Mutants onto, using farthest Mutant." );
-                    farthest = globalFarthestMutant;
+                    farthest = farthestMutant;
                 }
 
-                var movingMutants = new List<RelativePosition>( entities.getIDs( (UInt64) LevelEntities.HugeTypes.Mutant ).Count );
-                foreach( var m in mutantsPerDirection.Values )
+                var movingMutants = new List<XElement>();   // Start capacity at entities.getIDs( (UInt64) LevelEntities.HugeTypes.Mutant ).Count ?
+                foreach( var m in mutantsInAreaPerDirection.Values )
                 {
                     movingMutants.AddRange( m );
                 }
-                relocateMutants( movingMutants, farthest.ID );
+                relocateMutants( movingMutants, farthest );
             }
 
         }
@@ -714,36 +677,36 @@ namespace TABSAT
         }
         */
 
-        internal void removeFog( in uint radius = 0U, in bool withinNotBeyond = true )
+        internal void removeFog( in byte radius = 0, in bool removeWithinNotBeyond = false )
         {
             int rawLength = 4 * cellsCount * cellsCount;        // 4 bytes just to store 00 00 00 FF or 00 00 00 00, yuck
 
             // Sadly we can't use String.Create<TState>(Int32, TState, SpanAction<Char,TState>) to avoid duplicate allocation prior to creating the final string
 
-            byte[] clearFog = new byte[rawLength];  // Defaulting to 00 00 00 00, good if we want less than 50% fog
+            byte[] noFog = new byte[rawLength];  // Defaulting to 00 00 00 00, good if we want less than 50% fog
 
             // Should we not modify the existing LayerFog data instead of potentially adding more fog than before..?
 
-            if( withinNotBeyond )
+            if( removeWithinNotBeyond )
             {
-                if( radius > 0U )
+                if( radius > 0 )
                 {
-                    setFogCircle( ccPosition, cellsCount, clearFog, radius, withinNotBeyond );
+                    setFogArea( ccPosition, cellsCount, noFog, radius, true );
                 }
                 // Else no fog, already done thanks to default byte array values.
             }
             else
             {
-                if( radius > 0U )
+                if( radius > 0 )
                 {
-                    setFogCircle( ccPosition, cellsCount, clearFog, radius, withinNotBeyond );
+                    setFogArea( ccPosition, cellsCount, noFog, radius, false );
                 }/*
                 else
                 {
                     // Add fog everywhere. Never used?
-                    for( int x = 0; x < cellsCount; x++ )
+                    for( ushort x = 0; x < cellsCount; x++ )
                     {
-                        for( int y = 0; y < cellsCount; y++ )
+                        for( ushort y = 0; y < cellsCount; y++ )
                         {
                             //setFog( cellsCount, clearFog, x, y );
                         }
@@ -751,65 +714,63 @@ namespace TABSAT
                 }*/
             }
 
-            string layerFog = Convert.ToBase64String( clearFog );
+            string layerFog = Convert.ToBase64String( noFog );
             //Console.WriteLine( layerFog );
             
             getValueAttOfSimpleProp( levelComplex, "LayerFog" ).SetValue( layerFog );
         }
 
-        private static void setFogCircle( in MapNavigation.Position ccPosition, in int size, byte[] clearFog, in uint r, in bool clearWithinNotBeyond )
+        private static void setFogArea( in MapNavigation.Position ccPosition, in ushort size, byte[] noFog, in byte radius, in bool fogBeyondNotWithin )
         {
-            int radius = (int) r;   // Just assume it'll fit
-
-            void setFog( in int s, byte[] f, in int x, in int y )
+            void setFog( in ushort s, byte[] f, in ushort x, in ushort y )
             {
-                int wordIndex = ( ( y * s ) + x ) * 4;  // This indexing is backwards, because fog is oddly reversed, as well as in the opposite byte of the word
+                var wordIndex = ( ( y * s ) + x ) * 4;      // This indexing is backwards, because fog is oddly reversed, as well as in the opposite byte of the word
                 f[wordIndex + 3] = 0xFF;
             }
 
-            void setFogLine( in int s, byte[] f, in int xStart, in int y, in int xEnd )
+            void setFogLine( in ushort s, byte[] f, in ushort xStart, in ushort y, in ushort xEnd )
             {
-                for( int x = xStart; x < xEnd; x++ )
+                for( ushort x = xStart; x < xEnd; x++ )
                 {
                     setFog( s, f, x, y );
                 }
             }
 
-            int beforeCCx = ccPosition.x - radius;
-            int beforeCCy = ccPosition.y - radius;
-            int afterCCx = ccPosition.x + radius;
-            int afterCCy = ccPosition.y + radius;
+            ushort beforeCCx = (ushort) ( ccPosition.x - radius );
+            ushort beforeCCy = (ushort) ( ccPosition.y - radius );
+            ushort afterCCx = (ushort) ( ccPosition.x + radius );
+            ushort afterCCy = (ushort) ( ccPosition.y + radius );
 
-            if( clearWithinNotBeyond )
+            if( fogBeyondNotWithin )
             {
                 // Fill outside the circle with 00 00 00 FF, aka step 4 bytes at a time. Centered on CC
 
                 // Quick fill in "thirds" of before, adjacent, after (CC +- radius)
-                for( int x = 0; x < size; x++ )
+                for( ushort x = 0; x < size; x++ )
                 {
                     // 1/3 before, NorthEast
-                    for( int y = 0; y < beforeCCy; y++ )
+                    for( ushort y = 0; y < beforeCCy; y++ )
                     {
-                        setFog( size, clearFog, x, y );
+                        setFog( size, noFog, x, y );
                     }
                     // 1/3 after, SouthWest
-                    for( int y = afterCCy; y < size; y++ )
+                    for( ushort y = afterCCy; y < size; y++ )
                     {
-                        setFog( size, clearFog, x, y );
+                        setFog( size, noFog, x, y );
                     }
                 }
 
-                for( int y = beforeCCy; y < afterCCy; y++ )
+                for( ushort y = beforeCCy; y < afterCCy; y++ )
                 {
                     // 1/9 adjacent before, NorthWest
-                    for( int x = 0; x < beforeCCx; x++ )
+                    for( ushort x = 0; x < beforeCCx; x++ )
                     {
-                        setFog( size, clearFog, x, y );
+                        setFog( size, noFog, x, y );
                     }
                     // 1/9 adjacent after, SouthEast
-                    for( int x = afterCCx; x < size; x++ )
+                    for( ushort x = afterCCx; x < size; x++ )
                     {
-                        setFog( size, clearFog, x, y );
+                        setFog( size, noFog, x, y );
                     }
                 }
             }
@@ -818,35 +779,35 @@ namespace TABSAT
             // In calculating the xFromCC to the circle edge in a single anticlockwise 45degree octant between y=0 and y=x, we would have all the values to duplicate the octant & its mirror in all 4 corners.
 
             // We'll just skip messing with Bresenham and use square roots, for a 90degree arc quadrant, and mirror 4 times.
-            int radiusSquared = radius * radius;
-            int radiusBeforeCommandCenterX = ccPosition.x - radius;
-            int radiusAfterCommandCenterX = ccPosition.x + radius;
+            uint radiusSquared = (uint) radius * radius;
+            ushort radiusBeforeCommandCenterX = (ushort) (ccPosition.x - radius);
+            ushort radiusAfterCommandCenterX = (ushort) (ccPosition.x + radius);
 
-            int xFromCC;// = radius;
-            int yFromCC = 0;
+            ushort xFromCC;// = radius;
+            ushort yFromCC = 0;
             while( yFromCC <= radius )
             {
-                xFromCC = Convert.ToInt32( Math.Sqrt( radiusSquared - (yFromCC * yFromCC) ) );
+                xFromCC = Convert.ToUInt16( Math.Sqrt( radiusSquared - (yFromCC * yFromCC) ) );
 
-                if( clearWithinNotBeyond )
+                if( fogBeyondNotWithin )
                 {
                     // SE to S to SW
-                    setFogLine( size, clearFog, ccPosition.x + xFromCC, ccPosition.y + yFromCC, radiusAfterCommandCenterX );
+                    setFogLine( size, noFog, (ushort) (ccPosition.x + xFromCC), (ushort) (ccPosition.y + yFromCC), radiusAfterCommandCenterX );
 
                     // SW to W to NW
-                    setFogLine( size, clearFog, radiusBeforeCommandCenterX, ccPosition.y + yFromCC, ccPosition.x - xFromCC );
+                    setFogLine( size, noFog, radiusBeforeCommandCenterX, (ushort) (ccPosition.y + yFromCC ), (ushort) (ccPosition.x - xFromCC) );
 
                     // NW to N to NE
-                    setFogLine( size, clearFog, radiusBeforeCommandCenterX, ccPosition.y - yFromCC, ccPosition.x - xFromCC );
+                    setFogLine( size, noFog, radiusBeforeCommandCenterX, (ushort) (ccPosition.y - yFromCC), (ushort) ( ccPosition.x - xFromCC) );
 
                     // NE to E to SE
-                    setFogLine( size, clearFog, ccPosition.x + xFromCC, ccPosition.y - yFromCC, radiusAfterCommandCenterX );
+                    setFogLine( size, noFog, (ushort) (ccPosition.x + xFromCC), (ushort) (ccPosition.y - yFromCC), radiusAfterCommandCenterX );
                 }
                 else
                 {
                     // Before and after CC
-                    setFogLine( size, clearFog, ccPosition.x - xFromCC, ccPosition.y - yFromCC, ccPosition.x + xFromCC );
-                    setFogLine( size, clearFog, ccPosition.x - xFromCC, ccPosition.y + yFromCC, ccPosition.x + xFromCC );
+                    setFogLine( size, noFog, (ushort) ( ccPosition.x - xFromCC), (ushort) ( ccPosition.y - yFromCC), (ushort) ( ccPosition.x + xFromCC) );
+                    setFogLine( size, noFog, (ushort) ( ccPosition.x - xFromCC), (ushort) ( ccPosition.y + yFromCC), (ushort) ( ccPosition.x + xFromCC) );
                 }
 
                 yFromCC += 1;
@@ -859,16 +820,16 @@ namespace TABSAT
             getValueAttOfSimpleProp( levelComplex, "ShowFullMap" ).SetValue( "True" );
         }
 
-        internal void addExtraSupplies( uint food, uint energy, uint workers )
+        internal void addExtraSupplies( ushort food, ushort energy, ushort workers )
         {
-            bool addValue( XAttribute extra, uint add )
+            bool addValue( XAttribute extra, ushort add )
             {
-                if( !Int32.TryParse( extra.Value, out int value ) )
+                if( !UInt16.TryParse( extra.Value, out ushort value ) )
                 {
                     return false;
                 }
 
-                value += (int) add;
+                value += add;
                 extra.SetValue( value );
                 return true;
             }

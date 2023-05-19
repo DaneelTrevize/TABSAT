@@ -450,34 +450,34 @@ namespace TABSAT
 
         private bool modifySave( ModifyChoices choices, SaveEditor dataEditor )
         {
-            string formatArea( in uint radius, in bool withinNotBeyond )
+            string formatArea( in byte radius, in bool beyondNotWithin )
             {
-                return ( radius == 0U ? "" : ( withinNotBeyond ? " within" : " beyond" ) + " cell range: " + radius );
+                return ( radius == 0 ? "" : ( beyondNotWithin ? " beyond" : " within" ) + " cell range: " + radius );
             }
 
-            void logAndScale( string name, decimal scale, string areaText, SaveReader.InArea area, Action<decimal, SaveReader.InArea> modify )
+            void logAndScale( string name, byte scale, string areaText, Action<byte> modify )
             {
-                if( scale == 1M )
+                if( scale == 100 )
                 {
                     return;
                 }
-                statusWriter( "Scaling " + name + ( scale == 1M ? " per type" : " x" + scale ) + areaText );
-                modify.Invoke( scale, area );
+                statusWriter( "Scaling " + name + ( scale == 100 ? " per type" : " x" + scale ) + areaText );
+                modify.Invoke( scale );
             }
 
-            void logAndModify( string text, string areaText, SaveReader.InArea area, Action<SaveReader.InArea> modify )
+            void logAndModify( string text, string areaText, Action modify )
             {
                 statusWriter( String.Format( text, areaText ) );
-                modify.Invoke( area );
+                modify.Invoke();
             }
-
+            
             try
             {
                 // Zombie Population Scaling
-                uint popRadius = 0U;
+                byte popRadius = 0;
+                bool popBNW = true;
                 SaveReader.InArea popArea = null;
-                bool popWNB = true;
-                decimal popScale = choices.PopulationScale;
+                byte popScale = choices.PopulationScale;
                 switch( choices.PopulationArea )
                 {
                     case ModifyChoices.AreaChoices.None:
@@ -487,28 +487,28 @@ namespace TABSAT
                         break;
                     case ModifyChoices.AreaChoices.WithinRadius:
                         popRadius = choices.PopulationRadius;
-                        popArea = dataEditor.InRadiusArea( popRadius );
+                        popBNW = false;
+                        popArea = dataEditor.InRadiusArea( popRadius, popBNW );
                         break;
                     case ModifyChoices.AreaChoices.BeyondRadius:
                         popRadius = choices.PopulationRadius;
-                        popArea = dataEditor.InRadiusArea( popRadius, true );
-                        popWNB = false;
+                        popArea = dataEditor.InRadiusArea( popRadius, popBNW );
                         break;
                     default:
                         throw new NotImplementedException( "Unimplemented choice: " + choices.PopulationArea );
                 }
                 if( popArea != null )
                 {
-                    if( popScale != 1M )
+                    if( popScale != 100 )
                     {
-                        logAndScale( "Zombie population", popScale, formatArea( popRadius, popWNB ), popArea, ( s, a ) => { dataEditor.scalePopulation( s, choices.ScaleIdle, choices.ScaleActive, a ); } );
+                        logAndScale( "Zombie population", popScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scalePopulation( s, choices.ScaleIdle, choices.ScaleActive, popArea ); } );
                     }
                     else if( choices.ScalableZombieGroupFactors.Any() )
                     {
-                        logAndScale( "Zombie population", popScale, formatArea( popRadius, popWNB ), popArea, ( s, a ) => { dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive, a ); } );
+                        logAndScale( "Zombie population", popScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive, popArea ); } );
                     }
-                    logAndScale( "Giant population", choices.GiantScale, formatArea( popRadius, popWNB ), popArea, ( s, a ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.HugeTypes.Giant, s, a, true ); } );
-                    logAndScale( "Mutant population", choices.MutantScale, formatArea( popRadius, popWNB ), popArea, ( s, a ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.HugeTypes.Mutant, s, a, true ); } );
+                    logAndScale( "Giant population", choices.GiantScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.HugeTypes.Giant, s, popArea, true ); } );
+                    logAndScale( "Mutant population", choices.MutantScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.HugeTypes.Mutant, s, popArea, true ); } );
                 }
 
                 // VODs
@@ -518,9 +518,9 @@ namespace TABSAT
                     dataEditor.resizeVODs( choices.VodSize );
                 }
                 else*/
-                uint vodRadius = 0U;
+                byte vodRadius = 0;
+                bool vodBNW = true;
                 SaveReader.InArea vodArea = null;
-                bool vodWNB = true;
                 switch( choices.VODArea )
                 {
                     case ModifyChoices.AreaChoices.None:
@@ -530,32 +530,32 @@ namespace TABSAT
                         break;
                     case ModifyChoices.AreaChoices.WithinRadius:
                         vodRadius = choices.VODRadius;
-                        vodArea = dataEditor.InRadiusArea( vodRadius );
+                        vodBNW = false;
+                        vodArea = dataEditor.InRadiusArea( vodRadius, vodBNW );
                         break;
                     case ModifyChoices.AreaChoices.BeyondRadius:
                         vodRadius = choices.VODRadius;
-                        vodArea = dataEditor.InRadiusArea( vodRadius, true );
-                        vodWNB = false;
+                        vodArea = dataEditor.InRadiusArea( vodRadius, vodBNW );
                         break;
                     default:
                         throw new NotImplementedException( "Unimplemented choice: " + choices.VODArea );
                 }
                 if( vodArea != null )
                 {
-                    logAndScale( "Dwellings count", choices.VODSmallScale, formatArea( vodRadius, vodWNB ), vodArea, ( s, a ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingSmall, s, a ); } );
-                    logAndScale( "Taverns count", choices.VODMediumScale, formatArea( vodRadius, vodWNB ), vodArea, ( s, a ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingMedium, s, a ); } );
-                    logAndScale( "City Halls count", choices.VODLargeScale, formatArea( vodRadius, vodWNB ), vodArea, ( s, a ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingLarge, s, a ); } );
+                    logAndScale( "Dwellings count", choices.VODSmallScale, formatArea( vodRadius, vodBNW ), ( s ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingSmall, s, vodArea ); } );
+                    logAndScale( "Taverns count", choices.VODMediumScale, formatArea( vodRadius, vodBNW ), ( s ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingMedium, s, vodArea ); } );
+                    logAndScale( "City Halls count", choices.VODLargeScale, formatArea( vodRadius, vodBNW ), ( s ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingLarge, s, vodArea ); } );
                 }
 
                 // Command Center Extras
-                if( choices.Food != 0 || choices.Energy != 0 || choices.Workers != 0 )
+                if( choices.GiftFood != 0 || choices.GiftEnergy != 0 || choices.GiftWorkers != 0 )
                 {
                     statusWriter( "Adding Command Center extra supplies,"
-                        + ( choices.Food > 0 ? " Food: +" + choices.Food : "" )
-                        + ( choices.Energy > 0 ? " Energy: +" + choices.Energy : "" )
-                        + ( choices.Workers > 0 ? " Workers: +" + choices.Workers : "" )
+                        + ( choices.GiftFood > 0 ? " Food: +" + choices.GiftFood : "" )
+                        + ( choices.GiftEnergy > 0 ? " Energy: +" + choices.GiftEnergy : "" )
+                        + ( choices.GiftWorkers > 0 ? " Workers: +" + choices.GiftWorkers : "" )
                         + '.' );
-                    dataEditor.addExtraSupplies( choices.Food, choices.Energy, choices.Workers );
+                    dataEditor.addExtraSupplies( choices.GiftFood, choices.GiftEnergy, choices.GiftWorkers );
                 }
 
                 if( choices.GiftCount != 0 )
@@ -565,9 +565,9 @@ namespace TABSAT
                 }
 
                 // Mutants
-                uint mutantsRadius = 0U;
+                byte mutantsRadius = 0;
+                bool mutantsBNW = true;
                 SaveReader.InArea mutantsArea = null;
-                bool mutantsWNB = true;
                 switch( choices.MutantsArea )
                 {
                     case ModifyChoices.AreaChoices.None:
@@ -577,12 +577,12 @@ namespace TABSAT
                         break;
                     case ModifyChoices.AreaChoices.WithinRadius:
                         mutantsRadius = choices.MutantsRadius;
-                        mutantsArea = dataEditor.InRadiusArea( mutantsRadius );
+                        mutantsBNW = false;
+                        mutantsArea = dataEditor.InRadiusArea( mutantsRadius, mutantsBNW );
                         break;
                     case ModifyChoices.AreaChoices.BeyondRadius:
                         mutantsRadius = choices.MutantsRadius;
-                        mutantsArea = dataEditor.InRadiusArea( mutantsRadius, true );
-                        mutantsWNB = false;
+                        mutantsArea = dataEditor.InRadiusArea( mutantsRadius, mutantsBNW );
                         break;
                     default:
                         throw new NotImplementedException( "Unimplemented choice: " + choices.MutantsArea );
@@ -592,22 +592,22 @@ namespace TABSAT
                     switch( choices.Mutants )
                     {
                         case ModifyChoices.MutantChoices.ReplaceWithGiants:
-                            logAndModify( "Replacing all Mutants{0} with Giants.", formatArea( mutantsRadius, mutantsWNB ) , mutantsArea, ( a ) => { dataEditor.replaceHugeZombies( true, a ); } );
+                            logAndModify( "Replacing all Mutants{0} with Giants.", formatArea( mutantsRadius, mutantsBNW ), () => { dataEditor.replaceHugeZombies( true, mutantsArea ); } );
                             break;
                         case ModifyChoices.MutantChoices.ReplaceWithMutants:
-                            logAndModify( "Replacing all Giants{0} with Mutants.", formatArea( mutantsRadius, mutantsWNB ), mutantsArea, ( a ) => { dataEditor.replaceHugeZombies( false, a ); } );
+                            logAndModify( "Replacing all Giants{0} with Mutants.", formatArea( mutantsRadius, mutantsBNW ), () => { dataEditor.replaceHugeZombies( false, mutantsArea ); } );
                             break;
                         case ModifyChoices.MutantChoices.MoveToGiants:
-                            logAndModify( "Relocating Mutants{0} to farthest Giant on the map.", formatArea( mutantsRadius, mutantsWNB ), mutantsArea, ( a ) => { dataEditor.relocateMutants( true, false, a ); } );
+                            logAndModify( "Relocating Mutants{0} to farthest Giant on the map.", formatArea( mutantsRadius, mutantsBNW ), () => { dataEditor.relocateMutants( true, false, mutantsArea ); } );
                             break;
                         case ModifyChoices.MutantChoices.MoveToMutants:
-                            logAndModify( "Relocating Mutants{0} to farthest Mutant on the map.", formatArea( mutantsRadius, mutantsWNB ), mutantsArea, ( a ) => { dataEditor.relocateMutants( false, false, a ); } );
+                            logAndModify( "Relocating Mutants{0} to farthest Mutant on the map.", formatArea( mutantsRadius, mutantsBNW ), () => { dataEditor.relocateMutants( false, false, mutantsArea ); } );
                             break;
                         case ModifyChoices.MutantChoices.MoveToGiantsPerQuadrant:
-                            logAndModify( "Relocating Mutants{0} to farthest Giant per Compass quadrant if possible.", formatArea( mutantsRadius, mutantsWNB ), mutantsArea, ( a ) => { dataEditor.relocateMutants( true, true, a ); } );
+                            logAndModify( "Relocating Mutants{0} to farthest Giant per Compass quadrant if possible.", formatArea( mutantsRadius, mutantsBNW ), () => { dataEditor.relocateMutants( true, true, mutantsArea ); } );
                             break;
                         case ModifyChoices.MutantChoices.MoveToMutantsPerQuadrant:
-                            logAndModify( "Relocating Mutants{0} to farthest Mutant per Compass quadrant if possible.", formatArea( mutantsRadius, mutantsWNB ), mutantsArea, ( a ) => { dataEditor.relocateMutants( false, true, a ); } );
+                            logAndModify( "Relocating Mutants{0} to farthest Mutant per Compass quadrant if possible.", formatArea( mutantsRadius, mutantsBNW ), () => { dataEditor.relocateMutants( false, true, mutantsArea ); } );
                             break;
                         default:
                             throw new NotImplementedException( "Unimplemented choice: " + choices.Mutants );
@@ -644,11 +644,11 @@ namespace TABSAT
                             break;
                         case ModifyChoices.AreaChoices.WithinRadius:
                             statusWriter( "Removing the fog within cell range: " + choices.FogRadius );
-                            dataEditor.removeFog( choices.FogRadius );
+                            dataEditor.removeFog( choices.FogRadius, true );
                             break;
                         case ModifyChoices.AreaChoices.BeyondRadius:
                             statusWriter( "Removing the fog beyond cell range: " + choices.FogRadius );
-                            dataEditor.removeFog( choices.FogRadius, false );
+                            dataEditor.removeFog( choices.FogRadius );
                             break;
                         case ModifyChoices.AreaChoices.Sections:
                             // To implement...
