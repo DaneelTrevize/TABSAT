@@ -455,9 +455,9 @@ namespace TABSAT
                 return ( radius == 0 ? "" : ( beyondNotWithin ? " beyond" : " within" ) + " cell range: " + radius );
             }
 
-            void logAndScale( string name, byte scale, string areaText, Action<byte> modify )
+            void logAndScale( string name, byte scale, string areaText, Action<byte> modify, in bool overrideScale=false )
             {
-                if( scale == 100 )
+                if( scale == 100 && !overrideScale )
                 {
                     return;
                 }
@@ -499,13 +499,13 @@ namespace TABSAT
                 }
                 if( popArea != null )
                 {
-                    if( popScale != 100 )
+                    if( popScale != 100U )
                     {
                         logAndScale( "Zombie population", popScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scalePopulation( s, choices.ScaleIdle, choices.ScaleActive, popArea ); } );
                     }
                     else if( choices.ScalableZombieGroupFactors.Any() )
                     {
-                        logAndScale( "Zombie population", popScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive, popArea ); } );
+                        logAndScale( "Zombie population", popScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive, popArea ); }, true );
                     }
                     logAndScale( "Giant population", choices.GiantScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.HugeTypes.Giant, s, popArea, true ); } );
                     logAndScale( "Mutant population", choices.MutantScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.HugeTypes.Mutant, s, popArea, true ); } );

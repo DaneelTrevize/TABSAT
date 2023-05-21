@@ -40,7 +40,7 @@ namespace TABSAT
         internal readonly ushort GiftFood;
         internal readonly ushort GiftEnergy;
         internal readonly ushort GiftWorkers;
-        internal readonly ushort GiftCount;
+        internal readonly byte GiftCount;
         internal readonly LevelEntities.GiftableTypes Gift;
         internal readonly AreaChoices MutantsArea;
         internal readonly byte MutantsRadius;
@@ -80,7 +80,7 @@ namespace TABSAT
             in ushort GiftFood,
             in ushort GiftEnergy,
             in ushort GiftWorkers,
-            in ushort GiftCount,
+            in byte GiftCount,
             in LevelEntities.GiftableTypes Gift,
             in AreaChoices MutantsArea,
             in byte MutantsRadius,

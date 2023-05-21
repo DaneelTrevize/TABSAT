@@ -408,11 +408,11 @@ namespace TABSAT
             // Fog of War
 
             // Command Center Extras
-            ushort giftCount = 0;
+            byte giftCount = 0;
             LevelEntities.GiftableTypes gift = LevelEntities.GiftableTypes.SoldierRegular;
             if( ccGiftCheckBox.Checked )
             {
-                giftCount = Convert.ToUInt16( giftNumericUpDown.Value );
+                giftCount = Convert.ToByte( giftNumericUpDown.Value );
                 KeyValuePair<LevelEntities.GiftableTypes, string> kv = (KeyValuePair<LevelEntities.GiftableTypes, string>) giftComboBox.SelectedItem;
                 gift = kv.Key;
             }
@@ -446,15 +446,15 @@ namespace TABSAT
                 zombieAreaSelectorControl.Radius(),
                 idleRadioButton.Checked || bothRadioButton.Checked,
                 activeRadioButton.Checked || bothRadioButton.Checked,
-                (byte) (zombieScaleAllCheckBox.Checked ? Convert.ToByte( zombieScaleAllNumericUpDown.Value ) : 100U),
+                zombieScaleAllCheckBox.Checked ? Convert.ToByte( zombieScaleAllNumericUpDown.Value ) : (byte) (100U),
                 scalableZombieGroupFactors,
-                (byte) (zombieScaleGiantCheckBox.Checked ? Convert.ToByte( zombieScaleGiantNumericUpDown.Value ) : 100U),
-                (byte) (zombieScaleMutantCheckBox.Checked ? Convert.ToByte( zombieScaleMutantNumericUpDown.Value ) : 100U),
+                zombieScaleGiantCheckBox.Checked ? Convert.ToByte( zombieScaleGiantNumericUpDown.Value ) : (byte) (100U),
+                zombieScaleMutantCheckBox.Checked ? Convert.ToByte( zombieScaleMutantNumericUpDown.Value ) : (byte) (100U),
                 vodAreaSelectorControl.AreaChoice(),
                 vodAreaSelectorControl.Radius(),
-                (byte) (vodDwellingCheckBox.Checked ? Convert.ToByte( vodStackDwellingsNumericUpDown.Value ) : 100U),
-                (byte) (vodTavernsCheckBox.Checked ? Convert.ToByte( vodStackTavernsNumericUpDown.Value ) : 100U),
-                (byte) (vodCityHallsCheckBox.Checked ? Convert.ToByte( vodStackCityHallsNumericUpDown.Value ) : 100U),
+                vodDwellingCheckBox.Checked ? Convert.ToByte( vodStackDwellingsNumericUpDown.Value ) : (byte) (100U),
+                vodTavernsCheckBox.Checked ? Convert.ToByte( vodStackTavernsNumericUpDown.Value ) : (byte) (100U),
+                vodCityHallsCheckBox.Checked ? Convert.ToByte( vodStackCityHallsNumericUpDown.Value ) : (byte) (100U),
                 ccExtraFoodCheckBox.Checked ? Convert.ToUInt16( ccFoodNumericUpDown.Value ) : (ushort) (0U),
                 ccExtraEnergyCheckBox.Checked ? Convert.ToUInt16( ccEnergyNumericUpDown.Value ) : (ushort) (0U),
                 ccExtraWorkersCheckBox.Checked ? Convert.ToUInt16( ccWorkersNumericUpDown.Value ) : (ushort) (0U),
