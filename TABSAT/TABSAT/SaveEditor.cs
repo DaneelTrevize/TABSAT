@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using static System.Collections.Specialized.BitVector32;
 
 namespace TABSAT
 {
@@ -260,7 +261,7 @@ namespace TABSAT
               */
         }
 
-        internal void scalePopulation( in byte scale, in bool scaleIdle, in bool scaleActive, InArea inArea )
+        internal void scalePopulation( in byte scale, in bool scaleIdle, in bool scaleActive, ItemInArea inArea )
         {
             if( scale == 100 )
             {
@@ -283,7 +284,7 @@ namespace TABSAT
             scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive, inArea );
         }
 
-        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, byte> scalableZombieGroupFactors, in bool scaleIdle, in bool scaleActive, InArea inArea )
+        internal void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieGroups, byte> scalableZombieGroupFactors, in bool scaleIdle, in bool scaleActive, ItemInArea inArea )
         {
             SortedDictionary<LevelEntities.ScalableZombieTypes, byte> scalableZombieTypeFactors = new SortedDictionary<LevelEntities.ScalableZombieTypes, byte>();
 
@@ -303,7 +304,7 @@ namespace TABSAT
             scalePopulation( scalableZombieTypeFactors, scaleIdle, scaleActive, inArea );
         }
 
-        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, byte> scalableZombieTypeFactors, in bool scaleIdle, in bool scaleActive, InArea inArea )
+        private void scalePopulation( SortedDictionary<LevelEntities.ScalableZombieTypes, byte> scalableZombieTypeFactors, in bool scaleIdle, in bool scaleActive, ItemInArea inArea )
         {
             // First handle zombies from-and-idle-since the map was generated, found in LevelFastSerializedEntities
             if( scaleIdle )
@@ -343,7 +344,7 @@ namespace TABSAT
             }
         }
 
-        private void scaleInactiveZombies( XElement collection, in byte scale, InArea inArea )
+        private void scaleInactiveZombies( XElement collection, in byte scale, ItemInArea inArea )
         {
             /*
              *        <Dictionary name="LevelFastSerializedEntities" >
@@ -454,7 +455,7 @@ namespace TABSAT
             }
         }
 
-        internal void scaleEntities( UInt64 type, in byte scale, InArea inArea, in bool haveIcons = false )
+        internal void scaleEntities( UInt64 type, in byte scale, ItemInArea inArea, in bool haveIcons = false )
         {
             // Could refactor with scalePopulation( scaleIdle = false, scaleActive = true ) ..? Need to rename the method and those parameters though.
 
@@ -549,7 +550,7 @@ namespace TABSAT
                 var direction = compassDirectionToCC( position );
                 mutantsPerDirection[direction].Add( mutant );
 
-                if( inArea( mutant ) )  // duplicate call to extractCoordinates() ..?
+                if( inArea( x, y ) )
                 {
                     mutantsInAreaPerDirection[direction].Add( mutant );
                 }
@@ -677,6 +678,39 @@ namespace TABSAT
         }
         */
 
+        internal void removeFog( InArea inArea )    // Naive implementation, considering each coordinate individually
+        {
+            int rawLength = 4 * cellsCount * cellsCount;        // 4 bytes just to store 00 00 00 FF or 00 00 00 00, yuck
+
+            // Sadly we can't use String.Create<TState>(Int32, TState, SpanAction<Char,TState>) to avoid duplicate allocation prior to creating the final string
+
+            byte[] noFog = new byte[rawLength];  // Defaulting to 00 00 00 00, good if we want less than 50% fog
+
+            // Should we not modify the existing LayerFog data instead of potentially adding more fog than before..?
+
+            for( ushort x = 0; x < cellsCount; x++ )
+            {
+                for( ushort y = 0; y < cellsCount; y++ )
+                {
+                    if( !inArea( x, y ) )
+                    {
+                        setFog( cellsCount, noFog, x, y );
+                    }
+                }
+            }
+
+            string layerFog = Convert.ToBase64String( noFog );
+            //Console.WriteLine( layerFog );
+
+            getValueAttOfSimpleProp( levelComplex, "LayerFog" ).SetValue( layerFog );
+        }
+
+        private static void setFog( in ushort s, byte[] f, in ushort x, in ushort y )
+        {
+            var wordIndex = ( ( y * s ) + x ) * 4;      // This indexing is backwards, because fog is oddly reversed, as well as in the opposite byte of the word
+            f[wordIndex + 3] = 0xFF;
+        }
+
         internal void removeFog( in byte radius = 0, in bool removeWithinNotBeyond = false )
         {
             int rawLength = 4 * cellsCount * cellsCount;        // 4 bytes just to store 00 00 00 FF or 00 00 00 00, yuck
@@ -708,7 +742,7 @@ namespace TABSAT
                     {
                         for( ushort y = 0; y < cellsCount; y++ )
                         {
-                            //setFog( cellsCount, clearFog, x, y );
+                            //setFog( cellsCount, noFog, x, y );
                         }
                     }
                 }*/
@@ -722,11 +756,6 @@ namespace TABSAT
 
         private static void setFogArea( in MapNavigation.Position ccPosition, in ushort size, byte[] noFog, in byte radius, in bool fogBeyondNotWithin )
         {
-            void setFog( in ushort s, byte[] f, in ushort x, in ushort y )
-            {
-                var wordIndex = ( ( y * s ) + x ) * 4;      // This indexing is backwards, because fog is oddly reversed, as well as in the opposite byte of the word
-                f[wordIndex + 3] = 0xFF;
-            }
 
             void setFogLine( in ushort s, byte[] f, in ushort xStart, in ushort y, in ushort xEnd )
             {

@@ -18,6 +18,8 @@ namespace TABSAT
         MapNavigation.Direction? pathDirectionToCC( MapNavigation.Position position );
         SaveReader.CompassDirection compassDirectionToCC( MapNavigation.Position position );
         uint squaredDistanceToCC( MapNavigation.Position position );
+        SaveReader.InArea InSectionsArea( byte sections );
+        SaveReader.ItemInArea ItemInRadiusArea( byte radius, bool beyondNotWithin );
         SaveReader.InArea InRadiusArea( byte radius, bool beyondNotWithin );
         ushort getNavigableCount( in ushort x, in ushort y, in ushort res );
         ushort getZombieCount( in ushort x, in ushort y, in ushort res, SortedSet<LevelEntities.ScalableZombieGroups> groups );
@@ -194,7 +196,9 @@ namespace TABSAT
         private const string VOLCANO_Type = @"5660774435759652919";      // Multiple sizes?*/
         //private const string _Type = @"";
 
-        public delegate bool InArea( in XElement item, in bool levelEntityNotFast = true );
+        public delegate bool ItemInArea( in XElement item, in bool levelEntityNotFast = true );
+        public delegate bool InArea( in ushort x, in ushort y );
+        public static readonly ItemInArea ItemEverywhere;
         public static readonly InArea Everywhere;
 
         static SaveReader()
@@ -239,7 +243,8 @@ namespace TABSAT
                     Medium: new SwarmTimings( "482", "480", "120", "0" ) ) }
             };
 
-            Everywhere = ( in XElement i, in bool l ) => true;
+            ItemEverywhere = ( in XElement i, in bool l ) => true;
+            Everywhere = ( in ushort x, in ushort y ) => true;
         }
 
         // TAB cell coordinates are origin top left?, before 45 degree rotation clockwise. Positive x is due SE, positive y is due SW?
@@ -902,34 +907,119 @@ namespace TABSAT
             return (uint) (( ( position.x - ccPosition.x ) * ( position.x - ccPosition.x ) ) + ( ( position.y - ccPosition.y ) * ( position.y - ccPosition.y ) ));
         }
 
-        public InArea InRadiusArea( byte radius, bool beyondNotWithin )
+        public InArea InSectionsArea( byte sections )
         {
-            return ( in XElement item, in bool levelEntityNotFast ) =>
+            return ( in ushort x, in ushort y ) =>
             {
-                if( radius == 0 )
+                // North (-West)
+                if( y + 60 < cellsCount - x )
                 {
-                    return beyondNotWithin;
+                    // East (North-)
+                    if( x > y + 40 )
+                    {
+                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.NORTHEAST );
+                    }
+                    // West (South-)
+                    else if( x <= y - 40 )
+                    {
+                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.NORTHWEST );
+                    }
+                    else
+                    {
+                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.NORTH );
+                    }
                 }
-
-                ushort x;
-                ushort y;
-                if( levelEntityNotFast )
+                // South (-East)
+                else if( y - 60 > cellsCount - x )
                 {
-                    extractCoordinates( item, out x, out y );
+                    // East (North-)
+                    if( x > y + 40 )
+                    {
+                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.SOUTHEAST );
+                    }
+                    // West (South-)
+                    else if( x <= y - 40 )
+                    {
+                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.SOUTHWEST );
+                    }
+                    else
+                    {
+                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.SOUTH );
+                    }
                 }
                 else
                 {
-                    extractCoordinates( item, out x, out y, true, "B" );
-                }
-                if( squaredDistanceToCC( new MapNavigation.Position( x, y ) ) > radius * radius )
-                {
-                    return beyondNotWithin;
-                }
-                else
-                {
-                    return !beyondNotWithin;
+                    // East (North-)
+                    if( x > y + 40 )
+                    {
+                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.EAST );
+                    }
+                    // West (South-)
+                    else if( x <= y - 40 )
+                    {
+                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.WEST );
+                    }
+                    else
+                    // Middle
+                    {
+                        return true;
+                    }
                 }
             };
+        }
+
+        public ItemInArea ItemInRadiusArea( byte radius, bool beyondNotWithin )
+        {
+            if( radius == 0 )
+            {
+                return ( in XElement item, in bool levelEntityNotFast ) =>
+                {
+                    return beyondNotWithin;
+                };
+            }
+            else
+            {
+                return ( in XElement item, in bool levelEntityNotFast ) =>
+                {
+
+                    ushort x;
+                    ushort y;
+                    if( levelEntityNotFast )
+                    {
+                        extractCoordinates( item, out x, out y );
+                    }
+                    else
+                    {
+                        extractCoordinates( item, out x, out y, true, "B" );
+                    }
+                    return InRadiusArea( radius, beyondNotWithin ).Invoke( x, y );
+                };
+            }
+        }
+
+        public InArea InRadiusArea( byte radius, bool beyondNotWithin )
+        {
+            if( radius == 0 )
+            {
+                return ( in ushort x, in ushort y ) =>
+                {
+                    return beyondNotWithin;
+                };
+            }
+            else
+            {
+                return ( in ushort x, in ushort y ) =>
+                {
+                    if( squaredDistanceToCC( new MapNavigation.Position( x, y ) ) > radius * radius )
+                    {
+                        return beyondNotWithin;
+                    }
+                    else
+                    {
+                        return !beyondNotWithin;
+                    }
+                };
+            }
         }
     }
 }

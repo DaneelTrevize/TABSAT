@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 namespace TABSAT
@@ -18,7 +19,9 @@ namespace TABSAT
 
         // Assuming size doesn't change
         private readonly int thirdWidth;
+        private readonly int twoThirdWidth;
         private readonly int thirdHeight;
+        private readonly int twoThirdHeight;
         private readonly int halfWidth;
         private readonly int halfHeight;
 
@@ -30,7 +33,9 @@ namespace TABSAT
             directions = 0;
 
             thirdWidth = mapPictureBox.Width / 3;
+            twoThirdWidth = mapPictureBox.Width * 2 / 3;
             thirdHeight = mapPictureBox.Height / 3;
+            twoThirdHeight = mapPictureBox.Height * 2 / 3;
             halfWidth = mapPictureBox.Width / 2;
             halfHeight = mapPictureBox.Height / 2;
 
@@ -44,6 +49,8 @@ namespace TABSAT
             boundaryComboBox.SelectedIndexChanged += radiusControl_Changed;
             radiusLabel.Click += radiusControl_Changed;
             radiusNumericUpDown.ValueChanged += radiusControl_Changed;
+
+            mapPictureBox.MouseClick += mapPictureBox_MouseClick;
 
             updateMapImage();
         }
@@ -65,9 +72,9 @@ namespace TABSAT
                         mapGraphics.FillRectangle( backgroundBrush, 0, 0, mapPictureBox.Width, mapPictureBox.Height );
 
                         mapGraphics.DrawLine( gridPen, thirdWidth, 0, thirdWidth, mapPictureBox.Height - 1 );
-                        mapGraphics.DrawLine( gridPen, mapPictureBox.Width * 2 / 3, 0, mapPictureBox.Width * 2 / 3, mapPictureBox.Height - 1 );
+                        mapGraphics.DrawLine( gridPen, twoThirdWidth, 0, twoThirdWidth, mapPictureBox.Height - 1 );
                         mapGraphics.DrawLine( gridPen, 0, thirdHeight, mapPictureBox.Width - 1, thirdHeight );
-                        mapGraphics.DrawLine( gridPen, 0, mapPictureBox.Height * 2 / 3, mapPictureBox.Width - 1, mapPictureBox.Height * 2 / 3 );
+                        mapGraphics.DrawLine( gridPen, 0, twoThirdHeight, mapPictureBox.Width - 1, twoThirdHeight );
 
                         mapGraphics.DrawEllipse( gridPen, halfWidth - half_ellipse_width, halfHeight - half_ellipse_height, width_fraction, height_fraction );
                         break;
@@ -77,12 +84,47 @@ namespace TABSAT
                     case ModifyChoices.AreaChoices.Sections:
                         mapGraphics.FillRectangle( backgroundBrush, 0, 0, mapPictureBox.Width, mapPictureBox.Height );
 
+                        if( containsDirection( directions, MapNavigation.Direction.NORTHWEST) )
+                        {
+                            mapGraphics.FillRectangle( highlightBrush, 0, 0, thirdWidth, thirdHeight );
+                        }
+                        if( containsDirection( directions, MapNavigation.Direction.NORTH ) )
+                        {
+                            mapGraphics.FillRectangle( highlightBrush, thirdWidth, 0, thirdWidth, thirdHeight );
+                        }
+                        if( containsDirection( directions, MapNavigation.Direction.NORTHEAST ) )
+                        {
+                            mapGraphics.FillRectangle( highlightBrush, twoThirdWidth, 0, thirdWidth, thirdHeight );
+                        }
+                        if( containsDirection( directions, MapNavigation.Direction.WEST ) )
+                        {
+                            mapGraphics.FillRectangle( highlightBrush, 0, thirdHeight, thirdWidth, thirdHeight );
+                        }
+
                         mapGraphics.FillRectangle( highlightBrush, thirdWidth, thirdHeight, thirdWidth, thirdHeight );
 
+                        if( containsDirection( directions, MapNavigation.Direction.EAST ) )
+                        {
+                            mapGraphics.FillRectangle( highlightBrush, twoThirdWidth, thirdHeight, thirdWidth, thirdHeight );
+                        }
+                        if( containsDirection( directions, MapNavigation.Direction.SOUTHWEST ) )
+                        {
+                            mapGraphics.FillRectangle( highlightBrush, 0, twoThirdHeight, thirdWidth, thirdHeight );
+                        }
+                        if( containsDirection( directions, MapNavigation.Direction.SOUTH ) )
+                        {
+                            mapGraphics.FillRectangle( highlightBrush, thirdWidth, twoThirdHeight, thirdWidth, thirdHeight );
+                        }
+                        if( containsDirection( directions, MapNavigation.Direction.SOUTHEAST ) )
+                        {
+                            mapGraphics.FillRectangle( highlightBrush, twoThirdWidth, twoThirdHeight, thirdWidth, thirdHeight );
+                        }
+
+
                         mapGraphics.DrawLine( gridPen, thirdWidth, 0, thirdWidth, mapPictureBox.Height - 1 );
-                        mapGraphics.DrawLine( gridPen, mapPictureBox.Width * 2 / 3, 0, mapPictureBox.Width * 2 / 3, mapPictureBox.Height - 1 );
+                        mapGraphics.DrawLine( gridPen, twoThirdWidth, 0, twoThirdWidth, mapPictureBox.Height - 1 );
                         mapGraphics.DrawLine( gridPen, 0, thirdHeight, mapPictureBox.Width - 1, thirdHeight );
-                        mapGraphics.DrawLine( gridPen, 0, mapPictureBox.Height * 2 / 3, mapPictureBox.Width - 1, mapPictureBox.Height * 2 / 3 );
+                        mapGraphics.DrawLine( gridPen, 0, twoThirdHeight, mapPictureBox.Width - 1, twoThirdHeight );
                         break;
                     case ModifyChoices.AreaChoices.WithinRadius:
                         mapGraphics.FillRectangle( backgroundBrush, 0, 0, mapPictureBox.Width, mapPictureBox.Height );
@@ -105,10 +147,12 @@ namespace TABSAT
             if( nothingRadioButton.Checked )
             {
                 areaChoice = ModifyChoices.AreaChoices.None;
+                directions = 0;
             }
             else if( everywhereRadioButton.Checked )
             {
                 areaChoice = ModifyChoices.AreaChoices.Everywhere;
+                directions = 0xFF;
             }
             else if( sectionsRadioButton.Checked )
             {
@@ -117,6 +161,14 @@ namespace TABSAT
             else if( radiusRadioButton.Checked )
             {
                 radiusChoiceChanged();
+                if( areaChoice == ModifyChoices.AreaChoices.WithinRadius )
+                {
+                    directions = (byte) (MapNavigation.Direction.NORTH | MapNavigation.Direction.WEST | MapNavigation.Direction.EAST | MapNavigation.Direction.SOUTH);
+                }
+                else //if( areaChoice == ModifyChoices.AreaChoices.BeyondRadius )
+                {
+                    directions = (byte) (MapNavigation.Direction.NORTHWEST | MapNavigation.Direction.NORTHEAST | MapNavigation.Direction.SOUTHWEST | MapNavigation.Direction.SOUTHEAST);
+                }
             }
             updateMapImage();
         }
@@ -127,7 +179,7 @@ namespace TABSAT
             {
                 areaChoice = ModifyChoices.AreaChoices.WithinRadius;
             }
-            else if( boundaryComboBox.SelectedIndex == 1 )
+            else //if( boundaryComboBox.SelectedIndex == 1 )
             {
                 areaChoice = ModifyChoices.AreaChoices.BeyondRadius;
             }
@@ -138,6 +190,62 @@ namespace TABSAT
             radiusRadioButton.Checked = true;
             radiusChoiceChanged();
             updateMapImage();
+        }
+
+        private void mapPictureBox_MouseClick( object sender, MouseEventArgs e )
+        {
+            if( sectionsRadioButton.Enabled )
+            {
+                sectionsRadioButton.Checked = true;
+                if( e.X < thirdWidth )
+                {
+                    if( e.Y < thirdHeight )
+                    {
+                        toggleDirection( MapNavigation.Direction.NORTHWEST );
+                    }
+                    else if( e.Y > twoThirdHeight )
+                    {
+                        toggleDirection( MapNavigation.Direction.SOUTHWEST );
+                    }
+                    else
+                    {
+                        toggleDirection( MapNavigation.Direction.WEST );
+                    }
+                }
+                else if( e.X > twoThirdWidth )
+                {
+                    if( e.Y < thirdHeight )
+                    {
+                        toggleDirection( MapNavigation.Direction.NORTHEAST );
+                    }
+                    else if( e.Y > twoThirdWidth )
+                    {
+                        toggleDirection( MapNavigation.Direction.SOUTHEAST );
+                    }
+                    else
+                    {
+                        toggleDirection( MapNavigation.Direction.EAST );
+                    }
+                }
+                else
+                {
+                    if( e.Y < thirdHeight )
+                    {
+                        toggleDirection( MapNavigation.Direction.NORTH );
+                    }
+                    else if( e.Y > twoThirdWidth )
+                    {
+                        toggleDirection( MapNavigation.Direction.SOUTH );
+                    }
+                    // else middle
+                }
+                updateMapImage();
+            }
+        }
+
+        private void toggleDirection( in MapNavigation.Direction direction )
+        {
+            directions ^= (byte) direction;
         }
 
         internal ModifyChoices.AreaChoices AreaChoice()
@@ -153,6 +261,11 @@ namespace TABSAT
         internal byte Sections()
         {
             return directions;
+        }
+
+        internal static bool containsDirection( in byte sections, in MapNavigation.Direction direction )
+        {
+            return (sections & (byte) direction) != 0;
         }
 
         internal void reset()
@@ -188,6 +301,53 @@ namespace TABSAT
         internal void SetAreaEverywhere()
         {
             everywhereRadioButton.Checked = true;
+        }
+
+        internal static String formatSections( byte sections )
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if( containsDirection( sections, MapNavigation.Direction.NORTHWEST ) )
+            {
+                sb.Append( " NW" );
+            }
+            if( containsDirection( sections, MapNavigation.Direction.NORTH ) )
+            {
+                sb.Append( " N" );
+            }
+            if( containsDirection( sections, MapNavigation.Direction.NORTHEAST ) )
+            {
+                sb.Append( " NE" );
+            }
+
+            if( containsDirection( sections, MapNavigation.Direction.WEST ) )
+            {
+                sb.Append( " W" );
+            }
+
+            sb.Append( " M" );
+
+            if( containsDirection( sections, MapNavigation.Direction.EAST ) )
+            {
+                sb.Append( " E" );
+            }
+
+            if( containsDirection( sections, MapNavigation.Direction.SOUTHWEST ) )
+            {
+                sb.Append( " SW" );
+            }
+            if( containsDirection( sections, MapNavigation.Direction.SOUTH ) )
+            {
+                sb.Append( " S" );
+            }
+            if( containsDirection( sections, MapNavigation.Direction.SOUTHEAST ) )
+            {
+                sb.Append( " SE" );
+            }
+
+            sb.Append( "." );
+
+            return sb.ToString();
         }
     }
 }

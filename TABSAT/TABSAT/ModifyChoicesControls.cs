@@ -443,6 +443,7 @@ namespace TABSAT
 
             return new ModifyChoices(
                 zombieAreaSelectorControl.AreaChoice(),
+                zombieAreaSelectorControl.Sections(),
                 zombieAreaSelectorControl.Radius(),
                 idleRadioButton.Checked || bothRadioButton.Checked,
                 activeRadioButton.Checked || bothRadioButton.Checked,
@@ -451,6 +452,7 @@ namespace TABSAT
                 zombieScaleGiantCheckBox.Checked ? Convert.ToByte( zombieScaleGiantNumericUpDown.Value ) : (byte) (100U),
                 zombieScaleMutantCheckBox.Checked ? Convert.ToByte( zombieScaleMutantNumericUpDown.Value ) : (byte) (100U),
                 vodAreaSelectorControl.AreaChoice(),
+                vodAreaSelectorControl.Sections(),
                 vodAreaSelectorControl.Radius(),
                 vodDwellingCheckBox.Checked ? Convert.ToByte( vodStackDwellingsNumericUpDown.Value ) : (byte) (100U),
                 vodTavernsCheckBox.Checked ? Convert.ToByte( vodStackTavernsNumericUpDown.Value ) : (byte) (100U),
@@ -461,9 +463,11 @@ namespace TABSAT
                 giftCount,
                 gift,
                 mutantsAreaSelectorControl.AreaChoice(),
+                mutantsAreaSelectorControl.Sections(),
                 mutantsAreaSelectorControl.Radius(),
                 mutants,
                 fogAreaSelectorControl.AreaChoice(),
+                fogAreaSelectorControl.Sections(),
                 fogAreaSelectorControl.Radius(),
                 fogShowFullRadioButton.Checked,
                 warehousesFillGoldCheckBox.Checked,

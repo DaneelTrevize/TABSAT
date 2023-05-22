@@ -55,7 +55,6 @@
             // sectionsRadioButton
             // 
             this.sectionsRadioButton.AutoSize = true;
-            this.sectionsRadioButton.Enabled = false;
             this.sectionsRadioButton.Location = new System.Drawing.Point(82, 46);
             this.sectionsRadioButton.Name = "sectionsRadioButton";
             this.sectionsRadioButton.Size = new System.Drawing.Size(128, 17);

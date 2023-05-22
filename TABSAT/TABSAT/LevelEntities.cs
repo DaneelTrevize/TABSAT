@@ -468,7 +468,7 @@ namespace TABSAT
             return keys;
         }
 
-        internal LinkedList<ScaledEntity> scaleEntities( in UInt64 entityType, in byte scale, IDGenerator editor, SaveReader.InArea inArea )
+        internal LinkedList<ScaledEntity> scaleEntities( in UInt64 entityType, in byte scale, IDGenerator editor, SaveReader.ItemInArea inArea )
         {
             var selectedEntities = new LinkedList<ScaledEntity>();
 
@@ -570,7 +570,9 @@ namespace TABSAT
                 Console.Error.WriteLine( "Could not type-swap LevelEntity: " + id );
                 return false;
             }
-            if( !inArea( entity, true ) )
+
+            SaveReader.extractCoordinates( entity, out ushort x, out ushort y );
+            if( !inArea( x, y ) )
             {
                 return false;
             }
