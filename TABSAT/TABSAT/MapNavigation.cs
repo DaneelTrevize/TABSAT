@@ -19,6 +19,8 @@ namespace TABSAT
             NORTHWEST = 0b_1000_0000
         }
 
+        internal const byte ALL_DIRECTIONS = 0xFF;
+
         //private const Direction CARDINALS = Direction.NORTH | Direction.EAST | Direction.SOUTH | Direction.WEST;
         //private const Direction ORDINALS = Direction.NORTHEAST | Direction.SOUTHEAST | Direction.SOUTHWEST | Direction.NORTHWEST;
         private static readonly SortedSet<Direction> CARDINALS = new SortedSet<Direction> { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
@@ -125,17 +127,6 @@ namespace TABSAT
                     return c;
                 }
             }
-        }
-        /*
-        private static void indexToAxes( int index, ushort res, out ushort x, out ushort y )
-        {
-            x = index / res;
-            y = index % res;
-        }
-        */
-        internal static int axesToIndex( ushort res, ushort x, ushort y )
-        {
-            return ( x * res ) + y;
         }
 
         internal class FlowGraph
@@ -489,6 +480,22 @@ namespace TABSAT
                     tree.Add( x, y );
                 }
             }
+        }
+
+        internal static bool containsDirection( in byte sections, in Direction direction )
+        {
+            return ( sections & (byte) direction ) != 0;
+        }
+        /*
+        private static void indexToAxes( int index, ushort res, out ushort x, out ushort y )
+        {
+            x = index / res;
+            y = index % res;
+        }
+        */
+        internal static int axesToIndex( ushort res, ushort x, ushort y )
+        {
+            return ( x * res ) + y;
         }
     }
 }

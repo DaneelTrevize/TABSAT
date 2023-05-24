@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using static System.Collections.Specialized.BitVector32;
 
 namespace TABSAT
 {
@@ -678,7 +677,7 @@ namespace TABSAT
         }
         */
 
-        internal void removeFog( InArea inArea )    // Naive implementation, considering each coordinate individually
+        internal void removeFogSections( byte sections )
         {
             int rawLength = 4 * cellsCount * cellsCount;        // 4 bytes just to store 00 00 00 FF or 00 00 00 00, yuck
 
@@ -688,6 +687,7 @@ namespace TABSAT
 
             // Should we not modify the existing LayerFog data instead of potentially adding more fog than before..?
 
+            InArea inArea = InSectionsArea( sections );  // Naive implementation, considering each coordinate individually
             for( ushort x = 0; x < cellsCount; x++ )
             {
                 for( ushort y = 0; y < cellsCount; y++ )
@@ -711,7 +711,7 @@ namespace TABSAT
             f[wordIndex + 3] = 0xFF;
         }
 
-        internal void removeFog( in byte radius = 0, in bool removeWithinNotBeyond = false )
+        internal void removeFog( in byte radius, in bool removeWithinNotBeyond = false )
         {
             int rawLength = 4 * cellsCount * cellsCount;        // 4 bytes just to store 00 00 00 FF or 00 00 00 00, yuck
 

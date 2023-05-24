@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace TABSAT
@@ -84,38 +83,38 @@ namespace TABSAT
                     case ModifyChoices.AreaChoices.Sections:
                         mapGraphics.FillRectangle( backgroundBrush, 0, 0, mapPictureBox.Width, mapPictureBox.Height );
 
-                        if( containsDirection( directions, MapNavigation.Direction.NORTHWEST) )
+                        if( MapNavigation.containsDirection( directions, MapNavigation.Direction.NORTHWEST) )
                         {
                             mapGraphics.FillRectangle( highlightBrush, 0, 0, thirdWidth, thirdHeight );
                         }
-                        if( containsDirection( directions, MapNavigation.Direction.NORTH ) )
+                        if( MapNavigation.containsDirection( directions, MapNavigation.Direction.NORTH ) )
                         {
                             mapGraphics.FillRectangle( highlightBrush, thirdWidth, 0, thirdWidth, thirdHeight );
                         }
-                        if( containsDirection( directions, MapNavigation.Direction.NORTHEAST ) )
+                        if( MapNavigation.containsDirection( directions, MapNavigation.Direction.NORTHEAST ) )
                         {
                             mapGraphics.FillRectangle( highlightBrush, twoThirdWidth, 0, thirdWidth, thirdHeight );
                         }
-                        if( containsDirection( directions, MapNavigation.Direction.WEST ) )
+                        if( MapNavigation.containsDirection( directions, MapNavigation.Direction.WEST ) )
                         {
                             mapGraphics.FillRectangle( highlightBrush, 0, thirdHeight, thirdWidth, thirdHeight );
                         }
 
                         mapGraphics.FillRectangle( highlightBrush, thirdWidth, thirdHeight, thirdWidth, thirdHeight );
 
-                        if( containsDirection( directions, MapNavigation.Direction.EAST ) )
+                        if( MapNavigation.containsDirection( directions, MapNavigation.Direction.EAST ) )
                         {
                             mapGraphics.FillRectangle( highlightBrush, twoThirdWidth, thirdHeight, thirdWidth, thirdHeight );
                         }
-                        if( containsDirection( directions, MapNavigation.Direction.SOUTHWEST ) )
+                        if( MapNavigation.containsDirection( directions, MapNavigation.Direction.SOUTHWEST ) )
                         {
                             mapGraphics.FillRectangle( highlightBrush, 0, twoThirdHeight, thirdWidth, thirdHeight );
                         }
-                        if( containsDirection( directions, MapNavigation.Direction.SOUTH ) )
+                        if( MapNavigation.containsDirection( directions, MapNavigation.Direction.SOUTH ) )
                         {
                             mapGraphics.FillRectangle( highlightBrush, thirdWidth, twoThirdHeight, thirdWidth, thirdHeight );
                         }
-                        if( containsDirection( directions, MapNavigation.Direction.SOUTHEAST ) )
+                        if( MapNavigation.containsDirection( directions, MapNavigation.Direction.SOUTHEAST ) )
                         {
                             mapGraphics.FillRectangle( highlightBrush, twoThirdWidth, twoThirdHeight, thirdWidth, thirdHeight );
                         }
@@ -152,7 +151,7 @@ namespace TABSAT
             else if( everywhereRadioButton.Checked )
             {
                 areaChoice = ModifyChoices.AreaChoices.Everywhere;
-                directions = 0xFF;
+                directions = MapNavigation.ALL_DIRECTIONS;
             }
             else if( sectionsRadioButton.Checked )
             {
@@ -263,11 +262,6 @@ namespace TABSAT
             return directions;
         }
 
-        internal static bool containsDirection( in byte sections, in MapNavigation.Direction direction )
-        {
-            return (sections & (byte) direction) != 0;
-        }
-
         internal void reset()
         {
             radiusNumericUpDown.Value = 45;
@@ -301,53 +295,6 @@ namespace TABSAT
         internal void SetAreaEverywhere()
         {
             everywhereRadioButton.Checked = true;
-        }
-
-        internal static String formatSections( byte sections )
-        {
-            StringBuilder sb = new StringBuilder();
-
-            if( containsDirection( sections, MapNavigation.Direction.NORTHWEST ) )
-            {
-                sb.Append( " NW" );
-            }
-            if( containsDirection( sections, MapNavigation.Direction.NORTH ) )
-            {
-                sb.Append( " N" );
-            }
-            if( containsDirection( sections, MapNavigation.Direction.NORTHEAST ) )
-            {
-                sb.Append( " NE" );
-            }
-
-            if( containsDirection( sections, MapNavigation.Direction.WEST ) )
-            {
-                sb.Append( " W" );
-            }
-
-            sb.Append( " M" );
-
-            if( containsDirection( sections, MapNavigation.Direction.EAST ) )
-            {
-                sb.Append( " E" );
-            }
-
-            if( containsDirection( sections, MapNavigation.Direction.SOUTHWEST ) )
-            {
-                sb.Append( " SW" );
-            }
-            if( containsDirection( sections, MapNavigation.Direction.SOUTH ) )
-            {
-                sb.Append( " S" );
-            }
-            if( containsDirection( sections, MapNavigation.Direction.SOUTHEAST ) )
-            {
-                sb.Append( " SE" );
-            }
-
-            sb.Append( "." );
-
-            return sb.ToString();
         }
     }
 }

@@ -18,9 +18,8 @@ namespace TABSAT
         MapNavigation.Direction? pathDirectionToCC( MapNavigation.Position position );
         SaveReader.CompassDirection compassDirectionToCC( MapNavigation.Position position );
         uint squaredDistanceToCC( MapNavigation.Position position );
-        SaveReader.InArea InSectionsArea( byte sections );
-        SaveReader.ItemInArea ItemInRadiusArea( byte radius, bool beyondNotWithin );
-        SaveReader.InArea InRadiusArea( byte radius, bool beyondNotWithin );
+        SaveReader.ItemInArea getItemInArea( ModifyChoices.AreaChoices area, byte sections, byte radius );
+        SaveReader.InArea getInArea( ModifyChoices.AreaChoices area, byte sections, byte radius );
         ushort getNavigableCount( in ushort x, in ushort y, in ushort res );
         ushort getZombieCount( in ushort x, in ushort y, in ushort res, SortedSet<LevelEntities.ScalableZombieGroups> groups );
         LinkedList<MapNavigation.Position> getVodPositions( in LevelEntities.VODTypes vodType );
@@ -198,8 +197,8 @@ namespace TABSAT
 
         public delegate bool ItemInArea( in XElement item, in bool levelEntityNotFast = true );
         public delegate bool InArea( in ushort x, in ushort y );
-        public static readonly ItemInArea ItemEverywhere;
-        public static readonly InArea Everywhere;
+        private static readonly ItemInArea ItemEverywhere;
+        private static readonly InArea Everywhere;
 
         static SaveReader()
         {
@@ -907,7 +906,36 @@ namespace TABSAT
             return (uint) (( ( position.x - ccPosition.x ) * ( position.x - ccPosition.x ) ) + ( ( position.y - ccPosition.y ) * ( position.y - ccPosition.y ) ));
         }
 
-        public InArea InSectionsArea( byte sections )
+        private ItemInArea ItemInSectionsArea( byte sections )
+        {
+            if( sections == MapNavigation.ALL_DIRECTIONS )
+            {
+                return ( in XElement item, in bool levelEntityNotFast ) =>
+                {
+                    return true;
+                };
+            }
+            else
+            {
+                return ( in XElement item, in bool levelEntityNotFast ) =>
+                {
+
+                    ushort x;
+                    ushort y;
+                    if( levelEntityNotFast )
+                    {
+                        extractCoordinates( item, out x, out y );
+                    }
+                    else
+                    {
+                        extractCoordinates( item, out x, out y, true, "B" );
+                    }
+                    return InSectionsArea( sections ).Invoke( x, y );
+                };
+            }
+        }
+
+        internal InArea InSectionsArea( byte sections )
         {
             return ( in ushort x, in ushort y ) =>
             {
@@ -917,16 +945,16 @@ namespace TABSAT
                     // East (North-)
                     if( x > y + 40 )
                     {
-                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.NORTHEAST );
+                        return MapNavigation.containsDirection( sections, MapNavigation.Direction.NORTHEAST );
                     }
                     // West (South-)
                     else if( x <= y - 40 )
                     {
-                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.NORTHWEST );
+                        return MapNavigation.containsDirection( sections, MapNavigation.Direction.NORTHWEST );
                     }
                     else
                     {
-                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.NORTH );
+                        return MapNavigation.containsDirection( sections, MapNavigation.Direction.NORTH );
                     }
                 }
                 // South (-East)
@@ -935,16 +963,16 @@ namespace TABSAT
                     // East (North-)
                     if( x > y + 40 )
                     {
-                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.SOUTHEAST );
+                        return MapNavigation.containsDirection( sections, MapNavigation.Direction.SOUTHEAST );
                     }
                     // West (South-)
                     else if( x <= y - 40 )
                     {
-                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.SOUTHWEST );
+                        return MapNavigation.containsDirection( sections, MapNavigation.Direction.SOUTHWEST );
                     }
                     else
                     {
-                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.SOUTH );
+                        return MapNavigation.containsDirection( sections, MapNavigation.Direction.SOUTH );
                     }
                 }
                 else
@@ -952,12 +980,12 @@ namespace TABSAT
                     // East (North-)
                     if( x > y + 40 )
                     {
-                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.EAST );
+                        return MapNavigation.containsDirection( sections, MapNavigation.Direction.EAST );
                     }
                     // West (South-)
                     else if( x <= y - 40 )
                     {
-                        return AreaSelectorControl.containsDirection( sections, MapNavigation.Direction.WEST );
+                        return MapNavigation.containsDirection( sections, MapNavigation.Direction.WEST );
                     }
                     else
                     // Middle
@@ -968,7 +996,7 @@ namespace TABSAT
             };
         }
 
-        public ItemInArea ItemInRadiusArea( byte radius, bool beyondNotWithin )
+        private ItemInArea ItemInRadiusArea( byte radius, bool beyondNotWithin )
         {
             if( radius == 0 )
             {
@@ -997,7 +1025,7 @@ namespace TABSAT
             }
         }
 
-        public InArea InRadiusArea( byte radius, bool beyondNotWithin )
+        private InArea InRadiusArea( byte radius, bool beyondNotWithin )
         {
             if( radius == 0 )
             {
@@ -1020,6 +1048,56 @@ namespace TABSAT
                     }
                 };
             }
+        }
+
+        public ItemInArea getItemInArea( ModifyChoices.AreaChoices area, Byte sections, Byte radius )
+        {
+            ItemInArea inArea = null;
+            switch( area )
+            {
+                case ModifyChoices.AreaChoices.None:
+                    break;
+                case ModifyChoices.AreaChoices.Everywhere:
+                    inArea = ItemEverywhere;
+                    break;
+                case ModifyChoices.AreaChoices.Sections:
+                    inArea = ItemInSectionsArea( sections );
+                    break;
+                case ModifyChoices.AreaChoices.WithinRadius:
+                    inArea = ItemInRadiusArea( radius, false );
+                    break;
+                case ModifyChoices.AreaChoices.BeyondRadius:
+                    inArea = ItemInRadiusArea( radius, true );
+                    break;
+                default:
+                    throw new NotImplementedException( "Unimplemented choice: " + area );
+            }
+            return inArea;
+        }
+
+        public InArea getInArea( ModifyChoices.AreaChoices area, Byte sections, Byte radius )
+        {
+            InArea inArea = null;
+            switch( area )
+            {
+                case ModifyChoices.AreaChoices.None:
+                    break;
+                case ModifyChoices.AreaChoices.Everywhere:
+                    inArea = Everywhere;
+                    break;
+                case ModifyChoices.AreaChoices.Sections:
+                    inArea = InSectionsArea( sections );
+                    break;
+                case ModifyChoices.AreaChoices.WithinRadius:
+                    inArea = InRadiusArea( radius, false );
+                    break;
+                case ModifyChoices.AreaChoices.BeyondRadius:
+                    inArea = InRadiusArea( radius, true );
+                    break;
+                default:
+                    throw new NotImplementedException( "Unimplemented choice: " + area );
+            }
+            return inArea;
         }
     }
 }

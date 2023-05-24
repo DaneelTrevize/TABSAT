@@ -161,66 +161,56 @@ namespace TABSAT
 
         internal static bool modifySave( ModifyChoices choices, SaveEditor dataEditor, MainWindow.StatusWriterDelegate statusWriter )
         {
-            string formatArea( in byte radius, in bool beyondNotWithin )    // Refactor into AreaSelectorControl..?
+            void log( string text, AreaChoices area, Byte sections, Byte radius )
             {
-                return ( radius == 0 ? "" : ( beyondNotWithin ? " beyond" : " within" ) + " cell range: " + radius );
-            }
-
-            void logAndScale( string name, byte scale, string areaText, Action<byte> modify, in bool overrideScale = false )
-            {
-                if( scale == 100 && !overrideScale )
+                String areaText;
+                switch( area )
                 {
-                    return;
+                    case AreaChoices.Everywhere:
+                        areaText = "";
+                        break;
+                    case AreaChoices.Sections:
+                        areaText = " within sections: " + formatSections( sections );
+                        break;
+                    case AreaChoices.WithinRadius:
+                        areaText = " within cell range: " + radius;
+                        break;
+                    case AreaChoices.BeyondRadius:
+                        areaText = " beyond cell range: " + radius;
+                        break;
+                    default:
+                        throw new NotImplementedException( "Unimplemented choice: " + area );
                 }
-                statusWriter( "Scaling " + name + ( scale == 100 ? " per type" : " " + scale + "%" ) + areaText );
-                modify.Invoke( scale );
+                statusWriter( String.Format( text, areaText ) );
             }
 
-            void logAndModify( string text, string areaText, Action modify )
+            void logScale( String name, AreaChoices area, Byte sections, Byte radius, Byte scale )
             {
-                statusWriter( String.Format( text, areaText ) );
-                modify.Invoke();
+                log( "Scaling " + name + ( scale == 100 ? " per type" : " {0}" + scale + "% {0}" ), area, sections, radius );
             }
 
             try
             {
                 // Zombie Population Scaling
-                byte popRadius = 0;
-                bool popBNW = true;
-                SaveReader.ItemInArea popArea = null;
-                byte popScale = choices.PopulationScale;
-                switch( choices.PopulationArea )
-                {
-                    case AreaChoices.None:
-                        break;
-                    case AreaChoices.Everywhere:
-                        popArea = SaveReader.ItemEverywhere;
-                        break;
-                    case AreaChoices.WithinRadius:
-                        popRadius = choices.PopulationRadius;
-                        popBNW = false;
-                        popArea = dataEditor.ItemInRadiusArea( popRadius, popBNW );
-                        break;
-                    case AreaChoices.BeyondRadius:
-                        popRadius = choices.PopulationRadius;
-                        popArea = dataEditor.ItemInRadiusArea( popRadius, popBNW );
-                        break;
-                    default:
-                        throw new NotImplementedException( "Unimplemented choice: " + choices.PopulationArea );
-                }
+                SaveReader.ItemInArea popArea = dataEditor.getItemInArea( choices.PopulationArea, choices.PopulationSections, choices.PopulationRadius );
                 if( popArea != null )
                 {
+                    byte popScale = choices.PopulationScale;
                     // Log Idle/Active/Both using choices.ScaleIdle, choices.ScaleActive..?
                     if( popScale != 100U )
                     {
-                        logAndScale( "Zombie population", popScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scalePopulation( s, choices.ScaleIdle, choices.ScaleActive, popArea ); } );
+                        logScale( "Zombie population", choices.PopulationArea, choices.PopulationSections, choices.PopulationRadius, popScale );
+                        dataEditor.scalePopulation( popScale, choices.ScaleIdle, choices.ScaleActive, popArea );
                     }
                     else if( choices.ScalableZombieGroupFactors.Any() )
                     {
-                        logAndScale( "Zombie population", popScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive, popArea ); }, true );
+                        logScale( "Zombie population", choices.PopulationArea, choices.PopulationSections, choices.PopulationRadius, popScale );
+                        dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive, popArea );
                     }
-                    logAndScale( "Giant population", choices.GiantScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.HugeTypes.Giant, s, popArea, true ); } );
-                    logAndScale( "Mutant population", choices.MutantScale, formatArea( popRadius, popBNW ), ( s ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.HugeTypes.Mutant, s, popArea, true ); } );
+                    logScale( "Giant population", choices.PopulationArea, choices.PopulationSections, choices.PopulationRadius, choices.GiantScale );
+                    dataEditor.scaleEntities( (UInt64) LevelEntities.HugeTypes.Giant, choices.GiantScale, popArea, true );
+                    logScale( "Mutant population", choices.PopulationArea, choices.PopulationSections, choices.PopulationRadius, choices.MutantScale );
+                    dataEditor.scaleEntities( (UInt64) LevelEntities.HugeTypes.Mutant, choices.MutantScale, popArea, true );
                 }
 
                 // VODs
@@ -230,33 +220,15 @@ namespace TABSAT
                     dataEditor.resizeVODs( choices.VodSize );
                 }
                 else*/
-                byte vodRadius = 0;
-                bool vodBNW = true;
-                SaveReader.ItemInArea vodArea = null;
-                switch( choices.VODArea )
-                {
-                    case AreaChoices.None:
-                        break;
-                    case AreaChoices.Everywhere:
-                        vodArea = SaveReader.ItemEverywhere;
-                        break;
-                    case AreaChoices.WithinRadius:
-                        vodRadius = choices.VODRadius;
-                        vodBNW = false;
-                        vodArea = dataEditor.ItemInRadiusArea( vodRadius, vodBNW );
-                        break;
-                    case AreaChoices.BeyondRadius:
-                        vodRadius = choices.VODRadius;
-                        vodArea = dataEditor.ItemInRadiusArea( vodRadius, vodBNW );
-                        break;
-                    default:
-                        throw new NotImplementedException( "Unimplemented choice: " + choices.VODArea );
-                }
+                SaveReader.ItemInArea vodArea = dataEditor.getItemInArea( choices.VODArea, choices.VODSections, choices.VODRadius );
                 if( vodArea != null )
                 {
-                    logAndScale( "Dwellings count", choices.VODSmallScale, formatArea( vodRadius, vodBNW ), ( s ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingSmall, s, vodArea ); } );
-                    logAndScale( "Taverns count", choices.VODMediumScale, formatArea( vodRadius, vodBNW ), ( s ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingMedium, s, vodArea ); } );
-                    logAndScale( "City Halls count", choices.VODLargeScale, formatArea( vodRadius, vodBNW ), ( s ) => { dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingLarge, s, vodArea ); } );
+                    logScale( "Dwellings count", choices.VODArea, choices.VODSections, choices.VODRadius, choices.VODSmallScale );
+                    dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingSmall, choices.VODSmallScale, vodArea );
+                    logScale( "Taverns count", choices.VODArea, choices.VODSections, choices.VODRadius, choices.VODMediumScale );
+                    dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingMedium, choices.VODMediumScale, vodArea );
+                    logScale( "City Halls count", choices.VODArea, choices.VODSections, choices.VODRadius, choices.VODLargeScale );
+                    dataEditor.scaleEntities( (UInt64) LevelEntities.VODTypes.DoomBuildingLarge, choices.VODLargeScale, vodArea );
                 }
 
                 // Command Center Extras
@@ -277,49 +249,34 @@ namespace TABSAT
                 }
 
                 // Mutants
-                byte mutantsRadius = 0;
-                bool mutantsBNW = true;
-                SaveReader.InArea mutantsInArea = null;
-                switch( choices.MutantsArea )
-                {
-                    case AreaChoices.None:
-                        break;
-                    case AreaChoices.Everywhere:
-                        mutantsInArea = SaveReader.Everywhere;
-                        break;
-                    case AreaChoices.WithinRadius:
-                        mutantsRadius = choices.MutantsRadius;
-                        mutantsBNW = false;
-                        mutantsInArea = dataEditor.InRadiusArea( mutantsRadius, mutantsBNW );
-                        break;
-                    case AreaChoices.BeyondRadius:
-                        mutantsRadius = choices.MutantsRadius;
-                        mutantsInArea = dataEditor.InRadiusArea( mutantsRadius, mutantsBNW );
-                        break;
-                    default:
-                        throw new NotImplementedException( "Unimplemented choice: " + choices.MutantsArea );
-                }
+                SaveReader.InArea mutantsInArea = dataEditor.getInArea( choices.MutantsArea, choices.MutantsSections, choices.MutantsRadius );
                 if( mutantsInArea != null )
                 {
                     switch( choices.Mutants )
                     {
                         case MutantChoices.ReplaceWithGiants:
-                            logAndModify( "Replacing all Mutants{0} with Giants.", formatArea( mutantsRadius, mutantsBNW ), () => { dataEditor.replaceHugeZombies( true, mutantsInArea ); } );
+                            log( "Replacing all Mutants{0} with Giants.", choices.MutantsArea, choices.MutantsSections, choices.MutantsRadius );
+                            dataEditor.replaceHugeZombies( true, mutantsInArea );
                             break;
                         case MutantChoices.ReplaceWithMutants:
-                            logAndModify( "Replacing all Giants{0} with Mutants.", formatArea( mutantsRadius, mutantsBNW ), () => { dataEditor.replaceHugeZombies( false, mutantsInArea ); } );
+                            log( "Replacing all Giants{0} with Mutants.", choices.MutantsArea, choices.MutantsSections, choices.MutantsRadius );
+                            dataEditor.replaceHugeZombies( false, mutantsInArea );
                             break;
                         case MutantChoices.MoveToGiants:
-                            logAndModify( "Relocating Mutants{0} to farthest Giant on the map.", formatArea( mutantsRadius, mutantsBNW ), () => { dataEditor.relocateMutants( true, false, mutantsInArea ); } );
+                            log( "Relocating Mutants{0} to farthest Giant on the map.", choices.MutantsArea, choices.MutantsSections, choices.MutantsRadius );
+                            dataEditor.relocateMutants( true, false, mutantsInArea );
                             break;
                         case MutantChoices.MoveToMutants:
-                            logAndModify( "Relocating Mutants{0} to farthest Mutant on the map.", formatArea( mutantsRadius, mutantsBNW ), () => { dataEditor.relocateMutants( false, false, mutantsInArea ); } );
+                            log( "Relocating Mutants{0} to farthest Mutant on the map.", choices.MutantsArea, choices.MutantsSections, choices.MutantsRadius );
+                            dataEditor.relocateMutants( false, false, mutantsInArea );
                             break;
                         case MutantChoices.MoveToGiantsPerQuadrant:
-                            logAndModify( "Relocating Mutants{0} to farthest Giant per Compass quadrant if possible.", formatArea( mutantsRadius, mutantsBNW ), () => { dataEditor.relocateMutants( true, true, mutantsInArea ); } );
+                            log( "Relocating Mutants{0} to farthest Giant per Compass quadrant if possible.", choices.MutantsArea, choices.MutantsSections, choices.MutantsRadius );
+                            dataEditor.relocateMutants( true, true, mutantsInArea );
                             break;
                         case MutantChoices.MoveToMutantsPerQuadrant:
-                            logAndModify( "Relocating Mutants{0} to farthest Mutant per Compass quadrant if possible.", formatArea( mutantsRadius, mutantsBNW ), () => { dataEditor.relocateMutants( false, true, mutantsInArea ); } );
+                            log( "Relocating Mutants{0} to farthest Mutant per Compass quadrant.", choices.MutantsArea, choices.MutantsSections, choices.MutantsRadius );
+                            dataEditor.relocateMutants( false, true, mutantsInArea );
                             break;
                         default:
                             throw new NotImplementedException( "Unimplemented choice: " + choices.Mutants );
@@ -352,12 +309,12 @@ namespace TABSAT
                         else
                         {
                             statusWriter( "Removing all the fog." );
-                            dataEditor.removeFog();
+                            dataEditor.removeFogSections( MapNavigation.ALL_DIRECTIONS );
                         }
                         break;
                     case AreaChoices.Sections:
-                        statusWriter( "Removing the fog within sections:" + AreaSelectorControl.formatSections( choices.FogSections ) );
-                        dataEditor.removeFog( dataEditor.InSectionsArea( choices.FogSections ) );
+                        statusWriter( "Removing the fog within sections:" + formatSections( choices.FogSections ) );
+                        dataEditor.removeFogSections( choices.FogSections );
                         break;
                     case AreaChoices.WithinRadius:
                         statusWriter( "Removing the fog within cell range: " + choices.FogRadius );
@@ -414,6 +371,53 @@ namespace TABSAT
                 return false;
             }
             return true;
+        }
+
+        private static String formatSections( byte sections )
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if( MapNavigation.containsDirection( sections, MapNavigation.Direction.NORTHWEST ) )
+            {
+                sb.Append( " NW" );
+            }
+            if( MapNavigation.containsDirection( sections, MapNavigation.Direction.NORTH ) )
+            {
+                sb.Append( " N" );
+            }
+            if( MapNavigation.containsDirection( sections, MapNavigation.Direction.NORTHEAST ) )
+            {
+                sb.Append( " NE" );
+            }
+
+            if( MapNavigation.containsDirection( sections, MapNavigation.Direction.WEST ) )
+            {
+                sb.Append( " W" );
+            }
+
+            sb.Append( " M" );
+
+            if( MapNavigation.containsDirection( sections, MapNavigation.Direction.EAST ) )
+            {
+                sb.Append( " E" );
+            }
+
+            if( MapNavigation.containsDirection( sections, MapNavigation.Direction.SOUTHWEST ) )
+            {
+                sb.Append( " SW" );
+            }
+            if( MapNavigation.containsDirection( sections, MapNavigation.Direction.SOUTH ) )
+            {
+                sb.Append( " S" );
+            }
+            if( MapNavigation.containsDirection( sections, MapNavigation.Direction.SOUTHEAST ) )
+            {
+                sb.Append( " SE" );
+            }
+
+            sb.Append( "." );
+
+            return sb.ToString();
         }
     }
 }
