@@ -1,8 +1,6 @@
 
 2023 interests:
 
-Improve UI by alternating background colouring of save modification options?
-
 Summarise whether maps are worth continuing, without showing the layout.
 Count total pathable land, food, zombies? Chart them at each radius from CC? Summary in a starting radius?
 Assess values such as NEntitesCreatedPerTemplate, NSoldiersDead, EntitiesDeadByTemplate, to determine which achievements may still accomplished.
@@ -16,16 +14,14 @@ Offer to remove all zombies that are:
   Visible/not under fog as was last updated.
   Within x range of friendly units/buildings? Much easier to effectively do this via the prior 2 means.
 
-Offer to modify (inactive) zombies and/or ground:
-  -within/outside radius;
-  checkboxes for each cardinal compass direction?
-
 Not modifying pathing, minimal change to vision, making building easier:
   Replace rock with water (the reverse may break geometry assumptions about rock formations for art asset reasons)?
   Replace gold with dirt, or grass?
   Swap gold/iron/stone with another type or grass/dirt (possibly making teching up harder, but building layouts easier)?
 
 ----
+Ideas:
+
 
 Skip NavTree central circle when iterating over map?
 Refactor PlayableArea iteration into a generator?
