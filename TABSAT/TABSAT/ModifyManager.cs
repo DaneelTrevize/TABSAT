@@ -21,7 +21,7 @@ namespace TABSAT
          *  Exiting will have to terminate the reflector's environment, in order to end the stalled TAB assembly thread.
          */
 
-        internal enum SaveState
+        internal enum SaveState : byte
         {
             UNSET,
             SET,
@@ -146,12 +146,7 @@ namespace TABSAT
         {
             Assembly.LoadFile( Path.Combine( TABdirectory, @"Ionic.Zip.dll" ) );
 
-            if( refM == null )
-            {
-                throw new ArgumentNullException( "ReflectorManager should not be null." );
-            }
-
-            reflectorManager = refM;
+            reflectorManager = refM ?? throw new ArgumentNullException( "ReflectorManager should not be null." );
             editsDir = edits;
 
             if( !Directory.Exists( editsDir ) )

@@ -122,7 +122,7 @@ namespace TABSAT
             ZombieHarpy = 1214272082232025268,
             ZombieVenom = 12658363830661735733
         }
-        internal enum ScalableZombieGroups
+        internal enum ScalableZombieGroups : byte
         {
             WEAK,
             MEDIUM,
@@ -153,7 +153,7 @@ namespace TABSAT
                 Size = s;
             }
         }
-        internal static readonly Dictionary<VODTypes, string> vodSizesNames;    // Refactor with vodTypesData, making Name a field of VODData...
+        //internal static readonly Dictionary<VODTypes, string> vodSizesNames;    // Refactor with vodTypesData if still needed, making Name a field of VODData..?
         protected static readonly Dictionary<VODTypes, VODData> vodTypesData;
 
         internal static readonly SortedSet<UInt64> joinableTypes;
@@ -238,12 +238,12 @@ namespace TABSAT
                 { ScalableZombieGroups.VENOM, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieVenom } },
                 { ScalableZombieGroups.HARPY, new SortedSet<ScalableZombieTypes> { ScalableZombieTypes.ZombieHarpy } }
             };
-
+            /*
             vodSizesNames = new Dictionary<VODTypes, string> {
                 { VODTypes.DoomBuildingSmall, "Dwellings" },
                 { VODTypes.DoomBuildingMedium, "Taverns" },
                 { VODTypes.DoomBuildingLarge, "City Halls" }
-            };
+            };*/
             vodTypesData = new Dictionary<VODTypes, VODData> {
                 { VODTypes.DoomBuildingSmall, new VODData( @"ZX.Entities.DoomBuildingSmall, TheyAreBillions", @"400", @"2;2" ) },
                 { VODTypes.DoomBuildingMedium, new VODData (@"ZX.Entities.DoomBuildingMedium, TheyAreBillions", @"1500", @"3;3" ) },
@@ -468,16 +468,19 @@ namespace TABSAT
             return keys;
         }
 
-        internal LinkedList<ScaledEntity> scaleEntities( in UInt64 entityType, in decimal scale, IDGenerator editor )
+        internal LinkedList<ScaledEntity> scaleEntities( in UInt64 entityType, in byte scale, IDGenerator editor, SaveReader.ItemInArea inArea )
         {
-            if( scale < 0.0M )
+            var selectedEntities = new LinkedList<ScaledEntity>();
+
+            if( scale == 100U )
             {
-                throw new ArgumentOutOfRangeException( "Scale must not be negative." );
+                // Nothing needs be done
+                return selectedEntities;
             }
 
             void duplicateLevelEntity( XElement i, LinkedList<ScaledEntity> dupedEntities )
             {
-                XElement iCopy = new XElement( i );     // Duplicate at the same position
+                XElement iCopy = new XElement( i );         // Duplicate at the same position
                 var newID = editor.newID();
                 iCopy.Element( "Simple" ).SetAttributeValue( "value", newID );
                 SaveReader.getValueAttOfSimpleProp( iCopy.Element( "Complex" ), "ID" ).SetValue( newID );
@@ -486,95 +489,94 @@ namespace TABSAT
                 dupedEntities.AddLast( new ScaledEntity( (UInt64) i.Element( "Simple" ).Attribute( "value" ), newID ) );
             }
 
-            uint multiples = (uint) scale;              // How many duplicates to certainly make of each entity
-            double chance = (double) ( scale % 1 );     // The chance of making 1 more duplicate per entity
-
             Random rand = new Random();
 
-            var selectedEntities = new LinkedList<ScaledEntity>();
+            uint multiples = scale / 100U;                  // How many duplicates to certainly make of each zombie
+            double chance = ( scale % 100U ) / 100;         // The chance of making 1 more duplicate per zombie
 
-            if( scale < 1.0M )
+            IEnumerable<XElement> items = getEntitiesOfType( entityType );
+            foreach( var item in items )
             {
-                // chance is now chance to not remove existing entities
-                // selectedEntities will be those removed
-
-                // 0 >= scale < 1
-                foreach( var i in getEntitiesOfType( entityType ) )
+                // First test that their position is in the affected area
+                if( !inArea( item, true ) )
                 {
-                    if( scale == 0.0M || chance < rand.NextDouble() )
+                    continue;
+                }
+                // item is in the affected area, we continue here rather than loop to another immediately
+
+                if( scale < 100U )
+                {
+                    // chance is now chance to not remove existing entities
+                    // selectedEntities will be those removed
+
+                    // 0 >= scale < 100
+                    if( scale == 0U || chance < rand.NextDouble() )
                     {
-                        var id = (UInt64) i.Element( "Simple" ).Attribute( "value" );
+                        var id = (UInt64) item.Element( "Simple" ).Attribute( "value" );
                         Remove( id );
                         selectedEntities.AddLast( new ScaledEntity( id ) );
                     }
                 }
-                //Console.WriteLine( "selectedEntities: " + selectedEntities.Count );
-            }
-            else
-            {
-
-                foreach( var i in getEntitiesOfType( entityType ) )
+                else
                 {
                     // First the certain duplications
                     for( uint m = 1; m < multiples; m++ )
                     {
-                        duplicateLevelEntity( i, selectedEntities );
+                        duplicateLevelEntity( item, selectedEntities );
                     }
                     // And now the chance-based duplication
                     if( chance >= rand.NextDouble() )   // If the chance is not less than the roll
                     {
-                        duplicateLevelEntity( i, selectedEntities );
+                        duplicateLevelEntity( item, selectedEntities );
                     }
                 }
-                //Console.WriteLine( "selectedEntities: " + selectedEntities.Count );
             }
+            //Console.WriteLine( "selectedEntities: " + selectedEntities.Count );
 
             return selectedEntities;
         }
 
-        internal void relocateHuge( in UInt64 origin, in UInt64 destination )
+        internal bool relocateHuge( in XElement fromEntity, in XElement toEntity )
         {
-            if( origin == destination )
+            if( fromEntity == toEntity )
             {
-                return;
-            }
-
-            if( !IDsToItems.TryGetValue( origin, out XElement originEntity ) )
-            {
-                Console.Error.WriteLine( "Could not relocate LevelEntity: " + origin );
-                return;
-            }
-            if( !IDsToItems.TryGetValue( destination, out XElement destinationEntity ) )
-            {
-                Console.Error.WriteLine( "Could not relocate LevelEntity: " + origin + " to: " + destination );
-                return;
+                return false;
             }
 
             // We're after 3 different values in 2 different <Complex under Components
             // 1
-            XElement currentBehaviourTargetPosition = SaveReader.getFirstSimplePropertyNamed( SaveReader.getFirstComplexPropertyNamed( getBehaviour( originEntity ), "Data" ), "TargetPosition" );
+            XElement currentBehaviourTargetPosition = SaveReader.getFirstSimplePropertyNamed( SaveReader.getFirstComplexPropertyNamed( getBehaviour( fromEntity ), "Data" ), "TargetPosition" );
 
             // 2
-            XElement currentMovableTargetPosition = SaveReader.getFirstSimplePropertyNamed( getMovable( originEntity ), "TargetPosition" );
+            XElement currentMovableTargetPosition = SaveReader.getFirstSimplePropertyNamed( getMovable( fromEntity ), "TargetPosition" );
             // 3
-            XElement currentLastDestinyProcessed = SaveReader.getFirstSimplePropertyNamed( getMovable( originEntity ), "LastDestinyProcessed" );
+            XElement currentLastDestinyProcessed = SaveReader.getFirstSimplePropertyNamed( getMovable( fromEntity ), "LastDestinyProcessed" );
 
-            string farthestPositionString = (string) getPosition( destinationEntity );
+            string toPositionString = (string) getPosition( toEntity );
 
-            getPosition( originEntity ).SetValue( farthestPositionString );
-            SaveReader.getValueAttOfSimpleProp( originEntity.Element( "Complex" ), "LastPosition" ).SetValue( farthestPositionString );
-            currentBehaviourTargetPosition?.SetAttributeValue( "value", farthestPositionString );
-            currentMovableTargetPosition?.SetAttributeValue( "value", farthestPositionString );
-            currentLastDestinyProcessed?.SetAttributeValue( "value", farthestPositionString );
+            getPosition( fromEntity ).SetValue( toPositionString );
+            SaveReader.getValueAttOfSimpleProp( fromEntity.Element( "Complex" ), "LastPosition" ).SetValue( toPositionString );
+            currentBehaviourTargetPosition?.SetAttributeValue( "value", toPositionString );
+            currentMovableTargetPosition?.SetAttributeValue( "value", toPositionString );
+            currentLastDestinyProcessed?.SetAttributeValue( "value", toPositionString );
+
+            return true;
         }
 
-        internal void swapZombieType( in UInt64 id )
+        internal bool swapZombieType( in UInt64 id, SaveReader.InArea inArea )
         {
             if( !IDsToItems.TryGetValue( id, out XElement entity ) )
             {
                 Console.Error.WriteLine( "Could not type-swap LevelEntity: " + id );
-                return;
+                return false;
             }
+
+            SaveReader.extractCoordinates( entity, out ushort x, out ushort y );
+            if( !inArea( x, y ) )
+            {
+                return false;
+            }
+
             /*
             * change the <Item><Complex type=> from ZX.Entities.ZombieMutant to ZombieGiant
             * change the <Item><Complex><Properties><Simple name= value=> IDTemplate, Flags, Size
@@ -646,6 +648,8 @@ namespace TABSAT
 
             // Also move ID from old itemTypesToIDs index type to new
             changeItemType( id, (UInt64) ( targetType == (UInt64) HugeTypes.Mutant ? HugeTypes.Giant : HugeTypes.Mutant ), targetType );
+
+            return true;
         }
 
         private void changeItemType( in UInt64 id, in UInt64 oldType, in UInt64 newType )
@@ -710,11 +714,6 @@ namespace TABSAT
                     changeItemType( id, (UInt64) fromVodType, (UInt64) targetVodType );
                 }
             }
-        }
-
-        internal void scaleVODs( in VODTypes vodType, in decimal scale, IDGenerator editor )
-        {
-            scaleEntities( (UInt64) vodType, scale, editor );
         }
 
         internal void removeReclaimables()

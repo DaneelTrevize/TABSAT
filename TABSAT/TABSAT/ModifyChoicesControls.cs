@@ -35,22 +35,21 @@ namespace TABSAT
 
             zombieScalingCheckBoxes = new List<CheckBox>( 9 )
             {
+                zombieScaleAllCheckBox,
+                zombieScaleGiantCheckBox,
+                zombieScaleMutantCheckBox,
                 zombieScaleWeakCheckBox,
                 zombieScaleMediumCheckBox,
                 zombieScaleDressedCheckBox,
                 zombieScaleStrongCheckBox,
                 zombieScaleVenomCheckBox,
-                zombieScaleHarpyCheckBox,
-                zombieScaleCheckBox,
-                zombieScaleGiantCheckBox,
-                zombieScaleMutantCheckBox
+                zombieScaleHarpyCheckBox
             };
             vodCheckBoxes = new List<CheckBox>( 4 )
             {
-                vodReplaceCheckBox,
-                vodStackDwellingCheckBox,
-                vodStackTavernsCheckBox,
-                vodStackCityHallsCheckBox
+                vodDwellingCheckBox,
+                vodTavernsCheckBox,
+                vodCityHallsCheckBox
             };
             ccExtrasCheckBoxes = new List<CheckBox>( 3 )
             {
@@ -79,10 +78,6 @@ namespace TABSAT
                 removeReclaimablesCheckBox
             };
 
-            vodReplaceComboBox.DataSource = new BindingSource( LevelEntities.vodSizesNames, null );
-            vodReplaceComboBox.DisplayMember = "Value";
-            vodReplaceComboBox.ValueMember = "Key";
-
             giftComboBox.DataSource = new BindingSource( LevelEntities.giftableTypeNames, null );
             giftComboBox.DisplayMember = "Value";
             giftComboBox.ValueMember = "Key";
@@ -98,10 +93,9 @@ namespace TABSAT
             themeComboBox.DisplayMember = "Value";
             themeComboBox.ValueMember = "Key";
 
-            mutantReplaceAllComboBox.SelectedIndex = 0;
-            mutantMoveWhatComboBox.SelectedIndex = 0;
-            mutantMoveGlobalComboBox.SelectedIndex = 1;
-            vodReplaceComboBox.SelectedIndex = 0;
+            mutantsReplaceAllComboBox.SelectedIndex = 0;
+            mutantsMoveWhatComboBox.SelectedIndex = 0;
+            mutantsMoveGlobalComboBox.SelectedIndex = 1;
             giftComboBox.SelectedIndex = 1;
             swarmEasyComboBox.SelectedIndex = 1;
             swarmHardComboBox.SelectedIndex = 2;
@@ -112,46 +106,45 @@ namespace TABSAT
             var comboHandler = new EventHandler( comboBox_SelectedIndexChanged );
             var numericHandler = new EventHandler( numericUpDown_ValueChanged );
 
-            zombieScaleWeakCheckBox.CheckedChanged += notZombieScaleCheckBox_CheckedChanged;
-            zombieScaleMediumCheckBox.CheckedChanged += notZombieScaleCheckBox_CheckedChanged;
-            zombieScaleDressedCheckBox.CheckedChanged += notZombieScaleCheckBox_CheckedChanged;
-            zombieScaleStrongCheckBox.CheckedChanged += notZombieScaleCheckBox_CheckedChanged;
-            zombieScaleVenomCheckBox.CheckedChanged += notZombieScaleCheckBox_CheckedChanged;
-            zombieScaleHarpyCheckBox.CheckedChanged += notZombieScaleCheckBox_CheckedChanged;
-            zombieScaleCheckBox.CheckedChanged += zombieScaleCheckBox_CheckedChanged;
-            zombieScaleGiantCheckBox.CheckedChanged += zombieScaleCheckBox_CheckedChanged;
-            zombieScaleMutantCheckBox.CheckedChanged += zombieScaleCheckBox_CheckedChanged;
+            zombieScaleAllCheckBox.CheckedChanged += zombieScaleAllCheckBox_CheckedChanged;
+            zombieScaleGiantCheckBox.CheckedChanged += zombieScaleHugeCheckBox_CheckedChanged;
+            zombieScaleMutantCheckBox.CheckedChanged += zombieScaleHugeCheckBox_CheckedChanged;
+            zombieScaleWeakCheckBox.CheckedChanged += zombieScaleNotAllCheckBox_CheckedChanged;
+            zombieScaleMediumCheckBox.CheckedChanged += zombieScaleNotAllCheckBox_CheckedChanged;
+            zombieScaleDressedCheckBox.CheckedChanged += zombieScaleNotAllCheckBox_CheckedChanged;
+            zombieScaleStrongCheckBox.CheckedChanged += zombieScaleNotAllCheckBox_CheckedChanged;
+            zombieScaleVenomCheckBox.CheckedChanged += zombieScaleNotAllCheckBox_CheckedChanged;
+            zombieScaleHarpyCheckBox.CheckedChanged += zombieScaleNotAllCheckBox_CheckedChanged;
 
+            activeRadioButton.CheckedChanged += zombieScaleRadioButton_CheckedChanged;
+            idleRadioButton.CheckedChanged += zombieScaleRadioButton_CheckedChanged;
+            bothRadioButton.CheckedChanged += zombieScaleRadioButton_CheckedChanged;
+
+            zombieScaleAllNumericUpDown.ValueChanged += numericHandler;
+            zombieScaleGiantNumericUpDown.ValueChanged += numericHandler;
+            zombieScaleMutantNumericUpDown.ValueChanged += numericHandler;
             zombieScaleWeakNumericUpDown.ValueChanged += numericHandler;
             zombieScaleMediumNumericUpDown.ValueChanged += numericHandler;
             zombieScaleDressedNumericUpDown.ValueChanged += numericHandler;
             zombieScaleStrongNumericUpDown.ValueChanged += numericHandler;
             zombieScaleVenomNumericUpDown.ValueChanged += numericHandler;
             zombieScaleHarpyNumericUpDown.ValueChanged += numericHandler;
-            zombieScaleNumericUpDown.ValueChanged += numericHandler;
-            zombieScaleGiantNumericUpDown.ValueChanged += numericHandler;
-            zombieScaleMutantNumericUpDown.ValueChanged += numericHandler;
 
-
-            mutantReplaceAllComboBox.SelectedIndexChanged += comboHandler;
-            mutantMoveGlobalComboBox.SelectedIndexChanged += comboHandler;
-            mutantMoveWhatComboBox.SelectedIndexChanged += comboHandler;
-
-
-            vodReplaceCheckBox.CheckedChanged += vodReplaceCheckBox_CheckedChanged;
-            vodStackDwellingCheckBox.CheckedChanged += notVodReplaceCheckBox_CheckedChanged;
-            vodStackTavernsCheckBox.CheckedChanged += notVodReplaceCheckBox_CheckedChanged;
-            vodStackCityHallsCheckBox.CheckedChanged += notVodReplaceCheckBox_CheckedChanged;
-
-            vodReplaceComboBox.SelectedIndexChanged += comboHandler;
-
+            vodDwellingCheckBox.CheckedChanged += vod_CheckedChanged;
+            vodTavernsCheckBox.CheckedChanged += vod_CheckedChanged;
+            vodCityHallsCheckBox.CheckedChanged += vod_CheckedChanged;
             vodStackDwellingsNumericUpDown.ValueChanged += numericHandler;
             vodStackTavernsNumericUpDown.ValueChanged += numericHandler;
             vodStackCityHallsNumericUpDown.ValueChanged += numericHandler;
 
+            mutantsReplaceAllRadio.CheckedChanged += mutants_CheckedChanged;
+            mutantsMoveRadio.CheckedChanged += mutants_CheckedChanged;
+            mutantsReplaceAllComboBox.SelectedIndexChanged += comboHandler;
+            mutantsMoveGlobalComboBox.SelectedIndexChanged += comboHandler;
+            mutantsMoveWhatComboBox.SelectedIndexChanged += comboHandler;
 
-            fogNumericUpDown.ValueChanged += numericHandler;
-
+            fogRemoveRadioButton.CheckedChanged += fog_CheckedChanged;
+            fogShowFullRadioButton.CheckedChanged += fog_CheckedChanged;
 
             ccFoodNumericUpDown.ValueChanged += numericHandler;
             ccEnergyNumericUpDown.ValueChanged += numericHandler;
@@ -160,10 +153,8 @@ namespace TABSAT
             giftComboBox.SelectedIndexChanged += comboHandler;
             giftNumericUpDown.ValueChanged += numericHandler;
 
-
             swarmEasyComboBox.SelectedIndexChanged += comboHandler;
             swarmHardComboBox.SelectedIndexChanged += comboHandler;
-
 
             themeComboBox.SelectedIndexChanged += comboHandler;
         }
@@ -172,17 +163,15 @@ namespace TABSAT
         {
             var box = (ComboBox) sender;
 
-            if( box == mutantReplaceAllComboBox )
+            if( box == mutantsReplaceAllComboBox )
             {
-                mutantReplaceAllRadio.Checked = true;
+                mutantsReplaceAllRadio.Checked = true;
+                mutantsAreaSelectorControl.ensureSomeArea();
             }
-            else if( box == mutantMoveWhatComboBox || box == mutantMoveGlobalComboBox )
+            else if( box == mutantsMoveWhatComboBox || box == mutantsMoveGlobalComboBox )
             {
                 mutantsMoveRadio.Checked = true;
-            }
-            else if( box == vodReplaceComboBox )
-            {
-                vodReplaceCheckBox.Checked = true;
+                mutantsAreaSelectorControl.ensureSomeArea();
             }
             else if( box == giftComboBox )
             {
@@ -206,16 +195,16 @@ namespace TABSAT
         {
             var num = (NumericUpDown) sender;
 
-            if( num == zombieScaleNumericUpDown )
+            if( num == zombieScaleAllNumericUpDown )
             {
-                zombieScaleCheckBox.Checked = true;
+                zombieScaleAllCheckBox.Checked = true;
                 automatedStateSetting = true;
-                zombieScaleWeakNumericUpDown.Value = zombieScaleNumericUpDown.Value;
-                zombieScaleMediumNumericUpDown.Value = zombieScaleNumericUpDown.Value;
-                zombieScaleDressedNumericUpDown.Value = zombieScaleNumericUpDown.Value;
-                zombieScaleStrongNumericUpDown.Value = zombieScaleNumericUpDown.Value;
-                zombieScaleVenomNumericUpDown.Value = zombieScaleNumericUpDown.Value;
-                zombieScaleHarpyNumericUpDown.Value = zombieScaleNumericUpDown.Value;
+                zombieScaleWeakNumericUpDown.Value = zombieScaleAllNumericUpDown.Value;
+                zombieScaleMediumNumericUpDown.Value = zombieScaleAllNumericUpDown.Value;
+                zombieScaleDressedNumericUpDown.Value = zombieScaleAllNumericUpDown.Value;
+                zombieScaleStrongNumericUpDown.Value = zombieScaleAllNumericUpDown.Value;
+                zombieScaleVenomNumericUpDown.Value = zombieScaleAllNumericUpDown.Value;
+                zombieScaleHarpyNumericUpDown.Value = zombieScaleAllNumericUpDown.Value;
                 automatedStateSetting = false;
             }
             else if( num == zombieScaleWeakNumericUpDown && !automatedStateSetting )
@@ -245,26 +234,27 @@ namespace TABSAT
             else if( num == zombieScaleGiantNumericUpDown )
             {
                 zombieScaleGiantCheckBox.Checked = true;
+                zombieAreaSelectorControl.ensureSomeArea();
             }
             else if( num == zombieScaleMutantNumericUpDown )
             {
                 zombieScaleMutantCheckBox.Checked = true;
+                zombieAreaSelectorControl.ensureSomeArea();
             }
             else if( num == vodStackDwellingsNumericUpDown )
             {
-                vodStackDwellingCheckBox.Checked = true;
+                vodDwellingCheckBox.Checked = true;
+                vodAreaSelectorControl.ensureSomeArea();
             }
             else if( num == vodStackTavernsNumericUpDown )
             {
-                vodStackTavernsCheckBox.Checked = true;
+                vodTavernsCheckBox.Checked = true;
+                vodAreaSelectorControl.ensureSomeArea();
             }
             else if( num == vodStackCityHallsNumericUpDown )
             {
-                vodStackCityHallsCheckBox.Checked = true;
-            }
-            else if( num == fogNumericUpDown )
-            {
-                fogClearRadioButton.Checked = true;
+                vodCityHallsCheckBox.Checked = true;
+                vodAreaSelectorControl.ensureSomeArea();
             }
             else if( num == ccFoodNumericUpDown )
             {
@@ -284,7 +274,7 @@ namespace TABSAT
             }
         }
 
-        private void zombieScaleCheckBox_CheckedChanged( object sender, EventArgs e )
+        private void zombieScaleAllCheckBox_CheckedChanged( object sender, EventArgs e )
         {
             if( ( (CheckBox) sender ).Checked )
             {
@@ -294,81 +284,115 @@ namespace TABSAT
                 zombieScaleStrongCheckBox.Checked = false;
                 zombieScaleVenomCheckBox.Checked = false;
                 zombieScaleHarpyCheckBox.Checked = false;
+                zombieAreaSelectorControl.ensureSomeArea();
             }
         }
 
-        private void notZombieScaleCheckBox_CheckedChanged( object sender, EventArgs e )
+        private void zombieScaleNotAllCheckBox_CheckedChanged( object sender, EventArgs e )
         {
             if( ( (CheckBox) sender ).Checked )
             {
-                zombieScaleCheckBox.Checked = false;
+                zombieScaleAllCheckBox.Checked = false;
+                zombieAreaSelectorControl.ensureSomeArea();
             }
         }
 
-        private void vodReplaceCheckBox_CheckedChanged( object sender, EventArgs e )
+        private void zombieScaleRadioButton_CheckedChanged( object sender, EventArgs e )
         {
-            if( ( (CheckBox) sender ).Checked )
+            if( ( (RadioButton) sender ).Checked )
             {
-                vodStackDwellingCheckBox.Checked = false;
-                vodStackTavernsCheckBox.Checked = false;
-                vodStackCityHallsCheckBox.Checked = false;
+                zombieAreaSelectorControl.ensureSomeArea();
             }
         }
 
-        private void notVodReplaceCheckBox_CheckedChanged( object sender, EventArgs e )
+        private void zombieScaleHugeCheckBox_CheckedChanged( object sender, EventArgs e )
         {
             if( ( (CheckBox) sender ).Checked )
             {
-                vodReplaceCheckBox.Checked = false;
+                zombieAreaSelectorControl.ensureSomeArea();
+            }
+        }
+
+        private void vod_CheckedChanged( object sender, EventArgs e )
+        {
+            if( ( (CheckBox) sender ).Checked )
+            {
+                vodAreaSelectorControl.ensureSomeArea();
+            }
+        }
+
+        private void mutants_CheckedChanged( object sender, EventArgs e )
+        {
+            if( ( (RadioButton) sender ).Checked )
+            {
+                mutantsAreaSelectorControl.ensureSomeArea();
+            }
+        }
+
+        private void fog_CheckedChanged( object sender, EventArgs e )
+        {
+            if( fogRemoveRadioButton.Checked )
+            {
+                fogAreaSelectorControl.ensureSomeArea();
+                fogAreaSelectorControl.enableRadiusChoice();
+            }
+            else
+            {
+                // fogShowFullRadioButton.Checked
+                fogAreaSelectorControl.SetAreaEverywhere();
+                fogAreaSelectorControl.disableRadiusChoice();
             }
         }
 
         internal bool anyModificationChosen()
         {
-            return anyChecked( zombieScalingCheckBoxes ) || !mutantsNothingRadio.Checked || anyChecked( vodCheckBoxes ) || !fogLeaveRadioButton.Checked
-                || anyChecked( ccExtrasCheckBoxes ) || ccGiftCheckBox.Checked || anyChecked( warehousesFillCheckBoxes ) || anyChecked( swarmsCheckBoxes ) || anyChecked( generalCheckBoxes );
+            return zombieAreaSelectorControl.AreaChoice() != ModifyChoices.AreaChoices.None
+                || vodAreaSelectorControl.AreaChoice() != ModifyChoices.AreaChoices.None || anyChecked( ccExtrasCheckBoxes ) || ccGiftCheckBox.Checked
+                || mutantsAreaSelectorControl.AreaChoice() != ModifyChoices.AreaChoices.None || anyChecked( warehousesFillCheckBoxes )
+                || fogAreaSelectorControl.AreaChoice() != ModifyChoices.AreaChoices.None || anyChecked( swarmsCheckBoxes )
+                || anyChecked( generalCheckBoxes );
         }
 
         internal ModifyChoices getChoices()
         {
             // Zombie Population Scaling
-            SortedDictionary<LevelEntities.ScalableZombieGroups, decimal> scalableZombieGroupFactors = new SortedDictionary<LevelEntities.ScalableZombieGroups, decimal>();
+            SortedDictionary<LevelEntities.ScalableZombieGroups, byte> scalableZombieGroupFactors = new SortedDictionary<LevelEntities.ScalableZombieGroups, byte>();
             if( zombieScaleWeakCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.WEAK, zombieScaleWeakNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.WEAK, Convert.ToByte( zombieScaleWeakNumericUpDown.Value ) );
             }
             if( zombieScaleMediumCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.MEDIUM, zombieScaleMediumNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.MEDIUM, Convert.ToByte( zombieScaleMediumNumericUpDown.Value ) );
             }
             if( zombieScaleDressedCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.DRESSED, zombieScaleDressedNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.DRESSED, Convert.ToByte( zombieScaleDressedNumericUpDown.Value ) );
             }
             if( zombieScaleStrongCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.STRONG, zombieScaleStrongNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.STRONG, Convert.ToByte( zombieScaleStrongNumericUpDown.Value ) );
             }
             if( zombieScaleVenomCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.VENOM, zombieScaleVenomNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.VENOM, Convert.ToByte( zombieScaleVenomNumericUpDown.Value ) );
             }
             if( zombieScaleHarpyCheckBox.Checked )
             {
-                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.HARPY, zombieScaleHarpyNumericUpDown.Value );
+                scalableZombieGroupFactors.Add( LevelEntities.ScalableZombieGroups.HARPY, Convert.ToByte( zombieScaleHarpyNumericUpDown.Value ) );
             }
 
             // Mutants
-            ModifyChoices.MutantChoices mutants = ModifyChoices.MutantChoices.None;
-            if( mutantReplaceAllRadio.Checked )
+            ModifyChoices.MutantChoices mutants;
+            if( mutantsReplaceAllRadio.Checked )
             {
-                bool toGiantNotMutant = mutantReplaceAllComboBox.SelectedIndex == 0;
+                bool toGiantNotMutant = mutantsReplaceAllComboBox.SelectedIndex == 0;
                 mutants = toGiantNotMutant ? ModifyChoices.MutantChoices.ReplaceWithGiants : ModifyChoices.MutantChoices.ReplaceWithMutants;
             }
-            else if( mutantsMoveRadio.Checked )
+            else// if( mutantsMoveRadio.Checked )
             {
-                bool toGiantNotMutant = mutantMoveWhatComboBox.SelectedIndex == 0;
-                bool perDirection = mutantMoveGlobalComboBox.SelectedIndex == 1;
+                bool toGiantNotMutant = mutantsMoveWhatComboBox.SelectedIndex == 0;
+                bool perDirection = mutantsMoveGlobalComboBox.SelectedIndex == 1;
                 if( perDirection )
                 {
                     mutants = toGiantNotMutant ? ModifyChoices.MutantChoices.MoveToGiantsPerQuadrant : ModifyChoices.MutantChoices.MoveToMutantsPerQuadrant;
@@ -380,36 +404,15 @@ namespace TABSAT
             }
 
             // VODs
-            LevelEntities.VODTypes vodSize = LevelEntities.VODTypes.DoomBuildingSmall;
-            if( vodReplaceCheckBox.Checked )
-            {
-                KeyValuePair<LevelEntities.VODTypes, string> kv = (KeyValuePair<LevelEntities.VODTypes, string>) vodReplaceComboBox.SelectedItem;
-                vodSize = kv.Key;
-            }
 
             // Fog of War
-            ModifyChoices.FogChoices fog = ModifyChoices.FogChoices.None;
-            uint fogRadius = 0;
-            if( fogRemoveRadioButton.Checked )
-            {
-                fog = ModifyChoices.FogChoices.All;
-            }
-            else if( fogClearRadioButton.Checked )
-            {
-                fogRadius = Convert.ToUInt32( fogNumericUpDown.Value );
-                fog = ModifyChoices.FogChoices.Radius;
-            }
-            else if( fogShowFullRadioButton.Checked )
-            {
-                fog = ModifyChoices.FogChoices.Full;
-            }
 
             // Command Center Extras
-            uint giftCount = 0;
+            byte giftCount = 0;
             LevelEntities.GiftableTypes gift = LevelEntities.GiftableTypes.SoldierRegular;
             if( ccGiftCheckBox.Checked )
             {
-                giftCount = Convert.ToUInt32( giftNumericUpDown.Value );
+                giftCount = Convert.ToByte( giftNumericUpDown.Value );
                 KeyValuePair<LevelEntities.GiftableTypes, string> kv = (KeyValuePair<LevelEntities.GiftableTypes, string>) giftComboBox.SelectedItem;
                 gift = kv.Key;
             }
@@ -439,25 +442,34 @@ namespace TABSAT
             }
 
             return new ModifyChoices(
-                idleZombiesRadioButton.Checked || allZombiesRadioButton.Checked,
-                activeZombiesRadioButton.Checked || allZombiesRadioButton.Checked,
-                zombieScaleCheckBox.Checked ? zombieScaleNumericUpDown.Value : 1,
+                zombieAreaSelectorControl.AreaChoice(),
+                zombieAreaSelectorControl.Sections(),
+                zombieAreaSelectorControl.Radius(),
+                idleRadioButton.Checked || bothRadioButton.Checked,
+                activeRadioButton.Checked || bothRadioButton.Checked,
+                zombieScaleAllCheckBox.Checked ? Convert.ToByte( zombieScaleAllNumericUpDown.Value ) : (byte) (100U),
                 scalableZombieGroupFactors,
-                zombieScaleGiantCheckBox.Checked ? zombieScaleGiantNumericUpDown.Value : 1,
-                zombieScaleMutantCheckBox.Checked ? zombieScaleMutantNumericUpDown.Value : 1,
-                mutants,
-                vodReplaceCheckBox.Checked,
-                vodSize,
-                vodStackDwellingCheckBox.Checked ? vodStackDwellingsNumericUpDown.Value : 1,
-                vodStackTavernsCheckBox.Checked ? vodStackTavernsNumericUpDown.Value : 1,
-                vodStackCityHallsCheckBox.Checked ? vodStackCityHallsNumericUpDown.Value : 1,
-                fog,
-                fogRadius,
-                ccExtraFoodCheckBox.Checked ? Convert.ToUInt32( ccFoodNumericUpDown.Value ) : 0,
-                ccExtraEnergyCheckBox.Checked ? Convert.ToUInt32( ccEnergyNumericUpDown.Value ) : 0,
-                ccExtraWorkersCheckBox.Checked ? Convert.ToUInt32( ccWorkersNumericUpDown.Value ) : 0,
+                zombieScaleGiantCheckBox.Checked ? Convert.ToByte( zombieScaleGiantNumericUpDown.Value ) : (byte) (100U),
+                zombieScaleMutantCheckBox.Checked ? Convert.ToByte( zombieScaleMutantNumericUpDown.Value ) : (byte) (100U),
+                vodAreaSelectorControl.AreaChoice(),
+                vodAreaSelectorControl.Sections(),
+                vodAreaSelectorControl.Radius(),
+                vodDwellingCheckBox.Checked ? Convert.ToByte( vodStackDwellingsNumericUpDown.Value ) : (byte) (100U),
+                vodTavernsCheckBox.Checked ? Convert.ToByte( vodStackTavernsNumericUpDown.Value ) : (byte) (100U),
+                vodCityHallsCheckBox.Checked ? Convert.ToByte( vodStackCityHallsNumericUpDown.Value ) : (byte) (100U),
+                ccExtraFoodCheckBox.Checked ? Convert.ToUInt16( ccFoodNumericUpDown.Value ) : (ushort) (0U),
+                ccExtraEnergyCheckBox.Checked ? Convert.ToUInt16( ccEnergyNumericUpDown.Value ) : (ushort) (0U),
+                ccExtraWorkersCheckBox.Checked ? Convert.ToUInt16( ccWorkersNumericUpDown.Value ) : (ushort) (0U),
                 giftCount,
                 gift,
+                mutantsAreaSelectorControl.AreaChoice(),
+                mutantsAreaSelectorControl.Sections(),
+                mutantsAreaSelectorControl.Radius(),
+                mutants,
+                fogAreaSelectorControl.AreaChoice(),
+                fogAreaSelectorControl.Sections(),
+                fogAreaSelectorControl.Radius(),
+                fogShowFullRadioButton.Checked,
                 warehousesFillGoldCheckBox.Checked,
                 warehousesFillWoodCheckBox.Checked,
                 warehousesFillStoneCheckBox.Checked,
@@ -485,8 +497,12 @@ namespace TABSAT
                     c.Checked = false;
                 }
             }
-            mutantsNothingRadio.Checked = true;
-            fogLeaveRadioButton.Checked = true;
+            zombieScaleAllCheckBox.Checked = true;
+            bothRadioButton.Checked = true;       // Should we also reset the numerous ComboBox.SelectedIndex and NumericUpDown.Value..?
+            zombieAreaSelectorControl.reset();
+            vodAreaSelectorControl.reset();
+            mutantsAreaSelectorControl.reset();
+            fogAreaSelectorControl.reset();
             ccGiftCheckBox.Checked = false;
         }
     }

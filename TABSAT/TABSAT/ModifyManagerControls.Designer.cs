@@ -100,7 +100,7 @@
             this.saveFileGroupBox.Location = new System.Drawing.Point(135, 43);
             this.saveFileGroupBox.Margin = new System.Windows.Forms.Padding(6);
             this.saveFileGroupBox.Name = "saveFileGroupBox";
-            this.saveFileGroupBox.Size = new System.Drawing.Size(442, 51);
+            this.saveFileGroupBox.Size = new System.Drawing.Size(447, 51);
             this.saveFileGroupBox.TabIndex = 0;
             this.saveFileGroupBox.TabStop = false;
             this.saveFileGroupBox.Text = "Save File";
@@ -108,11 +108,11 @@
             // saveFileTextBox
             // 
             this.saveFileTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveFileTextBox.Location = new System.Drawing.Point(113, 19);
+            this.saveFileTextBox.Location = new System.Drawing.Point(105, 19);
             this.saveFileTextBox.Name = "saveFileTextBox";
             this.saveFileTextBox.ReadOnly = true;
             this.saveFileTextBox.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.saveFileTextBox.Size = new System.Drawing.Size(197, 20);
+            this.saveFileTextBox.Size = new System.Drawing.Size(210, 20);
             this.saveFileTextBox.TabIndex = 0;
             this.saveFileTextBox.TabStop = false;
             this.saveFileTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -121,7 +121,7 @@
             // saveFileChooseButton
             // 
             this.saveFileChooseButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.saveFileChooseButton.Location = new System.Drawing.Point(316, 13);
+            this.saveFileChooseButton.Location = new System.Drawing.Point(321, 13);
             this.saveFileChooseButton.Name = "saveFileChooseButton";
             this.saveFileChooseButton.Size = new System.Drawing.Size(120, 30);
             this.saveFileChooseButton.TabIndex = 0;
@@ -196,7 +196,7 @@
             this.reflectorOutputGroupBox.Location = new System.Drawing.Point(3, 5);
             this.reflectorOutputGroupBox.MinimumSize = new System.Drawing.Size(150, 30);
             this.reflectorOutputGroupBox.Name = "reflectorOutputGroupBox";
-            this.reflectorOutputGroupBox.Size = new System.Drawing.Size(181, 106);
+            this.reflectorOutputGroupBox.Size = new System.Drawing.Size(186, 107);
             this.reflectorOutputGroupBox.TabIndex = 2;
             this.reflectorOutputGroupBox.TabStop = false;
             this.reflectorOutputGroupBox.Text = "Reflector Output";
@@ -210,7 +210,7 @@
             this.reflectorTextBox.Name = "reflectorTextBox";
             this.reflectorTextBox.ReadOnly = true;
             this.reflectorTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.reflectorTextBox.Size = new System.Drawing.Size(175, 87);
+            this.reflectorTextBox.Size = new System.Drawing.Size(180, 88);
             this.reflectorTextBox.TabIndex = 0;
             this.reflectorTextBox.Text = "Reflector not yet deployed.";
             this.reflectorTextBox.WordWrap = false;
@@ -220,19 +220,20 @@
             this.verticalDividerLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.verticalDividerLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.verticalDividerLabel.Location = new System.Drawing.Point(187, 2);
+            this.verticalDividerLabel.Location = new System.Drawing.Point(192, 2);
             this.verticalDividerLabel.Name = "verticalDividerLabel";
-            this.verticalDividerLabel.Size = new System.Drawing.Size(3, 110);
+            this.verticalDividerLabel.Size = new System.Drawing.Size(3, 112);
             this.verticalDividerLabel.TabIndex = 2;
             // 
             // modifyHintLabel
             // 
             this.modifyHintLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.modifyHintLabel.BackColor = System.Drawing.Color.WhiteSmoke;
             this.modifyHintLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.modifyHintLabel.Location = new System.Drawing.Point(22, 7);
+            this.modifyHintLabel.Location = new System.Drawing.Point(3, 7);
             this.modifyHintLabel.MinimumSize = new System.Drawing.Size(2, 30);
             this.modifyHintLabel.Name = "modifyHintLabel";
-            this.modifyHintLabel.Size = new System.Drawing.Size(534, 30);
+            this.modifyHintLabel.Size = new System.Drawing.Size(579, 30);
             this.modifyHintLabel.TabIndex = 0;
             this.modifyHintLabel.Text = "1) Choose which Save File to modify.   2) Choose which Modifications to make.   3" +
     ") Start the Modifying Process.";
@@ -254,6 +255,7 @@
             // 
             this.reflectorSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.reflectorSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.reflectorSplitContainer.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.reflectorSplitContainer.Name = "reflectorSplitContainer";
             // 
             // reflectorSplitContainer.Panel1
@@ -266,8 +268,8 @@
             // 
             this.reflectorSplitContainer.Panel2.Controls.Add(this.processFlowLayoutPanel);
             this.reflectorSplitContainer.Panel2MinSize = 387;
-            this.reflectorSplitContainer.Size = new System.Drawing.Size(580, 115);
-            this.reflectorSplitContainer.SplitterDistance = 189;
+            this.reflectorSplitContainer.Size = new System.Drawing.Size(585, 115);
+            this.reflectorSplitContainer.SplitterDistance = 194;
             this.reflectorSplitContainer.SplitterWidth = 3;
             this.reflectorSplitContainer.TabIndex = 0;
             // 
@@ -302,18 +304,18 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsSplitContainer.Location = new System.Drawing.Point(0, 100);
             this.optionsSplitContainer.Margin = new System.Windows.Forms.Padding(0);
-            this.optionsSplitContainer.MinimumSize = new System.Drawing.Size(565, 300);
+            this.optionsSplitContainer.MinimumSize = new System.Drawing.Size(585, 300);
             this.optionsSplitContainer.Name = "optionsSplitContainer";
             this.optionsSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            this.optionsSplitContainer.Panel1MinSize = 185;
+            this.optionsSplitContainer.Panel1MinSize = 175;
             // 
             // optionsSplitContainer.Panel2
             // 
             this.optionsSplitContainer.Panel2.Controls.Add(this.horizontalDividerLabel);
             this.optionsSplitContainer.Panel2.Controls.Add(this.reflectorSplitContainer);
             this.optionsSplitContainer.Panel2MinSize = 115;
-            this.optionsSplitContainer.Size = new System.Drawing.Size(580, 626);
-            this.optionsSplitContainer.SplitterDistance = 508;
+            this.optionsSplitContainer.Size = new System.Drawing.Size(585, 672);
+            this.optionsSplitContainer.SplitterDistance = 554;
             this.optionsSplitContainer.SplitterWidth = 3;
             this.optionsSplitContainer.TabIndex = 0;
             // 
@@ -325,7 +327,7 @@
             this.horizontalDividerLabel.Location = new System.Drawing.Point(0, 0);
             this.horizontalDividerLabel.Margin = new System.Windows.Forms.Padding(0);
             this.horizontalDividerLabel.Name = "horizontalDividerLabel";
-            this.horizontalDividerLabel.Size = new System.Drawing.Size(580, 2);
+            this.horizontalDividerLabel.Size = new System.Drawing.Size(585, 2);
             this.horizontalDividerLabel.TabIndex = 2;
             // 
             // resetGroupBox
@@ -352,15 +354,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoScroll = true;
             this.Controls.Add(this.resetGroupBox);
             this.Controls.Add(this.optionsSplitContainer);
             this.Controls.Add(this.modifyHintLabel);
             this.Controls.Add(this.saveFileGroupBox);
             this.Margin = new System.Windows.Forms.Padding(0);
-            this.MinimumSize = new System.Drawing.Size(580, 290);
+            this.MinimumSize = new System.Drawing.Size(585, 290);
             this.Name = "ModifyManagerControls";
-            this.Size = new System.Drawing.Size(580, 726);
+            this.Size = new System.Drawing.Size(585, 772);
             this.saveFileGroupBox.ResumeLayout(false);
             this.saveFileGroupBox.PerformLayout();
             this.reflectorOutputGroupBox.ResumeLayout(false);

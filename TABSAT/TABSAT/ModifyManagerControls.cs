@@ -1,16 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows.Forms;
 using static TABSAT.MainWindow;
-using static TABSAT.SaveReader;
 
 namespace TABSAT
 {
     internal partial class ModifyManagerControls : UserControl
     {
-        private enum EditingState
+        private enum EditingState : byte
         {
             CHOOSING_SAVE,
             SAVE_CHOSEN,
@@ -158,7 +156,7 @@ namespace TABSAT
                         considerStoppingReflector( reflectorStopExtractCheckBox.Checked );
                         break;
                     default:
-                        throw new ArgumentException( "Unimplemented EditingState: " + newState );
+                        throw new NotImplementedException( "Unimplemented EditingState: " + newState );
                 }
             }
         }
@@ -441,191 +439,9 @@ namespace TABSAT
                 statusWriter( "Unable to read extracted save file." );
                 return false;
             }
-            if( choices != null && !modifySave( choices, dataEditor ) )
+            if( choices != null && !ModifyChoices.modifySave( choices, dataEditor, statusWriter ) )
             {
                 statusWriter( "Unable to modify extracted save file." );
-                return false;
-            }
-            return true;
-        }
-
-        private bool modifySave( in ModifyChoices choices, SaveEditor dataEditor )
-        {
-            try
-            {
-                // Zombie Population Scaling
-                if( choices.PopulationScale != 1 )
-                {
-                    statusWriter( "Scaling Zombie population x" + choices.PopulationScale + '.' );
-                    dataEditor.scalePopulation( choices.PopulationScale, choices.ScaleIdle, choices.ScaleActive );
-                }
-                else
-                {
-                    if( choices.ScalableZombieGroupFactors.Any() )
-                    {
-                        statusWriter( "Scaling Zombie population per type." );
-                        dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive );
-                    }
-                }
-                if( choices.GiantScale != 1 )
-                {
-                    statusWriter( "Scaling Giant population x" + choices.GiantScale + '.' );
-                    dataEditor.scaleHugePopulation( true, choices.GiantScale );
-                }
-                if( choices.MutantScale != 1 )
-                {
-                    statusWriter( "Scaling Mutant population x" + choices.MutantScale + '.' );
-                    dataEditor.scaleHugePopulation( false, choices.MutantScale );
-                }
-
-                // Mutants
-                switch( choices.Mutants )
-                {
-                    case ModifyChoices.MutantChoices.None:
-                        break;
-                    case ModifyChoices.MutantChoices.ReplaceWithGiants:
-                        statusWriter( "Replacing all Mutants with Giants." );
-                        dataEditor.replaceHugeZombies( true );
-                        break;
-                    case ModifyChoices.MutantChoices.ReplaceWithMutants:
-                        statusWriter( "Replacing all Giants with Mutants." );
-                        dataEditor.replaceHugeZombies( false );
-                        break;
-                    case ModifyChoices.MutantChoices.MoveToGiants:
-                        statusWriter( "Relocating Mutants to farthest Giant on the map." );
-                        dataEditor.relocateMutants( true, false );
-                        break;
-                    case ModifyChoices.MutantChoices.MoveToMutants:
-                        statusWriter( "Relocating Mutants to farthest Mutant on the map." );
-                        dataEditor.relocateMutants( false, false );
-                        break;
-                    case ModifyChoices.MutantChoices.MoveToGiantsPerQuadrant:
-                        statusWriter( "Relocating Mutants to farthest Giant per Compass quadrant if possible." );
-                        dataEditor.relocateMutants( true, true );
-                        break;
-                    case ModifyChoices.MutantChoices.MoveToMutantsPerQuadrant:
-                        statusWriter( "Relocating Mutants to farthest Mutant per Compass quadrant if possible." );
-                        dataEditor.relocateMutants( false, true );
-                        break;
-                    default:
-                        throw new ArgumentException( "Unimplemented choice: " + choices.Mutants );
-                }
-                
-                // VODs
-                if( choices.ResizeVODs )
-                {
-                    statusWriter( "Replacing all VOD buildings with " + LevelEntities.vodSizesNames[choices.VodSize] + '.' );
-                    dataEditor.resizeVODs( choices.VodSize );
-                }
-                else
-                {
-                    if( choices.SmallScale != 1 )
-                    {
-                        statusWriter( "Scaling Dwellings count x" + choices.SmallScale + '.' );
-                        dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingSmall, choices.SmallScale );
-                    }
-                    if( choices.MediumScale != 1 )
-                    {
-                        statusWriter( "Scaling Taverns count x" + choices.MediumScale + '.' );
-                        dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingMedium, choices.MediumScale );
-                    }
-                    if( choices.LargeScale != 1 )
-                    {
-                        statusWriter( "Scaling City Halls count x" + choices.LargeScale + '.' );
-                        dataEditor.stackVODbuildings( LevelEntities.VODTypes.DoomBuildingLarge, choices.LargeScale );
-                    }
-                }
-
-                // Fog of War
-                switch ( choices.Fog )
-                {
-                    case ModifyChoices.FogChoices.None:
-                        break;
-                    case ModifyChoices.FogChoices.All:
-                        statusWriter( "Removing all the fog." );
-                        dataEditor.removeFog();
-                        break;
-                    case ModifyChoices.FogChoices.Radius:
-                        statusWriter( "Removing the fog with cell range: " + choices.FogRadius );
-                        dataEditor.removeFog( choices.FogRadius );
-                        break;
-                    case ModifyChoices.FogChoices.Full:
-                        statusWriter( "Revealing the map." );
-                        dataEditor.showFullMap();
-                        break;
-                    default:
-                        throw new ArgumentException( "Unimplemented choice: " + choices.Fog );
-                }
-
-                // Command Center Extras
-                if( choices.Food != 0 || choices.Energy != 0 || choices.Workers != 0 )
-                {
-                    statusWriter( "Adding Command Center extra supplies,"
-                        + ( choices.Food > 0 ? " Food: +" + choices.Food : "" )
-                        + ( choices.Energy > 0 ? " Energy: +" + choices.Energy : "" )
-                        + ( choices.Workers > 0 ? " Workers: +" + choices.Workers : "" )
-                        + '.' );
-                    dataEditor.addExtraSupplies( choices.Food, choices.Energy, choices.Workers );
-                }
-
-                if( choices.GiftCount != 0 )
-                {
-                    statusWriter( "Gifting " + choices.GiftCount + "x " + LevelEntities.giftableTypeNames[choices.Gift] + "." );
-                    dataEditor.giftEntities( choices.Gift, choices.GiftCount );
-                }
-
-                // Fill Resource Storage
-                if( choices.FillGold || choices.FillWood || choices.FillStone || choices.FillIron || choices.FillOil )
-                {
-                    statusWriter( "Filling storage for specified resources:"
-                        + ( choices.FillGold ? " Gold;" : "" )
-                        + ( choices.FillWood ? " Wood;" : "" )
-                        + ( choices.FillStone ? " Stone;" : "" )
-                        + ( choices.FillIron ? " Iron;" : "" )
-                        + ( choices.FillOil ? " Oil;" : "" ) );
-                    dataEditor.fillStorage( choices.FillGold, choices.FillWood, choices.FillStone, choices.FillIron, choices.FillOil );
-                }
-
-                // Swarms
-                if( choices.FasterSwarms )
-                {
-                    statusWriter( "Setting swarms to 50 Days Challenge timings." );
-                    dataEditor.fasterSwarms();
-                }
-                if( choices.ChangeEasy )
-                {
-                    statusWriter( "Setting earlier swarm directions to " + SwarmDirectionsNames[choices.EasySwarms] + '.' );
-                    dataEditor.setSwarms( true, choices.EasySwarms );
-                }
-                if( choices.ChangeHard )
-                {
-                    statusWriter( "Setting later swarm directions to " + SwarmDirectionsNames[choices.HardSwarms] + '.' );
-                    dataEditor.setSwarms( false, choices.HardSwarms );
-                }
-
-                // General Rules
-                if( choices.ChangeTheme )
-                {
-                    statusWriter( "Changing Theme to " + themeTypeNames[choices.Theme] + '.' );
-                    dataEditor.changeTheme( choices.Theme );
-                }
-                if( choices.DisableMayors )
-                {
-                    statusWriter( "Disabling Mayors." );
-                    dataEditor.disableMayors();
-                }
-                if( choices.RemoveReclaimables )
-                {
-                    statusWriter( "Removing neutral buildings and loot piles." );
-                    dataEditor.removeReclaimables();
-                }
-
-                dataEditor.save();
-            }
-            catch( Exception e )
-            {
-                Console.Error.WriteLine( "Problem modifying save file: " + e.Message + Environment.NewLine + e.StackTrace );
-                statusWriter( "Problem modifying save file: " + e.Message );
                 return false;
             }
             return true;

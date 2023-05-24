@@ -149,6 +149,7 @@
             // 
             this.backupsHintLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.backupsHintLabel.BackColor = System.Drawing.Color.WhiteSmoke;
             this.backupsHintLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.backupsHintLabel.Location = new System.Drawing.Point(9, 45);
             this.backupsHintLabel.Name = "backupsHintLabel";

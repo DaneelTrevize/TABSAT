@@ -8,7 +8,7 @@ namespace TABSAT
 {
     public partial class MapViewerControl : UserControl
     {
-        private const int BASE_PIXELS_PER_CELL = 2;
+        private const ushort BASE_PIXELS_PER_CELL = 2;
         //private const float X_TRANSFORM = 3 / 4;
         //private const float Y_TRANSFORM = 15 / 16;
 
@@ -25,10 +25,10 @@ namespace TABSAT
         private static readonly Brush pickableBrush = new SolidBrush( Color.FromArgb( 0xDF, 0x00, 0xFF, 0x0F ) );
         private static readonly Brush joinableBrush = new SolidBrush( Color.FromArgb( 0xFF, 0xFF, 0xBF, 0x00 ) );
         private static readonly Pen redPen = new Pen( Color.FromArgb( 0x7F, 0xFF, 0x00, 0x00 ) );
-        private readonly SortedDictionary<ViewLayer, SortedDictionary<int, Image>> layerCache;
+        private readonly SortedDictionary<ViewLayer, SortedDictionary<ushort, Image>> layerCache;
         private readonly SortedDictionary<MapNavigation.Direction, Image> arrows;
 
-        private enum ViewLayer
+        private enum ViewLayer : byte
         {
             Terrain,
             Fog,
@@ -98,10 +98,10 @@ namespace TABSAT
             InitializeComponent();
 
             mapData = m;
-            layerCache = new SortedDictionary<ViewLayer, SortedDictionary<int, Image>>();
+            layerCache = new SortedDictionary<ViewLayer, SortedDictionary<ushort, Image>>();
             foreach( ViewLayer layer in Enum.GetValues( typeof( ViewLayer ) ) )
             {
-                layerCache[layer] = new SortedDictionary<int, Image>();
+                layerCache[layer] = new SortedDictionary<ushort, Image>();
             }
             arrows = new SortedDictionary<MapNavigation.Direction, Image>();
 
@@ -184,8 +184,8 @@ namespace TABSAT
         {
             arrows.Clear();
 
-            int cellSize = BASE_PIXELS_PER_CELL * zoom;
-            int cells = mapData.CellsCount();
+            ushort cellSize = (ushort) (BASE_PIXELS_PER_CELL * zoom);
+            ushort cells = mapData.CellsCount();
             int mapSize = cells * cellSize;
 
             // Now generate the combined image
@@ -268,8 +268,8 @@ namespace TABSAT
                 }
 
                 // Draw CommandCenter
-                mapData.getCCPosition( out int x, out int y );
-                mapGraphics.FillRectangle( ccBrush, ( x - 2 ) * cellSize, ( y - 2 ) * cellSize, cellSize * 5, cellSize * 5 );
+                var cc = mapData.getCCPosition();
+                mapGraphics.FillRectangle( ccBrush, ( cc.x - 2 ) * cellSize, ( cc.y - 2 ) * cellSize, cellSize * 5, cellSize * 5 );
 
                 if( gridCheckBox.Checked )
                 {
@@ -288,12 +288,12 @@ namespace TABSAT
             //mapPictureBox.Size = new Size( (int) ( mapSize * X_TRANSFORM ), (int) ( mapSize * Y_TRANSFORM ) );
         }
 
-        private Image getCachedImage( ViewLayer layer, in int cellSize, in int mapSize )
+        private Image getCachedImage( ViewLayer layer, in ushort cellSize, in int mapSize )
         {
             // For layers that draw a flat shape per cell (all but Direction?), is it not better to cache a resolution-independant image, 1 pixel/color per cell..?
             // Directions could also be encoded as colors, then not just simply scaled to 1 cell square rendering. Or just draw the arrows, uncached full res image.
 
-            SortedDictionary<int, Image> cache = layerCache[layer];
+            SortedDictionary<ushort, Image> cache = layerCache[layer];
             if( !cache.TryGetValue( cellSize, out Image map ) )
             {
                 switch( layer )
@@ -367,9 +367,9 @@ namespace TABSAT
                 layerBrushes = null;
             }
 
-            for( int x = 0; x < layerData.res; x++ )
+            for( ushort x = 0; x < layerData.res; x++ )
             {
-                for( int y = 0; y < layerData.res; y++ )
+                for( ushort y = 0; y < layerData.res; y++ )
                 {
                     int index = ( x * layerData.res ) + y;
                     if( layer == MapLayers.Fog )
@@ -406,13 +406,13 @@ namespace TABSAT
             Image map = new Bitmap( mapSize, mapSize );
             using( Graphics mapGraphics = Graphics.FromImage( map ) )
             {
-                int cells = mapData.CellsCount();
+                ushort cells = mapData.CellsCount();
                 int cellSize = mapSize / cells;
-                for( int x = 0; x < cells; x++ )
+                for( ushort x = 0; x < cells; x++ )
                 {
-                    for( int y = 0; y < cells; y++ )
+                    for( ushort y = 0; y < cells; y++ )
                     {
-                        var distance = mapData.getCCDistance( new MapNavigation.Position( x, y ) );
+                        var distance = mapData.pathDistanceToCC( new MapNavigation.Position( x, y ) );
                         var brightness = distance == MapNavigation.UNNAVIGABLE ? 0 : Math.Max( 255 - ( (int) (distance * 2.5) ), 4 );
                         Brush pathing = new SolidBrush( Color.FromArgb( 0xAF, brightness, brightness, brightness ) );
                         mapGraphics.FillRectangle( pathing, x * cellSize, y * cellSize, cellSize, cellSize );
@@ -427,13 +427,13 @@ namespace TABSAT
             Image map = new Bitmap( mapSize, mapSize );
             using( Graphics mapGraphics = Graphics.FromImage( map ) )
             {
-                int cells = mapData.CellsCount();
+                ushort cells = mapData.CellsCount();
                 int cellSize = mapSize / cells;
-                for( int x = 0; x < cells; x++ )
+                for( ushort x = 0; x < cells; x++ )
                 {
-                    for( int y = 0; y < cells; y++ )
+                    for( ushort y = 0; y < cells; y++ )
                     {
-                        var direction = mapData.getCCDirection( new MapNavigation.Position( x, y ) );
+                        var direction = mapData.pathDirectionToCC( new MapNavigation.Position( x, y ) );
                         if( direction != null )
                         {
                             mapGraphics.DrawImage( getArrow( (MapNavigation.Direction) direction, cellSize ), x * cellSize, y * cellSize, cellSize, cellSize );
@@ -449,17 +449,17 @@ namespace TABSAT
             Image map = new Bitmap( mapSize, mapSize );
             using( Graphics mapGraphics = Graphics.FromImage( map ) )
             {
-                int cells = mapData.CellsCount();
+                ushort cells = mapData.CellsCount();
                 int cellSize = mapSize / cells;
-                int quadRes = (int) Math.Pow( 2, navQuadsTrackBar.Value );
+                ushort quadRes = (ushort) Math.Pow( 2, navQuadsTrackBar.Value );
                 int maxPerQuad = quadRes * quadRes;
                 int quadSize = quadRes * cellSize;
-                for( int x = 0; x < cells; x += quadRes )
+                for( ushort x = 0; x < cells; x += quadRes )
                 {
-                    for( int y = 0; y < cells; y += quadRes )
+                    for( ushort y = 0; y < cells; y += quadRes )
                     {
                         var navCount = mapData.getNavigableCount( x, y, quadRes );
-                        var density = navCount * 255 / maxPerQuad;
+                        int density = navCount * 255 / maxPerQuad;
                         Brush densityBrush = new SolidBrush( Color.FromArgb( 0x3F, density, density, density ) );
                         mapGraphics.FillRectangle( densityBrush, x * cellSize, y * cellSize, quadSize, quadSize );
                     }
@@ -476,13 +476,13 @@ namespace TABSAT
                 Enum.TryParse( zombieComboBox.SelectedValue.ToString(), out LevelEntities.ScalableZombieGroups group );
                 var groups = new SortedSet<LevelEntities.ScalableZombieGroups>() { group };
 
-                int cells = mapData.CellsCount();
+                ushort cells = mapData.CellsCount();
                 int cellSize = mapSize / cells;
-                int quadRes = (int) Math.Pow( 2, zombieTrackBar.Value );
+                ushort quadRes = (ushort) Math.Pow( 2, zombieTrackBar.Value );
                 int quadSize = quadRes * cellSize;
-                for( int x = 0; x < cells; x += quadRes )
+                for( ushort x = 0; x < cells; x += quadRes )
                 {
-                    for( int y = 0; y < cells; y += quadRes )
+                    for( ushort y = 0; y < cells; y += quadRes )
                     {
                         var zCount = mapData.getZombieCount( x, y, quadRes, groups );
                         if( zCount > 0 )
@@ -501,7 +501,7 @@ namespace TABSAT
 
         private void drawSwarms( Graphics mapGraphics, in int mapSize )
         {
-            int cells = mapData.CellsCount();
+            ushort cells = mapData.CellsCount();
             int cellSize = mapSize / cells;
             var positions = mapData.getSwarmIconPositions();
             foreach( var p in positions )
@@ -512,7 +512,7 @@ namespace TABSAT
 
         private void drawVODs( Graphics mapGraphics, in int mapSize )
         {
-            int cells = mapData.CellsCount();
+            ushort cells = mapData.CellsCount();
             int cellSize = mapSize / cells;
             foreach( LevelEntities.VODTypes vodType in Enum.GetValues( typeof( LevelEntities.VODTypes ) ) )
             {
@@ -535,7 +535,7 @@ namespace TABSAT
                         case LevelEntities.VODTypes.DoomBuildingMedium:
                             corners = new Point[]{
                                 new Point( (p.x - 1) * cellSize, (p.y - 1) * cellSize ),
-                                new Point( (p.x + 2) * cellSize, (p.y - 1) * cellSize ),
+                                new Point( (p.x + 2) * cellSize, (p.y - 1) * cellSize),
                                 new Point( (p.x + 2) * cellSize, (p.y + 1) * cellSize ),
                                 new Point( (p.x + 1) * cellSize, (p.y + 2) * cellSize ),
                                 new Point( (p.x - 1) * cellSize, (p.y + 2) * cellSize )
@@ -559,7 +559,7 @@ namespace TABSAT
 
         private void drawHuge( Graphics mapGraphics, in int mapSize )
         {
-            int cells = mapData.CellsCount();
+            ushort cells = mapData.CellsCount();
             int cellSize = mapSize / cells;
             foreach( var hugeType in new LevelEntities.HugeTypes[] { LevelEntities.HugeTypes.Giant, LevelEntities.HugeTypes.Mutant } )  // This order so Mutants are on top and not obscured by Giants
             {
@@ -580,7 +580,7 @@ namespace TABSAT
 
         private void drawPickables( Graphics mapGraphics, in int mapSize )
         {
-            int cells = mapData.CellsCount();
+            ushort cells = mapData.CellsCount();
             int cellSize = mapSize / cells;
             foreach( LevelEntities.PickableTypes pickableType in Enum.GetValues( typeof( LevelEntities.PickableTypes ) ) )
             {
@@ -599,7 +599,7 @@ namespace TABSAT
 
         private void drawJoinables( Graphics mapGraphics, in int mapSize )
         {
-            int cells = mapData.CellsCount();
+            ushort cells = mapData.CellsCount();
             int cellSize = mapSize / cells;
             foreach( var joinableType in LevelEntities.joinableTypes )
             {
@@ -629,9 +629,9 @@ namespace TABSAT
                     arrowGraphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
                     Point[] points;
-                    var quarter = cellSize / 4;
-                    var half = cellSize / 2;
-                    var threeQuarters = cellSize - quarter;
+                    int quarter = cellSize / 4;
+                    int half = cellSize / 2;
+                    int threeQuarters = cellSize - quarter;
                     switch( direction )
                     {
                         case MapNavigation.Direction.NORTHEAST:
@@ -672,14 +672,14 @@ namespace TABSAT
             return arrow;
         }
 
-        private void drawGrid( in int cellSize, in int cells, Graphics mapGraphics )
+        private void drawGrid( in ushort cellSize, in ushort cells, Graphics mapGraphics )
         {
             Pen pen = new Pen( new SolidBrush( Color.FromArgb( 0x77, 0xFF, 0xFF, 0xFF ) ) );
-            for( int x = 1; x < cells; x++ )
+            for( ushort x = 1; x < cells; x++ )
             {
                 mapGraphics.DrawLine( pen, x * cellSize, 0, x * cellSize, cells * cellSize );
             }
-            for( int y = 1; y < cells; y++ )
+            for( ushort y = 1; y < cells; y++ )
             {
                 mapGraphics.DrawLine( pen, 0, y * cellSize, cells * cellSize, y * cellSize );
             }
