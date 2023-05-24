@@ -170,13 +170,13 @@ namespace TABSAT
                         areaText = "";
                         break;
                     case AreaChoices.Sections:
-                        areaText = " within sections: " + formatSections( sections );
+                        areaText = " within sections" + formatSections( sections );
                         break;
                     case AreaChoices.WithinRadius:
-                        areaText = " within cell range: " + radius;
+                        areaText = " within cell range " + radius;
                         break;
                     case AreaChoices.BeyondRadius:
-                        areaText = " beyond cell range: " + radius;
+                        areaText = " beyond cell range " + radius;
                         break;
                     default:
                         throw new NotImplementedException( "Unimplemented choice: " + area );
@@ -184,9 +184,12 @@ namespace TABSAT
                 statusWriter( String.Format( text, areaText ) );
             }
 
-            void logScale( String name, AreaChoices area, Byte sections, Byte radius, Byte scale )
+            void logScale( String name, AreaChoices area, Byte sections, Byte radius, Byte scale, bool scaleOverride = false )
             {
-                log( "Scaling " + name + ( scale == 100 ? " per type" : " {0}" + scale + "% {0}" ), area, sections, radius );
+                if( scale != 100U || scaleOverride )
+                {
+                    log( "Scaling " + name + ( scale == 100 ? " per type{0}" : " " + scale + "%{0}." ), area, sections, radius );
+                }
             }
 
             try
@@ -204,7 +207,7 @@ namespace TABSAT
                     }
                     else if( choices.ScalableZombieGroupFactors.Any() )
                     {
-                        logScale( "Zombie population", choices.PopulationArea, choices.PopulationSections, choices.PopulationRadius, popScale );
+                        logScale( "Zombie population", choices.PopulationArea, choices.PopulationSections, choices.PopulationRadius, popScale, true );
                         dataEditor.scalePopulation( choices.ScalableZombieGroupFactors, choices.ScaleIdle, choices.ScaleActive, popArea );
                     }
                     logScale( "Giant population", choices.PopulationArea, choices.PopulationSections, choices.PopulationRadius, choices.GiantScale );
@@ -313,15 +316,15 @@ namespace TABSAT
                         }
                         break;
                     case AreaChoices.Sections:
-                        statusWriter( "Removing the fog within sections:" + formatSections( choices.FogSections ) );
+                        statusWriter( "Removing the fog within sections" + formatSections( choices.FogSections ) + '.' );
                         dataEditor.removeFogSections( choices.FogSections );
                         break;
                     case AreaChoices.WithinRadius:
-                        statusWriter( "Removing the fog within cell range: " + choices.FogRadius );
+                        statusWriter( "Removing the fog within cell range " + choices.FogRadius + '.' );
                         dataEditor.removeFog( choices.FogRadius, true );
                         break;
                     case AreaChoices.BeyondRadius:
-                        statusWriter( "Removing the fog beyond cell range: " + choices.FogRadius );
+                        statusWriter( "Removing the fog beyond cell range " + choices.FogRadius + '.' );
                         dataEditor.removeFog( choices.FogRadius );
                         break;
                     default:
@@ -395,7 +398,7 @@ namespace TABSAT
                 sb.Append( " W" );
             }
 
-            sb.Append( " M" );
+            sb.Append( " C" );
 
             if( MapNavigation.containsDirection( sections, MapNavigation.Direction.EAST ) )
             {
@@ -414,8 +417,6 @@ namespace TABSAT
             {
                 sb.Append( " SE" );
             }
-
-            sb.Append( "." );
 
             return sb.ToString();
         }
