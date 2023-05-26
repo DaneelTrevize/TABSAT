@@ -292,11 +292,6 @@ namespace TABSAT
             return getComplexItemOfType( getComponents( entity.Element( "Complex" ) ), CMOVABLE_TYPE );
         }
 
-        private static XAttribute getPosition( XElement entity )
-        {
-            return SaveReader.getValueAttOfSimpleProp( entity.Element( "Complex" ), "Position" );
-        }
-
         private static XElement getComplexItemOfType( XElement components, string type, bool assumeExists = true )
         {
             var i = ( from c in components.Element( "Items" ).Elements( "Complex" )
@@ -369,6 +364,16 @@ namespace TABSAT
         {
             levelEntitiesItems.Add( copy );
             trackEntity( copy );
+        }
+
+        internal MapNavigation.Position GetPosition( in UInt64 id )
+        {
+            if( !IDsToItems.TryGetValue( id, out XElement entity ) )
+            {
+                return null;
+            }
+            SaveReader.extractCoordinates( entity, out ushort x, out ushort y );
+            return new MapNavigation.Position( x, y );
         }
 
         private void Remove( in UInt64 id )
@@ -551,6 +556,11 @@ namespace TABSAT
             XElement currentMovableTargetPosition = SaveReader.getFirstSimplePropertyNamed( getMovable( fromEntity ), "TargetPosition" );
             // 3
             XElement currentLastDestinyProcessed = SaveReader.getFirstSimplePropertyNamed( getMovable( fromEntity ), "LastDestinyProcessed" );
+
+            XAttribute getPosition( XElement entity )
+            {
+                return SaveReader.getValueAttOfSimpleProp( entity.Element( "Complex" ), "Position" );
+            }
 
             string toPositionString = (string) getPosition( toEntity );
 

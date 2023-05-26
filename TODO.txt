@@ -1,14 +1,20 @@
 
 2023 interests:
 
+Reconsider modifySave() and other uses of StatusWriterDelegate, to batch via StringBuilder before a single BeginInvoke() on the UI thread.
+
+Implement a less naive removeFogSections().
+Improve fog-removal to modify existing data rather than reset to clear array first.
+
 Summarise whether maps are worth continuing, without showing the layout.
 Count total pathable land, food, zombies? Chart them at each radius from CC? Summary in a starting radius?
 Assess values such as NEntitesCreatedPerTemplate, NSoldiersDead, EntitiesDeadByTemplate, to determine which achievements may still accomplished.
 
 Map Viewer:
-  Swarm zombies, colour-coded per swarm, or dynamically generate checkboxes per swarm icon/set?
+  Colour-coded zombies per swarm, or dynamically generate checkboxes per swarm icon/set?
   Show friendly units & buildings?
-  Differentiate types by colour?
+
+Set VOD building zombie spawn depletion % (x of max count per building type).
 
 Offer to remove all zombies that are:
   Visible/not under fog as was last updated.

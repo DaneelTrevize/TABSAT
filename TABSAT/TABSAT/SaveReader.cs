@@ -21,12 +21,14 @@ namespace TABSAT
         SaveReader.ItemInArea getItemInArea( ModifyChoices.AreaChoices area, byte sections, byte radius );
         SaveReader.InArea getInArea( ModifyChoices.AreaChoices area, byte sections, byte radius );
         ushort getNavigableCount( in ushort x, in ushort y, in ushort res );
-        ushort getZombieCount( in ushort x, in ushort y, in ushort res, SortedSet<LevelEntities.ScalableZombieGroups> groups );
+        //ushort getZombieCount( in ushort x, in ushort y, in ushort res, SortedSet<LevelEntities.ScalableZombieGroups> groups );
+        LinkedList<MapNavigation.Position> getZombiePositions( in LevelEntities.ScalableZombieGroups group );
         LinkedList<MapNavigation.Position> getVodPositions( in LevelEntities.VODTypes vodType );
         LinkedList<MapNavigation.Position> getHugePositions( in LevelEntities.HugeTypes vodType );
         LinkedList<MapNavigation.Position> getPickablePositions( in LevelEntities.PickableTypes pickableType );
         LinkedList<MapNavigation.Position> getJoinablePositions( in LevelEntities.GiftableTypes joinableType );
         LinkedList<MapNavigation.Position> getSwarmIconPositions();
+        LinkedList<MapNavigation.Position> getSwarmZombiePositions();
     }
 
     internal class Swarm
@@ -53,13 +55,32 @@ namespace TABSAT
               </Properties>
             </Complex>
         */
-        private readonly SortedSet<UInt64> zombies;
         internal readonly MapNavigation.Position position;
+        private readonly SortedSet<UInt64> zombies;
+        private LinkedList<MapNavigation.Position> zombiePositions;
 
-        internal Swarm( SortedSet<UInt64> z, MapNavigation.Position p  )
+        internal Swarm( MapNavigation.Position p, SortedSet<UInt64> z )
         {
-            zombies = z;
             position = p;
+            zombies = z;
+            zombiePositions = null;
+        }
+
+        internal LinkedList<MapNavigation.Position> getZombiePositions( LevelEntities entities )
+        {
+            if( zombiePositions == null )
+            {
+                zombiePositions = new LinkedList<MapNavigation.Position>();
+                foreach( var z in zombies )
+                {
+                    var pos = entities.GetPosition( z );
+                    if( pos != null )
+                    {
+                        zombiePositions.AddLast( pos );
+                    }
+                }
+            }
+            return zombiePositions;
         }
 
         static internal LinkedList<Swarm> GetSwarms( XElement levelComplex )
@@ -80,7 +101,7 @@ namespace TABSAT
                     var cell = SaveReader.getFirstSimplePropertyNamed( iconItem, "Cell" );
                     SaveReader.extractUShorts( cell, out ushort x, out ushort y );
 
-                    var swarm = new Swarm( zombies, new MapNavigation.Position( x, y ) );
+                    var swarm = new Swarm( new MapNavigation.Position( x, y ), zombies );
                     swarms.AddLast( swarm );
                 }
             }
@@ -282,14 +303,14 @@ namespace TABSAT
         private XElement extension;
         private XElement mapDrawer;
         private XElement extrasItems;
-        private readonly LinkedList<Swarm> swarms;  // Lazy-init..?
+        private LinkedList<Swarm> swarms;
 
         private readonly Regex layerDataRegex;
         private readonly SortedDictionary<MapLayers, LayerData> layerDataCache;
 
         private MapNavigation.FlowGraph flowGraph;
         private MapNavigation.IntQuadTree navQuadTree;
-        private SortedDictionary<LevelEntities.ScalableZombieTypes, MapNavigation.IntQuadTree> popQuadTrees;
+        //private SortedDictionary<LevelEntities.ScalableZombieTypes, MapNavigation.IntQuadTree> popQuadTrees;
         private readonly SortedDictionary<UInt64, LinkedList<MapNavigation.Position>> entityTypeToPositions;
         private readonly SortedDictionary<LevelEntities.GiftableTypes, LinkedList<MapNavigation.Position>> joinablePositions;
 
@@ -380,14 +401,12 @@ namespace TABSAT
 
             entities = new LevelEntities( levelComplex );
 
-            swarms = Swarm.GetSwarms( levelComplex );
-
             layerDataRegex = new Regex( @"(?:\d+\|){2}(?<data>.+)", RegexOptions.Compiled );    //value="256|256|AAAA..."
             layerDataCache = new SortedDictionary<MapLayers, LayerData>();
 
             flowGraph = null;
             navQuadTree = null;
-            popQuadTrees = null;
+            //popQuadTrees = null;
             entityTypeToPositions = new SortedDictionary<UInt64, LinkedList<MapNavigation.Position>>();
             joinablePositions = new SortedDictionary<LevelEntities.GiftableTypes, LinkedList<MapNavigation.Position>>();
         }
@@ -688,7 +707,7 @@ namespace TABSAT
         {
             return getNavQuadTree().getCount( x, y, res );
         }
-
+        /*
         public ushort getZombieCount( in ushort x, in ushort y, in ushort res, SortedSet<LevelEntities.ScalableZombieGroups> groups )
         {
             ushort count = 0;
@@ -702,7 +721,19 @@ namespace TABSAT
             }
             return count;
         }
-
+        */
+        public LinkedList<MapNavigation.Position> getZombiePositions( in LevelEntities.ScalableZombieGroups group )
+        {
+            var positions = new LinkedList<MapNavigation.Position>();
+            foreach( LevelEntities.ScalableZombieTypes type in LevelEntities.scalableZombieTypeGroups[group] )
+            {
+                foreach( var pos in getPositions( (UInt64) type ) )
+                {
+                    positions.AddLast( pos );
+                }
+            }
+            return positions;
+        }
         public LinkedList<MapNavigation.Position> getVodPositions( in LevelEntities.VODTypes vodType )
         {
             UInt64 entityType = (UInt64) vodType;
@@ -766,7 +797,7 @@ namespace TABSAT
             }
             return navQuadTree;
         }
-
+        /*
         private SortedDictionary<LevelEntities.ScalableZombieTypes, MapNavigation.IntQuadTree> getPopQuadTrees()
         {
             if( popQuadTrees == null )
@@ -776,7 +807,7 @@ namespace TABSAT
             }
             return popQuadTrees;
         }
-
+        */
         private void populateNavQuadTree()
         {
             //            <Simple name="PlayableArea" value="54;54;148;148" />
@@ -812,7 +843,7 @@ namespace TABSAT
                 }
             }
         }
-
+        /*
         private void populatePopQuadTree()
         {
             foreach( LevelEntities.ScalableZombieTypes zombieType in Enum.GetValues( typeof( LevelEntities.ScalableZombieTypes ) ) )
@@ -848,16 +879,38 @@ namespace TABSAT
                 }
             }
         }
-
+        */
         private void populatePositions( in UInt64 entityType )
         {
             var positions = new LinkedList<MapNavigation.Position>();
+
+            // First check active level entities
             IEnumerable<XElement> items = entities.getEntitiesOfType( entityType );
             foreach( var item in items )
             {
                 extractCoordinates( item, out ushort x, out ushort y );
                 positions.AddLast( new MapNavigation.Position( x, y ) );
             }
+
+            // That was active level entities, how about inactive zombies?
+            foreach( var t in getInactiveZombieItems() )
+            {
+                UInt64 zombieType = Convert.ToUInt64( t.Element( "Simple" ).Attribute( "value" ).Value );
+                if( zombieType == entityType )
+                {
+                    var col = t.Element( "Collection" );
+                    foreach( var com in col.Element( "Items" ).Elements( "Complex" ) )
+                    {
+                        // Get zombie coordinates, convert to ints/position, add to quadtree
+                        extractCoordinates( com, out ushort p_x, out ushort p_y, true, "B" );
+                        positions.AddLast( new MapNavigation.Position( p_x, p_y ) );
+                    }
+                    break;
+                }
+            }
+
+            // What about extra entities..?
+
             entityTypeToPositions.Add( entityType, positions );
         }
         
@@ -877,12 +930,35 @@ namespace TABSAT
             entityTypeToPositions.Add( impassibleTypeID, positions );
         }
 
-        LinkedList<MapNavigation.Position> MapData.getSwarmIconPositions()
+        private LinkedList<Swarm> GetSwarms()
+        {
+            if( swarms == null )
+            {
+                swarms = Swarm.GetSwarms( levelComplex );
+            }
+            return swarms;
+        }
+
+        public LinkedList<MapNavigation.Position> getSwarmIconPositions()
         {
             var positions = new LinkedList<MapNavigation.Position>();
-            foreach( var swarm in swarms )
+            foreach( var swarm in GetSwarms() )
             {
                 positions.AddLast( swarm.position );
+            }
+            return positions;
+        }
+
+        public LinkedList<MapNavigation.Position> getSwarmZombiePositions()
+        {
+            var positions = new LinkedList<MapNavigation.Position>();
+            foreach( var swarm in GetSwarms() )
+            {
+                var pos = swarm.getZombiePositions( entities );
+                foreach( var p in pos )
+                {
+                    positions.AddLast( p );
+                }
             }
             return positions;
         }

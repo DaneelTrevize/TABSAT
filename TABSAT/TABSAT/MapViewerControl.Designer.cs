@@ -32,11 +32,6 @@
             this.mapPictureBox = new System.Windows.Forms.PictureBox();
             this.mapPanel = new System.Windows.Forms.Panel();
             this.layersGroupBox = new System.Windows.Forms.GroupBox();
-            this.swarmsCheckBox = new System.Windows.Forms.CheckBox();
-            this.zombieComboBox = new System.Windows.Forms.ComboBox();
-            this.zombieLabel = new System.Windows.Forms.Label();
-            this.zombieCheckBox = new System.Windows.Forms.CheckBox();
-            this.zombieTrackBar = new System.Windows.Forms.TrackBar();
             this.navQuadLabel = new System.Windows.Forms.Label();
             this.navQuadsTrackBar = new System.Windows.Forms.TrackBar();
             this.navQuadsCheckBox = new System.Windows.Forms.CheckBox();
@@ -46,6 +41,7 @@
             this.fogCheckBox = new System.Windows.Forms.CheckBox();
             this.terrainCheckBox = new System.Windows.Forms.CheckBox();
             this.distanceCheckBox = new System.Windows.Forms.CheckBox();
+            this.swarmIsCheckBox = new System.Windows.Forms.CheckBox();
             this.gridCheckBox = new System.Windows.Forms.CheckBox();
             this.zoomLabel = new System.Windows.Forms.Label();
             this.rotateCheckBox = new System.Windows.Forms.CheckBox();
@@ -55,14 +51,22 @@
             this.pickablesCheckBox = new System.Windows.Forms.CheckBox();
             this.removablesGroupBox = new System.Windows.Forms.GroupBox();
             this.joinableCheckBox = new System.Windows.Forms.CheckBox();
+            this.zombiesGroupBox = new System.Windows.Forms.GroupBox();
+            this.swarmZsCheckBox = new System.Windows.Forms.CheckBox();
+            this.venomCheckBox = new System.Windows.Forms.CheckBox();
+            this.harpyCheckBox = new System.Windows.Forms.CheckBox();
+            this.strongCheckBox = new System.Windows.Forms.CheckBox();
+            this.dressedCheckBox = new System.Windows.Forms.CheckBox();
+            this.mediumCheckBox = new System.Windows.Forms.CheckBox();
+            this.weakCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).BeginInit();
             this.mapPanel.SuspendLayout();
             this.layersGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.zombieTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.navQuadsTrackBar)).BeginInit();
             this.optionsGroupBox.SuspendLayout();
             this.removablesGroupBox.SuspendLayout();
+            this.zombiesGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // zoomTrackBar
@@ -104,11 +108,6 @@
             // layersGroupBox
             // 
             this.layersGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.layersGroupBox.Controls.Add(this.swarmsCheckBox);
-            this.layersGroupBox.Controls.Add(this.zombieComboBox);
-            this.layersGroupBox.Controls.Add(this.zombieLabel);
-            this.layersGroupBox.Controls.Add(this.zombieCheckBox);
-            this.layersGroupBox.Controls.Add(this.zombieTrackBar);
             this.layersGroupBox.Controls.Add(this.navQuadLabel);
             this.layersGroupBox.Controls.Add(this.navQuadsTrackBar);
             this.layersGroupBox.Controls.Add(this.navQuadsCheckBox);
@@ -120,64 +119,10 @@
             this.layersGroupBox.Controls.Add(this.distanceCheckBox);
             this.layersGroupBox.Location = new System.Drawing.Point(1053, 12);
             this.layersGroupBox.Name = "layersGroupBox";
-            this.layersGroupBox.Size = new System.Drawing.Size(110, 535);
+            this.layersGroupBox.Size = new System.Drawing.Size(110, 318);
             this.layersGroupBox.TabIndex = 3;
             this.layersGroupBox.TabStop = false;
             this.layersGroupBox.Text = "Show Layers";
-            // 
-            // swarmsCheckBox
-            // 
-            this.swarmsCheckBox.AutoSize = true;
-            this.swarmsCheckBox.Checked = true;
-            this.swarmsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.swarmsCheckBox.Location = new System.Drawing.Point(6, 512);
-            this.swarmsCheckBox.Name = "swarmsCheckBox";
-            this.swarmsCheckBox.Size = new System.Drawing.Size(63, 17);
-            this.swarmsCheckBox.TabIndex = 14;
-            this.swarmsCheckBox.Text = "Swarms";
-            this.swarmsCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // zombieComboBox
-            // 
-            this.zombieComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.zombieComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.zombieComboBox.FormattingEnabled = true;
-            this.zombieComboBox.Location = new System.Drawing.Point(6, 344);
-            this.zombieComboBox.Name = "zombieComboBox";
-            this.zombieComboBox.Size = new System.Drawing.Size(82, 21);
-            this.zombieComboBox.TabIndex = 13;
-            // 
-            // zombieLabel
-            // 
-            this.zombieLabel.AutoSize = true;
-            this.zombieLabel.Location = new System.Drawing.Point(42, 419);
-            this.zombieLabel.Name = "zombieLabel";
-            this.zombieLabel.Size = new System.Drawing.Size(42, 39);
-            this.zombieLabel.TabIndex = 12;
-            this.zombieLabel.Text = "Zombie\r\nQuad\r\nZoom";
-            // 
-            // zombieCheckBox
-            // 
-            this.zombieCheckBox.AutoSize = true;
-            this.zombieCheckBox.Location = new System.Drawing.Point(6, 321);
-            this.zombieCheckBox.Name = "zombieCheckBox";
-            this.zombieCheckBox.Size = new System.Drawing.Size(66, 17);
-            this.zombieCheckBox.TabIndex = 11;
-            this.zombieCheckBox.Text = "Zombies";
-            this.zombieCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // zombieTrackBar
-            // 
-            this.zombieTrackBar.LargeChange = 2;
-            this.zombieTrackBar.Location = new System.Drawing.Point(6, 371);
-            this.zombieTrackBar.Maximum = 7;
-            this.zombieTrackBar.Minimum = 1;
-            this.zombieTrackBar.Name = "zombieTrackBar";
-            this.zombieTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.zombieTrackBar.Size = new System.Drawing.Size(45, 135);
-            this.zombieTrackBar.SmallChange = 6;
-            this.zombieTrackBar.TabIndex = 10;
-            this.zombieTrackBar.Value = 3;
             // 
             // navQuadLabel
             // 
@@ -278,6 +223,18 @@
             this.distanceCheckBox.Text = "Distance";
             this.distanceCheckBox.UseVisualStyleBackColor = true;
             // 
+            // swarmIsCheckBox
+            // 
+            this.swarmIsCheckBox.AutoSize = true;
+            this.swarmIsCheckBox.Checked = true;
+            this.swarmIsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.swarmIsCheckBox.Location = new System.Drawing.Point(6, 158);
+            this.swarmIsCheckBox.Name = "swarmIsCheckBox";
+            this.swarmIsCheckBox.Size = new System.Drawing.Size(87, 17);
+            this.swarmIsCheckBox.TabIndex = 14;
+            this.swarmIsCheckBox.Text = "Swarm Icons";
+            this.swarmIsCheckBox.UseVisualStyleBackColor = true;
+            // 
             // gridCheckBox
             // 
             this.gridCheckBox.AutoSize = true;
@@ -337,7 +294,7 @@
             this.hugeCheckBox.AutoSize = true;
             this.hugeCheckBox.Checked = true;
             this.hugeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.hugeCheckBox.Location = new System.Drawing.Point(6, 42);
+            this.hugeCheckBox.Location = new System.Drawing.Point(6, 204);
             this.hugeCheckBox.Name = "hugeCheckBox";
             this.hugeCheckBox.Size = new System.Drawing.Size(95, 17);
             this.hugeCheckBox.TabIndex = 7;
@@ -349,7 +306,7 @@
             this.pickablesCheckBox.AutoSize = true;
             this.pickablesCheckBox.Checked = true;
             this.pickablesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.pickablesCheckBox.Location = new System.Drawing.Point(6, 65);
+            this.pickablesCheckBox.Location = new System.Drawing.Point(6, 42);
             this.pickablesCheckBox.Name = "pickablesCheckBox";
             this.pickablesCheckBox.Size = new System.Drawing.Size(72, 17);
             this.pickablesCheckBox.TabIndex = 8;
@@ -362,10 +319,9 @@
             this.removablesGroupBox.Controls.Add(this.joinableCheckBox);
             this.removablesGroupBox.Controls.Add(this.vodsCheckBox);
             this.removablesGroupBox.Controls.Add(this.pickablesCheckBox);
-            this.removablesGroupBox.Controls.Add(this.hugeCheckBox);
-            this.removablesGroupBox.Location = new System.Drawing.Point(1053, 553);
+            this.removablesGroupBox.Location = new System.Drawing.Point(1053, 572);
             this.removablesGroupBox.Name = "removablesGroupBox";
-            this.removablesGroupBox.Size = new System.Drawing.Size(110, 111);
+            this.removablesGroupBox.Size = new System.Drawing.Size(110, 92);
             this.removablesGroupBox.TabIndex = 9;
             this.removablesGroupBox.TabStop = false;
             this.removablesGroupBox.Text = "Show Removables";
@@ -375,17 +331,107 @@
             this.joinableCheckBox.AutoSize = true;
             this.joinableCheckBox.Checked = true;
             this.joinableCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.joinableCheckBox.Location = new System.Drawing.Point(6, 88);
+            this.joinableCheckBox.Location = new System.Drawing.Point(6, 65);
             this.joinableCheckBox.Name = "joinableCheckBox";
             this.joinableCheckBox.Size = new System.Drawing.Size(65, 17);
             this.joinableCheckBox.TabIndex = 9;
             this.joinableCheckBox.Text = "Neutrals";
             this.joinableCheckBox.UseVisualStyleBackColor = true;
             // 
+            // zombiesGroupBox
+            // 
+            this.zombiesGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.zombiesGroupBox.Controls.Add(this.swarmZsCheckBox);
+            this.zombiesGroupBox.Controls.Add(this.venomCheckBox);
+            this.zombiesGroupBox.Controls.Add(this.harpyCheckBox);
+            this.zombiesGroupBox.Controls.Add(this.hugeCheckBox);
+            this.zombiesGroupBox.Controls.Add(this.strongCheckBox);
+            this.zombiesGroupBox.Controls.Add(this.dressedCheckBox);
+            this.zombiesGroupBox.Controls.Add(this.mediumCheckBox);
+            this.zombiesGroupBox.Controls.Add(this.weakCheckBox);
+            this.zombiesGroupBox.Controls.Add(this.swarmIsCheckBox);
+            this.zombiesGroupBox.Location = new System.Drawing.Point(1053, 336);
+            this.zombiesGroupBox.Name = "zombiesGroupBox";
+            this.zombiesGroupBox.Size = new System.Drawing.Size(110, 230);
+            this.zombiesGroupBox.TabIndex = 10;
+            this.zombiesGroupBox.TabStop = false;
+            this.zombiesGroupBox.Text = "Show Zombies";
+            // 
+            // swarmZsCheckBox
+            // 
+            this.swarmZsCheckBox.AutoSize = true;
+            this.swarmZsCheckBox.Location = new System.Drawing.Point(6, 181);
+            this.swarmZsCheckBox.Name = "swarmZsCheckBox";
+            this.swarmZsCheckBox.Size = new System.Drawing.Size(101, 17);
+            this.swarmZsCheckBox.TabIndex = 21;
+            this.swarmZsCheckBox.Text = "Swarm Zombies";
+            this.swarmZsCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // venomCheckBox
+            // 
+            this.venomCheckBox.AutoSize = true;
+            this.venomCheckBox.Location = new System.Drawing.Point(6, 135);
+            this.venomCheckBox.Name = "venomCheckBox";
+            this.venomCheckBox.Size = new System.Drawing.Size(59, 17);
+            this.venomCheckBox.TabIndex = 20;
+            this.venomCheckBox.Text = "Venom";
+            this.venomCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // harpyCheckBox
+            // 
+            this.harpyCheckBox.AutoSize = true;
+            this.harpyCheckBox.Location = new System.Drawing.Point(6, 111);
+            this.harpyCheckBox.Name = "harpyCheckBox";
+            this.harpyCheckBox.Size = new System.Drawing.Size(54, 17);
+            this.harpyCheckBox.TabIndex = 19;
+            this.harpyCheckBox.Text = "Harpy";
+            this.harpyCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // strongCheckBox
+            // 
+            this.strongCheckBox.AutoSize = true;
+            this.strongCheckBox.Location = new System.Drawing.Point(6, 88);
+            this.strongCheckBox.Name = "strongCheckBox";
+            this.strongCheckBox.Size = new System.Drawing.Size(57, 17);
+            this.strongCheckBox.TabIndex = 18;
+            this.strongCheckBox.Text = "Strong";
+            this.strongCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // dressedCheckBox
+            // 
+            this.dressedCheckBox.AutoSize = true;
+            this.dressedCheckBox.Location = new System.Drawing.Point(6, 65);
+            this.dressedCheckBox.Name = "dressedCheckBox";
+            this.dressedCheckBox.Size = new System.Drawing.Size(65, 17);
+            this.dressedCheckBox.TabIndex = 17;
+            this.dressedCheckBox.Text = "Dressed";
+            this.dressedCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // mediumCheckBox
+            // 
+            this.mediumCheckBox.AutoSize = true;
+            this.mediumCheckBox.Location = new System.Drawing.Point(6, 42);
+            this.mediumCheckBox.Name = "mediumCheckBox";
+            this.mediumCheckBox.Size = new System.Drawing.Size(63, 17);
+            this.mediumCheckBox.TabIndex = 16;
+            this.mediumCheckBox.Text = "Medium";
+            this.mediumCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // weakCheckBox
+            // 
+            this.weakCheckBox.AutoSize = true;
+            this.weakCheckBox.Location = new System.Drawing.Point(6, 19);
+            this.weakCheckBox.Name = "weakCheckBox";
+            this.weakCheckBox.Size = new System.Drawing.Size(55, 17);
+            this.weakCheckBox.TabIndex = 15;
+            this.weakCheckBox.Text = "Weak";
+            this.weakCheckBox.UseVisualStyleBackColor = true;
+            // 
             // MapViewerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.zombiesGroupBox);
             this.Controls.Add(this.removablesGroupBox);
             this.Controls.Add(this.optionsGroupBox);
             this.Controls.Add(this.layersGroupBox);
@@ -400,12 +446,13 @@
             this.mapPanel.PerformLayout();
             this.layersGroupBox.ResumeLayout(false);
             this.layersGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.zombieTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.navQuadsTrackBar)).EndInit();
             this.optionsGroupBox.ResumeLayout(false);
             this.optionsGroupBox.PerformLayout();
             this.removablesGroupBox.ResumeLayout(false);
             this.removablesGroupBox.PerformLayout();
+            this.zombiesGroupBox.ResumeLayout(false);
+            this.zombiesGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -429,15 +476,19 @@
         private System.Windows.Forms.CheckBox navQuadsCheckBox;
         private System.Windows.Forms.TrackBar navQuadsTrackBar;
         private System.Windows.Forms.Label navQuadLabel;
-        private System.Windows.Forms.Label zombieLabel;
-        private System.Windows.Forms.CheckBox zombieCheckBox;
-        private System.Windows.Forms.TrackBar zombieTrackBar;
-        private System.Windows.Forms.ComboBox zombieComboBox;
         private System.Windows.Forms.CheckBox vodsCheckBox;
         private System.Windows.Forms.CheckBox hugeCheckBox;
         private System.Windows.Forms.CheckBox pickablesCheckBox;
         private System.Windows.Forms.GroupBox removablesGroupBox;
         private System.Windows.Forms.CheckBox joinableCheckBox;
-        private System.Windows.Forms.CheckBox swarmsCheckBox;
+        private System.Windows.Forms.CheckBox swarmIsCheckBox;
+        private System.Windows.Forms.GroupBox zombiesGroupBox;
+        private System.Windows.Forms.CheckBox swarmZsCheckBox;
+        private System.Windows.Forms.CheckBox venomCheckBox;
+        private System.Windows.Forms.CheckBox harpyCheckBox;
+        private System.Windows.Forms.CheckBox strongCheckBox;
+        private System.Windows.Forms.CheckBox dressedCheckBox;
+        private System.Windows.Forms.CheckBox mediumCheckBox;
+        private System.Windows.Forms.CheckBox weakCheckBox;
     }
 }

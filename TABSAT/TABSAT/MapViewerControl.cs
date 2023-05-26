@@ -17,11 +17,17 @@ namespace TABSAT
         private static readonly SortedDictionary<MapLayers, SortedDictionary<byte, Brush>> layersBrushes;
         private static readonly Brush unknown = new SolidBrush( Color.HotPink );
         private static readonly Brush arrowBrush = new SolidBrush( Color.White );
-        private static readonly Brush ccBrush = new SolidBrush( Color.FromArgb( 0xAF, 0x00, 0x3F, 0xFF ) );
-        private static readonly Brush swarmBrush = new SolidBrush( Color.FromArgb( 0x7F, 0xFF, 0xFF, 0x00 ) );
-        private static readonly Brush vodBrush = new SolidBrush( Color.FromArgb( 0xAF, 0xFF, 0x7F, 0x00 ) );
-        private static readonly Brush mutantBrush = new SolidBrush( Color.FromArgb( 0xDF, 0xBF, 0x00, 0xFF ) );
-        private static readonly Brush giantBrush = new SolidBrush( Color.FromArgb( 0xDF, 0x3F, 0xBF, 0x9F ) );
+        private static readonly Brush ccBrush = new SolidBrush( Color.FromArgb( 0xBF, 0x00, 0x3F, 0xFF ) );
+        private static readonly Brush weakBrush = new SolidBrush( Color.FromArgb( 0xAF, 0xDF, 0xBF, 0x5F ) );
+        private static readonly Brush mediumBrush = new SolidBrush( Color.FromArgb( 0xAF, 0xDF, 0x5F, 0x00 ) );
+        private static readonly Brush dressedBrush = new SolidBrush( Color.FromArgb( 0xAF, 0xAF, 0x0F, 0x0F ) );
+        private static readonly Brush strongBrush = new SolidBrush( Color.FromArgb( 0xDF, 0x1F, 0x3F, 0xBF ) );
+        private static readonly Brush harpyBrush = new SolidBrush( Color.FromArgb( 0xDF, 0xDF, 0x00, 0xFF ) );
+        private static readonly Brush venomBrush = new SolidBrush( Color.FromArgb( 0xDF, 0x1F, 0xAF, 0x9F ) );
+        private static readonly Brush swarmBrush = new SolidBrush( Color.FromArgb( 0x7F, 0xFF, 0xBF, 0x00 ) );
+        private static readonly Brush vodBrush = new SolidBrush( Color.FromArgb( 0xBF, 0xFF, 0xDF, 0x1F ) );
+        private static readonly Brush mutantBrush = new SolidBrush( Color.FromArgb( 0xEF, 0xFF, 0x0F, 0x3F ) );
+        private static readonly Brush giantBrush = new SolidBrush( Color.FromArgb( 0xEF, 0x1F, 0xAF, 0x1F ) );
         private static readonly Brush pickableBrush = new SolidBrush( Color.FromArgb( 0xDF, 0x00, 0xFF, 0x0F ) );
         private static readonly Brush joinableBrush = new SolidBrush( Color.FromArgb( 0xFF, 0xFF, 0xBF, 0x00 ) );
         private static readonly Pen redPen = new Pen( Color.FromArgb( 0x7F, 0xFF, 0x00, 0x00 ) );
@@ -37,7 +43,12 @@ namespace TABSAT
             Distance,
             Direction,
             NavQuads,
-            ZombieQuads
+            WeakZombies,
+            MediumZombies,
+            DressedZombies,
+            StrongZombies,
+            HarpyZombies,
+            VenomZombies
         }
 
         static MapViewerControl()
@@ -109,35 +120,41 @@ namespace TABSAT
             {
                 fogCheckBox.Checked = false;
                 navQuadsCheckBox.Checked = false;
+                mediumCheckBox.Checked = true;
+                dressedCheckBox.Checked = true;
+                harpyCheckBox.Checked = true;
+                venomCheckBox.Checked = true;
+                swarmZsCheckBox.Checked = true;
                 vodsCheckBox.Checked = true;
             }
 
-            zoomTrackBar.ValueChanged += new EventHandler( zoomTrackBar_ValueChanged );
-            terrainCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-            fogCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-            activityCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-            navigableCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-            distanceCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-            directionCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-            navQuadsCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-            navQuadsTrackBar.ValueChanged += new EventHandler( navQuadsTrackBar_ValueChanged );
+            zoomTrackBar.ValueChanged += zoomTrackBar_ValueChanged;
+            terrainCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            fogCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            activityCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            navigableCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            distanceCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            directionCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            navQuadsCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            navQuadsTrackBar.ValueChanged += navQuadsTrackBar_ValueChanged;
 
-            zombieComboBox.DataSource = Enum.GetValues( typeof( LevelEntities.ScalableZombieGroups ) );
-            zombieComboBox.SelectedIndex = 5;   // Harpies
-            zombieComboBox.SelectedIndexChanged += new EventHandler( zombieComboBox_SelectedIndexChanged );
+            weakCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            mediumCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            dressedCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            strongCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            harpyCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            venomCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
 
-            zombieCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-            zombieTrackBar.ValueChanged += new EventHandler( zombieTrackBar_ValueChanged );
+            swarmIsCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            swarmZsCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
 
-            swarmsCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
+            vodsCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            hugeCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            pickablesCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            joinableCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
 
-            vodsCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-            hugeCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-            pickablesCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-            joinableCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-
-            gridCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
-            rotateCheckBox.CheckedChanged += new EventHandler( layersCheckBox_CheckedChanged );
+            gridCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
+            rotateCheckBox.CheckedChanged += layersCheckBox_CheckedChanged;
 
             updateMapImage( zoomTrackBar.Value );
         }
@@ -158,23 +175,6 @@ namespace TABSAT
             clearCache( ViewLayer.NavQuads );
 
             if( navQuadsCheckBox.Checked )
-            {
-                updateMapImage( zoomTrackBar.Value );
-            }
-        }
-
-        private void zombieComboBox_SelectedIndexChanged( object sender, EventArgs e )
-        {
-            clearCache( ViewLayer.ZombieQuads );
-
-            updateMapImage( zoomTrackBar.Value );
-        }
-
-        private void zombieTrackBar_ValueChanged( object sender, EventArgs e )
-        {
-            clearCache( ViewLayer.ZombieQuads );
-
-            if( zombieCheckBox.Checked )
             {
                 updateMapImage( zoomTrackBar.Value );
             }
@@ -237,19 +237,43 @@ namespace TABSAT
                     mapGraphics.DrawImage( getCachedImage( ViewLayer.NavQuads, cellSize, mapSize ), 0, 0, mapSize, mapSize );
                 }
 
-                if( zombieCheckBox.Checked )
+                if( weakCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.ZombieQuads, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.WeakZombies, cellSize, mapSize ), 0, 0, mapSize, mapSize );
                 }
-
-                if( swarmsCheckBox.Checked )
+                if( mediumCheckBox.Checked )
                 {
-                    drawSwarms( mapGraphics, mapSize );
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.MediumZombies, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                }
+                if( dressedCheckBox.Checked )
+                {
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.DressedZombies, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                }
+                if( strongCheckBox.Checked )
+                {
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.StrongZombies, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                }
+                if( harpyCheckBox.Checked )
+                {
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.HarpyZombies, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                }
+                if( venomCheckBox.Checked )
+                {
+                    mapGraphics.DrawImage( getCachedImage( ViewLayer.VenomZombies, cellSize, mapSize ), 0, 0, mapSize, mapSize );
                 }
 
                 if( vodsCheckBox.Checked )
                 {
                     drawVODs( mapGraphics, mapSize );
+                }
+
+                if( swarmIsCheckBox.Checked )
+                {
+                    drawSwarmIcons( mapGraphics, mapSize );
+                }
+                if( swarmZsCheckBox.Checked )
+                {
+                    drawSwarmZombies( mapGraphics, mapSize );
                 }
 
                 if( hugeCheckBox.Checked )
@@ -320,8 +344,23 @@ namespace TABSAT
                     case ViewLayer.NavQuads:
                         map = generateNavQuadsImage( mapSize );
                         break;
-                    case ViewLayer.ZombieQuads:
-                        map = generateZombieQuadsImage( mapSize );
+                    case ViewLayer.WeakZombies:
+                        map = generateZombieImage( mapSize, LevelEntities.ScalableZombieGroups.WEAK );
+                        break;
+                    case ViewLayer.MediumZombies:
+                        map = generateZombieImage( mapSize, LevelEntities.ScalableZombieGroups.MEDIUM );
+                        break;
+                    case ViewLayer.DressedZombies:
+                        map = generateZombieImage( mapSize, LevelEntities.ScalableZombieGroups.DRESSED );
+                        break;
+                    case ViewLayer.StrongZombies:
+                        map = generateZombieImage( mapSize, LevelEntities.ScalableZombieGroups.STRONG );
+                        break;
+                    case ViewLayer.HarpyZombies:
+                        map = generateZombieImage( mapSize, LevelEntities.ScalableZombieGroups.HARPY );
+                        break;
+                    case ViewLayer.VenomZombies:
+                        map = generateZombieImage( mapSize, LevelEntities.ScalableZombieGroups.VENOM );
                         break;
                     default:
                         map = new Bitmap( mapSize, mapSize );
@@ -467,7 +506,7 @@ namespace TABSAT
             }
             return map;
         }
-
+        /*
         private Image generateZombieQuadsImage( in int mapSize )
         {
             Image map = new Bitmap( mapSize, mapSize );
@@ -498,15 +537,66 @@ namespace TABSAT
             }
             return map;
         }
+        */
+        private Image generateZombieImage( in int mapSize, LevelEntities.ScalableZombieGroups group )   // Unify zombie group layers into 1 image..?
+        {
+            Image map = new Bitmap( mapSize, mapSize );
+            using( Graphics mapGraphics = Graphics.FromImage( map ) )
+            {
+                ushort cells = mapData.CellsCount();
+                int cellSize = mapSize / cells;
+                Brush zombieBrush;
+                switch( group )
+                {
+                    case LevelEntities.ScalableZombieGroups.WEAK:
+                        zombieBrush = weakBrush;
+                        break;
+                    case LevelEntities.ScalableZombieGroups.MEDIUM:
+                        zombieBrush = mediumBrush;
+                        break;
+                    case LevelEntities.ScalableZombieGroups.DRESSED:
+                        zombieBrush = dressedBrush;
+                        break;
+                    case LevelEntities.ScalableZombieGroups.STRONG:
+                        zombieBrush = strongBrush;
+                        break;
+                    case LevelEntities.ScalableZombieGroups.HARPY:
+                        zombieBrush = harpyBrush;
+                        break;
+                    case LevelEntities.ScalableZombieGroups.VENOM:
+                        zombieBrush = venomBrush;
+                        break;
+                    default:
+                        zombieBrush = new SolidBrush( Color.FromArgb( 0xBF, 0xFF, 0x00, 0x00 ) );
+                        break;
+                }
+                foreach( var pos in mapData.getZombiePositions( group ) )
+                {
+                    mapGraphics.FillRectangle( zombieBrush, pos.x * cellSize, pos.y * cellSize, cellSize, cellSize );
+                }
+            }
+            return map;
+        }
 
-        private void drawSwarms( Graphics mapGraphics, in int mapSize )
+        private void drawSwarmIcons( Graphics mapGraphics, in int mapSize )
         {
             ushort cells = mapData.CellsCount();
             int cellSize = mapSize / cells;
             var positions = mapData.getSwarmIconPositions();
             foreach( var p in positions )
             {
-                mapGraphics.FillEllipse( swarmBrush, ( p.x - 5 ) * cellSize, ( p.y - 5 ) * cellSize, cellSize * 11, cellSize * 11 );
+                mapGraphics.FillEllipse( swarmBrush, ( p.x - 3 ) * cellSize, ( p.y - 3 ) * cellSize, cellSize * 7, cellSize * 7 );
+            }
+        }
+
+        private void drawSwarmZombies( Graphics mapGraphics, in int mapSize )
+        {
+            ushort cells = mapData.CellsCount();
+            int cellSize = mapSize / cells;
+            var positions = mapData.getSwarmZombiePositions();
+            foreach( var p in positions )
+            {
+                mapGraphics.FillRectangle( swarmBrush, p.x * cellSize, p.y * cellSize, cellSize, cellSize );
             }
         }
 

@@ -112,6 +112,8 @@
             this.spoilersCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.spoilersCheckBox.AutoSize = true;
             this.spoilersCheckBox.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.spoilersCheckBox.Checked = true;
+            this.spoilersCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.spoilersCheckBox.Location = new System.Drawing.Point(6, 21);
             this.spoilersCheckBox.Name = "spoilersCheckBox";
             this.spoilersCheckBox.Size = new System.Drawing.Size(186, 17);
