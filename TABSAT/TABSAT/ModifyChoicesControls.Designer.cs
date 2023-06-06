@@ -42,7 +42,6 @@
             this.swarmsEasyCheckBox = new System.Windows.Forms.CheckBox();
             this.fogGroupBox = new System.Windows.Forms.GroupBox();
             this.fogRemoveRadioButton = new System.Windows.Forms.RadioButton();
-            this.fogAreaSelectorControl = new TABSAT.AreaSelectorControl();
             this.fogShowFullRadioButton = new System.Windows.Forms.RadioButton();
             this.warehousesGroupBox = new System.Windows.Forms.GroupBox();
             this.warehousesFillOilCheckBox = new System.Windows.Forms.CheckBox();
@@ -57,7 +56,6 @@
             this.mutantsMoveRadio = new System.Windows.Forms.RadioButton();
             this.mutantMoveCCLabel = new System.Windows.Forms.Label();
             this.mutantsReplaceAllRadio = new System.Windows.Forms.RadioButton();
-            this.mutantsAreaSelectorControl = new TABSAT.AreaSelectorControl();
             this.ccExtraGroupBox = new System.Windows.Forms.GroupBox();
             this.giftComboBox = new System.Windows.Forms.ComboBox();
             this.ccFoodNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -80,9 +78,7 @@
             this.vodTavernsCheckBox = new System.Windows.Forms.CheckBox();
             this.vodStackDwellingsNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.vodDwellingCheckBox = new System.Windows.Forms.CheckBox();
-            this.vodAreaSelectorControl = new TABSAT.AreaSelectorControl();
             this.zombieScalingGroupBox = new System.Windows.Forms.GroupBox();
-            this.zombieAreaSelectorControl = new TABSAT.AreaSelectorControl();
             this.zombieScaleMutantNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.zombieScaleGiantNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.zombieScaleMutantCheckBox = new System.Windows.Forms.CheckBox();
@@ -114,6 +110,10 @@
             this.zombieScaleAllCheckBox = new System.Windows.Forms.CheckBox();
             this.zombieScaleGiantCheckBox = new System.Windows.Forms.CheckBox();
             this.groupsFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.zombieAreaSelectorControl = new TABSAT.AreaSelectorControl();
+            this.vodAreaSelectorControl = new TABSAT.AreaSelectorControl();
+            this.mutantsAreaSelectorControl = new TABSAT.AreaSelectorControl();
+            this.fogAreaSelectorControl = new TABSAT.AreaSelectorControl();
             this.generalGroupBox.SuspendLayout();
             this.swarmsGroupBox.SuspendLayout();
             this.fogGroupBox.SuspendLayout();
@@ -296,13 +296,6 @@
             this.fogRemoveRadioButton.Text = "Remove Fog";
             this.fogRemoveRadioButton.UseVisualStyleBackColor = true;
             // 
-            // fogAreaSelectorControl
-            // 
-            this.fogAreaSelectorControl.Location = new System.Drawing.Point(6, 19);
-            this.fogAreaSelectorControl.Name = "fogAreaSelectorControl";
-            this.fogAreaSelectorControl.Size = new System.Drawing.Size(225, 90);
-            this.fogAreaSelectorControl.TabIndex = 5;
-            // 
             // fogShowFullRadioButton
             // 
             this.fogShowFullRadioButton.AutoSize = true;
@@ -469,13 +462,6 @@
             this.mutantsReplaceAllRadio.Text = "Replace all the";
             this.mutantsReplaceAllRadio.UseVisualStyleBackColor = true;
             // 
-            // mutantsAreaSelectorControl
-            // 
-            this.mutantsAreaSelectorControl.Location = new System.Drawing.Point(6, 19);
-            this.mutantsAreaSelectorControl.Name = "mutantsAreaSelectorControl";
-            this.mutantsAreaSelectorControl.Size = new System.Drawing.Size(225, 90);
-            this.mutantsAreaSelectorControl.TabIndex = 6;
-            // 
             // ccExtraGroupBox
             // 
             this.ccExtraGroupBox.Controls.Add(this.giftComboBox);
@@ -612,7 +598,7 @@
             this.giftNumericUpDown.Size = new System.Drawing.Size(35, 20);
             this.giftNumericUpDown.TabIndex = 6;
             this.giftNumericUpDown.Value = new decimal(new int[] {
-            10,
+            1,
             0,
             0,
             0});
@@ -824,13 +810,6 @@
             this.vodDwellingCheckBox.Text = "Dwellings";
             this.vodDwellingCheckBox.UseVisualStyleBackColor = true;
             // 
-            // vodAreaSelectorControl
-            // 
-            this.vodAreaSelectorControl.Location = new System.Drawing.Point(6, 19);
-            this.vodAreaSelectorControl.Name = "vodAreaSelectorControl";
-            this.vodAreaSelectorControl.Size = new System.Drawing.Size(225, 90);
-            this.vodAreaSelectorControl.TabIndex = 8;
-            // 
             // zombieScalingGroupBox
             // 
             this.zombieScalingGroupBox.Controls.Add(this.zombieAreaSelectorControl);
@@ -846,13 +825,6 @@
             this.zombieScalingGroupBox.TabIndex = 0;
             this.zombieScalingGroupBox.TabStop = false;
             this.zombieScalingGroupBox.Text = "Zombie Population Count Scaling %";
-            // 
-            // zombieAreaSelectorControl
-            // 
-            this.zombieAreaSelectorControl.Location = new System.Drawing.Point(6, 19);
-            this.zombieAreaSelectorControl.Name = "zombieAreaSelectorControl";
-            this.zombieAreaSelectorControl.Size = new System.Drawing.Size(225, 90);
-            this.zombieAreaSelectorControl.TabIndex = 20;
             // 
             // zombieScaleMutantNumericUpDown
             // 
@@ -1271,8 +1243,6 @@
             // zombieScaleAllCheckBox
             // 
             this.zombieScaleAllCheckBox.AutoSize = true;
-            this.zombieScaleAllCheckBox.Checked = true;
-            this.zombieScaleAllCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.zombieScaleAllCheckBox.Location = new System.Drawing.Point(5, 11);
             this.zombieScaleAllCheckBox.Name = "zombieScaleAllCheckBox";
             this.zombieScaleAllCheckBox.Size = new System.Drawing.Size(103, 17);
@@ -1311,13 +1281,41 @@
             this.groupsFlowLayoutPanel.Size = new System.Drawing.Size(589, 560);
             this.groupsFlowLayoutPanel.TabIndex = 1;
             // 
-            // ModifyChoicesControls
+            // zombieAreaSelectorControl
+            // 
+            this.zombieAreaSelectorControl.Location = new System.Drawing.Point(6, 19);
+            this.zombieAreaSelectorControl.Name = "zombieAreaSelectorControl";
+            this.zombieAreaSelectorControl.Size = new System.Drawing.Size(225, 90);
+            this.zombieAreaSelectorControl.TabIndex = 20;
+            // 
+            // vodAreaSelectorControl
+            // 
+            this.vodAreaSelectorControl.Location = new System.Drawing.Point(6, 19);
+            this.vodAreaSelectorControl.Name = "vodAreaSelectorControl";
+            this.vodAreaSelectorControl.Size = new System.Drawing.Size(225, 90);
+            this.vodAreaSelectorControl.TabIndex = 8;
+            // 
+            // mutantsAreaSelectorControl
+            // 
+            this.mutantsAreaSelectorControl.Location = new System.Drawing.Point(6, 19);
+            this.mutantsAreaSelectorControl.Name = "mutantsAreaSelectorControl";
+            this.mutantsAreaSelectorControl.Size = new System.Drawing.Size(225, 90);
+            this.mutantsAreaSelectorControl.TabIndex = 6;
+            // 
+            // fogAreaSelectorControl
+            // 
+            this.fogAreaSelectorControl.Location = new System.Drawing.Point(6, 19);
+            this.fogAreaSelectorControl.Name = "fogAreaSelectorControl";
+            this.fogAreaSelectorControl.Size = new System.Drawing.Size(225, 90);
+            this.fogAreaSelectorControl.TabIndex = 5;
+            // 
+            // ModifyChoicesControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupsFlowLayoutPanel);
             this.Margin = new System.Windows.Forms.Padding(0);
-            this.Name = "ModifyChoicesControls";
+            this.Name = "ModifyChoicesControl";
             this.Size = new System.Drawing.Size(589, 560);
             this.generalGroupBox.ResumeLayout(false);
             this.generalGroupBox.PerformLayout();

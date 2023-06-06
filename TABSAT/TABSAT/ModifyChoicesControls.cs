@@ -96,7 +96,7 @@ namespace TABSAT
             mutantsReplaceAllComboBox.SelectedIndex = 0;
             mutantsMoveWhatComboBox.SelectedIndex = 0;
             mutantsMoveGlobalComboBox.SelectedIndex = 1;
-            giftComboBox.SelectedIndex = 1;
+            giftComboBox.SelectedIndex = 0;
             swarmEasyComboBox.SelectedIndex = 1;
             swarmHardComboBox.SelectedIndex = 2;
             themeComboBox.SelectedIndex = 3;
@@ -497,7 +497,7 @@ namespace TABSAT
                     c.Checked = false;
                 }
             }
-            zombieScaleAllCheckBox.Checked = true;
+            zombieScaleAllCheckBox.Checked = false;
             bothRadioButton.Checked = true;       // Should we also reset the numerous ComboBox.SelectedIndex and NumericUpDown.Value..?
             zombieAreaSelectorControl.reset();
             vodAreaSelectorControl.reset();
