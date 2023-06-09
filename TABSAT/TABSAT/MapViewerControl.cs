@@ -119,11 +119,11 @@ namespace TABSAT
             if( showSpoilers )
             {
                 fogCheckBox.Checked = false;
+                navigableCheckBox.Checked = true;
                 navQuadsCheckBox.Checked = false;
                 mediumCheckBox.Checked = true;
                 dressedCheckBox.Checked = true;
                 harpyCheckBox.Checked = true;
-                venomCheckBox.Checked = true;
                 swarmZsCheckBox.Checked = true;
                 vodsCheckBox.Checked = true;
             }
@@ -452,8 +452,8 @@ namespace TABSAT
                     for( ushort y = 0; y < cells; y++ )
                     {
                         var distance = mapData.pathDistanceToCC( new MapNavigation.Position( x, y ) );
-                        var brightness = distance == MapNavigation.UNNAVIGABLE ? 0 : Math.Max( 255 - ( (int) (distance * 2.5) ), 4 );
-                        Brush pathing = new SolidBrush( Color.FromArgb( 0xAF, brightness, brightness, brightness ) );
+                        var darkness = distance == MapNavigation.UNNAVIGABLE ? 0x3F : Math.Min( (int) (distance * 2.25), 0xFF );
+                        Brush pathing = new SolidBrush( Color.FromArgb( darkness, 0x00, 0x00, 0x00 ) );
                         mapGraphics.FillRectangle( pathing, x * cellSize, y * cellSize, cellSize, cellSize );
                     }
                 }

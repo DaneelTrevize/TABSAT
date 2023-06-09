@@ -33,16 +33,18 @@ namespace TABSAT
             {
                 DirectoryInfo editsDirInfo = new DirectoryInfo( editsDirectory );
                 DirectoryInfo[] editsInfo = editsDirInfo.GetDirectories();
-                if( editsInfo.Length > 0 )
+                if( editsInfo.Length == 0 )
                 {
-                    IOrderedEnumerable<DirectoryInfo> sortedEditsInfo = editsInfo.OrderByDescending( s => s.LastWriteTimeUtc );
-                    DirectoryInfo newestEdit = sortedEditsInfo.First();
-                    mapFolderBrowserDialog.SelectedPath = newestEdit.FullName;
-                    viewMapButton.Enabled = true;
+                    // We are in an extracted save folder, try the parent edits directory..?
+                    editsInfo = editsDirInfo.Parent.GetDirectories();
                 }
-            }
+                IOrderedEnumerable<DirectoryInfo> sortedEditsInfo = editsInfo.OrderByDescending( s => s.LastWriteTimeUtc );
+                DirectoryInfo newestEdit = sortedEditsInfo.First();
+                mapFolderBrowserDialog.SelectedPath = newestEdit.FullName;
 
-            extractedSaveTextBox.Text = mapFolderBrowserDialog.SelectedPath;
+                viewMapButton.Enabled = true;
+                extractedSaveTextBox.Text = mapFolderBrowserDialog.SelectedPath;
+            }
         }
 
         private void extractedSaveChooseButton_Click( object sender, EventArgs e )
