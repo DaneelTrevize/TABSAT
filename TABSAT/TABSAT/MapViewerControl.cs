@@ -17,17 +17,17 @@ namespace TABSAT
         private static readonly SortedDictionary<MapLayers, SortedDictionary<byte, Brush>> layersBrushes;
         private static readonly Brush unknown = new SolidBrush( Color.HotPink );
         private static readonly Brush arrowBrush = new SolidBrush( Color.White );
-        private static readonly Brush ccBrush = new SolidBrush( Color.FromArgb( 0xBF, 0x00, 0x3F, 0xFF ) );
-        private static readonly Brush weakBrush = new SolidBrush( Color.FromArgb( 0xAF, 0xDF, 0xBF, 0x5F ) );
-        private static readonly Brush mediumBrush = new SolidBrush( Color.FromArgb( 0xAF, 0xDF, 0x5F, 0x00 ) );
-        private static readonly Brush dressedBrush = new SolidBrush( Color.FromArgb( 0xAF, 0xAF, 0x0F, 0x0F ) );
-        private static readonly Brush strongBrush = new SolidBrush( Color.FromArgb( 0xDF, 0x1F, 0x3F, 0xBF ) );
-        private static readonly Brush harpyBrush = new SolidBrush( Color.FromArgb( 0xDF, 0xDF, 0x00, 0xFF ) );
-        private static readonly Brush venomBrush = new SolidBrush( Color.FromArgb( 0xDF, 0x1F, 0xAF, 0x9F ) );
+        private static readonly Brush ccBrush = new SolidBrush( Color.FromArgb( 0xBF, 0x1F, 0x3F, 0xBF ) );
+        private static readonly Brush weakBrush = new SolidBrush( Color.FromArgb( 0xAF, 0x3F, 0x7F, 0xFF ) );
+        private static readonly Brush mediumBrush = new SolidBrush( Color.FromArgb( 0xAF, 0xCF, 0x6F, 0x00 ) );
+        private static readonly Brush dressedBrush = new SolidBrush( Color.FromArgb( 0xCF, 0xBF, 0xBF, 0x3F ) );
+        private static readonly Brush strongBrush = new SolidBrush( Color.FromArgb( 0xEF, 0x6F, 0x5F, 0xCF ) );
+        private static readonly Brush harpyBrush = new SolidBrush( Color.FromArgb( 0xEF, 0xCF, 0x00, 0xFF ) );
+        private static readonly Brush venomBrush = new SolidBrush( Color.FromArgb( 0xCF, 0x1F, 0xBF, 0x9F ) );
         private static readonly Brush swarmBrush = new SolidBrush( Color.FromArgb( 0x7F, 0xFF, 0xBF, 0x00 ) );
-        private static readonly Brush vodBrush = new SolidBrush( Color.FromArgb( 0xBF, 0xFF, 0xDF, 0x1F ) );
-        private static readonly Brush mutantBrush = new SolidBrush( Color.FromArgb( 0xEF, 0xFF, 0x0F, 0x3F ) );
-        private static readonly Brush giantBrush = new SolidBrush( Color.FromArgb( 0xEF, 0x1F, 0xAF, 0x1F ) );
+        private static readonly Brush vodBrush = new SolidBrush( Color.FromArgb( 0xBF, 0xFF, 0xCF, 0x0F ) );
+        private static readonly Brush mutantBrush = new SolidBrush( Color.FromArgb( 0xEF, 0xFF, 0x3F, 0x3F ) );
+        private static readonly Brush giantBrush = new SolidBrush( Color.FromArgb( 0xEF, 0x00, 0x3F, 0xFF ) );
         private static readonly Brush pickableBrush = new SolidBrush( Color.FromArgb( 0xDF, 0x00, 0xFF, 0x0F ) );
         private static readonly Brush joinableBrush = new SolidBrush( Color.FromArgb( 0xFF, 0xFF, 0xBF, 0x00 ) );
         private static readonly Pen redPen = new Pen( Color.FromArgb( 0x7F, 0xFF, 0x00, 0x00 ) );
@@ -119,11 +119,11 @@ namespace TABSAT
             if( showSpoilers )
             {
                 fogCheckBox.Checked = false;
+                navigableCheckBox.Checked = true;
                 navQuadsCheckBox.Checked = false;
                 mediumCheckBox.Checked = true;
                 dressedCheckBox.Checked = true;
                 harpyCheckBox.Checked = true;
-                venomCheckBox.Checked = true;
                 swarmZsCheckBox.Checked = true;
                 vodsCheckBox.Checked = true;
             }
@@ -182,6 +182,7 @@ namespace TABSAT
 
         private void updateMapImage( in int zoom )
         {
+
             arrows.Clear();
 
             ushort cellSize = (ushort) (BASE_PIXELS_PER_CELL * zoom);
@@ -192,6 +193,11 @@ namespace TABSAT
             Image map = new Bitmap( mapSize, mapSize );     // +1 for nicer grid, even though first pixels are cells covered in grid and last pixels are outside of cells but with grid
             using( Graphics mapGraphics = Graphics.FromImage( map ) )
             {
+                void drawCachedImage( in ViewLayer layer )
+                {
+                    mapGraphics.DrawImage( getCachedImage( layer, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                }
+
                 // Background
                 if( !backgroundMap.TryGetValue( mapData.Theme(), out Color background ) )
                 {
@@ -201,65 +207,65 @@ namespace TABSAT
 
                 if( terrainCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.Terrain, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.Terrain );
                 }
 
                 // MapLayers.Zombie
                 
                 if( fogCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.Fog, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.Fog );
                 }
                 
                 if( activityCheckBox.Checked )
                 {
                     // Should we cache this as it's a full map of data to parse, or just draw directly as it's often so few pixels non-transparent..?
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.Activity, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.Activity );
                 }
 
                 if( navigableCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.Navigable, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.Navigable );
                 }
 
                 if( distanceCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.Distance, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.Distance );
                 }
 
                 if( directionCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.Direction, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.Direction );
                 }
 
                 if( navQuadsCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.NavQuads, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.NavQuads );
                 }
 
                 if( weakCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.WeakZombies, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.WeakZombies );
                 }
                 if( mediumCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.MediumZombies, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.MediumZombies );
                 }
                 if( dressedCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.DressedZombies, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.DressedZombies );
                 }
                 if( strongCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.StrongZombies, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.StrongZombies );
                 }
                 if( harpyCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.HarpyZombies, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.HarpyZombies );
                 }
                 if( venomCheckBox.Checked )
                 {
-                    mapGraphics.DrawImage( getCachedImage( ViewLayer.VenomZombies, cellSize, mapSize ), 0, 0, mapSize, mapSize );
+                    drawCachedImage( ViewLayer.VenomZombies );
                 }
 
                 if( vodsCheckBox.Checked )
@@ -452,8 +458,8 @@ namespace TABSAT
                     for( ushort y = 0; y < cells; y++ )
                     {
                         var distance = mapData.pathDistanceToCC( new MapNavigation.Position( x, y ) );
-                        var brightness = distance == MapNavigation.UNNAVIGABLE ? 0 : Math.Max( 255 - ( (int) (distance * 2.5) ), 4 );
-                        Brush pathing = new SolidBrush( Color.FromArgb( 0xAF, brightness, brightness, brightness ) );
+                        var darkness = distance == MapNavigation.UNNAVIGABLE ? 0x3F : Math.Min( (int) (distance * 2.25), 0xFF );
+                        Brush pathing = new SolidBrush( Color.FromArgb( darkness, 0x00, 0x00, 0x00 ) );
                         mapGraphics.FillRectangle( pathing, x * cellSize, y * cellSize, cellSize, cellSize );
                     }
                 }
@@ -658,7 +664,7 @@ namespace TABSAT
                 {
                     if( hugeType == LevelEntities.HugeTypes.Mutant )
                     {
-                        mapGraphics.FillEllipse( mutantBrush, p.x * cellSize, p.y * cellSize, cellSize * 2, cellSize * 2 );
+                        mapGraphics.FillEllipse( mutantBrush, ( p.x - 1 ) * cellSize, ( p.y - 1 ) * cellSize, cellSize * 3, cellSize * 3 );
                     }
                     else
                     {

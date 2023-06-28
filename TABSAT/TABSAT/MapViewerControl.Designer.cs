@@ -71,15 +71,14 @@
             // 
             // zoomTrackBar
             // 
-            this.zoomTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.zoomTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.zoomTrackBar.LargeChange = 2;
-            this.zoomTrackBar.Location = new System.Drawing.Point(1059, 741);
-            this.zoomTrackBar.Maximum = 8;
+            this.zoomTrackBar.Location = new System.Drawing.Point(1033, 732);
+            this.zoomTrackBar.Maximum = 6;
             this.zoomTrackBar.Minimum = 1;
             this.zoomTrackBar.Name = "zoomTrackBar";
             this.zoomTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.zoomTrackBar.Size = new System.Drawing.Size(45, 298);
+            this.zoomTrackBar.Size = new System.Drawing.Size(45, 135);
             this.zoomTrackBar.TabIndex = 1;
             this.zoomTrackBar.Value = 2;
             // 
@@ -87,6 +86,7 @@
             // 
             this.mapPictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.mapPictureBox.Location = new System.Drawing.Point(0, 0);
+            this.mapPictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.mapPictureBox.Name = "mapPictureBox";
             this.mapPictureBox.Size = new System.Drawing.Size(1024, 1024);
             this.mapPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -100,9 +100,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mapPanel.AutoScroll = true;
             this.mapPanel.Controls.Add(this.mapPictureBox);
-            this.mapPanel.Location = new System.Drawing.Point(12, 12);
+            this.mapPanel.Location = new System.Drawing.Point(3, 3);
             this.mapPanel.Name = "mapPanel";
-            this.mapPanel.Size = new System.Drawing.Size(1024, 1027);
+            this.mapPanel.Size = new System.Drawing.Size(1024, 1025);
             this.mapPanel.TabIndex = 0;
             // 
             // layersGroupBox
@@ -117,7 +117,7 @@
             this.layersGroupBox.Controls.Add(this.fogCheckBox);
             this.layersGroupBox.Controls.Add(this.terrainCheckBox);
             this.layersGroupBox.Controls.Add(this.distanceCheckBox);
-            this.layersGroupBox.Location = new System.Drawing.Point(1053, 12);
+            this.layersGroupBox.Location = new System.Drawing.Point(1033, 3);
             this.layersGroupBox.Name = "layersGroupBox";
             this.layersGroupBox.Size = new System.Drawing.Size(110, 318);
             this.layersGroupBox.TabIndex = 3;
@@ -143,7 +143,7 @@
             this.navQuadsTrackBar.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.navQuadsTrackBar.Size = new System.Drawing.Size(45, 135);
             this.navQuadsTrackBar.TabIndex = 6;
-            this.navQuadsTrackBar.Value = 3;
+            this.navQuadsTrackBar.Value = 4;
             // 
             // navQuadsCheckBox
             // 
@@ -247,9 +247,9 @@
             // 
             // zoomLabel
             // 
-            this.zoomLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.zoomLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.zoomLabel.AutoSize = true;
-            this.zoomLabel.Location = new System.Drawing.Point(1103, 877);
+            this.zoomLabel.Location = new System.Drawing.Point(1073, 786);
             this.zoomLabel.Name = "zoomLabel";
             this.zoomLabel.Size = new System.Drawing.Size(34, 26);
             this.zoomLabel.TabIndex = 4;
@@ -272,7 +272,7 @@
             this.optionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsGroupBox.Controls.Add(this.rotateCheckBox);
             this.optionsGroupBox.Controls.Add(this.gridCheckBox);
-            this.optionsGroupBox.Location = new System.Drawing.Point(1053, 670);
+            this.optionsGroupBox.Location = new System.Drawing.Point(1033, 661);
             this.optionsGroupBox.Name = "optionsGroupBox";
             this.optionsGroupBox.Size = new System.Drawing.Size(110, 65);
             this.optionsGroupBox.TabIndex = 5;
@@ -319,7 +319,7 @@
             this.removablesGroupBox.Controls.Add(this.joinableCheckBox);
             this.removablesGroupBox.Controls.Add(this.vodsCheckBox);
             this.removablesGroupBox.Controls.Add(this.pickablesCheckBox);
-            this.removablesGroupBox.Location = new System.Drawing.Point(1053, 572);
+            this.removablesGroupBox.Location = new System.Drawing.Point(1033, 563);
             this.removablesGroupBox.Name = "removablesGroupBox";
             this.removablesGroupBox.Size = new System.Drawing.Size(110, 92);
             this.removablesGroupBox.TabIndex = 9;
@@ -350,7 +350,7 @@
             this.zombiesGroupBox.Controls.Add(this.mediumCheckBox);
             this.zombiesGroupBox.Controls.Add(this.weakCheckBox);
             this.zombiesGroupBox.Controls.Add(this.swarmIsCheckBox);
-            this.zombiesGroupBox.Location = new System.Drawing.Point(1053, 336);
+            this.zombiesGroupBox.Location = new System.Drawing.Point(1033, 327);
             this.zombiesGroupBox.Name = "zombiesGroupBox";
             this.zombiesGroupBox.Size = new System.Drawing.Size(110, 230);
             this.zombiesGroupBox.TabIndex = 10;
@@ -439,7 +439,7 @@
             this.Controls.Add(this.zoomTrackBar);
             this.Controls.Add(this.mapPanel);
             this.Name = "MapViewerControl";
-            this.Size = new System.Drawing.Size(1166, 1048);
+            this.Size = new System.Drawing.Size(1151, 1030);
             ((System.ComponentModel.ISupportInitialize)(this.zoomTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.mapPictureBox)).EndInit();
             this.mapPanel.ResumeLayout(false);
