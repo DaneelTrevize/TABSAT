@@ -237,6 +237,7 @@ namespace TABSAT
         private void resetButton_Click( object sender, EventArgs e )
         {
             modifyChoicesControls.resetChoices();
+            refreshSaveFileChoice();
         }
 
         private void saveFileChooseButton_Click( object sender, EventArgs e )
